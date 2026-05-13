@@ -6,9 +6,67 @@ Construir una plataforma social moderna, escalable, reutilizable y preparada par
 
 ---
 
+# Runtime y tooling
+
+## Node.js 22.14.0 (LTS)
+
+### ¿Qué es?
+Entorno de ejecución principal del proyecto.
+
+### ¿Por qué se eligió?
+- versión LTS estable
+- compatibilidad con Next.js 15
+- compatibilidad con Expo SDK 53
+- estabilidad para monorepos
+- soporte moderno del ecosistema
+
+### Regla oficial
+No utilizar versiones experimentales o no validadas para evitar incompatibilidades futuras.
+
+---
+
+## pnpm 10
+
+### ¿Qué es?
+Package manager oficial del proyecto.
+
+### ¿Por qué se eligió?
+- mejor rendimiento
+- mejor manejo de monorepos
+- instalación más rápida
+- dependencias más limpias
+- menor consumo de espacio
+
+### Uso dentro del proyecto
+- instalación de dependencias
+- workspaces
+- gestión del monorepo
+
+---
+
+## Turborepo 2
+
+### ¿Qué es?
+Sistema de orquestación para monorepos modernos.
+
+### ¿Por qué se eligió?
+- caching inteligente
+- builds rápidas
+- organización profesional
+- escalabilidad empresarial
+
+### Uso dentro del proyecto
+- coordinación entre apps
+- pipelines
+- builds
+- desarrollo compartido
+
+---
+
 # Web
 
 ## Next.js 15.3.2
+
 ### ¿Qué es?
 Framework moderno basado en React para aplicaciones web escalables.
 
@@ -31,6 +89,7 @@ Framework moderno basado en React para aplicaciones web escalables.
 ---
 
 ## React 19.1.0
+
 ### ¿Qué es?
 Librería principal para construir interfaces modernas.
 
@@ -50,6 +109,7 @@ Librería principal para construir interfaces modernas.
 ---
 
 ## TypeScript 5.8.3
+
 ### ¿Qué es?
 Superset tipado de JavaScript.
 
@@ -67,6 +127,7 @@ Superset tipado de JavaScript.
 ---
 
 ## Tailwind CSS 4.1.7
+
 ### ¿Qué es?
 Framework utility-first de estilos.
 
@@ -85,6 +146,7 @@ Framework utility-first de estilos.
 ---
 
 ## shadcn/ui
+
 ### ¿Qué es?
 Sistema moderno de componentes reutilizables.
 
@@ -107,6 +169,7 @@ Sistema moderno de componentes reutilizables.
 # Mobile
 
 ## Expo SDK 53
+
 ### ¿Qué es?
 Plataforma moderna para React Native.
 
@@ -126,6 +189,7 @@ Plataforma moderna para React Native.
 ---
 
 ## React Native 0.79
+
 ### ¿Qué es?
 Framework para aplicaciones móviles nativas usando React.
 
@@ -143,9 +207,28 @@ Framework para aplicaciones móviles nativas usando React.
 
 ---
 
+## NativeWind 4
+
+### ¿Qué es?
+Adaptación de Tailwind CSS para React Native.
+
+### ¿Por qué se eligió?
+- consistencia visual entre web y mobile
+- reutilización mental del sistema de estilos
+- velocidad de desarrollo
+- integración moderna con Expo
+
+### Uso dentro del proyecto
+- estilos mobile
+- diseño consistente
+- componentes reutilizables
+
+---
+
 # Backend
 
 ## Supabase
+
 ### ¿Qué es?
 Backend-as-a-Service moderno basado en PostgreSQL.
 
@@ -166,6 +249,7 @@ Backend-as-a-Service moderno basado en PostgreSQL.
 ---
 
 ## PostgreSQL 17
+
 ### ¿Qué es?
 Base de datos relacional avanzada.
 
@@ -182,6 +266,7 @@ Base de datos relacional avanzada.
 ---
 
 ## PostGIS
+
 ### ¿Qué es?
 Extensión geoespacial para PostgreSQL.
 
@@ -200,20 +285,22 @@ Extensión geoespacial para PostgreSQL.
 
 # Arquitectura
 
-## Turborepo
+## Monorepo
+
 ### ¿Qué es?
-Sistema moderno para manejar monorepos.
+Estructura centralizada para compartir código entre web y mobile.
 
 ### ¿Por qué se eligió?
-- compartir código
-- builds optimizadas
+- reutilización
+- consistencia
+- mantenimiento simplificado
 - escalabilidad
-- organización profesional
 
 ### Uso dentro del proyecto
-- gestión del monorepo
-- caching
-- pipelines
+- compartir tipos
+- compartir lógica
+- compartir configuración
+- compartir componentes
 
 ---
 
@@ -229,3 +316,5 @@ Sistema moderno para manejar monorepos.
 - accesibilidad obligatoria
 - evitar sobreingeniería
 - escalabilidad desde el inicio
+- privacidad del usuario como prioridad
+- geolocalización optimizada
