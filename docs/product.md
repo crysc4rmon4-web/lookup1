@@ -1,24 +1,9 @@
-# Producto
-
-La app será una red social basada en proximidad real.
-
-## Problema que resuelve
-Ayuda a descubrir personas cercanas de forma más simple y natural, reduciendo la fricción social.
-
-## Público objetivo
-- personas jóvenes
-- networking local
-- emprendedores
-- creadores pequeños
-- usuarios que quieren conocer gente cercana
-
-## Diferencial
-El valor principal no será el feed, sino el radar de proximidad y la conexión humana real.
-
 # MVP oficial
 
 ## Objetivo principal
-Validar si los usuarios quieren descubrir e interactuar con personas cercanas mediante proximidad geográfica en tiempo real.
+Validar una herramienta social basada en proximidad geográfica para descubrir personas, eventos y oportunidades cercanas en tiempo real.
+
+La aplicación no busca reemplazar redes sociales tradicionales, sino funcionar como puente hacia ellas.
 
 ---
 
@@ -31,54 +16,59 @@ El usuario podrá:
 - cerrar sesión
 
 ### Datos mínimos:
-- username
+- nombre visible
 - email
 - contraseña
 - foto de perfil
 
 ---
 
-## 2. Onboarding básico
-El usuario configurará:
-- intereses
-- bio corta
-- foto
+## 2. Perfil minimalista
+Cada usuario tendrá:
+
+- foto de perfil
 - nombre visible
+- descripción breve
+- intereses opcionales
+- links externos:
+  - Instagram
+  - TikTok
+  - LinkedIn
+  - Facebook
+  - WhatsApp
 
 ---
 
 ## 3. Radar de proximidad
 El usuario podrá:
-- ver personas cercanas
+
+- visualizar personas cercanas
+- detectar usuarios visibles
 - visualizar distancia aproximada
-- detectar usuarios online
 - actualizar resultados en tiempo real
 
 Este será el núcleo principal del producto.
 
 ---
 
-## 4. Perfil simple
-Cada usuario tendrá:
-- foto
-- bio
-- intereses
-- estado online
+## 4. Sistema de visibilidad
+El usuario podrá:
+
+- aparecer visible
+- ocultarse temporalmente
+- controlar presencia en el radar
 
 ---
 
-## 5. Chat privado básico
-Usuarios cercanos podrán:
-- iniciar conversación
-- enviar mensajes en tiempo real
+## 5. Eventos y actividades locales
+La aplicación permitirá visualizar:
 
----
+- eventos
+- promociones
+- actividades
+- negocios locales
 
-## 6. Presencia en tiempo real
-La app detectará:
-- online
-- offline
-- última actividad
+mediante mapa geográfico interactivo.
 
 ---
 
@@ -86,26 +76,29 @@ La app detectará:
 
 Estas funciones NO formarán parte del MVP inicial:
 
+- chat interno
 - feed social
 - reels
 - stories
-- marketplace
-- perfiles de empresa
-- monetización
+- marketplace completo
+- monetización avanzada
 - anuncios
-- algoritmos complejos
 - IA integrada
-- transmisiones en vivo
-- grupos
+- algoritmos complejos
 - videollamadas
+- grupos
+- lives
+- sistema de seguidores
 
 ---
 
 # Filosofía del MVP
 
-La prioridad inicial será validar:
-- descubrimiento humano real
-- interacción local
-- utilidad social del radar
+La prioridad será validar:
 
-No competir contra Instagram desde el inicio.
+- descubrimiento humano local
+- utilidad del radar social
+- interacción rápida entre personas reales
+- conexión mediante redes sociales existentes
+
+La aplicación será una herramienta social ligera, rápida y enfocada en experiencias reales.

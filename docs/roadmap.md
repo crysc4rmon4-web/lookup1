@@ -84,20 +84,20 @@ Usuarios detectándose en tiempo real mediante proximidad.
 
 ---
 
-# Fase 5 — Chat y conexión social
+# Fase 5 — Eventos y ecosistema local
 
 Objetivo:
-Permitir interacción directa entre usuarios.
+Expandir la utilidad social y comercial de la plataforma.
 
 Incluye:
-- chat privado
-- mensajes realtime
-- estados de lectura
-- presencia
-- conexiones sociales básicas
+- eventos geolocalizados
+- promociones
+- negocios locales
+- actividades cercanas
+- mejoras del mapa interactivo
 
 Resultado esperado:
-Comunicación funcional entre usuarios cercanos.
+Ecosistema social local dinámico y útil para usuarios y negocios.
 
 ---
 
