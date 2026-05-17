@@ -8,6 +8,9 @@ importers:
 
   .:
     devDependencies:
+      '@eslint/eslintrc':
+        specifier: ^3.3.5
+        version: 3.3.5
       turbo:
         specifier: 2.9.12
         version: 2.9.12
@@ -30,6 +33,12 @@ importers:
       '@types/react':
         specifier: 19.1.2
         version: 19.1.2
+      eslint:
+        specifier: 9.25.1
+        version: 9.25.1(jiti@2.7.0)
+      eslint-config-expo:
+        specifier: ~9.2.0
+        version: 9.2.0(eslint@9.25.1(jiti@2.7.0))(typescript@5.8.3)
       typescript:
         specifier: 5.8.3
         version: 5.8.3
@@ -72,6 +81,8 @@ importers:
         version: 5.8.3
 
   packages/config: {}
+
+  packages/eslint-config: {}
 
   packages/services: {}
 
@@ -2053,6 +2064,11 @@ packages:
     resolution: {integrity: sha512-TtpcNJ3XAzx3Gq8sWRzJaVajRs0uVxA2YAkdb1jm2YkPz4G6egUFAyA3n5vtEIZefPk5Wa4UXbKuS5fKkJWdgA==}
     engines: {node: '>=10'}
 
+  eslint-config-expo@9.2.0:
+    resolution: {integrity: sha512-TQgmSx+2mRM7qUS0hB5kTDrHcSC35rA1UzOSgK5YRLmSkSMlKLmXkUrhwOpnyo9D/nHdf4ERRAySRYxgA6dlrw==}
+    peerDependencies:
+      eslint: '>=8.10'
+
   eslint-config-next@15.3.2:
     resolution: {integrity: sha512-FerU4DYccO4FgeYFFglz0SnaKRe1ejXQrDb8kWUkTAg036YWi+jUsgg4sIGNCDhAsDITsZaL4MzBWKB6f4G1Dg==}
     peerDependencies:
@@ -2098,6 +2114,12 @@ packages:
         optional: true
       eslint-import-resolver-webpack:
         optional: true
+
+  eslint-plugin-expo@0.1.4:
+    resolution: {integrity: sha512-YA7yiMacQbLJySuyJA0Eb5V65obqp6fVOWtw1JdYDRWC5MeToPrnNvhGDpk01Bv3Vm4ownuzUfvi89MXi1d6cg==}
+    engines: {node: '>=18.0.0'}
+    peerDependencies:
+      eslint: '>=8.10'
 
   eslint-plugin-import@2.32.0:
     resolution: {integrity: sha512-whOE1HFo/qJDyX4SnXzP4N6zOWn79WhnCUY/iDR0mPfQZO8wcYE4JClzI2oZrhBnnMUCBCHZhO6VQyoBU95mZA==}
@@ -2399,6 +2421,10 @@ packages:
 
   globals@14.0.0:
     resolution: {integrity: sha512-oahGvuMGQlPw/ivIYBjVSrWAfWLBeku5tpPE2fOPLi+WHffIWbuh2tCjhyQhTBPMf5E9jDEH4FOmTYgYwbKwtQ==}
+    engines: {node: '>=18'}
+
+  globals@16.5.0:
+    resolution: {integrity: sha512-c/c15i26VrJ4IRt5Z89DnIzCGDn9EcebibhAOjw5ibqEHsE1wLUgkPn9RDmNcUKyU87GeaL633nyJ+pplFR2ZQ==}
     engines: {node: '>=18'}
 
   globalthis@1.0.4:
@@ -6477,6 +6503,23 @@ snapshots:
 
   escape-string-regexp@4.0.0: {}
 
+  eslint-config-expo@9.2.0(eslint@9.25.1(jiti@2.7.0))(typescript@5.8.3):
+    dependencies:
+      '@typescript-eslint/eslint-plugin': 8.59.3(@typescript-eslint/parser@8.59.3(eslint@9.25.1(jiti@2.7.0))(typescript@5.8.3))(eslint@9.25.1(jiti@2.7.0))(typescript@5.8.3)
+      '@typescript-eslint/parser': 8.59.3(eslint@9.25.1(jiti@2.7.0))(typescript@5.8.3)
+      eslint: 9.25.1(jiti@2.7.0)
+      eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import@2.32.0)(eslint@9.25.1(jiti@2.7.0))
+      eslint-plugin-expo: 0.1.4(eslint@9.25.1(jiti@2.7.0))(typescript@5.8.3)
+      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@8.59.3(eslint@9.25.1(jiti@2.7.0))(typescript@5.8.3))(eslint-import-resolver-typescript@3.10.1)(eslint@9.25.1(jiti@2.7.0))
+      eslint-plugin-react: 7.37.5(eslint@9.25.1(jiti@2.7.0))
+      eslint-plugin-react-hooks: 5.2.0(eslint@9.25.1(jiti@2.7.0))
+      globals: 16.5.0
+    transitivePeerDependencies:
+      - eslint-import-resolver-webpack
+      - eslint-plugin-import-x
+      - supports-color
+      - typescript
+
   eslint-config-next@15.3.2(eslint@9.25.1(jiti@2.7.0))(typescript@5.8.3):
     dependencies:
       '@next/eslint-plugin-next': 15.3.2
@@ -6530,6 +6573,15 @@ snapshots:
       eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import@2.32.0)(eslint@9.25.1(jiti@2.7.0))
     transitivePeerDependencies:
       - supports-color
+
+  eslint-plugin-expo@0.1.4(eslint@9.25.1(jiti@2.7.0))(typescript@5.8.3):
+    dependencies:
+      '@typescript-eslint/types': 8.59.3
+      '@typescript-eslint/utils': 8.59.3(eslint@9.25.1(jiti@2.7.0))(typescript@5.8.3)
+      eslint: 9.25.1(jiti@2.7.0)
+    transitivePeerDependencies:
+      - supports-color
+      - typescript
 
   eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.59.3(eslint@9.25.1(jiti@2.7.0))(typescript@5.8.3))(eslint-import-resolver-typescript@3.10.1)(eslint@9.25.1(jiti@2.7.0)):
     dependencies:
@@ -6932,6 +6984,8 @@ snapshots:
       path-is-absolute: 1.0.1
 
   globals@14.0.0: {}
+
+  globals@16.5.0: {}
 
   globalthis@1.0.4:
     dependencies:

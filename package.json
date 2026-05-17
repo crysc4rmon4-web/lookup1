@@ -9,6 +9,7 @@
     "typecheck": "turbo typecheck"
   },
   "devDependencies": {
+    "@eslint/eslintrc": "^3.3.5",
     "turbo": "2.9.12"
   }
 }
