@@ -181,3 +181,9 @@ Definir cómo viaja la información dentro del producto para mantener privacidad
 - la analítica vive separada del perfil
 - el radar solo muestra lo permitido
 - los eventos se usan para negocio, no para invadir privacidad
+
+Supabase → backend rápido y moderno
+PostgreSQL → base de datos robusta y escalable
+PostGIS → geolocalización profesional
+Next.js + Expo → compartir lógica entre web y móvil
+Turborepo → mantener todo organizado y reutilizable
