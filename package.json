@@ -11,5 +11,8 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.5",
     "turbo": "2.9.12"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.106.1"
   }
 }
