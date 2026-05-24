@@ -1,11 +1,5 @@
-import { testSupabaseConnection } from "../lib/test-supabase";
+import { redirect } from "next/navigation";
 
-export default async function Home() {
-  await testSupabaseConnection();
-
-  return (
-    <main>
-      <h1>LookUp Connected</h1>
-    </main>
-  );
+export default function HomePage() {
+  redirect("/login/signup");
 }
