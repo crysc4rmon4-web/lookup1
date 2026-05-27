@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 
 import { useAuth } from "../components/auth-provider";
 
-export default function HomePage() {
+export function useProtectedRoute() {
   const router = useRouter();
 
   const {
@@ -16,14 +16,13 @@ export default function HomePage() {
   useEffect(() => {
     if (loading) return;
 
-    router.replace(
-      user
-        ? "/dashboard"
-        : "/login/signup",
-    );
+    if (!user) {
+      router.replace("/login/signup");
+    }
   }, [loading, user, router]);
 
-  return (
-    <main className="min-h-screen bg-white" />
-  );
+  return {
+    user,
+    loading,
+  };
 }
