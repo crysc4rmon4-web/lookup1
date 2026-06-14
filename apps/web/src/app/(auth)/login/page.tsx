@@ -28,6 +28,14 @@ type FeedbackType = {
   message: string;
 };
 
+type AuthFlash = {
+  type?: "success" | "error" | "info";
+  message?: string;
+  email?: string;
+};
+
+const AUTH_FLASH_KEY = "lookup:auth-flash";
+
 export default function LoginPage() {
   const router = useRouter();
 
@@ -60,15 +68,46 @@ export default function LoginPage() {
     }
   }, [authLoading, user, router]);
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const raw =
+      window.sessionStorage.getItem(AUTH_FLASH_KEY);
+
+    if (!raw) return;
+
+    window.sessionStorage.removeItem(AUTH_FLASH_KEY);
+
+    try {
+      const flash = JSON.parse(raw) as AuthFlash;
+
+      if (typeof flash.email === "string" && flash.email) {
+        setEmail(flash.email);
+      }
+
+      if (
+        typeof flash.message === "string" &&
+        flash.message
+      ) {
+        setFeedback({
+          type: flash.type ?? "info",
+          message: flash.message,
+        });
+      }
+    } catch {
+      window.sessionStorage.removeItem(AUTH_FLASH_KEY);
+    }
+  }, []);
+
   function resetErrors() {
     setFieldErrors({});
     setFeedback((current) =>
       current.type === "info"
         ? current
         : {
-            type: null,
-            message: "",
-          },
+          type: null,
+          message: "",
+        },
     );
   }
 
@@ -87,10 +126,9 @@ export default function LoginPage() {
       transition-all
       placeholder:text-slate-400
       focus:bg-white
-      ${
-        hasError
-          ? "border-red-400 shadow-[0_0_0_4px_rgba(239,68,68,0.12)]"
-          : "border-slate-200 focus:border-[#5D5FEF]"
+      ${hasError
+        ? "border-red-400 shadow-[0_0_0_4px_rgba(239,68,68,0.12)]"
+        : "border-slate-200 focus:border-[#5D5FEF]"
       }
     `;
   }
@@ -240,13 +278,12 @@ export default function LoginPage() {
 
           {feedback.message ? (
             <p
-              className={`pt-2 text-center text-sm font-medium ${
-                feedback.type === "error"
+              className={`pt-2 text-center text-sm font-medium ${feedback.type === "error"
                   ? "text-red-500"
                   : feedback.type === "info"
                     ? "text-slate-500"
                     : "text-green-600"
-              }`}
+                }`}
             >
               {feedback.message}
             </p>
