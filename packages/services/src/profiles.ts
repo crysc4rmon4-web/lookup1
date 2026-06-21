@@ -40,6 +40,22 @@ export async function getMyProfile(userId: string) {
     .maybeSingle();
 }
 
+export async function getVisibleProfiles(excludeUserId?: string) {
+  let query = supabase
+    .from("profiles")
+    .select("*")
+    .eq("visibility", true)
+    .eq("onboarding_completed", true)
+    .order("updated_at", { ascending: false })
+    .limit(20);
+
+  if (excludeUserId) {
+    query = query.neq("id", excludeUserId);
+  }
+
+  return query;
+}
+
 export async function saveMyProfile(payload: ProfileUpsertInput) {
   return supabase
     .from("profiles")

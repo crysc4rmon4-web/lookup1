@@ -8,8 +8,17 @@ import { RadarCard } from "../../components/radar-card";
 import { featuredEvents, nearbyPeople } from "../../data/mock-radar";
 import { useAuth } from "../../components/auth-provider";
 import { useProfileStatus } from "../../hooks/use-profile-status";
+import { getVisibleProfiles, type ProfileRow } from "@lookup/services";
 
 type Section = "radar" | "events" | "settings";
+
+type RadarPerson = {
+  id: string;
+  name: string;
+  profession: string;
+  city: string;
+  bio: string;
+};
 
 function getInitials(name: string) {
   return name
@@ -53,6 +62,18 @@ function getCompletionPercent({
   return Math.round((checks.filter(Boolean).length / checks.length) * 100);
 }
 
+function profileToRadarPerson(profile: ProfileRow): RadarPerson {
+  return {
+    id: profile.id,
+    name: profile.full_name ?? profile.username ?? "LookUp user",
+    profession: profile.profession ?? "Sin profesión",
+    city: profile.city ?? "Sin ciudad",
+    bio:
+      profile.bio ??
+      "Perfil disponible en LookUp. Abre esta ficha para ver más detalles.",
+  };
+}
+
 export default function DashboardPage() {
   const router = useRouter();
 
@@ -63,6 +84,8 @@ export default function DashboardPage() {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [profileVisible, setProfileVisible] = useState(true);
   const [lastAction, setLastAction] = useState<string | null>(null);
+  const [visibleProfiles, setVisibleProfiles] = useState<ProfileRow[]>([]);
+  const [profilesLoading, setProfilesLoading] = useState(true);
 
   useEffect(() => {
     if (loading) return;
@@ -104,6 +127,39 @@ export default function DashboardPage() {
   ]);
 
   useEffect(() => {
+    if (!user?.id) {
+      setVisibleProfiles([]);
+      setProfilesLoading(false);
+      return;
+    }
+
+    let active = true;
+
+    setProfilesLoading(true);
+
+    void getVisibleProfiles(user.id)
+      .then(({ data, error }) => {
+        if (!active) return;
+
+        if (error) {
+          setVisibleProfiles([]);
+          return;
+        }
+
+        setVisibleProfiles(data ?? []);
+      })
+      .finally(() => {
+        if (active) {
+          setProfilesLoading(false);
+        }
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [user?.id]);
+
+  useEffect(() => {
     if (!user?.id || typeof window === "undefined") return;
 
     const storageKey = `lookup:profile-visible:${user.id}`;
@@ -126,12 +182,24 @@ export default function DashboardPage() {
     window.localStorage.setItem(storageKey, String(profileVisible));
   }, [profileVisible, user?.id]);
 
-  const currentPerson = nearbyPeople[selectedIndex] ?? nearbyPeople[0] ?? null;
+  const radarPeople: RadarPerson[] = useMemo(() => {
+    const fromSupabase = visibleProfiles.map(profileToRadarPerson);
+
+    return fromSupabase.length > 0 ? fromSupabase : nearbyPeople;
+  }, [visibleProfiles]);
+
+  const currentPerson = radarPeople[selectedIndex] ?? radarPeople[0] ?? null;
+
+  useEffect(() => {
+    if (selectedIndex >= radarPeople.length) {
+      setSelectedIndex(0);
+    }
+  }, [radarPeople.length, selectedIndex]);
 
   function handleSkip() {
     if (!currentPerson) return;
 
-    const nextIndex = (selectedIndex + 1) % nearbyPeople.length;
+    const nextIndex = (selectedIndex + 1) % radarPeople.length;
     setSelectedIndex(nextIndex);
     setLastAction(`Has saltado a ${currentPerson.name}.`);
   }
@@ -139,15 +207,17 @@ export default function DashboardPage() {
   function handleConnect() {
     if (!currentPerson) return;
 
-    const nextIndex = (selectedIndex + 1) % nearbyPeople.length;
+    const nextIndex = (selectedIndex + 1) % radarPeople.length;
     setSelectedIndex(nextIndex);
     setLastAction(`Conexión enviada a ${currentPerson.name}.`);
   }
 
-  if (loading) {
+  if (loading || profilesLoading) {
     return (
       <main className="min-h-screen bg-slate-50 flex items-center justify-center px-6">
-        <p className="text-sm font-medium text-slate-500">Cargando sesión...</p>
+        <p className="text-sm font-medium text-slate-500">
+          Cargando sesión...
+        </p>
       </main>
     );
   }
@@ -263,12 +333,12 @@ export default function DashboardPage() {
                 Personas cerca
               </p>
               <span className="text-xs font-semibold text-slate-500">
-                {nearbyPeople.length} activos
+                {radarPeople.length} activos
               </span>
             </div>
 
             <div className="mt-3 space-y-3">
-              {nearbyPeople.map((person, index) => {
+              {radarPeople.map((person, index) => {
                 const isActive = index === selectedIndex;
 
                 return (
