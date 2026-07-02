@@ -347,8 +347,8 @@ export default function DashboardPage() {
                     type="button"
                     onClick={() => setSelectedIndex(index)}
                     className={`flex w-full items-center gap-3 rounded-[1.25rem] border bg-white p-3 text-left shadow-sm transition ${isActive
-                        ? "border-[#5D5FEF]/30 ring-1 ring-[#5D5FEF]/10"
-                        : "border-slate-100 hover:border-slate-200"
+                      ? "border-[#5D5FEF]/30 ring-1 ring-[#5D5FEF]/10"
+                      : "border-slate-100 hover:border-slate-200"
                       }`}
                   >
                     <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-2 border-[#5D5FEF] bg-slate-50 text-xs font-black text-slate-900">
@@ -370,6 +370,7 @@ export default function DashboardPage() {
 
             <div className="mt-4">
               <RadarCard
+                id={currentPerson.id}
                 name={currentPerson.name}
                 profession={currentPerson.profession}
                 city={currentPerson.city}
@@ -452,8 +453,8 @@ export default function DashboardPage() {
                   key={chip}
                   type="button"
                   className={`whitespace-nowrap rounded-full border px-4 py-2 text-xs font-black uppercase tracking-wide ${index === 0
-                      ? "border-[#5D5FEF] bg-[#5D5FEF] text-white"
-                      : "border-slate-200 bg-white text-slate-500"
+                    ? "border-[#5D5FEF] bg-[#5D5FEF] text-white"
+                    : "border-slate-200 bg-white text-slate-500"
                     }`}
                 >
                   {chip}
