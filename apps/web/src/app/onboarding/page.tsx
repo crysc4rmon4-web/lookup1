@@ -16,8 +16,8 @@ export default function OnboardingPage() {
     update,
     next,
     previous,
+    canContinue,
   } = useOnboarding();
-
   return (
     <main className="min-h-screen bg-[#f7f8fc] px-6 py-10">
       <section className="mx-auto w-full max-w-[430px]">
@@ -63,6 +63,7 @@ export default function OnboardingPage() {
 
         <Navigation
           canGoBack={stepIndex > 0}
+          canContinue={canContinue}
           isLastStep={stepIndex === totalSteps - 1}
           onBack={previous}
           onNext={next}
