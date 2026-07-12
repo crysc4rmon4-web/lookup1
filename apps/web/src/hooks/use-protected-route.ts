@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-import { useAuth } from "../components/auth-provider";
+
 import { useProfileStatus } from "./use-profile-status";
 
 export function useProtectedRoute() {

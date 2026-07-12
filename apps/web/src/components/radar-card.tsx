@@ -34,9 +34,8 @@ export function RadarCard({
 }: RadarCardProps) {
   return (
     <article
-      className={`rounded-[2rem] bg-white p-5 shadow-sm transition ${
-        active ? "ring-2 ring-[#5D5FEF]/20" : ""
-      }`}
+      className={`rounded-[2rem] bg-white p-5 shadow-sm transition ${active ? "ring-2 ring-[#5D5FEF]/20" : ""
+        }`}
     >
       <div className="flex items-center gap-4">
         <div className="flex h-16 w-16 items-center justify-center rounded-full border-2 border-[#5D5FEF] bg-slate-50 text-lg font-black text-slate-900">
