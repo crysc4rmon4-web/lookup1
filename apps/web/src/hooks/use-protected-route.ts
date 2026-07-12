@@ -4,25 +4,42 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 import { useAuth } from "../components/auth-provider";
+import { useProfileStatus } from "./use-profile-status";
 
 export function useProtectedRoute() {
   const router = useRouter();
 
   const {
     user,
-    loading,
-  } = useAuth();
+    authLoading,
+    profileLoading,
+    needsOnboarding,
+  } = useProfileStatus();
+
+  const loading = authLoading || profileLoading;
 
   useEffect(() => {
     if (loading) return;
 
     if (!user) {
-      router.replace("/login/signup");
+      router.replace("/login");
+      return;
     }
-  }, [loading, user, router]);
+
+    if (needsOnboarding) {
+      router.replace("/onboarding");
+      return;
+    }
+  }, [
+    loading,
+    user,
+    needsOnboarding,
+    router,
+  ]);
 
   return {
     user,
     loading,
+    needsOnboarding,
   };
 }
