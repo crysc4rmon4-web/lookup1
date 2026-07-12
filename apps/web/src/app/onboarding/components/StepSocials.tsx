@@ -1,6 +1,7 @@
 "use client";
 
 import { Plus, Trash2 } from "lucide-react";
+import { SOCIAL_PLATFORMS } from "@lookup/config";
 
 type Social = {
   platform: string;
@@ -12,15 +13,6 @@ type Props = {
   onChange: (links: Social[]) => void;
 };
 
-const PLATFORMS = [
-  "Instagram",
-  "TikTok",
-  "LinkedIn",
-  "Github",
-  "Facebook",
-  "X",
-];
-
 export function StepSocials({
   links,
   onChange,
@@ -29,7 +21,7 @@ export function StepSocials({
     onChange([
       ...links,
       {
-        platform: "Instagram",
+        platform: SOCIAL_PLATFORMS[0]?.id ?? "instagram",
         url: "",
       },
     ]);
@@ -60,15 +52,19 @@ export function StepSocials({
 
   return (
     <section>
+
       <div className="flex items-center justify-between">
+
         <div>
+
           <h2 className="text-3xl font-black">
             Redes sociales
           </h2>
 
           <p className="mt-2 text-slate-500">
-            Añade las que quieras mostrar.
+            Añade únicamente las que quieras compartir.
           </p>
+
         </div>
 
         <button
@@ -78,59 +74,76 @@ export function StepSocials({
         >
           <Plus size={18} />
         </button>
+
       </div>
 
       <div className="mt-8 space-y-5">
-        {links.map((link, index) => (
-          <div
-            key={index}
-            className="rounded-2xl border border-slate-200 p-4"
-          >
-            <select
-              value={link.platform}
-              onChange={(e) =>
-                update(
-                  index,
-                  "platform",
-                  e.target.value,
-                )
-              }
-              className="w-full rounded-xl border p-3"
-            >
-              {PLATFORMS.map((item) => (
-                <option
-                  key={item}
-                  value={item}
-                >
-                  {item}
-                </option>
-              ))}
-            </select>
 
-            <input
-              value={link.url}
-              onChange={(e) =>
-                update(
-                  index,
-                  "url",
-                  e.target.value,
-                )
-              }
-              className="mt-3 w-full rounded-xl border p-3"
-              placeholder="https://..."
-            />
+        {links.map((link, index) => {
 
-            <button
-              type="button"
-              onClick={() => remove(index)}
-              className="mt-3 flex items-center gap-2 text-red-500"
+          const platform =
+            SOCIAL_PLATFORMS.find(
+              (p) => p.id === link.platform,
+            );
+
+          return (
+            <div
+              key={index}
+              className="rounded-2xl border border-slate-200 p-5"
             >
-              <Trash2 size={16} />
-              Eliminar
-            </button>
-          </div>
-        ))}
+
+              <select
+                value={link.platform}
+                onChange={(e) =>
+                  update(
+                    index,
+                    "platform",
+                    e.target.value,
+                  )
+                }
+                className="w-full rounded-xl border p-3"
+              >
+                {SOCIAL_PLATFORMS.map((item) => (
+                  <option
+                    key={item.id}
+                    value={item.id}
+                  >
+                    {item.name}
+                  </option>
+                ))}
+              </select>
+
+              <input
+                value={link.url}
+                onChange={(e) =>
+                  update(
+                    index,
+                    "url",
+                    e.target.value,
+                  )
+                }
+                className="mt-4 w-full rounded-xl border p-3"
+                placeholder={
+                  platform?.placeholder ??
+                  "Usuario"
+                }
+              />
+
+              <button
+                type="button"
+                onClick={() => remove(index)}
+                className="mt-4 flex items-center gap-2 text-red-500"
+              >
+                <Trash2 size={16} />
+                Eliminar
+              </button>
+
+            </div>
+          );
+        })}
+
       </div>
+
     </section>
   );
 }

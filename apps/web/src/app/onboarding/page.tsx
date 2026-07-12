@@ -2,8 +2,15 @@
 
 import { Navigation } from "./components/Navigation";
 import { ProgressBar } from "./components/ProgressBar";
+
 import { StepPhoto } from "./components/StepPhoto";
 import { StepUsername } from "./components/StepUsername";
+import { StepName } from "./components/StepName";
+import { StepSocials } from "./components/StepSocials";
+import { StepBio } from "./components/StepBio";
+import { StepInterests } from "./components/StepInterests";
+import { StepVisibility } from "./components/StepVisibility";
+
 import { useOnboarding } from "./hooks/useOnboarding";
 
 export default function OnboardingPage() {
@@ -18,9 +25,11 @@ export default function OnboardingPage() {
     previous,
     canContinue,
   } = useOnboarding();
+
   return (
     <main className="min-h-screen bg-[#f7f8fc] px-6 py-10">
       <section className="mx-auto w-full max-w-[430px]">
+
         <p className="text-xs font-black uppercase tracking-[0.35em] text-slate-400">
           LOOKUP
         </p>
@@ -38,6 +47,7 @@ export default function OnboardingPage() {
         </div>
 
         <div className="mt-10 rounded-[2rem] bg-white p-8 shadow-sm">
+
           {step === "photo" && (
             <StepPhoto
               avatarUrl={data.avatarUrl}
@@ -59,6 +69,62 @@ export default function OnboardingPage() {
               }
             />
           )}
+
+          {step === "name" && (
+            <StepName
+              fullName={data.fullName}
+              onChange={(value) =>
+                update({
+                  fullName: value,
+                })
+              }
+            />
+          )}
+
+          {step === "socials" && (
+            <StepSocials
+              links={data.socialLinks}
+              onChange={(value) =>
+                update({
+                  socialLinks: value,
+                })
+              }
+            />
+          )}
+
+          {step === "bio" && (
+            <StepBio
+              bio={data.bio}
+              onChange={(value) =>
+                update({
+                  bio: value,
+                })
+              }
+            />
+          )}
+
+          {step === "interests" && (
+            <StepInterests
+              interests={data.interests}
+              onChange={(value) =>
+                update({
+                  interests: value,
+                })
+              }
+            />
+          )}
+
+          {step === "visibility" && (
+            <StepVisibility
+              visibility={data.visibility}
+              onChange={(value) =>
+                update({
+                  visibility: value,
+                })
+              }
+            />
+          )}
+
         </div>
 
         <Navigation
@@ -68,6 +134,7 @@ export default function OnboardingPage() {
           onBack={previous}
           onNext={next}
         />
+
       </section>
     </main>
   );
