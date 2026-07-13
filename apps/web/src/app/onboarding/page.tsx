@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
+import { uploadAvatar } from "@lookup/services";
+
 import { Navigation } from "./components/Navigation";
 import { ProgressBar } from "./components/ProgressBar";
 
@@ -21,7 +23,7 @@ import { finishOnboarding } from "./services/finish-onboarding";
 export default function OnboardingPage() {
   const router = useRouter();
 
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
 
   const [loading, setLoading] = useState(false);
 
@@ -36,6 +38,28 @@ export default function OnboardingPage() {
     previous,
     canContinue,
   } = useOnboarding();
+
+  async function handleAvatar(file: File) {
+    if (!user) return;
+
+    try {
+      setLoading(true);
+
+      const url = await uploadAvatar(
+        user.id,
+        file,
+      );
+
+      update({
+        avatarUrl: url,
+      });
+    } catch (error) {
+      console.error(error);
+      alert("No se pudo subir la imagen.");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   async function handleNext() {
     if (!canContinue || loading) return;
@@ -65,9 +89,22 @@ export default function OnboardingPage() {
     }
   }
 
+  if (authLoading) {
+    return (
+      <main className="min-h-screen flex items-center justify-center">
+        Cargando...
+      </main>
+    );
+  }
+
+  if (!user) {
+    return null;
+  }
+
   return (
     <main className="min-h-screen bg-[#f7f8fc] px-6 py-10">
       <section className="mx-auto w-full max-w-[430px]">
+
         <p className="text-xs font-black uppercase tracking-[0.35em] text-slate-400">
           LOOKUP
         </p>
@@ -85,14 +122,11 @@ export default function OnboardingPage() {
         </div>
 
         <div className="mt-10 rounded-[2rem] bg-white p-8 shadow-sm">
+
           {step === "photo" && (
             <StepPhoto
               avatarUrl={data.avatarUrl}
-              onChange={(value) =>
-                update({
-                  avatarUrl: value,
-                })
-              }
+              onSelect={handleAvatar}
             />
           )}
 
@@ -161,6 +195,7 @@ export default function OnboardingPage() {
               }
             />
           )}
+
         </div>
 
         <Navigation
@@ -170,6 +205,7 @@ export default function OnboardingPage() {
           onBack={previous}
           onNext={handleNext}
         />
+
       </section>
     </main>
   );

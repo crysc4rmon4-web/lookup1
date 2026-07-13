@@ -1,53 +1,63 @@
 "use client";
 
+import Image from "next/image";
+
 type StepPhotoProps = {
   avatarUrl: string;
-  onChange: (value: string) => void;
+  onSelect: (file: File) => void;
 };
 
 export function StepPhoto({
   avatarUrl,
-  onChange,
+  onSelect,
 }: StepPhotoProps) {
-  return (
-    <section className="flex flex-col items-center">
+  function handleChange(
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) {
+    const file = e.target.files?.[0];
 
+    if (!file) return;
+
+    onSelect(file);
+  }
+
+  return (
+    <section>
       <h2 className="text-3xl font-black text-slate-900">
-        Tu foto
+        Foto de perfil
       </h2>
 
-      <p className="mt-2 text-center text-slate-500">
-        Esta será la imagen que verán las personas cerca de ti.
+      <p className="mt-2 text-slate-500">
+        Esta será la imagen que verán los demás usuarios.
       </p>
 
-      <div className="mt-10 flex h-40 w-40 items-center justify-center overflow-hidden rounded-full border-4 border-dashed border-[#5D5FEF] bg-slate-50">
+      <div className="mt-8 flex flex-col items-center gap-6">
+        <div className="relative h-36 w-36 overflow-hidden rounded-full border-4 border-[#5D5FEF] bg-slate-100">
+          {avatarUrl ? (
+            <Image
+              src={avatarUrl}
+              alt="Avatar"
+              fill
+              className="object-cover"
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center text-5xl">
+              👤
+            </div>
+          )}
+        </div>
 
-        {avatarUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={avatarUrl}
-            alt="Avatar"
-            className="h-full w-full object-cover"
+        <label className="cursor-pointer rounded-2xl bg-[#5D5FEF] px-6 py-4 font-bold text-white">
+          Seleccionar foto
+
+          <input
+            hidden
+            type="file"
+            accept="image/*"
+            onChange={handleChange}
           />
-        ) : (
-          <span className="text-6xl">
-            📷
-          </span>
-        )}
-
+        </label>
       </div>
-
-      <input
-        className="mt-8 w-full rounded-2xl border border-slate-200 p-4"
-        placeholder="Pega temporalmente la URL de una imagen"
-        value={avatarUrl}
-        onChange={(e) => onChange(e.target.value)}
-      />
-
-      <p className="mt-3 text-center text-xs text-slate-400">
-        En el siguiente bloque conectaremos este paso con Supabase Storage.
-      </p>
-
     </section>
   );
 }
