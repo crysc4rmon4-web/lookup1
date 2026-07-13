@@ -1,5 +1,8 @@
 "use client";
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+
 import { Navigation } from "./components/Navigation";
 import { ProgressBar } from "./components/ProgressBar";
 
@@ -12,8 +15,16 @@ import { StepInterests } from "./components/StepInterests";
 import { StepVisibility } from "./components/StepVisibility";
 
 import { useOnboarding } from "./hooks/useOnboarding";
+import { useAuth } from "../../components/auth-provider";
+import { finishOnboarding } from "./services/finish-onboarding";
 
 export default function OnboardingPage() {
+  const router = useRouter();
+
+  const { user } = useAuth();
+
+  const [loading, setLoading] = useState(false);
+
   const {
     step,
     stepIndex,
@@ -26,10 +37,37 @@ export default function OnboardingPage() {
     canContinue,
   } = useOnboarding();
 
+  async function handleNext() {
+    if (!canContinue || loading) return;
+
+    if (stepIndex < totalSteps - 1) {
+      next();
+      return;
+    }
+
+    if (!user?.email) return;
+
+    try {
+      setLoading(true);
+
+      await finishOnboarding({
+        userId: user.id,
+        email: user.email,
+        data,
+      });
+
+      router.replace("/dashboard");
+    } catch (error) {
+      console.error(error);
+      alert("No se pudo guardar el perfil.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <main className="min-h-screen bg-[#f7f8fc] px-6 py-10">
       <section className="mx-auto w-full max-w-[430px]">
-
         <p className="text-xs font-black uppercase tracking-[0.35em] text-slate-400">
           LOOKUP
         </p>
@@ -47,7 +85,6 @@ export default function OnboardingPage() {
         </div>
 
         <div className="mt-10 rounded-[2rem] bg-white p-8 shadow-sm">
-
           {step === "photo" && (
             <StepPhoto
               avatarUrl={data.avatarUrl}
@@ -124,17 +161,15 @@ export default function OnboardingPage() {
               }
             />
           )}
-
         </div>
 
         <Navigation
-          canGoBack={stepIndex > 0}
-          canContinue={canContinue}
+          canGoBack={stepIndex > 0 && !loading}
+          canContinue={canContinue && !loading}
           isLastStep={stepIndex === totalSteps - 1}
           onBack={previous}
-          onNext={next}
+          onNext={handleNext}
         />
-
       </section>
     </main>
   );
