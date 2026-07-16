@@ -39,5 +39,37 @@ export async function getNearbyProfiles(
     throw error;
   }
 
-  return data;
+  return data as {
+    id: string;
+    distance: number;
+  }[];
+}
+
+export async function getProfilesNearby(
+  latitude: number,
+  longitude: number,
+  radius = 100,
+) {
+  const nearby = await getNearbyProfiles(
+    latitude,
+    longitude,
+    radius,
+  );
+
+  if (nearby.length === 0) {
+    return [];
+  }
+
+  const ids = nearby.map((item) => item.id);
+
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("*")
+    .in("id", ids);
+
+  if (error) {
+    throw error;
+  }
+
+  return data ?? [];
 }

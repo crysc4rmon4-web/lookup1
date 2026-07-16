@@ -18,19 +18,12 @@ export async function finishOnboarding({
 }: Params) {
   const profile = await saveMyProfile({
     id: userId,
-
     email,
-
     full_name: data.fullName,
-
     username: data.username,
-
     avatar_url: data.avatarUrl,
-
     bio: data.bio,
-
     visibility: data.visibility,
-
     onboarding_completed: true,
   });
 
@@ -41,16 +34,11 @@ export async function finishOnboarding({
   for (const link of data.socialLinks) {
     if (!link.url.trim()) continue;
 
-    const result =
-      await saveProfileLink(
-        userId,
-        link.platform,
-        link.url,
-      );
-
-    if (result.error) {
-      throw result.error;
-    }
+    await saveProfileLink(
+      userId,
+      link.platform,
+      link.url,
+    );
   }
 
   return profile.data;

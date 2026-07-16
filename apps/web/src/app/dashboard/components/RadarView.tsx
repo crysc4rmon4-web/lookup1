@@ -1,13 +1,18 @@
 "use client";
 
+import type {
+  ProfileLink,
+  ProfileRow,
+} from "@lookup/services";
+
 import { RadarCard } from "../../../components/radar-card";
-import type { ProfileRow } from "@lookup/services";
 
 type RadarViewProps = {
   profiles: ProfileRow[];
+  links: Record<string, ProfileLink[]>;
   currentIndex: number;
   onSkip: () => void;
-  onConnect: () => void;
+  onConnect: (id: string) => void;
 };
 
 export function RadarView({
@@ -16,21 +21,20 @@ export function RadarView({
   onSkip,
   onConnect,
 }: RadarViewProps) {
-  if (profiles.length === 0) {
+  const profile = profiles[currentIndex];
+
+  if (!profile) {
     return (
-      <div className="rounded-[2rem] bg-white p-8 shadow-sm">
-        <p className="text-center text-slate-500">
-          No hay personas cerca por ahora.
+      <div className="rounded-[2rem] bg-white p-10 text-center shadow-sm">
+        <h2 className="text-2xl font-black">
+          No hay personas cerca
+        </h2>
+
+        <p className="mt-3 text-slate-500">
+          Cuando alguien entre en tu radio aparecerá aquí.
         </p>
       </div>
     );
-  }
-
-  const profile =
-    profiles[currentIndex] ?? profiles[0];
-
-  if (!profile) {
-    return null;
   }
 
   return (
@@ -51,11 +55,13 @@ export function RadarView({
       }
       bio={
         profile.bio ??
-        "Todavía no ha escrito una presentación."
+        ""
       }
-      onSkip={onSkip}
-      onConnect={onConnect}
       active
+      onSkip={onSkip}
+      onConnect={() =>
+        onConnect(profile.id)
+      }
     />
   );
 }

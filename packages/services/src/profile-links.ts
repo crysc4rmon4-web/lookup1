@@ -8,12 +8,20 @@ export type ProfileLink = {
   is_public: boolean;
 };
 
-export async function getProfileLinks(profileId: string) {
-  return supabase
+export async function getProfileLinks(
+  profileId: string,
+): Promise<ProfileLink[]> {
+  const { data, error } = await supabase
     .from("profile_links")
     .select("*")
     .eq("profile_id", profileId)
     .order("platform");
+
+  if (error) {
+    throw error;
+  }
+
+  return (data ?? []) as ProfileLink[];
 }
 
 export async function saveProfileLink(
@@ -21,7 +29,7 @@ export async function saveProfileLink(
   platform: string,
   url: string,
 ) {
-  return supabase
+  const { error } = await supabase
     .from("profile_links")
     .upsert(
       {
@@ -34,11 +42,21 @@ export async function saveProfileLink(
         onConflict: "profile_id,platform",
       },
     );
+
+  if (error) {
+    throw error;
+  }
 }
 
-export async function deleteProfileLink(id: string) {
-  return supabase
+export async function deleteProfileLink(
+  id: string,
+) {
+  const { error } = await supabase
     .from("profile_links")
     .delete()
     .eq("id", id);
+
+  if (error) {
+    throw error;
+  }
 }

@@ -1,7 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import type { ProfileLink, ProfileRow } from "@lookup/services";
+import type {
+  ProfileLink,
+  ProfileRow,
+} from "@lookup/services";
 
 type SettingsViewProps = {
   profile: ProfileRow;
@@ -17,7 +20,7 @@ function getInitials(name: string) {
     .split(" ")
     .filter(Boolean)
     .slice(0, 2)
-    .map((p) => p[0]?.toUpperCase() ?? "")
+    .map((part) => part[0]?.toUpperCase() ?? "")
     .join("");
 }
 
@@ -39,7 +42,7 @@ export function SettingsView({
 
       <div className="rounded-[2rem] bg-white p-6 shadow-sm">
 
-        <div className="mx-auto relative h-24 w-24 overflow-hidden rounded-full border-4 border-[#5D5FEF]">
+        <div className="relative mx-auto h-24 w-24 overflow-hidden rounded-full border-4 border-[#5D5FEF]">
 
           {profile.avatar_url ? (
             <Image
@@ -61,14 +64,14 @@ export function SettingsView({
         </h2>
 
         <p className="text-center text-[#5D5FEF]">
-          @{profile.username}
+          @{profile.username ?? "usuario"}
         </p>
 
       </div>
 
       <div className="rounded-[2rem] bg-white p-6 shadow-sm">
 
-        <h3 className="font-black">
+        <h3 className="text-lg font-black">
           Redes sociales
         </h3>
 
@@ -76,7 +79,7 @@ export function SettingsView({
 
           {links.length === 0 ? (
             <p className="text-sm text-slate-500">
-              No has añadido redes todavía.
+              No has añadido redes.
             </p>
           ) : (
             links.map((link) => (
@@ -88,9 +91,14 @@ export function SettingsView({
                   {link.platform}
                 </p>
 
-                <p className="text-sm text-slate-500 break-all">
+                <a
+                  href={link.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="break-all text-sm text-[#5D5FEF]"
+                >
                   {link.url}
-                </p>
+                </a>
               </div>
             ))
           )}
@@ -99,7 +107,7 @@ export function SettingsView({
 
       </div>
 
-      <div className="rounded-[2rem] bg-white p-6 shadow-sm">
+      <div className="rounded-[2rem] bg-white p-6 shadow-sm space-y-3">
 
         <button
           onClick={onToggleVisibility}
@@ -112,14 +120,14 @@ export function SettingsView({
 
         <button
           onClick={onEditProfile}
-          className="mt-3 w-full rounded-xl border py-3 font-bold"
+          className="w-full rounded-xl border py-3 font-bold"
         >
           Editar perfil
         </button>
 
         <button
           onClick={onLogout}
-          className="mt-3 w-full rounded-xl border border-red-300 py-3 font-bold text-red-600"
+          className="w-full rounded-xl border border-red-300 py-3 font-bold text-red-600"
         >
           Cerrar sesión
         </button>
