@@ -19,7 +19,7 @@ export default function HomePage() {
     router.replace(
       user
         ? "/dashboard"
-        : "/login/signup",
+        : "/login",
     );
   }, [loading, user, router]);
 
