@@ -162,7 +162,7 @@ export default function LoginPage() {
     try {
       setLoading(true);
 
-      const { data, error } =
+      const { error } =
         await supabase.auth.signInWithPassword({
           email: cleanEmail,
           password,
@@ -174,10 +174,6 @@ export default function LoginPage() {
           message: error.message,
         });
         return;
-      }
-
-      if (process.env.NODE_ENV === "development") {
-        console.log("LOGIN DATA:", data);
       }
 
       router.replace("/dashboard");
@@ -279,10 +275,10 @@ export default function LoginPage() {
           {feedback.message ? (
             <p
               className={`pt-2 text-center text-sm font-medium ${feedback.type === "error"
-                  ? "text-red-500"
-                  : feedback.type === "info"
-                    ? "text-slate-500"
-                    : "text-green-600"
+                ? "text-red-500"
+                : feedback.type === "info"
+                  ? "text-slate-500"
+                  : "text-green-600"
                 }`}
             >
               {feedback.message}
