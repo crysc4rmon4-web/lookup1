@@ -53,7 +53,7 @@ export default function DashboardPage() {
     if (loading) return;
 
     if (!user) {
-      router.replace("/login/signup");
+      router.replace("/login");
       return;
     }
 

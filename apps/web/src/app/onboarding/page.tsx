@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { uploadAvatar } from "@lookup/services";
@@ -18,12 +18,18 @@ import { StepVisibility } from "./components/StepVisibility";
 
 import { useOnboarding } from "./hooks/useOnboarding";
 import { useAuth } from "../../components/auth-provider";
+import { useProfileStatus } from "../../hooks/use-profile-status";
 import { finishOnboarding } from "./services/finish-onboarding";
 
 export default function OnboardingPage() {
   const router = useRouter();
 
   const { user, loading: authLoading } = useAuth();
+
+  const {
+    isProfileComplete,
+    loading: profileLoading,
+  } = useProfileStatus();
 
   const [loading, setLoading] = useState(false);
 
@@ -39,22 +45,34 @@ export default function OnboardingPage() {
     canContinue,
   } = useOnboarding();
 
+  useEffect(() => {
+    if (authLoading || profileLoading) return;
+
+    if (!user) return;
+
+    if (isProfileComplete) {
+      router.replace("/dashboard");
+    }
+  }, [
+    authLoading,
+    profileLoading,
+    user,
+    isProfileComplete,
+    router,
+  ]);
+
   async function handleAvatar(file: File) {
     if (!user) return;
 
     try {
       setLoading(true);
 
-      const url = await uploadAvatar(
-        user.id,
-        file,
-      );
+      const url = await uploadAvatar(user.id, file);
 
       update({
         avatarUrl: url,
       });
-    } catch (error) {
-      console.error(error);
+    } catch {
       alert("No se pudo subir la imagen.");
     } finally {
       setLoading(false);
@@ -82,14 +100,17 @@ export default function OnboardingPage() {
 
       router.replace("/dashboard");
     } catch (error) {
-      console.error(error);
-      alert("No se pudo guardar el perfil.");
+      if (error instanceof Error) {
+        alert(error.message);
+      } else {
+        alert(JSON.stringify(error));
+      }
     } finally {
       setLoading(false);
     }
   }
 
-  if (authLoading) {
+  if (authLoading || profileLoading) {
     return (
       <main className="min-h-screen flex items-center justify-center">
         Cargando...
@@ -104,7 +125,6 @@ export default function OnboardingPage() {
   return (
     <main className="min-h-screen bg-[#f7f8fc] px-6 py-10">
       <section className="mx-auto w-full max-w-[430px]">
-
         <p className="text-xs font-black uppercase tracking-[0.35em] text-slate-400">
           LOOKUP
         </p>
@@ -122,7 +142,6 @@ export default function OnboardingPage() {
         </div>
 
         <div className="mt-10 rounded-[2rem] bg-white p-8 shadow-sm">
-
           {step === "photo" && (
             <StepPhoto
               avatarUrl={data.avatarUrl}
@@ -195,7 +214,6 @@ export default function OnboardingPage() {
               }
             />
           )}
-
         </div>
 
         <Navigation
@@ -205,7 +223,6 @@ export default function OnboardingPage() {
           onBack={previous}
           onNext={handleNext}
         />
-
       </section>
     </main>
   );

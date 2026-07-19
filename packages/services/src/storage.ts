@@ -1,3 +1,4 @@
+
 import { supabase } from "./supabase/client";
 
 const BUCKET = "avatars";

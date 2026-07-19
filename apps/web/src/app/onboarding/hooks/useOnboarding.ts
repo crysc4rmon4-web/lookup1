@@ -34,7 +34,7 @@ export function useOnboarding() {
 
     switch (step) {
       case "photo":
-        return data.avatarUrl.trim().length > 0;
+        return true;
 
       case "username":
         return data.username.trim().length >= 3;

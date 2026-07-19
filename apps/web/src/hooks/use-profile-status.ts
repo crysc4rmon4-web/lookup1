@@ -3,7 +3,10 @@
 import { useEffect, useState } from "react";
 
 import { useAuth } from "../components/auth-provider";
-import { getMyProfile, type ProfileRow } from "@lookup/services";
+import {
+  getMyProfile,
+  type ProfileRow,
+} from "@lookup/services";
 
 type UseProfileStatusResult = {
   user: ReturnType<typeof useAuth>["user"];
@@ -21,54 +24,66 @@ export function useProfileStatus(): UseProfileStatusResult {
 
   const [profile, setProfile] =
     useState<ProfileRow | null>(null);
+
   const [profileLoading, setProfileLoading] =
-    useState(false);
+    useState(true);
+
   const [profileError, setProfileError] =
     useState<string | null>(null);
 
   useEffect(() => {
     let active = true;
 
-    if (!user) {
-      setProfile(null);
-      setProfileError(null);
-      setProfileLoading(false);
-      return;
-    }
-
-    setProfileLoading(true);
-    setProfileError(null);
-
-    void getMyProfile(user.id)
-      .then(({ data, error }) => {
+    async function loadProfile() {
+      if (!user) {
         if (!active) return;
 
-        if (error) {
-          setProfile(null);
-          setProfileError(error.message);
-          return;
-        }
+        setProfile(null);
+        setProfileError(null);
+        setProfileLoading(false);
+        return;
+      }
 
+      setProfileLoading(true);
+      setProfileError(null);
+
+      const { data, error } = await getMyProfile(user.id);
+
+      if (!active) return;
+
+      if (error) {
+        setProfile(null);
+        setProfileError(error.message);
+      } else {
         setProfile(data as ProfileRow | null);
-      })
-      .finally(() => {
-        if (active) {
-          setProfileLoading(false);
-        }
-      });
+      }
+
+      setProfileLoading(false);
+    }
+
+    void loadProfile();
 
     return () => {
       active = false;
     };
   }, [user]);
 
-  const isProfileComplete =
-    Boolean(profile?.onboarding_completed);
+  const loading =
+    authLoading || profileLoading;
 
+  const isProfileComplete =
+    profile?.onboarding_completed === true;
+
+  /**
+   * MUY IMPORTANTE
+   *
+   * Nunca decidir que necesita onboarding
+   * mientras todavía estamos cargando el perfil.
+   */
   const needsOnboarding =
-    Boolean(user) &&
-    !authLoading &&
-    !profileLoading &&
+    !loading &&
+    !!user &&
+    !!profile &&
     !isProfileComplete;
 
   return {
@@ -76,7 +91,7 @@ export function useProfileStatus(): UseProfileStatusResult {
     profile,
     authLoading,
     profileLoading,
-    loading: authLoading || profileLoading,
+    loading,
     profileError,
     needsOnboarding,
     isProfileComplete,

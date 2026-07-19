@@ -28,20 +28,17 @@ export async function saveProfileLink(
   profileId: string,
   platform: string,
   url: string,
-) {
+): Promise<void> {
+  if (!url.trim()) return;
+
   const { error } = await supabase
     .from("profile_links")
-    .upsert(
-      {
-        profile_id: profileId,
-        platform,
-        url,
-        is_public: true,
-      },
-      {
-        onConflict: "profile_id,platform",
-      },
-    );
+    .insert({
+      profile_id: profileId,
+      platform,
+      url,
+      is_public: true,
+    });
 
   if (error) {
     throw error;
@@ -50,7 +47,7 @@ export async function saveProfileLink(
 
 export async function deleteProfileLink(
   id: string,
-) {
+): Promise<void> {
   const { error } = await supabase
     .from("profile_links")
     .delete()
