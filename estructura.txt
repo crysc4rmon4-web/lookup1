@@ -1,0 +1,139 @@
+.
+├── README.md
+├── apps
+│   ├── mobile
+│   │   ├── App.tsx
+│   │   ├── app.json
+│   │   ├── assets
+│   │   │   ├── adaptive-icon.png
+│   │   │   ├── favicon.png
+│   │   │   ├── icon.png
+│   │   │   └── splash-icon.png
+│   │   ├── eslint.config.js
+│   │   ├── index.ts
+│   │   ├── package.json
+│   │   └── tsconfig.json
+│   └── web
+│       ├── AGENTS.md
+│       ├── CLAUDE.md
+│       ├── README.md
+│       ├── eslint.config.mjs
+│       ├── next-env.d.ts
+│       ├── next.config.ts
+│       ├── package.json
+│       ├── postcss.config.mjs
+│       ├── public
+│       │   ├── file.svg
+│       │   ├── globe.svg
+│       │   ├── next.svg
+│       │   ├── vercel.svg
+│       │   └── window.svg
+│       ├── src
+│       │   ├── app
+│       │   │   ├── (auth)
+│       │   │   │   └── login
+│       │   │   │       ├── page.tsx
+│       │   │   │       └── signup
+│       │   │   │           └── page.tsx
+│       │   │   ├── dashboard
+│       │   │   │   ├── components
+│       │   │   │   │   ├── DashboardHeader.tsx
+│       │   │   │   │   ├── EventsView.tsx
+│       │   │   │   │   ├── RadarView.tsx
+│       │   │   │   │   └── SettingsView.tsx
+│       │   │   │   ├── hooks
+│       │   │   │   │   └── useRadar.ts
+│       │   │   │   ├── page.tsx
+│       │   │   │   └── services
+│       │   │   │       └── load-nearby-profiles.ts
+│       │   │   ├── favicon.ico
+│       │   │   ├── globals.css
+│       │   │   ├── layout.tsx
+│       │   │   ├── onboarding
+│       │   │   │   ├── components
+│       │   │   │   │   ├── Navigation.tsx
+│       │   │   │   │   ├── ProgressBar.tsx
+│       │   │   │   │   ├── StepBio.tsx
+│       │   │   │   │   ├── StepInterests.tsx
+│       │   │   │   │   ├── StepName.tsx
+│       │   │   │   │   ├── StepPhoto.tsx
+│       │   │   │   │   ├── StepSocials.tsx
+│       │   │   │   │   ├── StepUsername.tsx
+│       │   │   │   │   └── StepVisibility.tsx
+│       │   │   │   ├── hooks
+│       │   │   │   │   └── useOnboarding.ts
+│       │   │   │   ├── page.tsx
+│       │   │   │   ├── services
+│       │   │   │   │   └── finish-onboarding.ts
+│       │   │   │   └── types.ts
+│       │   │   ├── page.tsx
+│       │   │   └── profile
+│       │   │       └── [id]
+│       │   │           └── page.tsx
+│       │   ├── components
+│       │   │   ├── auth-provider.tsx
+│       │   │   ├── bottom-nav.tsx
+│       │   │   └── radar-card.tsx
+│       │   ├── data
+│       │   │   └── mock-radar.ts
+│       │   ├── hooks
+│       │   │   ├── use-guest-route.ts
+│       │   │   ├── use-location.ts
+│       │   │   ├── use-profile-status.ts
+│       │   │   ├── use-protected-route.ts
+│       │   │   └── use-sync-location.ts
+│       │   └── lib
+│       │       └── test-supabase.ts
+│       └── tsconfig.json
+├── docs
+│   ├── architecture.md
+│   ├── conventions.md
+│   ├── data-flow.md
+│   ├── database-tables.md
+│   ├── database.md
+│   ├── docs
+│   ├── product.md
+│   ├── realtime.md
+│   ├── roadmap.md
+│   ├── stack.md
+│   └── ui-system.md
+├── estructura.txt
+├── package.json
+├── packages
+│   ├── config
+│   │   ├── package.json
+│   │   └── src
+│   │       ├── index.ts
+│   │       └── platforms.ts
+│   ├── eslint-config
+│   │   ├── base.js
+│   │   └── package.json
+│   ├── services
+│   │   ├── package.json
+│   │   └── src
+│   │       ├── index.ts
+│   │       ├── locations.ts
+│   │       ├── profile-links.ts
+│   │       ├── profiles.ts
+│   │       ├── storage.ts
+│   │       └── supabase
+│   │           └── client.ts
+│   ├── types
+│   │   ├── package.json
+│   │   └── src
+│   │       └── index.ts
+│   ├── ui
+│   │   ├── package.json
+│   │   └── src
+│   │       └── index.ts
+│   └── utils
+│       ├── package.json
+│       └── src
+│           ├── index.ts
+│           └── validations.ts
+├── pnpm-lock.yaml
+├── pnpm-workspace.yaml
+├── tsconfig.base.json
+└── turbo.json
+
+40 directories, 97 files

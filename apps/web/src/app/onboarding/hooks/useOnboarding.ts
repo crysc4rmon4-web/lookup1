@@ -16,11 +16,19 @@ const INITIAL_DATA: OnboardingData = {
   socialLinks: [],
 };
 
-export function useOnboarding() {
+type UseOnboardingOptions = {
+  initialData?: Partial<OnboardingData>;
+};
+
+export function useOnboarding(
+  options?: UseOnboardingOptions,
+) {
   const [stepIndex, setStepIndex] = useState(0);
 
-  const [data, setData] =
-    useState<OnboardingData>(INITIAL_DATA);
+  const [data, setData] = useState<OnboardingData>({
+    ...INITIAL_DATA,
+    ...options?.initialData,
+  });
 
   function update(values: Partial<OnboardingData>) {
     setData((current) => ({

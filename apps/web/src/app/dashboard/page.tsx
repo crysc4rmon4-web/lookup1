@@ -169,7 +169,7 @@ export default function DashboardPage() {
               setProfileVisible((v) => !v)
             }
             onEditProfile={() =>
-              router.push("/onboarding")
+              router.push("/profile/edit")
             }
             onLogout={async () => {
               await signOut();
