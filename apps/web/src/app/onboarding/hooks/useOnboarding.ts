@@ -1,6 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import {
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+
 import {
   ONBOARDING_STEPS,
   type OnboardingData,
@@ -25,12 +30,24 @@ export function useOnboarding(
 ) {
   const [stepIndex, setStepIndex] = useState(0);
 
-  const [data, setData] = useState<OnboardingData>({
-    ...INITIAL_DATA,
-    ...options?.initialData,
-  });
+  const [data, setData] =
+    useState<OnboardingData>({
+      ...INITIAL_DATA,
+      ...options?.initialData,
+    });
 
-  function update(values: Partial<OnboardingData>) {
+  useEffect(() => {
+    if (!options?.initialData) return;
+
+    setData({
+      ...INITIAL_DATA,
+      ...options.initialData,
+    });
+  }, [options?.initialData]);
+
+  function update(
+    values: Partial<OnboardingData>,
+  ) {
     setData((current) => ({
       ...current,
       ...values,
@@ -80,7 +97,7 @@ export function useOnboarding(
 
   return {
     stepIndex,
-    step: ONBOARDING_STEPS[stepIndex],
+    step: ONBOARDING_STEPS[stepIndex]!,
     totalSteps: ONBOARDING_STEPS.length,
     progress:
       ((stepIndex + 1) /

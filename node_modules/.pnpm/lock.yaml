@@ -49,6 +49,21 @@ importers:
 
   apps/web:
     dependencies:
+      '@lookup/config':
+        specifier: workspace:*
+        version: link:../../packages/config
+      '@lookup/services':
+        specifier: workspace:*
+        version: link:../../packages/services
+      '@lookup/types':
+        specifier: workspace:*
+        version: link:../../packages/types
+      '@lookup/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
+      '@lookup/utils':
+        specifier: workspace:*
+        version: link:../../packages/utils
       lucide-react:
         specifier: ^1.24.0
         version: 1.24.0(react@19.1.0)
