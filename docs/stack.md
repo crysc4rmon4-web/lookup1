@@ -1,227 +1,157 @@
-# Stack oficial del proyecto
+# Stack oficial — LookUp
 
-## Objetivo del stack
-
-Construir una plataforma social moderna, escalable, reutilizable y preparada para crecimiento rápido en web y mobile, manteniendo una sola arquitectura consistente.
+> Última actualización: Julio 2026
 
 ---
 
-# Runtime y tooling
+# Objetivo
 
-## Node.js 22.14.0 (LTS)
-
-### ¿Qué es?
-Entorno de ejecución principal del proyecto.
-
-### ¿Por qué se eligió?
-- versión LTS estable
-- compatibilidad con Next.js 15
-- compatibilidad con Expo SDK 53
-- estabilidad para monorepos
-- soporte moderno del ecosistema
-
-### Regla oficial
-No utilizar versiones experimentales o no validadas para evitar incompatibilidades futuras.
+Mantener un stack moderno, estable y compartido entre web y móvil, priorizando la reutilización, la escalabilidad y la simplicidad.
 
 ---
 
-## pnpm 10
+# Runtime
 
-### ¿Qué es?
-Package manager oficial del proyecto.
+## Node.js
 
-### ¿Por qué se eligió?
-- mejor rendimiento
-- mejor manejo de monorepos
-- instalación más rápida
-- dependencias más limpias
-- menor consumo de espacio
+Versión LTS oficial del proyecto.
 
-### Uso dentro del proyecto
-- instalación de dependencias
-- workspaces
-- gestión del monorepo
+Uso:
+
+- Desarrollo
+- Builds
+- Scripts
+- Herramientas
 
 ---
 
-## Turborepo 2
+## pnpm
 
-### ¿Qué es?
-Sistema de orquestación para monorepos modernos.
+Package manager oficial.
 
-### ¿Por qué se eligió?
-- caching inteligente
-- builds rápidas
-- organización profesional
-- escalabilidad empresarial
+Uso:
 
-### Uso dentro del proyecto
-- coordinación entre apps
-- pipelines
-- builds
-- desarrollo compartido
+- Dependencias
+- Workspaces
+- Monorepo
+
+---
+
+## Turborepo
+
+Orquestador del monorepo.
+
+Uso:
+
+- Builds
+- Caché
+- Compartición de paquetes
+- Desarrollo conjunto
 
 ---
 
 # Web
 
-## Next.js 15.3.2
+## Next.js 15
 
-### ¿Qué es?
-Framework moderno basado en React para aplicaciones web escalables.
+Framework principal.
 
-### ¿Por qué se eligió?
-- App Router moderno
-- excelente rendimiento
+Uso:
+
+- Aplicación web
+- App Router
 - Server Components
-- SEO optimizado
-- escalabilidad empresarial
-- gran ecosistema
-- ideal para plataformas híbridas modernas
-
-### Uso dentro del proyecto
-- aplicación web principal
-- rendering híbrido
-- navegación
-- server actions
-- APIs internas
+- Server Actions
+- Rendering híbrido
 
 ---
 
-## React 19.1.0
+## React 19
 
-### ¿Qué es?
-Librería principal para construir interfaces modernas.
+Biblioteca principal de interfaz.
 
-### ¿Por qué se eligió?
-- ecosistema dominante
-- compatibilidad enorme
-- reutilización
-- rendimiento
-- base compartida con React Native
+Uso:
 
-### Uso dentro del proyecto
-- UI
-- componentes
-- estados
-- arquitectura visual
+- Componentes
+- Hooks
+- Estados
+- Renderizado
 
 ---
 
-## TypeScript 5.8.3
+## TypeScript
 
-### ¿Qué es?
-Superset tipado de JavaScript.
+Modo estricto obligatorio.
 
-### ¿Por qué se eligió?
-- reduce errores
-- facilita escalabilidad
-- mejora mantenibilidad
-- hace el código más profesional
-- mejor experiencia de desarrollo
+Reglas:
 
-### Reglas importantes
-- strict mode obligatorio
-- prohibido usar any
+- `strict: true`
+- Prohibido utilizar `any`
+- Tipado compartido entre web y móvil
 
 ---
 
-## Tailwind CSS 4.1.7
+## Tailwind CSS v4
 
-### ¿Qué es?
-Framework utility-first de estilos.
+Sistema oficial de estilos.
 
-### ¿Por qué se eligió?
-- velocidad de desarrollo
-- consistencia visual
-- diseño moderno
-- reutilización
-- excelente integración con React
+Uso:
 
-### Uso dentro del proyecto
-- estilos globales
-- layout
-- sistema visual
+- Layout
+- Componentes
+- Responsive
+- Diseño visual
 
 ---
 
 ## shadcn/ui
 
-### ¿Qué es?
-Sistema moderno de componentes reutilizables.
+Biblioteca de componentes base.
 
-### ¿Por qué se eligió?
-- componentes desacoplados
-- alta personalización
-- calidad visual premium
-- accesibilidad integrada
+Uso:
 
-### Uso dentro del proyecto
-- componentes base
-- formularios
-- modales
-- inputs
-- menús
-- diálogos
+- Formularios
+- Inputs
+- Modales
+- Menús
+- Componentes reutilizables
 
 ---
 
 # Mobile
 
-## Expo SDK 53
+## Expo
 
-### ¿Qué es?
-Plataforma moderna para React Native.
+Framework oficial para la aplicación móvil.
 
-### ¿Por qué se eligió?
-- desarrollo rápido
-- gran ecosistema
-- soporte nativo moderno
-- facilidad de despliegue
-- excelente DX
+Uso:
 
-### Uso dentro del proyecto
-- aplicación móvil
-- builds Android/iOS
-- acceso a hardware
-- geolocalización
+- Android
+- iOS
+- Acceso a hardware
+- Geolocalización
 
 ---
 
-## React Native 0.79
+## React Native
 
-### ¿Qué es?
-Framework para aplicaciones móviles nativas usando React.
+Base de la aplicación móvil.
 
-### ¿Por qué se eligió?
-- rendimiento nativo
-- ecosistema maduro
-- compatibilidad con React
-- experiencia móvil moderna
+Uso:
 
-### Uso dentro del proyecto
-- interfaz móvil
-- navegación
-- animaciones
-- experiencia táctil
+- Componentes nativos
+- Navegación
+- Interacción táctil
 
 ---
 
-## NativeWind 4
+## NativeWind
 
-### ¿Qué es?
-Adaptación de Tailwind CSS para React Native.
+Sistema de estilos para React Native.
 
-### ¿Por qué se eligió?
-- consistencia visual entre web y mobile
-- reutilización mental del sistema de estilos
-- velocidad de desarrollo
-- integración moderna con Expo
+Objetivo:
 
-### Uso dentro del proyecto
-- estilos mobile
-- diseño consistente
-- componentes reutilizables
+Mantener consistencia visual entre web y móvil.
 
 ---
 
@@ -229,57 +159,50 @@ Adaptación de Tailwind CSS para React Native.
 
 ## Supabase
 
-### ¿Qué es?
-Backend-as-a-Service moderno basado en PostgreSQL.
+Backend principal.
 
-### ¿Por qué se eligió?
-- autenticación integrada
-- realtime
-- PostgreSQL nativo
-- velocidad de desarrollo
-- excelente integración con TypeScript
+Uso:
 
-### Uso dentro del proyecto
-- auth
-- base de datos
-- realtime
-- storage
-- APIs iniciales
+- Auth
+- PostgreSQL
+- Storage
+- Realtime
+- Edge Functions (cuando sean necesarias)
 
 ---
 
-## PostgreSQL 17
+## PostgreSQL
 
-### ¿Qué es?
-Base de datos relacional avanzada.
+Base de datos principal.
 
-### ¿Por qué se eligió?
-- estabilidad
-- rendimiento
-- escalabilidad
-- compatibilidad con PostGIS
-- estándar empresarial
+Uso:
 
-### Uso dentro del proyecto
-- almacenamiento principal de datos
+- Información pública
+- Información privada
+- Publicaciones
+- Configuración
 
 ---
 
 ## PostGIS
 
-### ¿Qué es?
-Extensión geoespacial para PostgreSQL.
+Motor geoespacial.
 
-### ¿Por qué se eligió?
-- cálculos geográficos avanzados
-- búsquedas por proximidad
-- optimización espacial
-- escalabilidad para radar geográfico
+Uso:
 
-### Uso dentro del proyecto
-- radar de usuarios cercanos
-- cálculo de distancias
-- geolocalización avanzada
+- Radar
+- Distancias
+- Consultas geográficas
+
+---
+
+## Storage
+
+Uso:
+
+- Avatares
+- Imágenes de publicaciones
+- Recursos públicos
 
 ---
 
@@ -287,34 +210,47 @@ Extensión geoespacial para PostgreSQL.
 
 ## Monorepo
 
-### ¿Qué es?
-Estructura centralizada para compartir código entre web y mobile.
+```
+apps/
+    web/
+    mobile/
 
-### ¿Por qué se eligió?
-- reutilización
-- consistencia
-- mantenimiento simplificado
-- escalabilidad
+packages/
+    config/
+    services/
+    types/
+    ui/
+    utils/
+```
 
-### Uso dentro del proyecto
-- compartir tipos
-- compartir lógica
-- compartir configuración
-- compartir componentes
+Objetivo:
+
+- Compartir código.
+- Compartir tipos.
+- Compartir configuración.
+- Compartir componentes.
 
 ---
 
-# Principios técnicos oficiales
+# Principios técnicos
 
-- TypeScript estricto
-- mobile-first
-- arquitectura modular
-- componentes reutilizables
-- separación de responsabilidades
-- clean architecture
-- performance primero
-- accesibilidad obligatoria
-- evitar sobreingeniería
-- escalabilidad desde el inicio
-- privacidad del usuario como prioridad
-- geolocalización optimizada
+- Mobile First.
+- TypeScript estricto.
+- Arquitectura modular.
+- Componentes reutilizables.
+- Separación de responsabilidades.
+- Clean Architecture.
+- Performance como prioridad.
+- Accesibilidad.
+- Privacidad por diseño.
+- Escalabilidad desde el inicio.
+
+---
+
+# Regla oficial
+
+Las versiones concretas de cada dependencia se definen en los archivos `package.json`.
+
+Este documento describe únicamente las tecnologías oficiales del proyecto.
+
+La actualización de versiones deberá realizarse directamente en el código y reflejarse posteriormente en la documentación cuando implique un cambio de tecnología o arquitectura.

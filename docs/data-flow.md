@@ -1,189 +1,230 @@
-# Flujo de datos oficial — LookUp
+# Flujo oficial de datos — LookUp
 
-## Objetivo
-Definir cómo viaja la información dentro del producto para mantener privacidad, orden y escalabilidad.
+> Última actualización: Julio 2026
+
+---
+
+# Objetivo
+
+Definir cómo viaja la información dentro de LookUp para mantener una arquitectura clara, escalable y respetuosa con la privacidad.
+
+Todos los flujos deben mantener separada la información pública de la información privada.
 
 ---
 
 # 1. Flujo de autenticación
 
 ## Entrada
-- email
-- contraseña
-- nombre real
-- teléfono
+
+- Email
+- Contraseña
 
 ## Proceso
-1. el usuario crea cuenta
-2. Supabase Auth valida credenciales
-3. se crea el registro privado
-4. se crea el perfil público mínimo
-5. se registran consentimientos y aceptación de términos
+
+1. El usuario crea una cuenta.
+2. Supabase Auth valida las credenciales.
+3. Se crea el usuario autenticado.
+4. Se generan los registros iniciales del perfil.
+5. Se inicia la sesión.
+6. El usuario es redirigido al onboarding.
 
 ## Salida
-- sesión activa
-- perfil inicial listo
-- acceso al onboarding
+
+- Sesión activa.
+- Perfil inicial creado.
+- Acceso al onboarding.
 
 ---
 
 # 2. Flujo de onboarding
 
 ## Entrada
-- username
-- foto
-- bio
-- profesión
-- intereses
-- links sociales
-- preferencias de visibilidad
+
+- Username
+- Fotografía
+- Nombre
+- Biografía
+- Profesión
+- Intereses
+- Redes sociales
+- Preferencias de visibilidad
 
 ## Proceso
-1. el usuario completa su perfil
-2. se guarda información pública
-3. se guardan preferencias privadas
-4. se crea presencia inicial del radar
-5. se registra evento interno de onboarding completado
+
+1. El usuario completa su perfil.
+2. Se guarda la información pública.
+3. Se guardan las preferencias privadas.
+4. Se crea la presencia inicial en el radar.
+5. Se ejecuta el Affinity Engine.
+6. El perfil queda enriquecido para futuras búsquedas.
 
 ## Salida
-- perfil visible
-- datos listos para radar y eventos
+
+- Perfil público.
+- Perfil privado.
+- Perfil preparado para el radar inteligente.
 
 ---
 
 # 3. Flujo del radar
 
 ## Entrada
-- ubicación aproximada
-- estado visible/invisible
-- radio permitido
-- último movimiento
+
+- Ubicación aproximada.
+- Estado visible.
+- Radio permitido.
 
 ## Proceso
-1. el móvil actualiza la presencia
-2. el backend guarda ubicación aproximada
-3. PostGIS calcula cercanía
-4. se devuelven usuarios dentro del radio
-5. solo se muestra información pública permitida
+
+Usuario
+
+↓
+
+GPS
+
+↓
+
+useLocation()
+
+↓
+
+updateMyLocation()
+
+↓
+
+user_locations
+
+↓
+
+nearby_profiles()
+
+↓
+
+Affinity Engine Score
+
+↓
+
+Ranking
+
+↓
+
+RadarView
 
 ## Salida
-- lista de personas cercanas
-- distancia aproximada
-- actualización visual del radar
+
+- Personas cercanas.
+- Distancia aproximada.
+- Afinidad calculada.
+- Acceso al perfil público.
 
 ---
 
-# 4. Flujo de eventos
+# 4. Flujo de publicaciones
 
 ## Entrada
-- título
-- descripción
-- categoría
-- imagen
-- ubicación
-- horario
-- creador
+
+- Título
+- Descripción
+- Categoría
+- Imagen (opcional)
 
 ## Proceso
-1. el usuario crea o interactúa con un evento
-2. se guarda el evento en la base
-3. se indexa por ubicación y categoría
-4. se muestra en el mapa y en el listado
-5. se registran interacciones internas
+
+1. El usuario crea una publicación.
+2. Se guarda en Supabase.
+3. Se relaciona con el perfil del usuario.
+4. Se muestra en el dashboard y en el radar cuando corresponda.
 
 ## Salida
-- eventos visibles
-- métricas de interacción
-- contenido local útil
+
+- Publicación disponible.
+- Visible según configuración de privacidad.
 
 ---
 
-# 5. Flujo de analítica interna
+# 5. Flujo del Affinity Engine (MVP+)
 
 ## Entrada
-- login
-- visitas
-- clicks
-- búsquedas
-- interacciones
-- tiempo activo
-- acciones del radar
-- eventos creados
-- links abiertos
+
+Información pública del perfil
+
+- Biografía
+- Profesión
+- Intereses
+- Redes sociales públicas
 
 ## Proceso
-1. cada acción relevante genera un evento interno
-2. el evento se guarda con propiedades
-3. el sistema agrega datos por usuario, zona y segmento
-4. se construyen métricas de negocio
-5. se generan insights para el equipo
+
+1. El usuario crea o actualiza su perfil.
+2. Se ejecuta el proceso de enriquecimiento.
+3. La IA analiza únicamente la información pública.
+4. Se generan atributos estructurados.
+5. Se calcula una puntuación de afinidad.
+6. Se almacenan los resultados.
 
 ## Salida
-- funnels
-- retención
-- cohortes
-- zonas calientes
-- comportamiento por segmento
+
+- Perfil enriquecido.
+- Afinidad disponible para el radar.
+
+La IA nunca se ejecuta cuando un usuario abre el radar.
 
 ---
 
 # 6. Flujo de privacidad
 
 ## Entrada
-- consentimiento
-- visibilidad
-- ocultar teléfono
-- ocultar ubicación
-- modo invisible
-- zonas bloqueadas
+
+- Visibilidad
+- Modo invisible
+- Permitir descubrimiento
 
 ## Proceso
-1. el usuario configura privacidad
-2. el sistema guarda preferencias
-3. RLS aplica restricciones de acceso
-4. el radar respeta visibilidad
-5. los datos públicos no exponen información privada
+
+1. El usuario configura la privacidad.
+2. Supabase almacena la configuración.
+3. Las políticas RLS controlan el acceso.
+4. El radar únicamente muestra perfiles autorizados.
+5. La IA sólo procesa información pública.
 
 ## Salida
-- control del usuario
-- protección de datos
-- cumplimiento técnico
+
+- Privacidad garantizada.
+- Descubrimiento controlado.
 
 ---
 
 # 7. Flujo de moderación
 
 ## Entrada
-- reporte
-- bloqueo
-- motivo
-- cuenta afectada
+
+- Reporte
+- Bloqueo
+- Motivo
 
 ## Proceso
-1. el usuario reporta o bloquea
-2. se guarda en reports_blocks
-3. se registra en audit_logs
-4. el sistema puede limitar exposición o acceso
-5. el equipo revisa casos internos
+
+1. El usuario reporta un perfil.
+2. Se registra el incidente.
+3. El sistema limita la visibilidad cuando corresponda.
+4. El equipo revisa el caso.
 
 ## Salida
-- seguridad
-- trazabilidad
-- control interno
+
+- Plataforma más segura.
+- Historial de moderación.
 
 ---
 
-# Principios del flujo
+# Principios oficiales
 
-- nunca mezclar datos públicos y privados sin necesidad
-- cada acción importante genera trazabilidad
-- la privacidad se respeta por diseño
-- la analítica vive separada del perfil
-- el radar solo muestra lo permitido
-- los eventos se usan para negocio, no para invadir privacidad
-
-Supabase → backend rápido y moderno
-PostgreSQL → base de datos robusta y escalable
-PostGIS → geolocalización profesional
-Next.js + Expo → compartir lógica entre web y móvil
-Turborepo → mantener todo organizado y reutilizable
+- Nunca mezclar datos públicos y privados.
+- La privacidad se respeta por diseño.
+- El radar únicamente muestra información autorizada.
+- La IA nunca procesa información privada.
+- La IA trabaja durante la creación o edición del perfil, nunca durante la búsqueda.
+- Supabase es la única fuente de datos.
+- PostgreSQL almacena la información.
+- PostGIS gestiona la geolocalización.
+- Next.js y Expo comparten la mayor cantidad posible de lógica.
+- Turborepo centraliza la arquitectura del proyecto.

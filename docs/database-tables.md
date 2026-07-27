@@ -1,211 +1,206 @@
 # Tablas oficiales — LookUp
 
+> Última actualización: Julio 2026
+
+---
+
 # Objetivo
 
-Definir la estructura conceptual oficial de las tablas del sistema.
+Documentar la estructura conceptual de la base de datos y distinguir claramente entre las tablas implementadas y las planificadas.
+
+La documentación debe reflejar siempre el estado real del proyecto.
 
 ---
 
-# Tabla: profiles_private
+# Tablas implementadas
 
-## Objetivo
+## profiles
 
-Guardar información privada y sensible de la cuenta.
+### Objetivo
 
-## Contendrá
+Información principal del usuario.
 
-- id
-- auth_user_id
-- email
-- phone
-- real_name
-- birth_date
-- account_status
-- created_at
-- updated_at
-
-## Reglas
-
-- nunca pública
-- protegida mediante RLS
-- acceso exclusivo del propietario
+Contiene la información necesaria para construir el perfil.
 
 ---
 
-# Tabla: profiles_public
+## profile_links
 
-## Objetivo
+### Objetivo
 
-Perfil visible dentro de la plataforma.
+Guardar las redes sociales y enlaces públicos del usuario.
 
-## Contendrá
+### Información
 
-- id
-- username
-- display_name
-- avatar_url
-- bio
-- profession
-- interests
-- visibility_status
-- created_at
-
-## Reglas
-
-- visible públicamente dentro del sistema
-- nunca contener datos sensibles
+- Instagram
+- Facebook
+- TikTok
+- Página web
+- Otros enlaces públicos
 
 ---
 
-# Tabla: profile_links
+## profiles_public
 
-## Objetivo
+### Objetivo
 
-Guardar redes sociales y links externos.
+Información pública utilizada por el radar y los perfiles.
 
-## Contendrá
-
-- id
-- profile_id
-- instagram_url
-- tiktok_url
-- facebook_url
-- website_url
+Nunca contiene datos sensibles.
 
 ---
 
-# Tabla: privacy_settings
+## profiles_private
 
-## Objetivo
+### Objetivo
 
-Controlar privacidad y visibilidad.
+Información privada del usuario.
 
-## Contendrá
-
-- id
-- profile_id
-- invisible_mode
-- hide_phone
-- hide_location
-- allow_discovery
-- allow_event_visibility
+Acceso únicamente mediante políticas RLS.
 
 ---
 
-# Tabla: location_presence
+## user_locations
 
-## Objetivo
+### Objetivo
 
-Sistema radar y presencia geográfica.
+Ubicación utilizada por el radar.
 
-## Contendrá
+Contiene únicamente la información necesaria para localizar usuarios cercanos.
 
-- id
-- profile_id
-- geohash
-- location
-- visibility_radius
-- last_seen
-- online_status
-
-## Reglas
-
-- nunca mostrar coordenadas exactas públicamente
-- optimizada para PostGIS
+Nunca expone coordenadas exactas públicamente.
 
 ---
 
-# Tabla: events
+## location_presence
 
-## Objetivo
+### Objetivo
 
-Eventos, actividades y negocios.
+Gestionar la presencia del usuario dentro del radar.
 
-## Contendrá
+Información
 
-- id
-- creator_id
-- title
-- description
-- category
-- cover_image
-- location
-- starts_at
-- ends_at
-- visibility
-- created_at
+- Estado
+- Última actualización
+- Radio de visibilidad
 
 ---
 
-# Tabla: event_interactions
+## privacy_settings
 
-## Objetivo
+### Objetivo
 
-Interacciones de usuarios con eventos.
+Configuración de privacidad.
 
-## Contendrá
+Permite controlar:
 
-- id
-- event_id
-- profile_id
-- interaction_type
-- created_at
+- Descubrimiento
+- Visibilidad
+- Modo invisible
 
 ---
 
-# Tabla: analytics_events
+## reports_blocks
 
-## Objetivo
+### Objetivo
 
-Sistema interno de analítica y comportamiento.
+Moderación.
 
-## Contendrá
+Permite registrar:
 
-- id
-- profile_id
-- event_name
-- event_data
-- device_info
-- session_id
-- created_at
-
-## Objetivo técnico
-
-- funnels
-- cohortes
-- retención
-- métricas internas
-- comportamiento agregado
+- Reportes
+- Bloqueos
 
 ---
 
-# Tabla: reports_blocks
+# Almacenamiento
 
-## Objetivo
+## Bucket
 
-Moderación y seguridad.
+avatars
 
-## Contendrá
-
-- id
-- reporter_id
-- target_profile_id
-- reason
-- status
-- created_at
+Utilizado para almacenar las fotografías de perfil.
 
 ---
 
-# Tabla: audit_logs
+# Funciones SQL
 
-## Objetivo
+## nearby_profiles()
 
-Auditoría interna del sistema.
+Obtiene perfiles cercanos utilizando PostGIS.
 
-## Contendrá
+---
 
-- id
-- action_type
-- actor_id
-- metadata
-- created_at
+## sync_user_location()
+
+Actualiza la ubicación del usuario.
+
+---
+
+# Tablas planificadas
+
+Las siguientes tablas forman parte de la hoja de ruta y sólo se crearán cuando sean necesarias.
+
+---
+
+## publications
+
+Publicaciones creadas por los usuarios.
+
+---
+
+## publication_images
+
+Imágenes asociadas a publicaciones.
+
+---
+
+## analytics_events
+
+Analítica interna.
+
+Permitirá medir:
+
+- Retención
+- Funnels
+- Uso del radar
+- Uso de publicaciones
+
+---
+
+## audit_logs
+
+Auditoría interna.
+
+Permitirá registrar acciones críticas del sistema.
+
+---
+
+## affinity_profiles
+
+Resultados generados por el Affinity Engine.
+
+Podrá almacenar información estructurada derivada del análisis del perfil.
+
+Ejemplos:
+
+- Categorías
+- Habilidades
+- Intereses normalizados
+- Objetivos
+- Afinidad calculada
+
+Esta tabla será alimentada por IA cuando el usuario cree o modifique su perfil.
+
+Nunca durante el uso del radar.
+
+---
+
+# Principios de la base de datos
+
+- Mantener separada la información pública y privada.
+- No duplicar información innecesariamente.
+- Aprovechar PostgreSQL y PostGIS como núcleo del sistema.
+- Utilizar RLS en toda información privada.
+- Mantener el backend desacoplado del frontend.
+- Toda ampliación deberá documentarse antes de implementarse.

@@ -1,14 +1,16 @@
 # Base de datos oficial — LookUp
 
-# Filosofía
+> Última actualización: Julio 2026
 
-La base de datos de LookUp se divide en múltiples capas desacopladas para:
+---
 
-- proteger privacidad
-- mejorar escalabilidad
-- facilitar analítica
-- evitar mezcla entre datos públicos y privados
-- permitir crecimiento futuro sin caos técnico
+# Objetivo
+
+La base de datos de LookUp está diseñada para ofrecer una arquitectura segura, modular y escalable.
+
+Su objetivo es mantener completamente separadas la información pública, la información privada, la geolocalización y los datos internos del sistema.
+
+La estructura está preparada para crecer sin necesidad de rediseñar el backend.
 
 ---
 
@@ -17,139 +19,136 @@ La base de datos de LookUp se divide en múltiples capas desacopladas para:
 - Supabase
 - PostgreSQL 17
 - PostGIS
-- RLS obligatorio
-- arquitectura modular
+- Storage
+- Row Level Security (RLS)
 
 ---
 
-# Capas del sistema
+# Principios de diseño
+
+La arquitectura de la base de datos sigue estos principios:
+
+- Privacidad por diseño.
+- Separación entre datos públicos y privados.
+- Reutilización antes que duplicación.
+- Escalabilidad horizontal.
+- Consultas optimizadas para geolocalización.
+- Seguridad mediante políticas RLS.
+- Arquitectura preparada para IA.
+
+---
+
+# Capas de información
 
 ## 1. Datos privados
 
-Información sensible y operativa.
+Información exclusiva del propietario.
 
-### Contendrá
+Ejemplos
 
-- email
-- teléfono
+- correo electrónico
 - nombre real
-- fecha de nacimiento
-- estado de cuenta
-- aceptación de términos
-- consentimientos
-- timestamps
+- información sensible
+- configuración interna
 
-### Reglas
-
-- nunca públicos por defecto
-- acceso restringido mediante RLS
-- visibles únicamente por propietario y sistema interno
+Nunca puede ser utilizada por el radar.
 
 ---
 
 ## 2. Perfil público
 
-Información visible dentro de la plataforma.
+Información visible para otros usuarios.
 
-### Contendrá
+Ejemplos
 
+- fotografía
 - username
-- nombre visible
-- foto de perfil
-- bio
+- biografía
 - profesión
 - intereses
-- links sociales
-- estado visible/invisible
-- distancia aproximada
+- enlaces públicos
 
-### Objetivo
-
-Facilitar networking rápido y visual.
+Esta información alimenta el radar y el Affinity Engine.
 
 ---
 
-## 3. Sistema radar
+## 3. Geolocalización
 
-Información geográfica temporal.
+Información temporal utilizada por el radar.
 
-### Contendrá
+Incluye
 
 - ubicación aproximada
-- geohash
 - radio de visibilidad
-- last_seen
-- estado online
-- zonas ocultas
+- estado
+- última actualización
 
-### Objetivo
-
-Mostrar personas cercanas sin revelar ubicación exacta.
+Nunca se muestran coordenadas exactas.
 
 ---
 
-## 4. Eventos y negocios
+## 4. Publicaciones
 
-Sistema de actividades y empresas.
+Información generada por los usuarios.
 
-### Contendrá
+Incluye
 
-- nombre
-- descripción
-- categoría
+- publicaciones
 - imágenes
-- ubicación
-- creador
-- links
-- métricas
+- metadatos
+
+Siempre asociadas a un perfil.
 
 ---
 
-## 5. Analítica interna
+## 5. Inteligencia (MVP+)
 
-Sistema privado de negocio y comportamiento.
+LookUp incorpora una capa de enriquecimiento mediante IA.
 
-### Contendrá
+La IA nunca modifica directamente los perfiles visibles.
 
-- sesiones
-- tiempo activo
-- visitas perfil
-- clicks
-- búsquedas
-- interacciones
+Su función consiste en analizar la información pública del usuario cuando éste crea o actualiza su perfil.
+
+El resultado se almacena para acelerar el funcionamiento del radar.
+
+---
+
+## 6. Analítica
+
+Información exclusivamente interna.
+
+Permite conocer:
+
+- uso del radar
+- uso de publicaciones
 - retención
-- cohortes
 - comportamiento agregado
 
-### Objetivo
-
-Entender crecimiento y comportamiento de usuarios.
+Nunca interviene en la experiencia del usuario.
 
 ---
 
-# Principios técnicos
+# Seguridad
 
-- privacidad por diseño
-- minimización de datos
-- evitar tablas gigantes
-- evitar duplicación innecesaria
-- separación de responsabilidades
-- escalabilidad desde el inicio
-- datos sensibles siempre opcionales
-- consentimiento obligatorio
-- ubicación exacta nunca pública
+Toda la información privada se protege mediante Row Level Security (RLS).
+
+Las consultas públicas únicamente pueden acceder a la información expresamente permitida.
+
+La ubicación exacta nunca será visible para otros usuarios.
+
+La IA únicamente podrá procesar información pública.
 
 ---
 
-# Futuras tablas previstas
+# Filosofía del sistema
 
-- profiles_private
-- profiles_public
-- privacy_settings
-- consents
-- location_presence
-- events
-- event_interactions
-- analytics_events
-- reports_blocks
-- audit_logs
+La base de datos no está diseñada únicamente para almacenar información.
+
+Está diseñada para:
+
+- proteger la privacidad
+- facilitar el descubrimiento de personas
+- escalar con miles de usuarios
+- permitir incorporar nuevas funcionalidades sin modificar la arquitectura existente
+
+Las tablas concretas y su estructura se documentan en `DATABASE-TABLES.md`.

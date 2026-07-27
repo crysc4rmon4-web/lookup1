@@ -1,104 +1,155 @@
-# MVP oficial
+# Producto oficial — LookUp
 
-## Objetivo principal
-Validar una herramienta social basada en proximidad geográfica para descubrir personas, eventos y oportunidades cercanas en tiempo real.
-
-La aplicación no busca reemplazar redes sociales tradicionales, sino funcionar como puente hacia ellas.
+> Última actualización: Julio 2026
 
 ---
 
-# Funcionalidades incluidas
+# Objetivo
+
+LookUp es una herramienta de descubrimiento social basada en proximidad geográfica.
+
+Su propósito es ayudar a descubrir personas cercanas con intereses afines y facilitar el acceso directo a sus redes sociales públicas.
+
+LookUp no pretende sustituir las redes sociales existentes.
+
+La conversación continúa fuera de la aplicación.
+
+---
+
+# Propuesta de valor
+
+En lugar de preguntar:
+
+> "¿Me das tu Instagram?"
+
+LookUp permite descubrir perfiles cercanos y acceder directamente a las redes sociales que cada usuario haya decidido compartir.
+
+El valor del producto está en el descubrimiento, no en la comunicación.
+
+---
+
+# MVP
 
 ## 1. Autenticación
-El usuario podrá:
-- registrarse
-- iniciar sesión
-- cerrar sesión
 
-### Datos mínimos:
-- nombre visible
-- email
-- contraseña
-- foto de perfil
-
----
-
-## 2. Perfil minimalista
-Cada usuario tendrá:
-
-- foto de perfil
-- nombre visible
-- descripción breve
-- intereses opcionales
-- links externos:
-  - Instagram
-  - TikTok
-  - LinkedIn
-  - Facebook
-  - WhatsApp
-
----
-
-## 3. Radar de proximidad
 El usuario podrá:
 
-- visualizar personas cercanas
-- detectar usuarios visibles
-- visualizar distancia aproximada
-- actualizar resultados en tiempo real
-
-Este será el núcleo principal del producto.
+- Registrarse.
+- Iniciar sesión.
+- Cerrar sesión.
 
 ---
 
-## 4. Sistema de visibilidad
-El usuario podrá:
+## 2. Onboarding
 
-- aparecer visible
-- ocultarse temporalmente
-- controlar presencia en el radar
+El usuario completará su perfil mediante un flujo guiado.
 
----
+Información disponible:
 
-## 5. Eventos y actividades locales
-La aplicación permitirá visualizar:
-
-- eventos
-- promociones
-- actividades
-- negocios locales
-
-mediante mapa geográfico interactivo.
+- Fotografía.
+- Nombre.
+- Username.
+- Biografía.
+- Profesión.
+- Intereses.
+- Redes sociales.
+- Preferencias de visibilidad.
 
 ---
 
-# Funcionalidades excluidas temporalmente
+## 3. Perfil
 
-Estas funciones NO formarán parte del MVP inicial:
+Cada usuario dispondrá de un perfil público que podrá editar en cualquier momento.
 
-- chat interno
-- feed social
-- reels
-- stories
-- marketplace completo
-- monetización avanzada
-- anuncios
-- IA integrada
-- algoritmos complejos
-- videollamadas
-- grupos
-- lives
-- sistema de seguidores
+El perfil podrá mostrar:
+
+- Fotografía.
+- Username.
+- Nombre.
+- Biografía.
+- Profesión.
+- Intereses.
+- Redes sociales públicas.
 
 ---
 
-# Filosofía del MVP
+## 4. Radar
 
-La prioridad será validar:
+El radar constituye el núcleo del producto.
 
-- descubrimiento humano local
-- utilidad del radar social
-- interacción rápida entre personas reales
-- conexión mediante redes sociales existentes
+Permitirá:
 
-La aplicación será una herramienta social ligera, rápida y enfocada en experiencias reales.
+- Detectar personas cercanas.
+- Mostrar distancia aproximada.
+- Mostrar únicamente perfiles autorizados.
+- Acceder al perfil público.
+
+---
+
+## 5. Publicaciones
+
+Los usuarios podrán:
+
+- Crear publicaciones.
+- Visualizarlas.
+- Descubrir contenido cercano.
+
+No existirán comentarios, reacciones ni compartidos durante el MVP.
+
+---
+
+## 6. Configuración
+
+Cada usuario podrá controlar:
+
+- Visibilidad.
+- Modo invisible.
+- Descubrimiento.
+- Redes sociales públicas.
+
+---
+
+# Funcionalidades fuera del MVP
+
+Estas funcionalidades quedan fuera del alcance inicial.
+
+- Chat.
+- Mensajes privados.
+- Solicitudes de amistad.
+- Sistema de conexiones.
+- Seguidores.
+- Feed social.
+- Stories.
+- Reacciones.
+- Comentarios.
+- Marketplace.
+- Videollamadas.
+- Grupos.
+- Lives.
+- Notificaciones avanzadas.
+
+---
+
+# MVP+
+
+La arquitectura queda preparada para incorporar:
+
+- Affinity Engine.
+- Ranking inteligente.
+- Recomendaciones personalizadas.
+- Analítica avanzada.
+- Nuevas fuentes de descubrimiento.
+
+Estas funcionalidades no modifican la filosofía del producto.
+
+---
+
+# Filosofía
+
+LookUp ayuda a descubrir personas.
+
+Las redes sociales ayudan a conversar.
+
+Cada plataforma cumple una función distinta.
+
+El objetivo es reducir la fricción para conectar personas en el mundo real mediante herramientas digitales simples, rápidas y respetuosas con la privacidad.

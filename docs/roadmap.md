@@ -1,163 +1,213 @@
-# Roadmap oficial del proyecto
+# Roadmap oficial — LookUp
 
-## Objetivo general
-Construir una plataforma social moderna basada en proximidad humana real y descubrimiento local.
-
----
-
-# Fase 1 — Definición estratégica
-
-Objetivo:
-Definir arquitectura, stack, convenciones, MVP y estructura del proyecto antes de programar.
-
-Incluye:
-- visión producto
-- stack oficial
-- arquitectura monorepo
-- convenciones
-- definición MVP
-- roadmap
-
-Estado:
-- en progreso
+> Última actualización: Julio 2026
 
 ---
 
-# Fase 2 — Bootstrap técnico
+# Objetivo
 
-Objetivo:
-Preparar el entorno profesional del monorepo.
+Construir una herramienta de descubrimiento social basada en proximidad geográfica que permita conectar personas mediante sus redes sociales públicas.
 
-Incluye:
-- configuración Turborepo
-- instalación Next.js
-- instalación Expo
-- configuración TypeScript
-- ESLint
-- Prettier
-- aliases
-- estructura base
-- configuración compartida
-- git hooks
-- variables de entorno
-
-Resultado esperado:
-Repositorio profesional listo para desarrollo real.
+El desarrollo seguirá un enfoque incremental, validando primero el núcleo del producto antes de incorporar funcionalidades avanzadas.
 
 ---
 
-# Fase 3 — Core infrastructure
+# Estado actual
 
-Objetivo:
-Construir la infraestructura principal del producto.
+## Documentación
+
+Estado: ✅ Completada
 
 Incluye:
+
+- Arquitectura
+- Stack oficial
+- Convenciones
+- Base de datos
+- Flujo de datos
+- MVP
+- Roadmap
+- IA
+- Decisiones técnicas
+
+---
+
+## Infraestructura
+
+Estado: ✅ Completada
+
+Incluye:
+
+- Monorepo
+- Turborepo
+- pnpm
+- Next.js
+- Expo
+- TypeScript
+- Tailwind CSS
 - Supabase
-- autenticación
-- onboarding
-- navegación
-- sistema de diseño
-- providers
-- estados globales
-- conexión backend
-
-Resultado esperado:
-Base estable y funcional del producto.
+- PostgreSQL
+- PostGIS
+- Storage
+- Configuración compartida
 
 ---
 
-# Fase 4 — Radar geográfico
+## Core del producto
 
-Objetivo:
-Implementar el núcleo principal de la aplicación.
+Estado: 🟡 En desarrollo
 
 Incluye:
-- geolocalización
-- detección de usuarios cercanos
-- cálculos espaciales
-- realtime
-- presencia online
-- optimización geográfica
 
-Resultado esperado:
-Usuarios detectándose en tiempo real mediante proximidad.
-
----
-
-# Fase 5 — Eventos y ecosistema local
+- Autenticación
+- Onboarding
+- Dashboard
+- Perfil público
+- Edición de perfil
+- Navegación
+- Providers
+- Sistema de diseño
 
 Objetivo:
-Expandir la utilidad social y comercial de la plataforma.
 
-Incluye:
-- eventos geolocalizados
-- promociones
-- negocios locales
-- actividades cercanas
-- mejoras del mapa interactivo
-
-Resultado esperado:
-Ecosistema social local dinámico y útil para usuarios y negocios.
+Disponer de una base estable sobre la que construir el radar.
 
 ---
 
-# Fase 6 — Refinamiento UX/UI
+# Fase 1 — Radar
 
-Objetivo:
-Mejorar experiencia visual y fluidez general.
+Objetivo
+
+Construir el núcleo del producto.
 
 Incluye:
-- animaciones
-- microinteracciones
-- optimización mobile
-- accesibilidad
-- performance visual
-- mejoras de navegación
 
-Resultado esperado:
-Experiencia premium moderna y fluida.
+- Geolocalización
+- Actualización de ubicación
+- Detección de personas cercanas
+- Ranking
+- Visualización del radar
+- Optimización con PostGIS
+- Realtime
+
+Resultado esperado
+
+Usuarios descubriendo personas cercanas en tiempo real.
 
 ---
 
-# Fase 7 — Testing y estabilización
+# Fase 2 — Publicaciones
 
-Objetivo:
-Reducir errores y mejorar confiabilidad.
+Objetivo
+
+Aumentar el valor del descubrimiento.
 
 Incluye:
-- testing
-- validaciones
-- manejo de errores
-- edge cases
-- optimización
 
-Resultado esperado:
-Producto estable listo para usuarios reales.
+- Crear publicaciones
+- Mostrar publicaciones
+- Relacionarlas con perfiles
+- Descubrimiento local
+
+Resultado esperado
+
+Contenido generado por los usuarios sin convertir la aplicación en una red social.
 
 ---
 
-# Fase 8 — Deploy inicial
+# Fase 3 — Affinity Engine (MVP+)
 
-Objetivo:
-Publicar primeras versiones utilizables.
+Objetivo
+
+Ordenar los perfiles por afinidad.
 
 Incluye:
-- despliegue web
-- builds mobile
-- variables producción
-- configuración dominios
-- analytics
-- monitoreo
 
-Resultado esperado:
-Primera versión pública funcional.
+- Enriquecimiento del perfil
+- Clasificación de intereses
+- Normalización
+- Ranking inteligente
+- Preparación para IA
+
+Resultado esperado
+
+El radar deja de ordenar únicamente por distancia y comienza a priorizar personas relevantes.
 
 ---
 
-# Filosofía del roadmap
+# Fase 4 — Refinamiento UX/UI
 
-- avanzar por capas
-- no saltar fases
-- validar antes de escalar
-- priorizar estabilidad
-- construir el núcleo antes que funciones secundarias
+Objetivo
+
+Mejorar la experiencia general.
+
+Incluye:
+
+- Animaciones
+- Microinteracciones
+- Optimización mobile
+- Accesibilidad
+- Rendimiento
+- Consistencia visual
+
+---
+
+# Fase 5 — Testing
+
+Objetivo
+
+Garantizar estabilidad.
+
+Incluye:
+
+- Testing funcional
+- Casos límite
+- Validaciones
+- Corrección de errores
+- Optimización
+
+---
+
+# Fase 6 — Deploy
+
+Objetivo
+
+Publicar la primera versión utilizable.
+
+Incluye:
+
+- Web
+- Android
+- iOS
+- Variables de producción
+- Monitorización
+- Analítica
+
+---
+
+# Versiones futuras
+
+Una vez validado el MVP podrán incorporarse nuevas funcionalidades.
+
+Posibles líneas de evolución:
+
+- Eventos
+- Negocios locales
+- Promociones geolocalizadas
+- IA avanzada
+- Recomendaciones inteligentes
+- Marketplace
+- Monetización
+
+Estas funcionalidades no forman parte del MVP actual.
+
+---
+
+# Filosofía
+
+- Construir primero el núcleo.
+- Validar antes de ampliar.
+- No competir con las redes sociales.
+- Priorizar simplicidad.
+- Mantener una arquitectura escalable.
+- Documentar antes de implementar.

@@ -1,185 +1,173 @@
 # LookUp — Architecture
 
 > Última actualización: Julio 2026
+> Estado: Arquitectura oficial del proyecto
 
 ---
 
 # Objetivo
 
-LookUp es una aplicación de networking presencial.
+LookUp es una aplicación de networking presencial basada en geolocalización.
 
-No es una red social.
+Su propósito es ayudar a descubrir personas cercanas con intereses afines y facilitar el acceso directo a sus redes sociales públicas.
 
-Su propósito es descubrir personas y eventos cercanos utilizando la ubicación GPS.
+LookUp no es una red social.
+
+No pretende sustituir Instagram, LinkedIn, TikTok o cualquier otra plataforma.
+
+Su función es descubrir personas relevantes y facilitar la conexión fuera de la aplicación.
 
 ---
 
-# MVP
+# Principios de arquitectura
 
-El MVP incluye únicamente:
+- Arquitectura modular y escalable.
+- Monorepo con responsabilidades separadas.
+- Reutilización antes que duplicación.
+- Separación entre interfaz, lógica de negocio y acceso a datos.
+- TypeScript estricto.
+- Cada bloque funcional debe finalizar con un `pnpm build` limpio.
 
-- Registro / Login
+---
+
+# Alcance del MVP
+
+## Incluye
+
+- Registro
+- Login
 - Onboarding
+- Edición de perfil
 - Perfil público
-- Radar
-- Eventos
-- Configuración
-- Conexiones
+- Dashboard
+- Radar inteligente
+- Publicaciones
+- Configuración básica
 
-NO incluye:
+## No incluye
 
 - Chat
-- Feed
+- Feed social
 - Stories
 - Likes
 - Comentarios
 - Mensajes privados
+- Seguidores
+- Solicitudes de amistad
+- Sistema de conexiones
+- Notificaciones
 
-La arquitectura permitirá añadir chat en el futuro sin modificar el resto del sistema.
+La arquitectura queda preparada para incorporar estas funcionalidades en el futuro sin romper la estructura existente.
 
 ---
 
-# Stack
+# Stack oficial
 
-Monorepo
+## Monorepo
 
-TurboRepo
+- TurboRepo
+- pnpm
 
-pnpm
+## Frontend
 
-Next.js 15
+- Next.js 15
+- React 19
+- TypeScript
+- Tailwind CSS v4
 
-React 19
+## Backend
 
-TypeScript
-
-Tailwind CSS v4
-
-Supabase
-
-PostgreSQL
-
-PostGIS
+- Supabase
+- PostgreSQL
+- PostGIS
+- Storage
+- Row Level Security (RLS)
 
 ---
 
 # Estructura
 
+```
 apps/
-
-web/
-
-mobile/
+    web/
+    mobile/
 
 packages/
-
-services/
-
-ui/
-
-types/
-
-config/
-
-utils/
+    config/
+    services/
+    types/
+    ui/
+    utils/
+```
 
 ---
 
 # apps/web
 
+```
 app/
-
-dashboard/
-
-onboarding/
-
-profile/
-
-(auth)/
+    (auth)/
+    dashboard/
+    onboarding/
+    profile/
 
 components/
-
 hooks/
-
 data/
-
 lib/
+```
 
 ---
 
 # Dashboard
 
-Componentes
+## Componentes
 
-DashboardHeader
+- DashboardHeader
+- RadarView
+- SettingsView
+- BottomNav
 
-RadarView
+## Hooks
 
-EventsView
-
-SettingsView
-
-BottomNav
-
-Hooks
-
-useRadar
-
-useProfileStatus
-
-useLocation
-
-useNearbyProfiles
-
-useSyncLocation
+- useRadar
+- useProfileStatus
+- useLocation
+- useNearbyProfiles
+- useSyncLocation
 
 ---
 
 # Onboarding
 
-StepPhoto
+Componentes reutilizables
 
-StepUsername
+- StepPhoto
+- StepUsername
+- StepName
+- StepSocials
+- StepBio
+- StepInterests
+- StepVisibility
+- Navigation
+- ProgressBar
 
-StepName
-
-StepSocials
-
-StepBio
-
-StepInterests
-
-StepVisibility
-
-Navigation
-
-ProgressBar
+El mismo flujo se reutiliza para editar el perfil.
 
 ---
 
 # Base de datos
 
-Tablas existentes
+## Tablas principales
 
-profiles
-
-profile_links
-
-profiles_public
-
-profiles_private
-
-user_locations
-
-location_presence
-
-connections
-
-events
-
-privacy_settings
-
-reports_blocks
+- profiles
+- profile_links
+- profiles_public
+- profiles_private
+- user_locations
+- location_presence
+- privacy_settings
+- reports_blocks
 
 ---
 
@@ -187,23 +175,22 @@ reports_blocks
 
 Bucket
 
-avatars
+- avatars
 
 ---
 
 # Funciones SQL
 
-nearby_profiles()
+- nearby_profiles()
+- sync_user_location()
 
-sync_user_location()
-
-PostGIS activo
+PostGIS permanece como motor geoespacial del proyecto.
 
 ---
 
 # Radar
 
-Flujo
+## Flujo
 
 Usuario
 
@@ -229,7 +216,11 @@ nearby_profiles()
 
 ↓
 
-profiles
+Affinity Engine
+
+↓
+
+Ranking
 
 ↓
 
@@ -237,54 +228,67 @@ RadarView
 
 ---
 
-# Eventos
+# Affinity Engine (MVP+)
 
-Los eventos son independientes del radar.
+El radar está preparado para integrar inteligencia artificial.
 
-Cada evento pertenece a un usuario.
+La IA nunca participa directamente durante la carga del radar.
 
-Los usuarios podrán:
+Su función consiste en enriquecer el perfil del usuario cuando éste se crea o se modifica.
 
-crear
+El motor calculará afinidad utilizando:
 
-descubrir
+- intereses
+- profesión
+- objetivos
+- biografía
+- información pública
 
-apuntarse
+El resultado será una puntuación de afinidad utilizada por el radar para ordenar los perfiles.
 
 ---
 
-# Conexiones
+# Descubrimiento de perfiles
 
-Las conexiones sustituyen al chat.
+LookUp no implementa solicitudes de amistad ni mensajería.
 
-Un usuario puede:
+Cada perfil puede mostrar:
 
-Conectar
+- Fotografía
+- Nombre de usuario
+- Biografía
+- Intereses
+- Redes sociales públicas
+- Enlaces externos
 
-Aceptar
+El objetivo es facilitar el descubrimiento de personas y permitir que la conversación continúe directamente en las redes sociales del usuario.
 
-Rechazar
+---
 
-Bloquear
+# Publicaciones
 
-En el MVP no existe mensajería.
+Las publicaciones forman parte del MVP.
+
+Permiten:
+
+- Crear
+- Descubrir
+- Visualizar
+
+No incluyen:
+
+- Comentarios
+- Reacciones
+- Compartidos
 
 ---
 
 # Reglas
 
-Nunca crear archivos duplicados.
-
-Nunca crear tablas existentes.
-
-Cada bloque debe terminar con
-
-pnpm build
-
-Cada bloque funcional termina con
-
-git commit
-
-Nunca mezclar arquitectura antigua y nueva.
-
-Siempre entregar archivos completos cuando cambien.
+- Nunca duplicar componentes.
+- Nunca duplicar tablas existentes.
+- Reutilizar antes de crear.
+- Mantener la arquitectura del monorepo.
+- Finalizar cada bloque con `pnpm build`.
+- Finalizar cada funcionalidad con su correspondiente commit.
+- Mantener la documentación sincronizada con el código.
