@@ -5,21 +5,12 @@ import { useRouter } from "next/navigation";
 
 import { uploadAvatar } from "@lookup/services";
 
-import { Navigation } from "./components/Navigation";
-import { ProgressBar } from "./components/ProgressBar";
-
-import { StepPhoto } from "./components/StepPhoto";
-import { StepUsername } from "./components/StepUsername";
-import { StepName } from "./components/StepName";
-import { StepSocials } from "./components/StepSocials";
-import { StepBio } from "./components/StepBio";
-import { StepInterests } from "./components/StepInterests";
-import { StepVisibility } from "./components/StepVisibility";
-
-import { useOnboarding } from "./hooks/useOnboarding";
 import { useAuth } from "../../components/auth-provider";
 import { useProfileStatus } from "../../hooks/use-profile-status";
-import { finishOnboarding } from "./services/finish-onboarding";
+
+import { OnboardingForm } from "./components/OnboardingForm";
+import { useOnboarding } from "./hooks/useOnboarding";
+import { saveProfile } from "./services/save-profile";
 
 export default function OnboardingPage() {
   const router = useRouter();
@@ -33,17 +24,7 @@ export default function OnboardingPage() {
 
   const [loading, setLoading] = useState(false);
 
-  const {
-    step,
-    stepIndex,
-    totalSteps,
-    progress,
-    data,
-    update,
-    next,
-    previous,
-    canContinue,
-  } = useOnboarding();
+  const onboarding = useOnboarding();
 
   useEffect(() => {
     if (authLoading || profileLoading) return;
@@ -69,7 +50,7 @@ export default function OnboardingPage() {
 
       const url = await uploadAvatar(user.id, file);
 
-      update({
+      onboarding.update({
         avatarUrl: url,
       });
     } catch {
@@ -80,10 +61,13 @@ export default function OnboardingPage() {
   }
 
   async function handleNext() {
-    if (!canContinue || loading) return;
+    if (!onboarding.canContinue || loading) return;
 
-    if (stepIndex < totalSteps - 1) {
-      next();
+    if (
+      onboarding.stepIndex <
+      onboarding.totalSteps - 1
+    ) {
+      onboarding.next();
       return;
     }
 
@@ -92,10 +76,11 @@ export default function OnboardingPage() {
     try {
       setLoading(true);
 
-      await finishOnboarding({
+      await saveProfile({
         userId: user.id,
         email: user.email,
-        data,
+        data: onboarding.data,
+        completeOnboarding: true,
       });
 
       router.replace("/dashboard");
@@ -112,7 +97,7 @@ export default function OnboardingPage() {
 
   if (authLoading || profileLoading) {
     return (
-      <main className="min-h-screen flex items-center justify-center">
+      <main className="flex min-h-screen items-center justify-center">
         Cargando...
       </main>
     );
@@ -123,107 +108,18 @@ export default function OnboardingPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#f7f8fc] px-6 py-10">
-      <section className="mx-auto w-full max-w-[430px]">
-        <p className="text-xs font-black uppercase tracking-[0.35em] text-slate-400">
-          LOOKUP
-        </p>
-
-        <h1 className="mt-2 text-4xl font-black italic text-[#5D5FEF]">
-          Completa tu perfil
-        </h1>
-
-        <p className="mt-3 text-sm text-slate-500">
-          Paso {stepIndex + 1} de {totalSteps}
-        </p>
-
-        <div className="mt-6">
-          <ProgressBar progress={progress} />
-        </div>
-
-        <div className="mt-10 rounded-[2rem] bg-white p-8 shadow-sm">
-          {step === "photo" && (
-            <StepPhoto
-              avatarUrl={data.avatarUrl}
-              onSelect={handleAvatar}
-            />
-          )}
-
-          {step === "username" && (
-            <StepUsername
-              username={data.username}
-              onChange={(value) =>
-                update({
-                  username: value,
-                })
-              }
-            />
-          )}
-
-          {step === "name" && (
-            <StepName
-              fullName={data.fullName}
-              onChange={(value) =>
-                update({
-                  fullName: value,
-                })
-              }
-            />
-          )}
-
-          {step === "socials" && (
-            <StepSocials
-              links={data.socialLinks}
-              onChange={(value) =>
-                update({
-                  socialLinks: value,
-                })
-              }
-            />
-          )}
-
-          {step === "bio" && (
-            <StepBio
-              bio={data.bio}
-              onChange={(value) =>
-                update({
-                  bio: value,
-                })
-              }
-            />
-          )}
-
-          {step === "interests" && (
-            <StepInterests
-              interests={data.interests}
-              onChange={(value) =>
-                update({
-                  interests: value,
-                })
-              }
-            />
-          )}
-
-          {step === "visibility" && (
-            <StepVisibility
-              visibility={data.visibility}
-              onChange={(value) =>
-                update({
-                  visibility: value,
-                })
-              }
-            />
-          )}
-        </div>
-
-        <Navigation
-          canGoBack={stepIndex > 0 && !loading}
-          canContinue={canContinue && !loading}
-          isLastStep={stepIndex === totalSteps - 1}
-          onBack={previous}
-          onNext={handleNext}
-        />
-      </section>
-    </main>
+    <OnboardingForm
+      step={onboarding.step}
+      stepIndex={onboarding.stepIndex}
+      totalSteps={onboarding.totalSteps}
+      progress={onboarding.progress}
+      data={onboarding.data}
+      loading={loading}
+      canContinue={onboarding.canContinue}
+      update={onboarding.update}
+      onAvatar={handleAvatar}
+      onBack={onboarding.previous}
+      onNext={handleNext}
+    />
   );
 }

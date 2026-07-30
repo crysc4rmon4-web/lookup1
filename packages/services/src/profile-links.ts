@@ -45,6 +45,9 @@ export async function saveProfileLink(
   }
 }
 
+/**
+ * Elimina una red concreta.
+ */
 export async function deleteProfileLink(
   id: string,
 ): Promise<void> {
@@ -52,6 +55,24 @@ export async function deleteProfileLink(
     .from("profile_links")
     .delete()
     .eq("id", id);
+
+  if (error) {
+    throw error;
+  }
+}
+
+/**
+ * Elimina todas las redes del usuario.
+ * Se utiliza antes de volver a guardarlas
+ * para mantener la sincronización.
+ */
+export async function deleteProfileLinks(
+  profileId: string,
+): Promise<void> {
+  const { error } = await supabase
+    .from("profile_links")
+    .delete()
+    .eq("profile_id", profileId);
 
   if (error) {
     throw error;

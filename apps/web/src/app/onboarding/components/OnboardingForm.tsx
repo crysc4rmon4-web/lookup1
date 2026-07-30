@@ -35,6 +35,18 @@ type Props = {
 
   onBack: () => void;
   onNext: () => void;
+
+  /**
+   * Reutilización del formulario.
+   * false = onboarding inicial
+   * true = edición de perfil
+   */
+  isEditing?: boolean;
+
+  /**
+   * Solo se usa cuando isEditing=true
+   */
+  onCancel?: (() => void);
 };
 
 export function OnboardingForm({
@@ -49,16 +61,21 @@ export function OnboardingForm({
   onAvatar,
   onBack,
   onNext,
+  isEditing = false,
+  onCancel,
 }: Props) {
   return (
     <main className="min-h-screen bg-[#f7f8fc] px-6 py-10">
       <section className="mx-auto w-full max-w-[430px]">
+
         <p className="text-xs font-black uppercase tracking-[0.35em] text-slate-400">
           LOOKUP
         </p>
 
         <h1 className="mt-2 text-4xl font-black italic text-[#5D5FEF]">
-          Completa tu perfil
+          {isEditing
+            ? "Editar perfil"
+            : "Completa tu perfil"}
         </h1>
 
         <p className="mt-3 text-sm text-slate-500">
@@ -70,6 +87,7 @@ export function OnboardingForm({
         </div>
 
         <div className="mt-10 rounded-[2rem] bg-white p-8 shadow-sm">
+
           {step === "photo" && (
             <StepPhoto
               avatarUrl={data.avatarUrl}
@@ -142,6 +160,7 @@ export function OnboardingForm({
               }
             />
           )}
+
         </div>
 
         <Navigation
@@ -150,7 +169,10 @@ export function OnboardingForm({
           isLastStep={stepIndex === totalSteps - 1}
           onBack={onBack}
           onNext={onNext}
+          isEditing={isEditing}
+          {...(onCancel ? { onCancel } : {})}
         />
+
       </section>
     </main>
   );
