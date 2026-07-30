@@ -1,6 +1,7 @@
 "use client";
 
-import Image from "next/image";
+import { AvatarPicker } from "@/components/ui/AvatarPicker";
+import { SectionTitle } from "@/components/ui/SectionTitle";
 
 type StepPhotoProps = {
   avatarUrl: string;
@@ -11,53 +12,27 @@ export function StepPhoto({
   avatarUrl,
   onSelect,
 }: StepPhotoProps) {
-  function handleChange(
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) {
-    const file = e.target.files?.[0];
-
-    if (!file) return;
-
-    onSelect(file);
-  }
-
   return (
-    <section>
-      <h2 className="text-3xl font-black text-slate-900">
-        Foto de perfil
-      </h2>
+    <section className="flex min-h-[560px] flex-col">
 
-      <p className="mt-2 text-slate-500">
-        Esta será la imagen que verán los demás usuarios.
+      <SectionTitle
+        title="Tu foto"
+        description="Añade una foto para que otras personas puedan reconocerte más fácilmente."
+      />
+
+      <div className="mt-10 flex flex-1 items-center justify-center">
+
+        <AvatarPicker
+          avatarUrl={avatarUrl}
+          onSelect={onSelect}
+        />
+
+      </div>
+
+      <p className="mt-10 text-center text-sm font-medium tracking-wide text-[#98A2B3]">
+        OPCIONAL · PUEDES CONTINUAR SIN AÑADIR UNA FOTO
       </p>
 
-      <div className="mt-8 flex flex-col items-center gap-6">
-        <div className="relative h-36 w-36 overflow-hidden rounded-full border-4 border-[#5D5FEF] bg-slate-100">
-          {avatarUrl ? (
-            <Image
-              src={avatarUrl}
-              alt="Avatar"
-              fill
-              className="object-cover"
-            />
-          ) : (
-            <div className="flex h-full w-full items-center justify-center text-5xl">
-              👤
-            </div>
-          )}
-        </div>
-
-        <label className="cursor-pointer rounded-2xl bg-[#5D5FEF] px-6 py-4 font-bold text-white">
-          Seleccionar foto
-
-          <input
-            hidden
-            type="file"
-            accept="image/*"
-            onChange={handleChange}
-          />
-        </label>
-      </div>
     </section>
   );
 }

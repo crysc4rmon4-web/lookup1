@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { Camera } from "lucide-react";
 
 type Props = {
   avatarUrl: string;
@@ -24,7 +25,7 @@ export function AvatarPicker({
   return (
     <div className="flex flex-col items-center">
 
-      <div className="relative h-40 w-40 overflow-hidden rounded-full border-[6px] border-[#5D5FEF] bg-[#EEF2FF] shadow-lg">
+      <label className="group relative flex h-52 w-52 cursor-pointer items-center justify-center overflow-hidden rounded-full border-[3px] border-dashed border-[#D6DAE8] bg-[#F8F9FD] transition hover:border-[#5D5FEF]">
 
         {avatarUrl ? (
           <Image
@@ -34,21 +35,23 @@ export function AvatarPicker({
             className="object-cover"
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center text-6xl">
-            👤
+          <div className="flex flex-col items-center text-[#7B61FF]">
+
+            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white shadow-sm">
+              <Camera size={28} strokeWidth={2} />
+            </div>
+
+            <span className="mt-5 text-base font-semibold text-[#111827]">
+              Añadir foto
+            </span>
+
           </div>
         )}
 
-      </div>
-
-      <label className="mt-8 cursor-pointer rounded-full bg-[#111827] px-8 py-4 text-sm font-semibold text-white transition hover:bg-[#1F2937]">
-
-        Elegir fotografía
-
         <input
           hidden
-          accept="image/*"
           type="file"
+          accept="image/*"
           onChange={handleChange}
         />
 
