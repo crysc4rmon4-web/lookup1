@@ -1,2 +1,2 @@
 export const APP_NAME = "LookUp";
-export * from "./platforms";
+export * from "./social-platforms";

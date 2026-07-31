@@ -10,12 +10,12 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@icons-pack/react-simple-icons": "^13.13.0",
     "@lookup/config": "workspace:*",
     "@lookup/services": "workspace:*",
     "@lookup/types": "workspace:*",
     "@lookup/ui": "workspace:*",
     "@lookup/utils": "workspace:*",
-
     "lucide-react": "^1.24.0",
     "next": "15.5.9",
     "react": "19.1.0",

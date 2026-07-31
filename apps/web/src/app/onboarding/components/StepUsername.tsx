@@ -1,7 +1,5 @@
 "use client";
 
-import { useMemo } from "react";
-
 type StepUsernameProps = {
   username: string;
   onChange: (value: string) => void;
@@ -11,41 +9,54 @@ export function StepUsername({
   username,
   onChange,
 }: StepUsernameProps) {
-  const normalized = useMemo(
-    () =>
-      username
-        .toLowerCase()
-        .replace(/\s+/g, "")
-        .replace(/[^a-z0-9._]/g, ""),
-    [username],
-  );
+  function normalize(value: string) {
+    return value
+      .toLowerCase()
+      .replace(/\s+/g, "")
+      .replace(/[^a-z0-9._]/g, "");
+  }
 
   return (
-    <section className="flex flex-col">
+    <section className="flex min-h-[560px] flex-col">
 
-      <h2 className="text-3xl font-black text-slate-900">
-        Elige tu username
-      </h2>
+      <div>
 
-      <p className="mt-2 text-slate-500">
-        Será tu identidad dentro de LookUp.
-      </p>
-
-      <input
-        value={username}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder="crysc4rmon4"
-        className="mt-10 rounded-2xl border border-slate-200 p-5 text-lg outline-none focus:border-[#5D5FEF]"
-      />
-
-      <div className="mt-5 rounded-xl bg-slate-50 p-4">
-
-        <p className="text-xs uppercase tracking-widest text-slate-400">
-          Vista previa
+        <p className="text-xs font-bold uppercase tracking-[0.3em] text-[#5D5FEF]">
+          PERFIL
         </p>
 
-        <p className="mt-2 text-xl font-black text-[#5D5FEF]">
-          @{normalized || "username"}
+        <h2 className="mt-4 text-4xl font-black text-[#111827]">
+          Elige tu usuario
+        </h2>
+
+        <p className="mt-4 text-base leading-7 text-slate-500">
+          Será el nombre con el que otras personas podrán
+          identificarte dentro de LookUp.
+        </p>
+
+      </div>
+
+      <div className="mt-14">
+
+        <div className="rounded-3xl border border-[#E5E7EB] bg-white px-6 py-5">
+
+          <span className="text-slate-400">@</span>
+
+          <input
+            value={username}
+            onChange={(e) =>
+              onChange(normalize(e.target.value))
+            }
+            placeholder="crysc4rmon4"
+            autoComplete="off"
+            spellCheck={false}
+            className="ml-2 w-[90%] bg-transparent text-lg font-semibold outline-none"
+          />
+
+        </div>
+
+        <p className="mt-5 text-sm text-slate-400">
+          Este nombre será visible para cualquier usuario.
         </p>
 
       </div>
