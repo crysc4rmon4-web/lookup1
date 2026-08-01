@@ -7,9 +7,10 @@ import {
   type Platform,
 } from "@lookup/config";
 
+import { Trash2 } from "lucide-react";
+
 import { PlatformCard } from "@/components/ui/PlatformCard";
 import { SocialIcon } from "@/components/ui/SocialIcon";
-import { Trash2 } from "lucide-react";
 
 type Social = {
   platform: string;
@@ -85,13 +86,20 @@ export function StepSocials({
     );
   }
 
+  function remove(
+    platformId: string,
+  ) {
+    onChange(
+      links.filter(
+        (item) =>
+          item.platform !== platformId,
+      ),
+    );
+  }
+
   function normalizedPreview(
     value: string,
   ) {
-    if (!value.trim()) {
-      return "";
-    }
-
     return value.trim();
   }
 
@@ -199,13 +207,7 @@ export function StepSocials({
               <button
                 type="button"
                 onClick={() =>
-                  onChange(
-                    links.filter(
-                      (item) =>
-                        item.platform !==
-                        platform.id,
-                    ),
-                  )
+                  remove(platform.id)
                 }
                 className="rounded-xl p-2 text-red-400 transition hover:bg-red-50 hover:text-red-600"
                 aria-label="Eliminar red social"
@@ -215,45 +217,71 @@ export function StepSocials({
 
             </div>
 
-        {
-          platform.id ===
-          "onlyfans" && (
+            <input
+              value={link.url}
+              onChange={(event) =>
+                update(
+                  platform.id,
+                  event.target.value,
+                )
+              }
+              placeholder={
+                platform.placeholder
+              }
+              className="
+                  mt-5
+                  w-full
+                  rounded-2xl
+                  border
+                  border-[#E5E7EB]
+                  bg-[#FAFAFC]
+                  px-5
+                  py-4
+                  text-[15px]
+                  font-medium
+                  text-slate-700
+                  placeholder:text-slate-500
+                  outline-none
+                  transition-all
+                  focus:border-[#5D5FEF]
+                "
+            />
 
-            <div className="mt-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3">
+            {platform.id ===
+              "onlyfans" && (
 
-              <p className="text-xs font-medium text-amber-700">
-                🔞 Solo selecciona esta plataforma si eres mayor de 18 años.
+                <div className="mt-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3">
+
+                  <p className="text-xs font-medium text-amber-700">
+                    🔞 Solo selecciona esta plataforma si eres mayor de 18 años.
+                  </p>
+
+                </div>
+
+              )}
+
+            {platform.prefix && (
+
+              <p className="mt-3 break-all text-xs text-slate-400">
+
+                {platform.prefix}
+                {normalizedPreview(
+                  link.url,
+                ) ||
+                  platform.placeholder}
+
               </p>
 
-            </div>
+            )}
 
-          )
-        }
+          </div>
 
-        {
-          platform.prefix && (
+        );
 
-            <p className="mt-3 break-all text-xs text-slate-400">
+      })}
 
-              {platform.prefix}
-              {normalizedPreview(
-                link.url,
-              ) ||
-                platform.placeholder}
+    </div>
 
-            </p>
-
-          )
-        }
-
-            </div>
-
-    );
-
-        })}
-
-  </div>
-
-    </section >
+  </section>
   );
 }

@@ -31,7 +31,7 @@ export async function saveProfile({
     username: data.username,
     avatar_url: data.avatarUrl,
     bio: data.bio,
-    visibility: data.visibility,
+    visibility: true,
     onboarding_completed: completeOnboarding,
   });
 

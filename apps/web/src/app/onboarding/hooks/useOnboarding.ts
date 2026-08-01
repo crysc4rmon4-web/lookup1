@@ -17,7 +17,7 @@ const INITIAL_DATA: OnboardingData = {
   fullName: "",
   bio: "",
   interests: [],
-  visibility: true,
+  acceptedTerms: false,
   socialLinks: [],
 };
 
@@ -69,6 +69,9 @@ export function useOnboarding(
 
       case "interests":
         return true;
+
+        case "terms":
+  return data.acceptedTerms;
 
       default:
         return true;

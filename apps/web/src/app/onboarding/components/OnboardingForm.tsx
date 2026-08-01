@@ -8,7 +8,8 @@ import { StepUsername } from "./StepUsername";
 import { StepSocials } from "./StepSocials";
 import { StepBio } from "./StepBio";
 import { StepInterests } from "./StepInterests";
-import { StepVisibility } from "./StepVisibility";
+import { StepReview } from "./StepReview";
+import { StepTerms } from "./StepTerms";
 
 import type {
   OnboardingData,
@@ -140,14 +141,26 @@ export function OnboardingForm({
             />
           )}
 
-          {step === "visibility" && (
-            <StepVisibility
-              visibility={data.visibility}
+          {step === "terms" && (
+            <StepTerms
+              accepted={data.acceptedTerms}
               onChange={(value) =>
                 update({
-                  visibility: value,
+                  acceptedTerms: value,
                 })
               }
+            />
+          )}
+
+          
+
+          {step === "review" && (
+            <StepReview
+              avatarUrl={data.avatarUrl}
+              username={data.username}
+              bio={data.bio}
+              interests={data.interests}
+              socialLinks={data.socialLinks}
             />
           )}
 

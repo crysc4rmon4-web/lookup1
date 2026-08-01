@@ -19,10 +19,10 @@ export async function loadProfile(userId: string): Promise<OnboardingData> {
     username: profile.data?.username ?? "",
     fullName: profile.data?.full_name ?? "",
     bio: profile.data?.bio ?? "",
-    visibility: profile.data?.visibility ?? true,
 
     interests: [],
-
+    acceptedTerms: true,
+    
     socialLinks: links.map((link) => ({
       platform: link.platform,
       url: link.url,
