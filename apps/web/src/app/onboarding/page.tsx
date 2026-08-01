@@ -9,27 +9,39 @@ import { useAuth } from "../../components/auth-provider";
 import { useProfileStatus } from "../../hooks/use-profile-status";
 
 import { OnboardingForm } from "./components/OnboardingForm";
+import { StepWelcome } from "./components/StepWelcome";
+
 import { useOnboarding } from "./hooks/useOnboarding";
 import { saveProfile } from "./services/save-profile";
 
 export default function OnboardingPage() {
   const router = useRouter();
 
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading } =
+    useAuth();
 
   const {
     isProfileComplete,
     loading: profileLoading,
   } = useProfileStatus();
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] =
+    useState(false);
 
-  const onboarding = useOnboarding();
+  const [showWelcome, setShowWelcome] =
+    useState(false);
+
+  const onboarding =
+    useOnboarding();
 
   useEffect(() => {
-    if (authLoading || profileLoading) return;
+    if (authLoading || profileLoading) {
+      return;
+    }
 
-    if (!user) return;
+    if (!user) {
+      return;
+    }
 
     if (isProfileComplete) {
       router.replace("/dashboard");
@@ -42,26 +54,41 @@ export default function OnboardingPage() {
     router,
   ]);
 
-  async function handleAvatar(file: File) {
-    if (!user) return;
+  async function handleAvatar(
+    file: File,
+  ) {
+    if (!user) {
+      return;
+    }
 
     try {
       setLoading(true);
 
-      const url = await uploadAvatar(user.id, file);
+      const url =
+        await uploadAvatar(
+          user.id,
+          file,
+        );
 
       onboarding.update({
         avatarUrl: url,
       });
     } catch {
-      alert("No se pudo subir la imagen.");
+      alert(
+        "No se pudo subir la imagen.",
+      );
     } finally {
       setLoading(false);
     }
   }
 
   async function handleNext() {
-    if (!onboarding.canContinue || loading) return;
+    if (
+      !onboarding.canContinue ||
+      loading
+    ) {
+      return;
+    }
 
     if (
       onboarding.stepIndex <
@@ -71,7 +98,9 @@ export default function OnboardingPage() {
       return;
     }
 
-    if (!user?.email) return;
+    if (!user?.email) {
+      return;
+    }
 
     try {
       setLoading(true);
@@ -83,19 +112,26 @@ export default function OnboardingPage() {
         completeOnboarding: true,
       });
 
-      router.replace("/dashboard");
+      setShowWelcome(true);
+
     } catch (error) {
+
       if (error instanceof Error) {
         alert(error.message);
       } else {
         alert(JSON.stringify(error));
       }
+
     } finally {
+
       setLoading(false);
+
     }
   }
-
-  if (authLoading || profileLoading) {
+  if (
+    authLoading ||
+    profileLoading
+  ) {
     return (
       <main className="flex min-h-screen items-center justify-center">
         Cargando...
@@ -107,7 +143,27 @@ export default function OnboardingPage() {
     return null;
   }
 
+  if (showWelcome) {
+    return (
+      <main className="min-h-screen bg-[#F7F8FC] px-6 py-10">
+
+        <section className="mx-auto flex min-h-[85vh] w-full max-w-[430px] items-center">
+
+          <StepWelcome
+            fullName={onboarding.data.fullName}
+            onFinish={() =>
+              router.replace("/dashboard")
+            }
+          />
+
+        </section>
+
+      </main>
+    );
+  }
+
   return (
+
     <OnboardingForm
       step={onboarding.step}
       stepIndex={onboarding.stepIndex}
@@ -121,5 +177,6 @@ export default function OnboardingPage() {
       onBack={onboarding.previous}
       onNext={handleNext}
     />
+
   );
 }

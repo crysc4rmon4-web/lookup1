@@ -73,8 +73,7 @@ export function useOnboarding(
       case "terms":
         return data.acceptedTerms;
 
-      case "welcome":
-        return true;
+      
 
       default:
         return true;

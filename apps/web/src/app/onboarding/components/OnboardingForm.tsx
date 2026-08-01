@@ -10,7 +10,6 @@ import { StepBio } from "./StepBio";
 import { StepInterests } from "./StepInterests";
 import { StepReview } from "./StepReview";
 import { StepTerms } from "./StepTerms";
-import { StepWelcome } from "./StepWelcome";
 
 import type {
   OnboardingData,
@@ -59,54 +58,34 @@ export function OnboardingForm({
   isEditing = false,
   onCancel,
 }: Props) {
-
-  const isWelcome =
-    step === "welcome";
-
   return (
     <main className="min-h-screen bg-[#F7F8FC] px-6 py-10">
 
       <section className="mx-auto w-full max-w-[430px]">
 
-        {!isWelcome && (
+        <p className="text-xs font-black uppercase tracking-[0.35em] text-slate-400">
+          LOOKUP
+        </p>
 
-          <>
+        <h1 className="mt-2 text-4xl font-black italic text-[#5D5FEF]">
+          {isEditing
+            ? "Editar perfil"
+            : "Completa tu perfil"}
+        </h1>
 
-            <p className="text-xs font-black uppercase tracking-[0.35em] text-slate-400">
-              LOOKUP
-            </p>
+        <p className="mt-3 text-sm text-slate-500">
+          Paso {stepIndex + 1} de {totalSteps}
+        </p>
 
-            <h1 className="mt-2 text-4xl font-black italic text-[#5D5FEF]">
+        <div className="mt-6">
 
-              {isEditing
-                ? "Editar perfil"
-                : "Completa tu perfil"}
+          <ProgressBar
+            progress={progress}
+          />
 
-            </h1>
+        </div>
 
-            <p className="mt-3 text-sm text-slate-500">
-              Paso {stepIndex + 1} de {totalSteps}
-            </p>
-
-            <div className="mt-6">
-
-              <ProgressBar
-                progress={progress}
-              />
-
-            </div>
-
-          </>
-
-        )}
-
-        <div
-          className={
-            isWelcome
-              ? "mt-8"
-              : "mt-10 rounded-[2rem] bg-white p-8 shadow-sm"
-          }
-        >
+        <div className="mt-10 rounded-[2rem] bg-white p-8 shadow-sm">
 
           {step === "photo" && (
 
@@ -201,41 +180,28 @@ export function OnboardingForm({
 
           )}
 
-          {step === "welcome" && (
-
-            <StepWelcome
-              fullName={data.fullName}
-              onFinish={onNext}
-            />
-
-          )}
-
         </div>
 
-        {!isWelcome && (
-
-          <Navigation
-            canGoBack={
-              stepIndex > 0 &&
-              !loading
-            }
-            canContinue={
-              canContinue &&
-              !loading
-            }
-            isLastStep={
-              stepIndex ===
-              totalSteps - 1
-            }
-            onBack={onBack}
-            onNext={onNext}
-            isEditing={isEditing}
-            {...(onCancel
-              ? { onCancel }
-              : {})}
-          />
-
-        )}
+        <Navigation
+          canGoBack={
+            stepIndex > 0 &&
+            !loading
+          }
+          canContinue={
+            canContinue &&
+            !loading
+          }
+          isLastStep={
+            stepIndex ===
+            totalSteps - 1
+          }
+          onBack={onBack}
+          onNext={onNext}
+          isEditing={isEditing}
+          {...(onCancel
+            ? { onCancel }
+            : {})}
+        />
 
       </section>
 
