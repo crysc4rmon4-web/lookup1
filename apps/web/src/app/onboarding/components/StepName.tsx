@@ -10,21 +10,53 @@ export function StepName({
   onChange,
 }: StepNameProps) {
   return (
-    <section className="flex flex-col">
-      <h2 className="text-3xl font-black text-slate-900">
-        Tu nombre
-      </h2>
+    <section className="flex min-h-[560px] flex-col">
 
-      <p className="mt-2 text-slate-500">
-        Es el nombre que verán los demás usuarios.
-      </p>
+      <div>
 
-      <input
-        value={fullName}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder="Cristian Carmona"
-        className="mt-10 rounded-2xl border border-slate-200 p-5 text-lg outline-none focus:border-[#5D5FEF]"
-      />
+        <p className="text-xs font-black uppercase tracking-[0.3em] text-[#5D5FEF]">
+          PERFIL
+        </p>
+
+        <h2 className="mt-4 text-4xl font-black leading-tight text-[#111827]">
+          Tu nombre
+        </h2>
+
+        <p className="mt-4 text-base leading-7 text-slate-500">
+          Este será el nombre que verán las demás personas.
+        </p>
+
+      </div>
+
+      <div className="mt-14">
+
+        <input
+          value={fullName}
+          onChange={(e) =>
+            onChange(e.target.value)
+          }
+          placeholder="Cristian Carmona"
+          autoComplete="name"
+          className="
+            w-full
+            rounded-3xl
+            border
+            border-[#E5E7EB]
+            bg-white
+            px-6
+            py-5
+            text-lg
+            font-semibold
+            text-[#1F2937]
+            outline-none
+            transition-all
+            placeholder:text-slate-400
+            focus:border-[#5D5FEF]
+          "
+        />
+
+      </div>
+
     </section>
   );
 }

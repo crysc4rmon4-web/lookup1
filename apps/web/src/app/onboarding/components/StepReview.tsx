@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-
+import { INTEREST_OPTIONS } from "@lookup/config";
 import {
   Globe,
   Camera,
@@ -34,6 +34,13 @@ export function StepReview({
   const hasInterests =
     interests.length > 0;
 
+  function getInterestLabel(id: string) {
+    return (
+      INTEREST_OPTIONS.find(
+        (interest) => interest.id === id,
+      )?.label ?? id
+    );
+  }
   return (<section className="flex min-h-[560px] flex-col">
 
     <div>
@@ -161,7 +168,7 @@ export function StepReview({
                   key={interest}
                   className="rounded-full border border-[#E5E7EB] bg-slate-50 px-4 py-2 text-xs font-semibold text-slate-700"
                 >
-                  {interest}
+                  {getInterestLabel(interest)}
                 </span>
 
               ))

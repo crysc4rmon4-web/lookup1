@@ -61,8 +61,8 @@ export function useOnboarding(
       case "photo":
         return true;
 
-      case "username":
-        return data.username.trim().length >= 3;
+      case "name":
+        return data.fullName.trim().length >= 2;
 
       case "bio":
         return true;
@@ -70,8 +70,11 @@ export function useOnboarding(
       case "interests":
         return true;
 
-        case "terms":
-  return data.acceptedTerms;
+      case "terms":
+        return data.acceptedTerms;
+
+      case "welcome":
+        return true;
 
       default:
         return true;

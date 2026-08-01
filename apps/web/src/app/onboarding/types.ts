@@ -1,16 +1,16 @@
 export type OnboardingStep =
   | "photo"
-  | "username"
+  | "name"
   | "socials"
   | "bio"
   | "interests"
   | "review"
   | "terms"
-  | "welcome";;
+  | "welcome";
 
 export const ONBOARDING_STEPS: OnboardingStep[] = [
   "photo",
-  "username",
+  "name",
   "socials",
   "bio",
   "interests",

@@ -20,109 +20,33 @@ import {
   Users,
 } from "lucide-react";
 
-type Interest = {
-  id: string;
-  label: string;
-  icon: React.ReactNode;
-};
+import { INTEREST_OPTIONS } from "@lookup/config";
 
-const OPTIONS: Interest[] = [
-  {
-    id: "gym",
-    label: "Gym",
-    icon: <Dumbbell size={18} />,
-  },
-  {
-    id: "running",
-    label: "Running",
-    icon: <Trophy size={18} />,
-  },
-  {
-    id: "cycling",
-    label: "Ciclismo",
-    icon: <Bike size={18} />,
-  },
-  {
-    id: "travel",
-    label: "Viajes",
-    icon: <Plane size={18} />,
-  },
-  {
-    id: "coffee",
-    label: "Café",
-    icon: <Coffee size={18} />,
-  },
-  {
-    id: "food",
-    label: "Gastronomía",
-    icon: <Pizza size={18} />,
-  },
-  {
-    id: "photography",
-    label: "Fotografía",
-    icon: <Camera size={18} />,
-  },
-  {
-    id: "technology",
-    label: "Tecnología",
-    icon: <Laptop size={18} />,
-  },
-  {
-    id: "programming",
-    label: "Programación",
-    icon: <Laptop size={18} />,
-  },
-  {
-    id: "gaming",
-    label: "Gaming",
-    icon: <Gamepad2 size={18} />,
-  },
-  {
-    id: "music",
-    label: "Música",
-    icon: <Music4 size={18} />,
-  },
-  {
-    id: "cinema",
-    label: "Cine",
-    icon: <Film size={18} />,
-  },
-  {
-    id: "books",
-    label: "Libros",
-    icon: <BookOpen size={18} />,
-  },
-  {
-    id: "entrepreneurship",
-    label: "Emprendimiento",
-    icon: <BriefcaseBusiness size={18} />,
-  },
-  {
-    id: "pets",
-    label: "Mascotas",
-    icon: <PawPrint size={18} />,
-  },
-  {
-    id: "sports",
-    label: "Deportes",
-    icon: <Trophy size={18} />,
-  },
-  {
-    id: "networking",
-    label: "Networking",
-    icon: <Users size={18} />,
-  },
-  {
-    id: "volunteering",
-    label: "Voluntariado",
-    icon: <HeartHandshake size={18} />,
-  },
-  {
-    id: "nature",
-    label: "Naturaleza",
-    icon: <Map size={18} />,
-  },
-];
+const INTEREST_ICONS = {
+  gym: <Dumbbell size={18} />,
+  running: <Trophy size={18} />,
+  cycling: <Bike size={18} />,
+  travel: <Plane size={18} />,
+  coffee: <Coffee size={18} />,
+  food: <Pizza size={18} />,
+  photography: <Camera size={18} />,
+  technology: <Laptop size={18} />,
+  programming: <Laptop size={18} />,
+  gaming: <Gamepad2 size={18} />,
+  music: <Music4 size={18} />,
+  cinema: <Film size={18} />,
+  books: <BookOpen size={18} />,
+  entrepreneurship: (
+    <BriefcaseBusiness size={18} />
+  ),
+  pets: <PawPrint size={18} />,
+  sports: <Trophy size={18} />,
+  networking: <Users size={18} />,
+  volunteering: (
+    <HeartHandshake size={18} />
+  ),
+  nature: <Map size={18} />,
+} as const;
 
 type Props = {
   interests: string[];
@@ -150,84 +74,91 @@ export function StepInterests({
     ]);
   }
 
-  return (<section className="flex min-h-[560px] flex-col">
+  return (
+    <section className="flex min-h-[560px] flex-col">
 
-    <div>
+      <div>
 
-      <p className="text-xs font-black uppercase tracking-[0.3em] text-[#5D5FEF]">
-        INTERESES
-      </p>
+        <p className="text-xs font-black uppercase tracking-[0.3em] text-[#5D5FEF]">
+          INTERESES
+        </p>
 
-      <h2 className="mt-4 text-4xl font-black leading-tight text-[#111827]">
-        ¿Qué te interesa?
-      </h2>
+        <h2 className="mt-4 text-4xl font-black leading-tight text-[#111827]">
+          ¿Qué te interesa?
+        </h2>
 
-      <p className="mt-4 text-base leading-7 text-slate-500">
-        Selecciona los temas que mejor te representan. Esto ayudará a mostrarte personas y eventos más relevantes para ti.
-      </p>
+        <p className="mt-4 text-base leading-7 text-slate-500">
+          Selecciona los temas que mejor te representan.
+          Esto ayudará a mostrarte personas y eventos
+          más relevantes para ti.
+        </p>
 
-    </div>
+      </div>
 
-    <div className="mt-12 flex flex-wrap gap-3">
+      <div className="mt-12 flex flex-wrap gap-3">
 
-      {OPTIONS.map((option) => {
+        {INTEREST_OPTIONS.map((option) => {
 
-        const active =
-          interests.includes(option.id);
+          const active =
+            interests.includes(option.id);
 
-        return (
+          return (
 
-          <button
-            key={option.id}
-            type="button"
-            onClick={() =>
-              toggle(option.id)
-            }
-            className={[
-              "flex items-center gap-2 rounded-full border px-5 py-3 transition-all duration-200",
-              active
-                ? "border-[#5D5FEF] bg-[#5D5FEF] text-white shadow-sm"
-                : "border-[#E5E7EB] bg-white text-slate-700 hover:border-[#5D5FEF]",
-            ].join(" ")}
-          >
-
-            <span
-              className={
-                active
-                  ? "text-white"
-                  : "text-slate-500"
+            <button
+              key={option.id}
+              type="button"
+              onClick={() =>
+                toggle(option.id)
               }
+              className={[
+                "flex items-center gap-2 rounded-full border px-5 py-3 transition-all duration-200",
+                active
+                  ? "border-[#5D5FEF] bg-[#5D5FEF] text-white shadow-sm"
+                  : "border-[#E5E7EB] bg-white text-slate-700 hover:border-[#5D5FEF]",
+              ].join(" ")}
             >
-              {option.icon}
-            </span>
 
-            <span className="text-sm font-semibold">
-              {option.label}
-            </span>
+              <span
+                className={
+                  active
+                    ? "text-white"
+                    : "text-slate-500"
+                }
+              >
+                {
+                  INTEREST_ICONS[
+                  option.id as keyof typeof INTEREST_ICONS
+                  ]
+                }
+              </span>
 
-          </button>
+              <span className="text-sm font-semibold">
+                {option.label}
+              </span>
 
-        );
+            </button>
 
-      })}
+          );
 
-    </div>
+        })}
 
-    <div className="mt-auto pt-8">
+      </div>
 
-      <p className="text-sm text-slate-500">
+      <div className="mt-auto pt-8">
 
-        {interests.length === 0
-          ? "Puedes continuar sin seleccionar intereses."
-          : `${interests.length} ${interests.length === 1
-            ? "interés seleccionado"
-            : "intereses seleccionados"
-          }`}
+        <p className="text-sm text-slate-500">
 
-      </p>
+          {interests.length === 0
+            ? "Puedes continuar sin seleccionar intereses."
+            : `${interests.length} ${interests.length === 1
+              ? "interés seleccionado"
+              : "intereses seleccionados"
+            }`}
 
-    </div>
+        </p>
 
-  </section>
+      </div>
+
+    </section>
   );
 }
