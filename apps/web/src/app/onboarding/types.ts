@@ -1,7 +1,6 @@
 export type OnboardingStep =
   | "photo"
   | "username"
-  | "name"
   | "socials"
   | "bio"
   | "interests"
@@ -10,7 +9,6 @@ export type OnboardingStep =
 export const ONBOARDING_STEPS: OnboardingStep[] = [
   "photo",
   "username",
-  "name",
   "socials",
   "bio",
   "interests",

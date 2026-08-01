@@ -5,7 +5,6 @@ import { ProgressBar } from "./ProgressBar";
 
 import { StepPhoto } from "./StepPhoto";
 import { StepUsername } from "./StepUsername";
-import { StepName } from "./StepName";
 import { StepSocials } from "./StepSocials";
 import { StepBio } from "./StepBio";
 import { StepInterests } from "./StepInterests";
@@ -106,16 +105,7 @@ export function OnboardingForm({
             />
           )}
 
-          {step === "name" && (
-            <StepName
-              fullName={data.fullName}
-              onChange={(value) =>
-                update({
-                  fullName: value,
-                })
-              }
-            />
-          )}
+
 
           {step === "socials" && (
             <StepSocials

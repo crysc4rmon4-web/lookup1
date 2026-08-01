@@ -64,14 +64,11 @@ export function useOnboarding(
       case "username":
         return data.username.trim().length >= 3;
 
-      case "name":
-        return data.fullName.trim().length >= 3;
-
       case "bio":
-        return data.bio.trim().length >= 10;
+        return true;
 
       case "interests":
-        return data.interests.length > 0;
+        return true;
 
       default:
         return true;

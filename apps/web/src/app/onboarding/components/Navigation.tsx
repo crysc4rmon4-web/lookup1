@@ -1,3 +1,8 @@
+import {
+  ArrowLeft,
+  ArrowRight,
+} from "lucide-react";
+
 type NavigationProps = {
   canGoBack: boolean;
   canContinue: boolean;
@@ -6,16 +11,8 @@ type NavigationProps = {
   onBack: () => void;
   onNext: () => void;
 
-  /**
-   * Modo edición de perfil.
-   * En este modo el último botón cambia a
-   * "Guardar cambios" y aparece "Cancelar".
-   */
   isEditing?: boolean;
 
-  /**
-   * Acción al cancelar la edición.
-   */
   onCancel?: () => void;
 };
 
@@ -28,26 +25,32 @@ export function Navigation({
   isEditing = false,
   onCancel,
 }: NavigationProps) {
+  const showCancel =
+    isEditing && !canGoBack;
+
+  const showBack =
+    canGoBack;
+
   return (
     <div className="mt-10 flex gap-3">
 
-      {isEditing && (
+      {showCancel && (
         <button
           type="button"
           onClick={onCancel}
-          className="flex-1 rounded-2xl border border-slate-200 bg-white py-4 font-bold text-slate-700 transition hover:bg-slate-50"
+          className="flex flex-1 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white py-4 font-semibold text-slate-700 transition hover:bg-slate-50"
         >
           Cancelar
         </button>
       )}
 
-      {!isEditing && (
+      {showBack && (
         <button
           type="button"
           onClick={onBack}
-          disabled={!canGoBack}
-          className="flex-1 rounded-2xl border border-slate-200 bg-white py-4 font-bold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40"
+          className="flex flex-1 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white py-4 font-semibold text-slate-700 transition hover:bg-slate-50"
         >
+          <ArrowLeft size={18} />
           Atrás
         </button>
       )}
@@ -56,7 +59,7 @@ export function Navigation({
         type="button"
         onClick={onNext}
         disabled={!canContinue}
-        className="flex-1 rounded-2xl bg-[#5D5FEF] py-4 font-bold text-white transition hover:bg-[#4b4de2] disabled:cursor-not-allowed disabled:opacity-40"
+        className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-[#5D5FEF] py-4 font-semibold text-white transition hover:bg-[#4B4DE2] disabled:cursor-not-allowed disabled:opacity-40"
       >
         {isEditing
           ? isLastStep
@@ -65,6 +68,8 @@ export function Navigation({
           : isLastStep
             ? "Finalizar"
             : "Continuar"}
+
+        <ArrowRight size={18} />
       </button>
 
     </div>
