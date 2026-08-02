@@ -1,10 +1,10 @@
 "use client";
 
-import { NearbyProfileCard } from "./NearbyProfileCard";
-
 import type {
   NearbyProfile,
 } from "@lookup/types";
+
+import { NearbyProfileCard } from "./NearbyProfileCard";
 
 type Props = {
   enabled: boolean;
@@ -20,14 +20,14 @@ export function NearbyProfiles({
 
     return (
 
-      <section className="rounded-[2rem] bg-white p-12 text-center shadow-sm">
+      <section className="rounded-[2rem] border border-[#ECEFF5] bg-white p-8 text-center shadow-sm">
 
-        <h2 className="text-2xl font-black text-slate-900">
+        <h2 className="text-xl font-black text-slate-900">
           Radar desactivado
         </h2>
 
-        <p className="mt-3 text-slate-500">
-          Activa el radar para descubrir personas cerca de ti.
+        <p className="mt-2 text-sm text-slate-500">
+          Activa el radar para comenzar a detectar personas.
         </p>
 
       </section>
@@ -38,25 +38,21 @@ export function NearbyProfiles({
 
   return (
 
-    <section className="space-y-5">
+    <section className="-mt-1 space-y-4">
 
-      <div className="flex items-center justify-between">
+      <div className="flex items-end justify-between px-1">
 
         <div>
 
-          <p className="text-xs font-black uppercase tracking-[0.28em] text-[#5D5FEF]">
+          <p className="text-[11px] font-black uppercase tracking-[0.30em] text-slate-400">
             PERSONAS CERCA
           </p>
 
-          <h2 className="mt-1 text-2xl font-black text-slate-900">
-            Cerca de ti
-          </h2>
-
         </div>
 
-        <span className="rounded-full bg-[#EEF2FF] px-3 py-1 text-sm font-bold text-[#5D5FEF]">
+        <span className="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-300">
 
-          {profiles.length}
+          Actualizado ahora
 
         </span>
 
@@ -64,14 +60,28 @@ export function NearbyProfiles({
 
       {profiles.length === 0 && (
 
-        <div className="rounded-[2rem] border border-dashed border-slate-200 bg-white p-10 text-center">
+        <div
+          className="
+            rounded-[28px]
+            border
+            border-dashed
+            border-[#E8ECF4]
+            bg-white
+            px-8
+            py-8
+            text-center
+            shadow-sm
+          "
+        >
 
-          <p className="text-lg font-bold text-slate-700">
+          <p className="text-base font-black text-slate-700">
             No hay personas cerca
           </p>
 
-          <p className="mt-2 text-sm text-slate-500">
-            Sigue con el radar activo para detectar nuevos usuarios.
+          <p className="mt-2 text-sm leading-6 text-slate-500">
+            Mantén el radar activo.
+            <br />
+            Los nuevos usuarios aparecerán automáticamente.
           </p>
 
         </div>

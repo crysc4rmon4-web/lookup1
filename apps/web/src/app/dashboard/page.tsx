@@ -20,7 +20,6 @@ import { useSyncLocation } from "../../hooks/use-sync-location";
 
 import { useRadar } from "./hooks/useRadar";
 
-
 import { DashboardHeader } from "./components/DashboardHeader";
 import { RadarView } from "./components/RadarView";
 
@@ -128,6 +127,7 @@ export default function DashboardPage() {
     void loadLinks();
 
   }, [profile]);
+
   const events: EventCard[] = [];
 
   if (
@@ -147,23 +147,19 @@ export default function DashboardPage() {
   if (!profile) {
     return null;
   }
-
   return (
-    <main className="min-h-screen bg-[#F4F6FB] px-4 py-4 pb-28">
 
-      <section className="mx-auto flex w-full max-w-[430px] flex-col gap-5">
+  <main className="min-h-screen bg-[#F4F6FB] px-4 py-5 pb-28">
 
-        <DashboardHeader
-          section={section}
-          profileVisible={profileVisible}
-          onToggleVisibility={() =>
-            setProfileVisible(
-              (value) => !value,
-            )
-          }
-        />
+    <section className="mx-auto flex w-full max-w-[430px] flex-col gap-4">
 
-        {section === "radar" && (
+      {section === "radar" ? (
+
+        <div className="space-y-2">
+
+          <DashboardHeader
+            section={section}
+          />
 
           <RadarView
             enabled={radarEnabled}
@@ -176,61 +172,72 @@ export default function DashboardPage() {
             onRefresh={refresh}
           />
 
-        )}
+        </div>
 
-        {section === "events" && (
+      ) : (
 
-          <EventsView
-            events={events}
-            onCreateEvent={() =>
-              console.log(
-                "Crear evento",
-              )
-            }
-            onJoinEvent={(id) =>
-              console.log(
-                "Unirse",
-                id,
-              )
-            }
-          />
+        <DashboardHeader
+          section={section}
+        />
 
-        )}
+      )}
 
-        {section === "settings" && (
+      {section === "events" && (
 
-          <SettingsView
-            profile={profile}
-            links={profileLinks}
-            profileVisible={profileVisible}
-            onToggleVisibility={() =>
-              setProfileVisible(
-                (value) => !value,
-              )
-            }
-            onEditProfile={() =>
-              router.push(
-                "/profile/edit",
-              )
-            }
-            onLogout={async () => {
-              await signOut();
+        <EventsView
+          events={events}
+          onCreateEvent={() =>
+            console.log(
+              "Crear evento",
+            )
+          }
+          onJoinEvent={(id) =>
+            console.log(
+              "Unirse",
+              id,
+            )
+          }
+        />
 
-              router.replace(
-                "/login/signup",
-              );
-            }}
-          />
+      )}
 
-        )}
+      {section === "settings" && (
 
-      </section>
+        <SettingsView
+          profile={profile}
+          links={profileLinks}
+          profileVisible={profileVisible}
+          onToggleVisibility={() =>
+            setProfileVisible(
+              (value) => !value,
+            )
+          }
+          onEditProfile={() =>
+            router.push(
+              "/profile/edit",
+            )
+          }
+          onLogout={async () => {
 
-      <BottomNav
-        active={section}
-        onChange={setSection}
-      />
+            await signOut();
 
-    </main>
-  );
+            router.replace(
+              "/login/signup",
+            );
+
+          }}
+        />
+
+      )}
+
+    </section>
+
+    <BottomNav
+      active={section}
+      onChange={setSection}
+    />
+
+  </main>
+
+);
 }
