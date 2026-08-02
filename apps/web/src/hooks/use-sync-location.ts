@@ -2,12 +2,19 @@
 
 import { useEffect } from "react";
 
-import { updateMyLocation } from "@lookup/services";
-
 import { useAuth } from "../components/auth-provider";
+
+import { updateLocation } from "../services/location/update-location";
+
 import { useLocation } from "./use-location";
 
-export function useSyncLocation() {
+type Props = {
+  enabled: boolean;
+};
+
+export function useSyncLocation({
+  enabled,
+}: Props) {
   const { user } = useAuth();
 
   const {
@@ -18,6 +25,10 @@ export function useSyncLocation() {
   } = useLocation();
 
   useEffect(() => {
+    if (!enabled) {
+      return;
+    }
+
     if (
       loading ||
       !user ||
@@ -27,13 +38,14 @@ export function useSyncLocation() {
       return;
     }
 
-    void updateMyLocation(
+    void updateLocation(
       user.id,
       latitude,
       longitude,
       accuracy ?? undefined,
     );
   }, [
+    enabled,
     user,
     latitude,
     longitude,

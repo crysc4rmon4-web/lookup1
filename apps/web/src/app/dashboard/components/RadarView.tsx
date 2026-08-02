@@ -1,19 +1,22 @@
 "use client";
 
-import { useState } from "react";
-
 import type {
   ProfileLink,
   ProfileRow,
 } from "@lookup/services";
 
 import { RadarCanvas } from "../../../components/RadarCanvas";
+
 import { NearbyProfiles } from "./NearbyProfiles";
 import { RadarTopBar } from "./RadarTopBar";
 
 type RadarViewProps = {
+  enabled: boolean;
+  onToggle: () => void;
+
   profiles: ProfileRow[];
   links: Record<string, ProfileLink[]>;
+
   currentIndex: number;
 
   onSkip: () => void;
@@ -21,17 +24,13 @@ type RadarViewProps = {
 };
 
 export function RadarView({
+  enabled,
+  onToggle,
   profiles,
-  currentIndex,
-  onSkip,
-  onConnect,
 }: RadarViewProps) {
 
-  const [enabled, setEnabled] =
-    useState(true);
-
   const profile =
-    profiles[currentIndex];
+    profiles[0];
 
   function refreshRadar() {
     console.log(
@@ -47,14 +46,8 @@ export function RadarView({
         enabled={enabled}
         radius={25}
         nearbyCount={profiles.length}
-        onToggle={() =>
-          setEnabled(
-            (value) => !value,
-          )
-        }
-        onRefresh={
-          refreshRadar
-        }
+        onToggle={onToggle}
+        onRefresh={refreshRadar}
       />
 
       {!profile && (
@@ -62,15 +55,11 @@ export function RadarView({
         <div className="rounded-[2rem] bg-white p-10 text-center shadow-sm">
 
           <h2 className="text-2xl font-black">
-
             No hay personas cerca
-
           </h2>
 
           <p className="mt-3 text-slate-500">
-
             Cuando alguien entre en tu radio aparecerá aquí.
-
           </p>
 
         </div>

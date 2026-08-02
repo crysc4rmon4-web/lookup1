@@ -1,21 +1,30 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import {
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+
 import { useRouter } from "next/navigation";
 
 import { BottomNav } from "../../components/bottom-nav";
 import { useAuth } from "../../components/auth-provider";
 
+import { useProfileStatus } from "../../hooks/use-profile-status";
+import { useSyncLocation } from "../../hooks/use-sync-location";
+
+import { useRadar } from "./hooks/useRadar";
+
 import { DashboardHeader } from "./components/DashboardHeader";
 import { RadarView } from "./components/RadarView";
+
 import {
   EventsView,
   type EventCard,
 } from "./components/EventsView";
-import { SettingsView } from "./components/SettingsView";
 
-import { useProfileStatus } from "../../hooks/use-profile-status";
-import { useRadar } from "./hooks/useRadar";
+import { SettingsView } from "./components/SettingsView";
 
 type Section =
   | "radar"
@@ -23,31 +32,48 @@ type Section =
   | "settings";
 
 export default function DashboardPage() {
-  const router = useRouter();
+  const router =
+    useRouter();
 
-  const { signOut } = useAuth();
+  const { signOut } =
+    useAuth();
 
   const {
     user,
     profile,
     loading,
     needsOnboarding,
-  } = useProfileStatus();
+  } =
+    useProfileStatus();
 
   const {
     profiles,
     links,
     profilesLoading,
-  } = useRadar();
+  } =
+    useRadar();
 
   const [section, setSection] =
     useState<Section>("radar");
 
-  const [profileVisible, setProfileVisible] =
-    useState(true);
+  const [
+    radarEnabled,
+    setRadarEnabled,
+  ] = useState(true);
 
-  const [currentIndex, setCurrentIndex] =
-    useState(0);
+  const [
+    profileVisible,
+    setProfileVisible,
+  ] = useState(true);
+
+  const [
+    currentIndex,
+    setCurrentIndex,
+  ] = useState(0);
+
+  useSyncLocation({
+    enabled: radarEnabled,
+  });
 
   useEffect(() => {
     if (loading) return;
@@ -138,14 +164,22 @@ export default function DashboardPage() {
             setProfileVisible((v) => !v)
           }
         />
-                {section === "radar" && (
+        {section === "radar" && (
+
           <RadarView
+            enabled={radarEnabled}
+            onToggle={() =>
+              setRadarEnabled(
+                (value) => !value,
+              )
+            }
             profiles={profiles}
             links={links}
             currentIndex={currentIndex}
             onSkip={handleSkip}
             onConnect={handleConnect}
           />
+
         )}
 
         {section === "events" && (

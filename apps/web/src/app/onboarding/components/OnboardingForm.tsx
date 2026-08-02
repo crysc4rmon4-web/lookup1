@@ -5,6 +5,7 @@ import { ProgressBar } from "./ProgressBar";
 
 import { StepPhoto } from "./StepPhoto";
 import { StepName } from "./StepName";
+import { StepProfession } from "./StepProfession";
 import { StepSocials } from "./StepSocials";
 import { StepBio } from "./StepBio";
 import { StepInterests } from "./StepInterests";
@@ -116,6 +117,19 @@ export function OnboardingForm({
 
           )}
 
+          {step === "profession" && (
+
+            <StepProfession
+              profession={data.profession}
+              onChange={(value) =>
+                update({
+                  profession: value,
+                })
+              }
+            />
+
+          )}
+
           {step === "socials" && (
 
             <StepSocials
@@ -129,7 +143,7 @@ export function OnboardingForm({
 
           )}
 
-                    {step === "bio" && (
+          {step === "bio" && (
 
             <StepBio
               bio={data.bio}
@@ -161,6 +175,7 @@ export function OnboardingForm({
               avatarUrl={data.avatarUrl}
               fullName={data.fullName}
               username={data.username}
+              profession={data.profession}
               bio={data.bio}
               interests={data.interests}
               socialLinks={data.socialLinks}

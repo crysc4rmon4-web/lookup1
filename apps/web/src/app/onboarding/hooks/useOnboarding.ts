@@ -15,6 +15,7 @@ const INITIAL_DATA: OnboardingData = {
   avatarUrl: "",
   username: "",
   fullName: "",
+  profession: "",
   bio: "",
   interests: [],
   acceptedTerms: false,
@@ -64,6 +65,9 @@ export function useOnboarding(
       case "name":
         return data.fullName.trim().length >= 2;
 
+      case "profession":
+        return true;
+
       case "bio":
         return true;
 
@@ -73,7 +77,7 @@ export function useOnboarding(
       case "terms":
         return data.acceptedTerms;
 
-      
+
 
       default:
         return true;

@@ -18,6 +18,7 @@ export async function loadProfile(userId: string): Promise<OnboardingData> {
     avatarUrl: profile.data?.avatar_url ?? "",
     username: profile.data?.username ?? "",
     fullName: profile.data?.full_name ?? "",
+    profession: profile.data?.profession ?? "",
     bio: profile.data?.bio ?? "",
 
     interests: [],

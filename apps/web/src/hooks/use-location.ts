@@ -1,68 +1,98 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useState,
+} from "react";
+
+import {
+  getCurrentLocation,
+  type UserLocation,
+} from "../services/location/get-current-location";
+
+import { watchLocation } from "../services/location/watch-location";
+
+import { stopWatchLocation } from "../services/location/stop-watch-location";
 
 type LocationState = {
-  latitude: number | null;
-  longitude: number | null;
-  accuracy: number | null;
+  location: UserLocation | null;
   loading: boolean;
   error: string | null;
 };
 
 export function useLocation() {
-  const [location, setLocation] = useState<LocationState>({
-    latitude: null,
-    longitude: null,
-    accuracy: null,
-    loading: true,
-    error: null,
-  });
+  const [state, setState] =
+    useState<LocationState>({
+      location: null,
+      loading: true,
+      error: null,
+    });
 
   useEffect(() => {
-    if (!navigator.geolocation) {
-      setLocation({
-        latitude: null,
-        longitude: null,
-        accuracy: null,
-        loading: false,
-        error: "Geolocalización no soportada.",
-      });
+    let watchId: number | null = null;
 
-      return;
+    async function initialize() {
+      try {
+        const location =
+          await getCurrentLocation();
+
+        setState({
+          location,
+          loading: false,
+          error: null,
+        });
+
+        watchId =
+          watchLocation(
+            (nextLocation) => {
+              setState({
+                location:
+                  nextLocation,
+                loading: false,
+                error: null,
+              });
+            },
+          );
+      } catch (error) {
+        setState({
+          location: null,
+          loading: false,
+          error:
+            error instanceof Error
+              ? error.message
+              : "No se pudo obtener la ubicación.",
+        });
+      }
     }
 
-    const watchId =
-      navigator.geolocation.watchPosition(
-        (position) => {
-          setLocation({
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-            accuracy: position.coords.accuracy,
-            loading: false,
-            error: null,
-          });
-        },
-        (error) => {
-          setLocation({
-            latitude: null,
-            longitude: null,
-            accuracy: null,
-            loading: false,
-            error: error.message,
-          });
-        },
-        {
-          enableHighAccuracy: true,
-          maximumAge: 5000,
-          timeout: 10000,
-        },
-      );
+    void initialize();
 
     return () => {
-      navigator.geolocation.clearWatch(watchId);
+      if (watchId !== null) {
+        stopWatchLocation(
+          watchId,
+        );
+      }
     };
   }, []);
 
-  return location;
+  return {
+    location: state.location,
+
+    latitude:
+      state.location?.latitude ??
+      null,
+
+    longitude:
+      state.location?.longitude ??
+      null,
+
+    accuracy:
+      state.location?.accuracy ??
+      null,
+
+    loading: state.loading,
+
+    error: state.error,
+  };
 }
