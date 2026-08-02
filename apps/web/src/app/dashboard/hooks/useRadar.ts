@@ -1,6 +1,10 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 
 import type {
   NearbyProfile,
@@ -18,61 +22,141 @@ type RadarState = {
 };
 
 export function useRadar(): RadarState {
-  const { user } = useAuth();
+
+  const { user } =
+    useAuth();
 
   const {
     latitude,
     longitude,
     loading: locationLoading,
-  } = useLocation();
+  } =
+    useLocation();
 
-  const [profiles, setProfiles] = useState<NearbyProfile[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [
+    profiles,
+    setProfiles,
+  ] =
+    useState<NearbyProfile[]>([]);
 
-  const refresh = useCallback(async () => {
-    if (
-      !user ||
-      latitude === null ||
-      longitude === null
-    ) {
-      setProfiles([]);
-      setLoading(false);
-      return;
-    }
+  const [
+    loading,
+    setLoading,
+  ] =
+    useState(true);
 
-    try {
-      setLoading(true);
+  const refresh =
+    useCallback(async () => {
 
-      const nearby = await loadNearbyProfiles({
-        currentUserId: user.id,
-        latitude,
-        longitude,
-      });
+      if (
+        !user ||
+        latitude === null ||
+        longitude === null
+      ) {
 
-      setProfiles(nearby as NearbyProfile[]);
-    } finally {
-      setLoading(false);
-    }
-  }, [
-    user,
-    latitude,
-    longitude,
-  ]);
+        console.log(
+          "⛔ Radar cancelado",
+        );
+
+        setProfiles([]);
+        setLoading(false);
+
+        return;
+
+      }
+
+      try {
+
+        setLoading(true);
+
+        console.group("🛰️ Radar Refresh");
+
+        console.log("Usuario:", user.id);
+
+        console.log("Posición:", {
+          latitude,
+          longitude,
+        });
+
+        const nearby =
+          await loadNearbyProfiles({
+
+            currentUserId:
+              user.id,
+
+            latitude,
+
+            longitude,
+
+          });
+
+        console.log(
+          "Perfiles recibidos:",
+          nearby,
+        );
+
+        console.log(
+          "Cantidad:",
+          nearby.length,
+        );
+
+        setProfiles(
+          nearby,
+        );
+
+        console.log(
+          "Estado actualizado",
+        );
+
+        console.groupEnd();
+
+      } catch (error) {
+
+        console.error(
+          "❌ Error Radar",
+          error,
+        );
+
+      } finally {
+
+        setLoading(false);
+
+      }
+
+    }, [
+
+      user,
+
+      latitude,
+
+      longitude,
+
+    ]);
 
   useEffect(() => {
+
     if (locationLoading) {
       return;
     }
 
     void refresh();
+
   }, [
+
     refresh,
+
     locationLoading,
+
   ]);
 
   return {
+
     profiles,
+
     loading,
+
     refresh,
+
   };
+
 }

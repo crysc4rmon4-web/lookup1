@@ -1,12 +1,18 @@
 import { supabase } from "./supabase/client";
-
 export async function updateMyLocation(
   userId: string,
   latitude: number,
   longitude: number,
   accuracy?: number,
 ) {
-  const { error } = await supabase
+  console.log("📍 updateMyLocation", {
+    userId,
+    latitude,
+    longitude,
+    accuracy,
+  });
+
+  const result = await supabase
     .from("user_locations")
     .upsert({
       user_id: userId,
@@ -14,62 +20,14 @@ export async function updateMyLocation(
       longitude,
       accuracy,
       updated_at: new Date().toISOString(),
-    });
+    })
+    .select();
 
-  if (error) {
-    throw error;
-  }
-}
+  console.log(result);
 
-export async function getNearbyProfiles(
-  latitude: number,
-  longitude: number,
-  radius = 100,
-) {
-  const { data, error } = await supabase.rpc(
-    "nearby_profiles",
-    {
-      my_lat: latitude,
-      my_lon: longitude,
-      radius,
-    },
-  );
-
-  if (error) {
-    throw error;
+  if (result.error) {
+    throw result.error;
   }
 
-  return data as {
-    id: string;
-    distance: number;
-  }[];
-}
-
-export async function getProfilesNearby(
-  latitude: number,
-  longitude: number,
-  radius = 100,
-) {
-  const nearby = await getNearbyProfiles(
-    latitude,
-    longitude,
-    radius,
-  );
-
-  if (nearby.length === 0) {
-    return [];
-  }
-
-  const ids = nearby.map((item) => item.id);
-
-  const { data, error } = await supabase
-    .from("profiles")
-    .select("*")
-    .in("id", ids);
-
-  if (error) {
-    throw error;
-  }
-
-  return data ?? [];
+  return result.data;
 }
