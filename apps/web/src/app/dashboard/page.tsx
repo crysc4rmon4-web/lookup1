@@ -2,11 +2,15 @@
 
 import {
   useEffect,
-  useMemo,
   useState,
 } from "react";
 
 import { useRouter } from "next/navigation";
+
+import {
+  getProfileLinks,
+  type ProfileLink,
+} from "@lookup/services";
 
 import { BottomNav } from "../../components/bottom-nav";
 import { useAuth } from "../../components/auth-provider";
@@ -15,6 +19,7 @@ import { useProfileStatus } from "../../hooks/use-profile-status";
 import { useSyncLocation } from "../../hooks/use-sync-location";
 
 import { useRadar } from "./hooks/useRadar";
+
 
 import { DashboardHeader } from "./components/DashboardHeader";
 import { RadarView } from "./components/RadarView";
@@ -32,6 +37,7 @@ type Section =
   | "settings";
 
 export default function DashboardPage() {
+
   const router =
     useRouter();
 
@@ -48,7 +54,6 @@ export default function DashboardPage() {
 
   const {
     profiles,
-    links,
     loading: radarLoading,
     refresh,
   } =
@@ -60,24 +65,30 @@ export default function DashboardPage() {
   const [
     radarEnabled,
     setRadarEnabled,
-  ] = useState(true);
+  ] =
+    useState(true);
 
   const [
     profileVisible,
     setProfileVisible,
-  ] = useState(true);
+  ] =
+    useState(true);
 
   const [
-    currentIndex,
-    setCurrentIndex,
-  ] = useState(0);
+    profileLinks,
+    setProfileLinks,
+  ] =
+    useState<ProfileLink[]>([]);
 
   useSyncLocation({
     enabled: radarEnabled,
   });
 
   useEffect(() => {
-    if (loading) return;
+
+    if (loading) {
+      return;
+    }
 
     if (!user) {
       router.replace("/login");
@@ -87,6 +98,7 @@ export default function DashboardPage() {
     if (needsOnboarding) {
       router.replace("/onboarding");
     }
+
   }, [
     loading,
     user,
@@ -95,46 +107,28 @@ export default function DashboardPage() {
   ]);
 
   useEffect(() => {
-    if (
-      currentIndex >= profiles.length &&
-      profiles.length > 0
-    ) {
-      setCurrentIndex(0);
+
+    async function loadLinks() {
+
+      if (!profile) {
+        return;
+      }
+
+      const links =
+        await getProfileLinks(
+          profile.id,
+        );
+
+      setProfileLinks(
+        links ?? [],
+      );
+
     }
-  }, [
-    currentIndex,
-    profiles.length,
-  ]);
 
-  const profileLinks = useMemo(() => {
-    if (!profile) return [];
+    void loadLinks();
 
-    return links[profile.id] ?? [];
-  }, [links, profile]);
-
+  }, [profile]);
   const events: EventCard[] = [];
-
-  function handleSkip() {
-    if (profiles.length === 0) return;
-
-    setCurrentIndex((current) =>
-      current + 1 >= profiles.length
-        ? 0
-        : current + 1,
-    );
-  }
-
-  function handleConnect() {
-    const current =
-      profiles[currentIndex];
-
-    if (!current) return;
-
-    console.log(
-      "Connect",
-      current.id,
-    );
-  }
 
   if (
     loading ||
@@ -155,16 +149,20 @@ export default function DashboardPage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#f4f6fb] px-4 py-4 pb-28">
+    <main className="min-h-screen bg-[#F4F6FB] px-4 py-4 pb-28">
+
       <section className="mx-auto flex w-full max-w-[430px] flex-col gap-5">
 
         <DashboardHeader
           section={section}
           profileVisible={profileVisible}
           onToggleVisibility={() =>
-            setProfileVisible((v) => !v)
+            setProfileVisible(
+              (value) => !value,
+            )
           }
         />
+
         {section === "radar" && (
 
           <RadarView
@@ -175,42 +173,55 @@ export default function DashboardPage() {
               )
             }
             profiles={profiles}
-            links={links}
-            currentIndex={currentIndex}
-            onSkip={handleSkip}
-            onConnect={handleConnect}
+            onRefresh={refresh}
           />
 
         )}
 
         {section === "events" && (
+
           <EventsView
             events={events}
             onCreateEvent={() =>
-              console.log("Crear evento")
+              console.log(
+                "Crear evento",
+              )
             }
             onJoinEvent={(id) =>
-              console.log("Unirse", id)
+              console.log(
+                "Unirse",
+                id,
+              )
             }
           />
+
         )}
 
         {section === "settings" && (
+
           <SettingsView
             profile={profile}
             links={profileLinks}
             profileVisible={profileVisible}
             onToggleVisibility={() =>
-              setProfileVisible((v) => !v)
+              setProfileVisible(
+                (value) => !value,
+              )
             }
             onEditProfile={() =>
-              router.push("/profile/edit")
+              router.push(
+                "/profile/edit",
+              )
             }
             onLogout={async () => {
               await signOut();
-              router.replace("/login/signup");
+
+              router.replace(
+                "/login/signup",
+              );
             }}
           />
+
         )}
 
       </section>
@@ -219,6 +230,7 @@ export default function DashboardPage() {
         active={section}
         onChange={setSection}
       />
+
     </main>
   );
 }

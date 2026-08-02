@@ -3,17 +3,18 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import type { ProfileRow } from "@lookup/services";
+import type {
+  NearbyProfile,
+} from "@lookup/types";
 
 type Props = {
-    profile: ProfileRow;
-    distance?: number;
+  profile: NearbyProfile;
 };
 
 export function NearbyProfileCard({
-    profile,
-    distance = 0,
+  profile,
 }: Props) {
+
     return (
 
         <Link
@@ -92,7 +93,7 @@ export function NearbyProfileCard({
 
                     <p className="text-sm font-bold text-[#5D5FEF]">
 
-                        {Math.round(distance)} m
+                        {Math.round(profile.distance)} m
 
                     </p>
 

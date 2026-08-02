@@ -1,68 +1,38 @@
-"use client";
+import { supabase } from "@lookup/services";
 
-import {
-  getVisibleProfiles,
-  getProfileLinks,
-  type ProfileLink,
-  type ProfileRow,
-} from "@lookup/services";
+import type {
+  NearbyProfile,
+} from "@lookup/types";
 
-import { getCurrentLocation } from "../../../services/location/get-current-location";
 
-type Result = {
-  profiles: ProfileRow[];
-  links: Record<string, ProfileLink[]>;
+type Params = {
+  currentUserId: string;
+  latitude: number;
+  longitude: number;
+  radius?: number;
 };
 
-export async function loadNearbyProfiles(): Promise<Result> {
+export async function loadNearbyProfiles({
+  currentUserId,
+  latitude,
+  longitude,
+  radius = 25,
+}: Params) {
+  const { data, error } =
+    await supabase.rpc(
+      "nearby_profiles",
+      {
+        current_user_id: currentUserId,
+        my_lat: latitude,
+        my_lon: longitude,
+        radius,
+      },
+    );
 
-  const location =
-    await getCurrentLocation();
-
-  if (!location) {
-
-    return {
-      profiles: [],
-      links: {},
-    };
-
+  if (error) {
+    throw error;
   }
 
-  const response =
-    await getVisibleProfiles();
-
-  const profiles =
-    response.data ?? [];
-
-  const links: Record<
-    string,
-    ProfileLink[]
-  > = {};
-
-  await Promise.all(
-
-    profiles.map(
-      async (profile) => {
-
-        const result =
-          await getProfileLinks(
-            profile.id,
-          );
-
-        links[profile.id] =
-          result ?? [];
-
-      },
-    ),
-
-  );
-
-  return {
-
-    profiles,
-
-    links,
-
-  };
-
+  return (data ??
+    []) as NearbyProfile[];
 }

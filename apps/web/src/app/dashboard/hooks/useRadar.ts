@@ -1,71 +1,78 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import type {
-  ProfileLink,
-  ProfileRow,
-} from "@lookup/services";
+  NearbyProfile,
+} from "@lookup/types";
+
+import { useAuth } from "../../../components/auth-provider";
+import { useLocation } from "../../../hooks/use-location";
 
 import { loadNearbyProfiles } from "../services/load-nearby-profiles";
 
 type RadarState = {
-  profiles: ProfileRow[];
-  links: Record<string, ProfileLink[]>;
+  profiles: NearbyProfile[];
   loading: boolean;
   refresh(): Promise<void>;
 };
 
 export function useRadar(): RadarState {
+  const { user } = useAuth();
 
-  const [profiles, setProfiles] =
-    useState<ProfileRow[]>([]);
+  const {
+    latitude,
+    longitude,
+    loading: locationLoading,
+  } = useLocation();
 
-  const [links, setLinks] =
-    useState<
-      Record<string, ProfileLink[]>
-    >({});
+  const [profiles, setProfiles] = useState<NearbyProfile[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const [loading, setLoading] =
-    useState(true);
-
-  async function refresh() {
-
-    try {
-
-      setLoading(true);
-
-      const result =
-        await loadNearbyProfiles();
-
-      setProfiles(result.profiles);
-
-      setLinks(result.links);
-
-    } finally {
-
+  const refresh = useCallback(async () => {
+    if (
+      !user ||
+      latitude === null ||
+      longitude === null
+    ) {
+      setProfiles([]);
       setLoading(false);
-
+      return;
     }
 
-  }
+    try {
+      setLoading(true);
+
+      const nearby = await loadNearbyProfiles({
+        currentUserId: user.id,
+        latitude,
+        longitude,
+      });
+
+      setProfiles(nearby as NearbyProfile[]);
+    } finally {
+      setLoading(false);
+    }
+  }, [
+    user,
+    latitude,
+    longitude,
+  ]);
 
   useEffect(() => {
+    if (locationLoading) {
+      return;
+    }
 
     void refresh();
-
-  }, []);
+  }, [
+    refresh,
+    locationLoading,
+  ]);
 
   return {
-
     profiles,
-
-    links,
-
     loading,
-
     refresh,
-
   };
-
 }

@@ -1,9 +1,8 @@
 "use client";
 
 import type {
-  ProfileLink,
-  ProfileRow,
-} from "@lookup/services";
+  NearbyProfile,
+} from "@lookup/types";
 
 import { RadarCanvas } from "../../../components/RadarCanvas";
 
@@ -12,32 +11,22 @@ import { RadarTopBar } from "./RadarTopBar";
 
 type RadarViewProps = {
   enabled: boolean;
-  onToggle: () => void;
+  onToggle(): void;
+  onRefresh(): Promise<void>;
 
-  profiles: ProfileRow[];
-  links: Record<string, ProfileLink[]>;
-
-  currentIndex: number;
-
-  onSkip: () => void;
-  onConnect: (id: string) => void;
+  profiles: NearbyProfile[];
 };
-
 export function RadarView({
   enabled,
   onToggle,
+  onRefresh,
   profiles,
 }: RadarViewProps) {
 
   const profile =
     profiles[0];
 
-  function refreshRadar() {
-    console.log(
-      "Radar scan...",
-    );
-  }
-
+  
   return (
 
     <div className="space-y-6">
@@ -47,7 +36,7 @@ export function RadarView({
         radius={25}
         nearbyCount={profiles.length}
         onToggle={onToggle}
-        onRefresh={refreshRadar}
+        onRefresh={onRefresh}
       />
 
       {!profile && (

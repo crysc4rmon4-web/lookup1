@@ -3,12 +3,12 @@
 import { NearbyProfileCard } from "./NearbyProfileCard";
 
 import type {
-  ProfileRow,
-} from "@lookup/services";
+  NearbyProfile,
+} from "@lookup/types";
 
 type Props = {
   enabled: boolean;
-  profiles: ProfileRow[];
+  profiles: NearbyProfile[];
 };
 
 export function NearbyProfiles({
