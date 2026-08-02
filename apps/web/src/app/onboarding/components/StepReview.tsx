@@ -14,6 +14,7 @@ type Social = {
 
 type Props = {
   avatarUrl: string;
+  fullName: string;
   username: string;
   bio: string;
   interests: string[];
@@ -22,6 +23,7 @@ type Props = {
 
 export function StepReview({
   avatarUrl,
+  fullName,
   username,
   bio,
   interests,
@@ -87,7 +89,7 @@ export function StepReview({
         </div>
 
         <h3 className="mt-6 text-2xl font-black text-slate-900">
-          {username || "Tu nombre"}
+          {fullName || "Tu nombre"}
         </h3>
 
         <p className="mt-2 text-sm font-medium text-[#5D5FEF]">

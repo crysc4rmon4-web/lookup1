@@ -47,7 +47,7 @@ export default function PrivacyPage() {
                     <div className="mt-8 inline-flex rounded-2xl bg-[#EEF0FF] px-5 py-3">
 
                         <span className="text-sm font-semibold text-[#5D5FEF]">
-                            Última actualización · Enero 2027
+                            Última actualización · Agosto 2026
                         </span>
 
                     </div>

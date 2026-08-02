@@ -159,6 +159,7 @@ export function OnboardingForm({
 
             <StepReview
               avatarUrl={data.avatarUrl}
+              fullName={data.fullName}
               username={data.username}
               bio={data.bio}
               interests={data.interests}

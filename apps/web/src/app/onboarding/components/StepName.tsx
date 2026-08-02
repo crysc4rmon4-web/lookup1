@@ -9,6 +9,14 @@ export function StepName({
   fullName,
   onChange,
 }: StepNameProps) {
+  const username =
+    fullName
+      .trim()
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9\s]/g, "")
+      .replace(/\s+/g, "-");
   return (
     <section className="flex min-h-[560px] flex-col">
 
@@ -35,7 +43,7 @@ export function StepName({
           onChange={(e) =>
             onChange(e.target.value)
           }
-          placeholder="Cristian Carmona"
+          placeholder="Nombre"
           autoComplete="name"
           className="
             w-full
@@ -54,7 +62,16 @@ export function StepName({
             focus:border-[#5D5FEF]
           "
         />
+        <div className="mt-4">
 
+          <p className="text-sm text-slate-500">
+            Username:
+            <span className="ml-2 font-semibold text-[#5D5FEF]">
+              @{username || "usuario"}
+            </span>
+          </p>
+
+        </div>
       </div>
 
     </section>
