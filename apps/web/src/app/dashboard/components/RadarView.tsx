@@ -1,16 +1,21 @@
 "use client";
 
+import { useState } from "react";
+
 import type {
   ProfileLink,
   ProfileRow,
 } from "@lookup/services";
 
-import { RadarCard } from "../../../components/radar-card";
+import { RadarCanvas } from "../../../components/RadarCanvas";
+
+import { RadarTopBar } from "./RadarTopBar";
 
 type RadarViewProps = {
   profiles: ProfileRow[];
   links: Record<string, ProfileLink[]>;
   currentIndex: number;
+
   onSkip: () => void;
   onConnect: (id: string) => void;
 };
@@ -21,47 +26,66 @@ export function RadarView({
   onSkip,
   onConnect,
 }: RadarViewProps) {
-  const profile = profiles[currentIndex];
 
-  if (!profile) {
-    return (
-      <div className="rounded-[2rem] bg-white p-10 text-center shadow-sm">
-        <h2 className="text-2xl font-black">
-          No hay personas cerca
-        </h2>
+  const [enabled, setEnabled] =
+    useState(true);
 
-        <p className="mt-3 text-slate-500">
-          Cuando alguien entre en tu radio aparecerá aquí.
-        </p>
-      </div>
+  const profile =
+    profiles[currentIndex];
+
+  function refreshRadar() {
+    console.log(
+      "Radar scan...",
     );
   }
 
   return (
-    <RadarCard
-      id={profile.id}
-      name={
-        profile.full_name ??
-        profile.username ??
-        "Usuario"
-      }
-      profession={
-        profile.profession ??
-        "Profesional"
-      }
-      city={
-        profile.city ??
-        "Sin ciudad"
-      }
-      bio={
-        profile.bio ??
-        ""
-      }
-      active
-      onSkip={onSkip}
-      onConnect={() =>
-        onConnect(profile.id)
-      }
-    />
+
+    <div className="space-y-6">
+
+      <RadarTopBar
+        enabled={enabled}
+        radius={25}
+        nearbyCount={profiles.length}
+        onToggle={() =>
+          setEnabled(
+            (value) => !value,
+          )
+        }
+        onRefresh={
+          refreshRadar
+        }
+      />
+
+      {!profile && (
+
+        <div className="rounded-[2rem] bg-white p-10 text-center shadow-sm">
+
+          <h2 className="text-2xl font-black">
+
+            No hay personas cerca
+
+          </h2>
+
+          <p className="mt-3 text-slate-500">
+
+            Cuando alguien entre en tu radio aparecerá aquí.
+
+          </p>
+
+        </div>
+
+      )}
+
+      {enabled && (
+
+        <RadarCanvas
+          enabled={enabled}
+        />
+
+      )}
+
+    </div>
+
   );
 }
