@@ -7,76 +7,65 @@ import type {
   ProfileRow,
 } from "@lookup/services";
 
-import { useLocation } from "../../../hooks/use-location";
 import { loadNearbyProfiles } from "../services/load-nearby-profiles";
 
-export function useRadar() {
-  const {
-    latitude,
-    longitude,
-    loading,
-  } = useLocation();
+type RadarState = {
+  profiles: ProfileRow[];
+  links: Record<string, ProfileLink[]>;
+  loading: boolean;
+  refresh(): Promise<void>;
+};
 
-  const [profiles, setProfiles] = useState<
-    ProfileRow[]
-  >([]);
+export function useRadar(): RadarState {
 
-  const [links, setLinks] = useState<
-    Record<string, ProfileLink[]>
-  >({});
+  const [profiles, setProfiles] =
+    useState<ProfileRow[]>([]);
 
-  const [isLoading, setIsLoading] =
+  const [links, setLinks] =
+    useState<
+      Record<string, ProfileLink[]>
+    >({});
+
+  const [loading, setLoading] =
     useState(true);
 
+  async function refresh() {
+
+    try {
+
+      setLoading(true);
+
+      const result =
+        await loadNearbyProfiles();
+
+      setProfiles(result.profiles);
+
+      setLinks(result.links);
+
+    } finally {
+
+      setLoading(false);
+
+    }
+
+  }
+
   useEffect(() => {
-    if (
-      loading ||
-      latitude === null ||
-      longitude === null
-    ) {
-      return;
-    }
 
-    const lat = latitude;
-    const lon = longitude;
+    void refresh();
 
-    let mounted = true;
-
-    async function load() {
-      setIsLoading(true);
-
-      try {
-        const result =
-          await loadNearbyProfiles(
-            lat,
-            lon,
-          );
-
-        if (!mounted) return;
-
-        setProfiles(result.profiles);
-        setLinks(result.links);
-      } finally {
-        if (mounted) {
-          setIsLoading(false);
-        }
-      }
-    }
-
-    void load();
-
-    return () => {
-      mounted = false;
-    };
-  }, [
-    latitude,
-    longitude,
-    loading,
-  ]);
+  }, []);
 
   return {
+
     profiles,
+
     links,
-    profilesLoading: isLoading,
+
+    loading,
+
+    refresh,
+
   };
+
 }

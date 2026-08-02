@@ -1,37 +1,68 @@
+"use client";
+
 import {
+  getVisibleProfiles,
   getProfileLinks,
-  getProfilesNearby,
   type ProfileLink,
   type ProfileRow,
 } from "@lookup/services";
 
-export type NearbyProfilesResult = {
+import { getCurrentLocation } from "../../../services/location/get-current-location";
+
+type Result = {
   profiles: ProfileRow[];
   links: Record<string, ProfileLink[]>;
 };
 
-export async function loadNearbyProfiles(
-  latitude: number,
-  longitude: number,
-): Promise<NearbyProfilesResult> {
-  const profiles = await getProfilesNearby(
-    latitude,
-    longitude,
-    100,
-  );
+export async function loadNearbyProfiles(): Promise<Result> {
 
-  const links: Record<string, ProfileLink[]> = {};
+  const location =
+    await getCurrentLocation();
+
+  if (!location) {
+
+    return {
+      profiles: [],
+      links: {},
+    };
+
+  }
+
+  const response =
+    await getVisibleProfiles();
+
+  const profiles =
+    response.data ?? [];
+
+  const links: Record<
+    string,
+    ProfileLink[]
+  > = {};
 
   await Promise.all(
-    profiles.map(async (profile) => {
-      links[profile.id] = await getProfileLinks(
-        profile.id,
-      );
-    }),
+
+    profiles.map(
+      async (profile) => {
+
+        const result =
+          await getProfileLinks(
+            profile.id,
+          );
+
+        links[profile.id] =
+          result ?? [];
+
+      },
+    ),
+
   );
 
   return {
+
     profiles,
+
     links,
+
   };
+
 }

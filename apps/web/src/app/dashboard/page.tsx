@@ -49,7 +49,8 @@ export default function DashboardPage() {
   const {
     profiles,
     links,
-    profilesLoading,
+    loading: radarLoading,
+    refresh,
   } =
     useRadar();
 
@@ -137,7 +138,7 @@ export default function DashboardPage() {
 
   if (
     loading ||
-    profilesLoading ||
+    radarLoading ||
     !user
   ) {
     return (
