@@ -8,7 +8,7 @@ import type {
 } from "@lookup/services";
 
 import { RadarCanvas } from "../../../components/RadarCanvas";
-
+import { NearbyProfiles } from "./NearbyProfiles";
 import { RadarTopBar } from "./RadarTopBar";
 
 type RadarViewProps = {
@@ -79,9 +79,19 @@ export function RadarView({
 
       {enabled && (
 
-        <RadarCanvas
-          enabled={enabled}
-        />
+        <>
+
+          <RadarCanvas
+            enabled={enabled}
+            profiles={profiles}
+          />
+
+          <NearbyProfiles
+            enabled={enabled}
+            profiles={profiles}
+          />
+
+        </>
 
       )}
 
