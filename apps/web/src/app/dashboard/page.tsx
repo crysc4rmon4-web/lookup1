@@ -15,6 +15,7 @@ import {
 import { BottomNav } from "../../components/bottom-nav";
 import { useAuth } from "../../components/auth-provider";
 
+import { useLocation } from "../../hooks/use-location";
 import { useProfileStatus } from "../../hooks/use-profile-status";
 import { useSyncLocation } from "../../hooks/use-sync-location";
 
@@ -51,12 +52,30 @@ export default function DashboardPage() {
   } =
     useProfileStatus();
 
+  /*
+   * ÚNICA instancia de geolocalización
+   * Toda la aplicación compartirá este estado.
+   */
+  const location =
+    useLocation();
+
   const {
     profiles,
     loading: radarLoading,
     refresh,
   } =
-    useRadar();
+    useRadar({
+
+      latitude:
+        location.latitude,
+
+      longitude:
+        location.longitude,
+
+      loading:
+        location.loading,
+
+    });
 
   const [section, setSection] =
     useState<Section>("radar");
@@ -80,7 +99,22 @@ export default function DashboardPage() {
     useState<ProfileLink[]>([]);
 
   useSyncLocation({
-    enabled: radarEnabled,
+
+    enabled:
+      radarEnabled,
+
+    latitude:
+      location.latitude,
+
+    longitude:
+      location.longitude,
+
+    accuracy:
+      location.accuracy,
+
+    loading:
+      location.loading,
+
   });
 
   useEffect(() => {
@@ -90,19 +124,30 @@ export default function DashboardPage() {
     }
 
     if (!user) {
-      router.replace("/login");
+
+      router.replace(
+        "/login",
+      );
+
       return;
+
     }
 
     if (needsOnboarding) {
-      router.replace("/onboarding");
+
+      router.replace(
+        "/onboarding",
+      );
+
     }
 
   }, [
+
     loading,
     user,
     needsOnboarding,
     router,
+
   ]);
 
   useEffect(() => {
@@ -131,113 +176,125 @@ export default function DashboardPage() {
   const events: EventCard[] = [];
 
   if (
+
     loading ||
     radarLoading ||
     !user
+
   ) {
+
     return (
+
       <main className="flex min-h-screen items-center justify-center bg-slate-50">
+
         <p className="text-slate-500">
+
           Cargando...
+
         </p>
+
       </main>
+
     );
+
   }
 
   if (!profile) {
     return null;
   }
-  return (
 
-  <main className="min-h-screen bg-[#F4F6FB] px-4 py-5 pb-28">
+    return (
 
-    <section className="mx-auto flex w-full max-w-[430px] flex-col gap-4">
+    <main className="min-h-screen bg-[#F4F6FB] px-4 py-5 pb-28">
 
-      {section === "radar" ? (
+      <section className="mx-auto flex w-full max-w-[430px] flex-col gap-4">
 
-        <div className="space-y-2">
+        {section === "radar" ? (
+
+          <div className="space-y-2">
+
+            <DashboardHeader
+              section={section}
+            />
+
+            <RadarView
+              enabled={radarEnabled}
+              onToggle={() =>
+                setRadarEnabled(
+                  (value) => !value,
+                )
+              }
+              profiles={profiles}
+              onRefresh={refresh}
+            />
+
+          </div>
+
+        ) : (
 
           <DashboardHeader
             section={section}
           />
 
-          <RadarView
-            enabled={radarEnabled}
-            onToggle={() =>
-              setRadarEnabled(
+        )}
+
+        {section === "events" && (
+
+          <EventsView
+            events={events}
+            onCreateEvent={() =>
+              console.log(
+                "Crear evento",
+              )
+            }
+            onJoinEvent={(id) =>
+              console.log(
+                "Unirse",
+                id,
+              )
+            }
+          />
+
+        )}
+
+        {section === "settings" && (
+
+          <SettingsView
+            profile={profile}
+            links={profileLinks}
+            profileVisible={profileVisible}
+            onToggleVisibility={() =>
+              setProfileVisible(
                 (value) => !value,
               )
             }
-            profiles={profiles}
-            onRefresh={refresh}
+            onEditProfile={() =>
+              router.push(
+                "/profile/edit",
+              )
+            }
+            onLogout={async () => {
+
+              await signOut();
+
+              router.replace(
+                "/login/signup",
+              );
+
+            }}
           />
 
-        </div>
+        )}
 
-      ) : (
+      </section>
 
-        <DashboardHeader
-          section={section}
-        />
+      <BottomNav
+        active={section}
+        onChange={setSection}
+      />
 
-      )}
+    </main>
 
-      {section === "events" && (
+  );
 
-        <EventsView
-          events={events}
-          onCreateEvent={() =>
-            console.log(
-              "Crear evento",
-            )
-          }
-          onJoinEvent={(id) =>
-            console.log(
-              "Unirse",
-              id,
-            )
-          }
-        />
-
-      )}
-
-      {section === "settings" && (
-
-        <SettingsView
-          profile={profile}
-          links={profileLinks}
-          profileVisible={profileVisible}
-          onToggleVisibility={() =>
-            setProfileVisible(
-              (value) => !value,
-            )
-          }
-          onEditProfile={() =>
-            router.push(
-              "/profile/edit",
-            )
-          }
-          onLogout={async () => {
-
-            await signOut();
-
-            router.replace(
-              "/login/signup",
-            );
-
-          }}
-        />
-
-      )}
-
-    </section>
-
-    <BottomNav
-      active={section}
-      onChange={setSection}
-    />
-
-  </main>
-
-);
 }

@@ -3,6 +3,7 @@
 import {
   useCallback,
   useEffect,
+  useRef,
   useState,
 } from "react";
 
@@ -11,9 +12,14 @@ import type {
 } from "@lookup/types";
 
 import { useAuth } from "../../../components/auth-provider";
-import { useLocation } from "../../../hooks/use-location";
 
 import { loadNearbyProfiles } from "../services/load-nearby-profiles";
+
+type Props = {
+  latitude: number | null;
+  longitude: number | null;
+  loading: boolean;
+};
 
 type RadarState = {
   profiles: NearbyProfile[];
@@ -21,17 +27,14 @@ type RadarState = {
   refresh(): Promise<void>;
 };
 
-export function useRadar(): RadarState {
+export function useRadar({
+  latitude,
+  longitude,
+  loading: locationLoading,
+}: Props): RadarState {
 
   const { user } =
     useAuth();
-
-  const {
-    latitude,
-    longitude,
-    loading: locationLoading,
-  } =
-    useLocation();
 
   const [
     profiles,
@@ -45,6 +48,9 @@ export function useRadar(): RadarState {
   ] =
     useState(true);
 
+  const initialized =
+    useRef(false);
+
   const refresh =
     useCallback(async () => {
 
@@ -53,30 +59,10 @@ export function useRadar(): RadarState {
         latitude === null ||
         longitude === null
       ) {
-
-        console.log(
-          "⛔ Radar cancelado",
-        );
-
-        setProfiles([]);
-        setLoading(false);
-
         return;
-
       }
 
       try {
-
-        setLoading(true);
-
-        console.group("🛰️ Radar Refresh");
-
-        console.log("Usuario:", user.id);
-
-        console.log("Posición:", {
-          latitude,
-          longitude,
-        });
 
         const nearby =
           await loadNearbyProfiles({
@@ -90,25 +76,7 @@ export function useRadar(): RadarState {
 
           });
 
-        console.log(
-          "Perfiles recibidos:",
-          nearby,
-        );
-
-        console.log(
-          "Cantidad:",
-          nearby.length,
-        );
-
-        setProfiles(
-          nearby,
-        );
-
-        console.log(
-          "Estado actualizado",
-        );
-
-        console.groupEnd();
+        setProfiles(nearby);
 
       } catch (error) {
 
@@ -119,16 +87,20 @@ export function useRadar(): RadarState {
 
       } finally {
 
-        setLoading(false);
+        if (!initialized.current) {
+
+          initialized.current = true;
+
+          setLoading(false);
+
+        }
 
       }
 
     }, [
 
       user,
-
       latitude,
-
       longitude,
 
     ]);
@@ -144,8 +116,36 @@ export function useRadar(): RadarState {
   }, [
 
     refresh,
-
     locationLoading,
+
+  ]);
+
+  useEffect(() => {
+
+    if (
+      !user ||
+      latitude === null ||
+      longitude === null
+    ) {
+      return;
+    }
+
+    const interval =
+      window.setInterval(() => {
+
+        void refresh();
+
+      }, 5000);
+
+    return () =>
+      clearInterval(interval);
+
+  }, [
+
+    refresh,
+    user,
+    latitude,
+    longitude,
 
   ]);
 

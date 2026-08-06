@@ -6,28 +6,25 @@ import { useAuth } from "../components/auth-provider";
 
 import { updateLocation } from "../services/location/update-location";
 
-import { useLocation } from "./use-location";
-
 type Props = {
   enabled: boolean;
+  latitude: number | null;
+  longitude: number | null;
+  accuracy: number | null;
+  loading: boolean;
 };
 
 export function useSyncLocation({
   enabled,
+  latitude,
+  longitude,
+  accuracy,
+  loading,
 }: Props) {
   const { user } = useAuth();
 
-  const {
-    latitude,
-    longitude,
-    accuracy,
-    loading,
-  } = useLocation();
-
   useEffect(() => {
-    if (!enabled) {
-      return;
-    }
+    if (!enabled) return;
 
     if (
       loading ||
@@ -46,10 +43,10 @@ export function useSyncLocation({
     );
   }, [
     enabled,
+    loading,
     user,
     latitude,
     longitude,
     accuracy,
-    loading,
   ]);
 }
