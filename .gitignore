@@ -1,10 +1,32 @@
-node_modules
-.next
-.expo
-.expo-shared
-dist
-build
-coverage
+# Dependencies
+node_modules/
+
+# Next.js
+.next/
+
+# Expo
+.expo/
+.expo-shared/
+
+# Build
+dist/
+build/
+
+# Test / coverage
+coverage/
+
+# Turbo
+.turbo/
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
 *.log
+
+# OS
 .DS_Store
-.turbo
