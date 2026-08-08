@@ -1,33 +1,47 @@
 import { supabase } from "./supabase/client";
+
 export async function updateMyLocation(
   userId: string,
   latitude: number,
   longitude: number,
   accuracy?: number,
 ) {
-  console.log("📍 updateMyLocation", {
-    userId,
-    latitude,
-    longitude,
-    accuracy,
-  });
-
-  const result = await supabase
+  const { data, error } = await supabase
     .from("user_locations")
-    .upsert({
-      user_id: userId,
-      latitude,
-      longitude,
-      accuracy,
-      updated_at: new Date().toISOString(),
-    })
-    .select();
+    .upsert(
+      {
+        user_id: userId,
+        latitude,
+        longitude,
+        accuracy,
+        updated_at: new Date().toISOString(),
+        is_active: true,
+      },
+      {
+        onConflict: "user_id",
+      },
+    )
+    .select()
+    .single();
 
-  console.log(result);
-
-  if (result.error) {
-    throw result.error;
+  if (error) {
+    throw error;
   }
 
-  return result.data;
+  return data;
+}
+
+export async function setRadarPresence(
+  enabled: boolean,
+) {
+  const { error } = await supabase.rpc(
+    "set_radar_presence",
+    {
+      enabled,
+    },
+  );
+
+  if (error) {
+    throw error;
+  }
 }

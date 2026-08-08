@@ -24,27 +24,39 @@ export function useSyncLocation({
   const { user } = useAuth();
 
   useEffect(() => {
-    if (!enabled) return;
-
-    if (
-      loading ||
-      !user ||
-      latitude === null ||
-      longitude === null
-    ) {
+    if (!enabled) {
       return;
     }
 
+    if (loading) {
+      return;
+    }
+
+    if (!user) {
+      return;
+    }
+
+    if (latitude === null || longitude === null) {
+      return;
+    }
+
+    const userId = user.id;
+
     void updateLocation(
-      user.id,
+      userId,
       latitude,
       longitude,
       accuracy ?? undefined,
-    );
+    ).catch((error) => {
+      console.error(
+        "❌ Error sincronizando ubicación:",
+        error,
+      );
+    });
   }, [
     enabled,
     loading,
-    user,
+    user?.id,
     latitude,
     longitude,
     accuracy,

@@ -1,4 +1,7 @@
-import { updateMyLocation } from "@lookup/services";
+import {
+  disableMyLocation as disableLocation,
+  updateMyLocation,
+} from "@lookup/services";
 
 export async function updateLocation(
   userId: string,
@@ -12,4 +15,10 @@ export async function updateLocation(
     longitude,
     accuracy,
   );
+}
+
+export async function disableMyLocation(
+  userId: string,
+) {
+  return disableLocation(userId);
 }
