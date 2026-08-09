@@ -21,7 +21,6 @@ export async function updateMyLocation(
       longitude,
       accuracy,
       updated_at: new Date().toISOString(),
-      is_active: true,
     })
     .select();
 
