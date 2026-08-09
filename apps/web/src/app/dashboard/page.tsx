@@ -39,11 +39,9 @@ type Section =
   | "settings";
 
 export default function DashboardPage() {
-  const router =
-    useRouter();
+  const router = useRouter();
 
-  const { signOut } =
-    useAuth();
+  const { signOut } = useAuth();
 
   const {
     user,
@@ -54,16 +52,15 @@ export default function DashboardPage() {
 
   /*
    * ÚNICA instancia de geolocalización.
-   * Toda la aplicación comparte este estado.
+   * Toda la aplicación comparte esta ubicación.
    */
-  const location =
-    useLocation();
+  const location = useLocation();
 
   /*
-   * El estado inicial es OFF por seguridad.
+   * Estado local del radar.
    *
-   * Después consultamos Supabase y recuperamos
-   * el estado real del usuario.
+   * Arranca OFF por seguridad.
+   * Después recuperamos el estado real desde Supabase.
    */
   const [
     radarEnabled,
@@ -74,6 +71,15 @@ export default function DashboardPage() {
     radarPresenceLoading,
     setRadarPresenceLoading,
   ] = useState(true);
+
+  /*
+   * Evita múltiples cambios simultáneos
+   * del toggle mientras Supabase responde.
+   */
+  const [
+    radarToggleLoading,
+    setRadarToggleLoading,
+  ] = useState(false);
 
   const [
     profileVisible,
@@ -91,14 +97,11 @@ export default function DashboardPage() {
   ] = useState<Section>("radar");
 
   /*
-   * Recuperamos el estado real del radar
-   * desde Supabase después de tener usuario.
+   * Recuperamos el estado real de presencia
+   * desde Supabase una vez autenticado el usuario.
    */
   useEffect(() => {
-    if (
-      loading ||
-      !user
-    ) {
+    if (loading || !user) {
       return;
     }
 
@@ -110,9 +113,7 @@ export default function DashboardPage() {
           await getRadarPresence();
 
         if (mounted) {
-          setRadarEnabled(
-            enabled,
-          );
+          setRadarEnabled(enabled);
         }
       } catch (error) {
         console.error(
@@ -130,9 +131,7 @@ export default function DashboardPage() {
         }
       } finally {
         if (mounted) {
-          setRadarPresenceLoading(
-            false,
-          );
+          setRadarPresenceLoading(false);
         }
       }
     }
@@ -142,11 +141,17 @@ export default function DashboardPage() {
     return () => {
       mounted = false;
     };
-  }, [
-    loading,
-    user,
-  ]);
+  }, [loading, user]);
 
+  /*
+   * Radar:
+   *
+   * Solo consulta perfiles cuando:
+   * - el usuario está autenticado
+   * - el radar está activo
+   * - la presencia ya fue cargada
+   * - existe una ubicación válida
+   */
   const {
     profiles,
     refresh,
@@ -166,10 +171,10 @@ export default function DashboardPage() {
   });
 
   /*
-   * Sincronización de ubicación + presencia.
+   * Sincronización de ubicación.
    *
-   * Este hook es quien comunica el estado
-   * ON/OFF real con Supabase.
+   * Mientras el radar está activo,
+   * actualizamos la ubicación del usuario.
    */
   useSyncLocation({
     enabled:
@@ -198,17 +203,12 @@ export default function DashboardPage() {
     }
 
     if (!user) {
-      router.replace(
-        "/login",
-      );
-
+      router.replace("/login");
       return;
     }
 
     if (needsOnboarding) {
-      router.replace(
-        "/onboarding",
-      );
+      router.replace("/onboarding");
     }
   }, [
     loading,
@@ -219,36 +219,96 @@ export default function DashboardPage() {
 
   /*
    * Carga de enlaces del perfil.
+   *
+   * Guardamos el ID antes de entrar
+   * en la operación asíncrona para que
+   * TypeScript pueda garantizar que existe.
    */
   useEffect(() => {
-    async function loadLinks() {
-      if (!profile) {
-        return;
-      }
+    if (!profile) {
+      return;
+    }
 
+    const profileId = profile.id;
+
+    let mounted = true;
+
+    async function loadLinks() {
       try {
         const links =
           await getProfileLinks(
-            profile.id,
+            profileId,
           );
 
-        setProfileLinks(
-          links ?? [],
-        );
+        if (mounted) {
+          setProfileLinks(
+            links ?? [],
+          );
+        }
       } catch (error) {
         console.error(
           "❌ Error cargando enlaces del perfil",
           error,
         );
 
-        setProfileLinks([]);
+        if (mounted) {
+          setProfileLinks([]);
+        }
       }
     }
 
     void loadLinks();
+
+    return () => {
+      mounted = false;
+    };
   }, [profile]);
 
+  /*
+   * Eventos:
+   *
+   * Contrato preparado para el siguiente sprint.
+   */
   const events: EventCard[] = [];
+
+  /*
+   * Cambio real de presencia.
+   *
+   * Primero persistimos en Supabase.
+   * Solo si Supabase confirma el cambio
+   * modificamos el estado visual local.
+   */
+  const handleRadarToggle =
+    async () => {
+      if (
+        radarToggleLoading ||
+        !user
+      ) {
+        return;
+      }
+
+      const nextEnabled =
+        !radarEnabled;
+
+      setRadarToggleLoading(true);
+
+      try {
+        await setRadarPresence(
+          nextEnabled,
+        );
+
+        setRadarEnabled(
+          nextEnabled,
+        );
+      } catch (error) {
+        console.error(
+          "❌ Error cambiando presencia del radar",
+          error,
+        );
+      } finally {
+        setRadarToggleLoading(false);
+      }
+    };
 
   /*
    * Estado de carga general.
@@ -258,50 +318,28 @@ export default function DashboardPage() {
     radarPresenceLoading ||
     !user
   ) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-slate-50">
-        <p className="text-slate-500">
-          Cargando...
-        </p>
-      </main>
-    );
+    return null;
   }
 
   if (!profile) {
     return null;
   }
 
-  /*
-   * El toggle solo cambia estado local.
-   *
-   * useSyncLocation es la única capa encargada
-   * de sincronizar la presencia con Supabase.
-   */
-  const handleRadarToggle =
-    () => {
-      setRadarEnabled(
-        (value) => !value,
-      );
-    };
-
   return (
-    <main className="min-h-screen bg-[#F4F6FB] px-4 py-5 pb-28">
-      <section className="mx-auto flex w-full max-w-[430px] flex-col gap-4">
+    <main className="min-h-screen bg-[#F5F7FC]">
+      <section className="mx-auto flex min-h-screen w-full max-w-md flex-col px-4 pb-24 pt-4">
         {section === "radar" ? (
-          <div className="space-y-2">
-            <DashboardHeader
-              section={section}
-            />
-
-            <RadarView
-              enabled={radarEnabled}
-              onToggle={
-                handleRadarToggle
-              }
-              profiles={profiles}
-              onRefresh={refresh}
-            />
-          </div>
+          <RadarView
+            enabled={radarEnabled}
+            toggleLoading={
+              radarToggleLoading
+            }
+            onToggle={
+              handleRadarToggle
+            }
+            profiles={profiles}
+            onRefresh={refresh}
+          />
         ) : (
           <DashboardHeader
             section={section}
@@ -346,10 +384,14 @@ export default function DashboardPage() {
             onLogout={async () => {
               /*
                * Antes de cerrar sesión,
-               * dejamos de estar presentes.
+               * eliminamos la presencia del radar.
                */
               try {
                 await setRadarPresence(
+                  false,
+                );
+
+                setRadarEnabled(
                   false,
                 );
               } catch (error) {
@@ -367,12 +409,16 @@ export default function DashboardPage() {
             }}
           />
         )}
-      </section>
 
-      <BottomNav
-        active={section}
-        onChange={setSection}
-      />
+        <BottomNav
+          active={section}
+          onChange={(nextSection) =>
+            setSection(
+              nextSection as Section,
+            )
+          }
+        />
+      </section>
     </main>
   );
 }
