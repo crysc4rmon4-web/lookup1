@@ -36,7 +36,10 @@ export function useSyncLocation({
       return;
     }
 
-    if (latitude === null || longitude === null) {
+    if (
+      latitude === null ||
+      longitude === null
+    ) {
       return;
     }
 
@@ -56,7 +59,7 @@ export function useSyncLocation({
   }, [
     enabled,
     loading,
-    user?.id,
+    user,
     latitude,
     longitude,
     accuracy,

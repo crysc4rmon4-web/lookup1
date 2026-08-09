@@ -6,42 +6,50 @@ export async function updateMyLocation(
   longitude: number,
   accuracy?: number,
 ) {
-  const { data, error } = await supabase
-    .from("user_locations")
-    .upsert(
-      {
-        user_id: userId,
-        latitude,
-        longitude,
-        accuracy,
-        updated_at: new Date().toISOString(),
-        is_active: true,
-      },
-      {
-        onConflict: "user_id",
-      },
-    )
-    .select()
-    .single();
+  console.log("📍 updateMyLocation", {
+    userId,
+    latitude,
+    longitude,
+    accuracy,
+  });
 
-  if (error) {
-    throw error;
+  const result = await supabase
+    .from("user_locations")
+    .upsert({
+      user_id: userId,
+      latitude,
+      longitude,
+      accuracy,
+      updated_at: new Date().toISOString(),
+      is_active: true,
+    })
+    .select();
+
+  if (result.error) {
+    throw result.error;
   }
 
-  return data;
+  return result.data;
 }
 
-export async function setRadarPresence(
-  enabled: boolean,
+export async function disableMyLocation(
+  userId: string,
 ) {
-  const { error } = await supabase.rpc(
-    "set_radar_presence",
-    {
-      enabled,
-    },
-  );
+  console.log("📍 disableMyLocation", {
+    userId,
+  });
 
-  if (error) {
-    throw error;
+  const result = await supabase
+    .from("user_locations")
+    .update({
+      is_active: false,
+      updated_at: new Date().toISOString(),
+    })
+    .eq("user_id", userId);
+
+  if (result.error) {
+    throw result.error;
   }
+
+  return result.data;
 }

@@ -1,5 +1,5 @@
 import {
-  disableMyLocation as disableLocation,
+  disableMyLocation,
   updateMyLocation,
 } from "@lookup/services";
 
@@ -17,8 +17,8 @@ export async function updateLocation(
   );
 }
 
-export async function disableMyLocation(
+export async function disableLocation(
   userId: string,
 ) {
-  return disableLocation(userId);
+  return disableMyLocation(userId);
 }

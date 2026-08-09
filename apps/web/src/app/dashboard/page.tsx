@@ -149,7 +149,6 @@ export default function DashboardPage() {
 
   const {
     profiles,
-    loading: radarLoading,
     refresh,
   } = useRadar({
     enabled:
