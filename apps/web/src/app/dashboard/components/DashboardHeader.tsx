@@ -9,23 +9,26 @@ export function DashboardHeader({
     section === "radar"
       ? "LookUp"
       : section === "events"
-      ? "Actividades"
-      : "Configuración";
+        ? "Actividades"
+        : "Ajustes";
+
+  const isRadar = section === "radar";
+  const isSettings = section === "settings";
 
   return (
-    <header>
-
+    <header className="flex items-center justify-between px-1">
       <h1
         className={[
-          "font-black italic tracking-[-0.05em]",
-          section === "radar"
-            ? "text-[2.3rem] text-[#5D5FEF]"
-            : "text-[2rem] text-slate-900",
+          "font-black tracking-[-0.05em]",
+          isRadar
+            ? "text-[2.3rem] italic text-[#5D5FEF]"
+            : isSettings
+              ? "text-[2rem] text-[#5D5FEF]"
+              : "text-[2rem] text-slate-900",
         ].join(" ")}
       >
         {title}
       </h1>
-
     </header>
   );
 }

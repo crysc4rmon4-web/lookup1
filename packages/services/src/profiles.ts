@@ -11,6 +11,7 @@ export type ProfileRow = {
   city: string | null;
   instagram: string | null;
   twitter: string | null;
+  interests: string[] | null;
   visibility: boolean;
   onboarding_completed: boolean;
   created_at: string;
@@ -28,11 +29,14 @@ export type ProfileUpsertInput = {
   city?: string | null;
   instagram?: string | null;
   twitter?: string | null;
+  interests?: string[] | null;
   visibility?: boolean;
   onboarding_completed?: boolean;
 };
 
-export async function getMyProfile(userId: string) {
+export async function getMyProfile(
+  userId: string,
+) {
   return supabase
     .from("profiles")
     .select("*")
@@ -48,7 +52,8 @@ export async function saveMyProfile(
     .upsert(
       {
         ...payload,
-        updated_at: new Date().toISOString(),
+        updated_at:
+          new Date().toISOString(),
       },
       {
         onConflict: "id",
@@ -72,7 +77,10 @@ export async function getVisibleProfiles(
     .limit(20);
 
   if (currentUserId) {
-    query = query.neq("id", currentUserId);
+    query = query.neq(
+      "id",
+      currentUserId,
+    );
   }
 
   return query;
