@@ -1,5 +1,9 @@
 import { supabase } from "./supabase/client";
 
+export type AccountType =
+  | "person"
+  | "business";
+
 export type ProfileRow = {
   id: string;
   email: string | null;
@@ -11,9 +15,10 @@ export type ProfileRow = {
   city: string | null;
   instagram: string | null;
   twitter: string | null;
-  interests: string[] | null;
+  interests: string[];
   visibility: boolean;
   onboarding_completed: boolean;
+  account_type: AccountType | null;
   created_at: string;
   updated_at: string;
 };
@@ -29,9 +34,10 @@ export type ProfileUpsertInput = {
   city?: string | null;
   instagram?: string | null;
   twitter?: string | null;
-  interests?: string[] | null;
+  interests?: string[];
   visibility?: boolean;
   onboarding_completed?: boolean;
+  account_type?: AccountType | null;
 };
 
 export async function getMyProfile(
@@ -63,6 +69,18 @@ export async function saveMyProfile(
     .single();
 }
 
+export async function setMyAccountType(
+  userId: string,
+  accountType: AccountType,
+  email?: string | null,
+) {
+  return saveMyProfile({
+    id: userId,
+    email: email ?? null,
+    account_type: accountType,
+  });
+}
+
 export async function getVisibleProfiles(
   currentUserId?: string,
 ) {
@@ -70,7 +88,10 @@ export async function getVisibleProfiles(
     .from("profiles")
     .select("*")
     .eq("visibility", true)
-    .eq("onboarding_completed", true)
+    .eq(
+      "onboarding_completed",
+      true,
+    )
     .order("updated_at", {
       ascending: false,
     })
