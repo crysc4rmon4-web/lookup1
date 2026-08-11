@@ -40,6 +40,12 @@ export type ProfileUpsertInput = {
   account_type?: AccountType | null;
 };
 
+export type ProfileUpdateInput =
+  Omit<
+    ProfileUpsertInput,
+    "id"
+  >;
+
 export async function getMyProfile(
   userId: string,
 ) {
@@ -69,6 +75,22 @@ export async function saveMyProfile(
     .single();
 }
 
+export async function updateMyProfile(
+  userId: string,
+  payload: ProfileUpdateInput,
+) {
+  return supabase
+    .from("profiles")
+    .update({
+      ...payload,
+      updated_at:
+        new Date().toISOString(),
+    })
+    .eq("id", userId)
+    .select("*")
+    .single();
+}
+
 export async function setMyAccountType(
   userId: string,
   accountType: AccountType,
@@ -78,6 +100,7 @@ export async function setMyAccountType(
     id: userId,
     email: email ?? null,
     account_type: accountType,
+    onboarding_completed: false,
   });
 }
 
