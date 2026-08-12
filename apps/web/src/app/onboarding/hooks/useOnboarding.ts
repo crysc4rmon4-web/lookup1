@@ -1,15 +1,8 @@
 "use client";
 
-import {
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { useEffect, useMemo, useState } from "react";
 
-import {
-  ONBOARDING_STEPS,
-  type OnboardingData,
-} from "../types";
+import { ONBOARDING_STEPS, type OnboardingData } from "../types";
 
 const INITIAL_DATA: OnboardingData = {
   avatarUrl: "",
@@ -26,16 +19,13 @@ type UseOnboardingOptions = {
   initialData?: Partial<OnboardingData>;
 };
 
-export function useOnboarding(
-  options?: UseOnboardingOptions,
-) {
+export function useOnboarding(options?: UseOnboardingOptions) {
   const [stepIndex, setStepIndex] = useState(0);
 
-  const [data, setData] =
-    useState<OnboardingData>({
-      ...INITIAL_DATA,
-      ...options?.initialData,
-    });
+  const [data, setData] = useState<OnboardingData>({
+    ...INITIAL_DATA,
+    ...options?.initialData,
+  });
 
   useEffect(() => {
     if (!options?.initialData) return;
@@ -46,9 +36,7 @@ export function useOnboarding(
     });
   }, [options?.initialData]);
 
-  function update(
-    values: Partial<OnboardingData>,
-  ) {
+  function update(values: Partial<OnboardingData>) {
     setData((current) => ({
       ...current,
       ...values,
@@ -77,8 +65,6 @@ export function useOnboarding(
       case "terms":
         return data.acceptedTerms;
 
-
-
       default:
         return true;
     }
@@ -88,27 +74,19 @@ export function useOnboarding(
     if (!canContinue) return;
 
     setStepIndex((current) =>
-      Math.min(
-        current + 1,
-        ONBOARDING_STEPS.length - 1,
-      ),
+      Math.min(current + 1, ONBOARDING_STEPS.length - 1),
     );
   }
 
   function previous() {
-    setStepIndex((current) =>
-      Math.max(current - 1, 0),
-    );
+    setStepIndex((current) => Math.max(current - 1, 0));
   }
 
   return {
     stepIndex,
     step: ONBOARDING_STEPS[stepIndex]!,
     totalSteps: ONBOARDING_STEPS.length,
-    progress:
-      ((stepIndex + 1) /
-        ONBOARDING_STEPS.length) *
-      100,
+    progress: ((stepIndex + 1) / ONBOARDING_STEPS.length) * 100,
     data,
     update,
     next,

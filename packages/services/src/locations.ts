@@ -31,9 +31,7 @@ export async function updateMyLocation(
   return result.data;
 }
 
-export async function disableMyLocation(
-  userId: string,
-) {
+export async function disableMyLocation(userId: string) {
   console.log("📍 disableMyLocation", {
     userId,
   });

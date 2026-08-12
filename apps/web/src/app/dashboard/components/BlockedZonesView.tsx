@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  MapPin,
-  Plus,
-  ShieldCheck,
-  Trash2,
-} from "lucide-react";
+import { MapPin, Plus, ShieldCheck, Trash2 } from "lucide-react";
 
 import type { RadarBlockedZone } from "@lookup/services";
 
@@ -41,8 +36,8 @@ export function BlockedZonesView({
           </h3>
 
           <p className="mt-1 text-sm leading-6 text-slate-500">
-            Protege lugares donde no quieres que el radar
-            permanezca activo automáticamente.
+            Protege lugares donde no quieres que el radar permanezca activo
+            automáticamente.
           </p>
         </div>
       </div>
@@ -50,13 +45,10 @@ export function BlockedZonesView({
       <div className="mt-5 rounded-2xl bg-slate-50 p-4">
         <p className="text-sm leading-6 text-slate-600">
           Puedes añadir hasta{" "}
-          <span className="font-black text-slate-900">
-            {maxZones} zonas
-          </span>
-          , por ejemplo tu casa, trabajo u otro lugar privado.
-          Cuando entres en una zona bloqueada, LookUp apagará
-          automáticamente el radar. Al salir, podrás volver a
-          activarlo manualmente.
+          <span className="font-black text-slate-900">{maxZones} zonas</span>,
+          por ejemplo tu casa, trabajo u otro lugar privado. Cuando entres en
+          una zona bloqueada, LookUp apagará automáticamente el radar. Al salir,
+          podrás volver a activarlo manualmente.
         </p>
       </div>
 
@@ -105,18 +97,14 @@ export function BlockedZonesView({
 
           {zones.length === 0 && (
             <div className="rounded-2xl border border-dashed border-slate-200 px-5 py-6 text-center">
-              <MapPin
-                size={22}
-                className="mx-auto text-slate-300"
-              />
+              <MapPin size={22} className="mx-auto text-slate-300" />
 
               <p className="mt-3 text-sm font-black text-slate-700">
                 No tienes zonas bloqueadas
               </p>
 
               <p className="mt-1 text-xs leading-5 text-slate-500">
-                Si no configuras ninguna, el radar funcionará
-                normalmente.
+                Si no configuras ninguna, el radar funcionará normalmente.
               </p>
             </div>
           )}

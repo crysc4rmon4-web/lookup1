@@ -16,7 +16,7 @@ export const ONBOARDING_STEPS: OnboardingStep[] = [
   "bio",
   "interests",
   "review",
-  "terms"
+  "terms",
 ];
 
 export type SocialLink = {

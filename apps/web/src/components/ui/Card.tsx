@@ -7,10 +7,7 @@ type Props = {
   className?: string;
 };
 
-export function Card({
-  children,
-  className = "",
-}: Props) {
+export function Card({ children, className = "" }: Props) {
   return (
     <section
       className={[

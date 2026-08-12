@@ -119,9 +119,7 @@ export async function updateRadarBlockedZone(
 /**
  * Elimina una zona bloqueada.
  */
-export async function deleteRadarBlockedZone(
-  zoneId: string,
-): Promise<void> {
+export async function deleteRadarBlockedZone(zoneId: string): Promise<void> {
   const { error } = await supabase
     .from("radar_blocked_zones")
     .delete()

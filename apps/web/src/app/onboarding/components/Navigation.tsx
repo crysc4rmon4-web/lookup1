@@ -1,7 +1,4 @@
-import {
-  ArrowLeft,
-  ArrowRight,
-} from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 
 type NavigationProps = {
   canGoBack: boolean;
@@ -25,15 +22,12 @@ export function Navigation({
   isEditing = false,
   onCancel,
 }: NavigationProps) {
-  const showCancel =
-    isEditing && !canGoBack;
+  const showCancel = isEditing && !canGoBack;
 
-  const showBack =
-    canGoBack;
+  const showBack = canGoBack;
 
   return (
     <div className="mt-10 flex gap-3">
-
       {showCancel && (
         <button
           type="button"
@@ -71,7 +65,6 @@ export function Navigation({
 
         <ArrowRight size={18} />
       </button>
-
     </div>
   );
 }

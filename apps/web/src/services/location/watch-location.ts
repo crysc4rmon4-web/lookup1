@@ -1,16 +1,10 @@
 import type { UserLocation } from "./get-current-location";
 
-type LocationListener = (
-  location: UserLocation,
-) => void;
+type LocationListener = (location: UserLocation) => void;
 
-export function watchLocation(
-  listener: LocationListener,
-): number {
+export function watchLocation(listener: LocationListener): number {
   if (!("geolocation" in navigator)) {
-    throw new Error(
-      "Este navegador no soporta geolocalización.",
-    );
+    throw new Error("Este navegador no soporta geolocalización.");
   }
 
   return navigator.geolocation.watchPosition(

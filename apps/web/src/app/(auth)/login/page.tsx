@@ -1,33 +1,17 @@
 "use client";
 
-import {
-  FormEvent,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 
 import Link from "next/link";
-import {
-  useRouter,
-} from "next/navigation";
+import { useRouter } from "next/navigation";
 
-import {
-  getMyProfile,
-  supabase,
-  type ProfileRow,
-} from "@lookup/services";
+import { getMyProfile, supabase, type ProfileRow } from "@lookup/services";
 
-import {
-  isValidEmail,
-  normalizeEmail,
-} from "@lookup/utils";
+import { isValidEmail, normalizeEmail } from "@lookup/utils";
 
 import { useAuth } from "../../../components/auth-provider";
 
-import {
-  getAuthenticatedDestination,
-} from "../../../lib/account-routing";
+import { getAuthenticatedDestination } from "../../../lib/account-routing";
 
 type FieldErrors = {
   email?: string;
@@ -35,73 +19,39 @@ type FieldErrors = {
 };
 
 type FeedbackType = {
-  type:
-    | "success"
-    | "error"
-    | "info"
-    | null;
+  type: "success" | "error" | "info" | null;
 
   message: string;
 };
 
 type AuthFlash = {
-  type?:
-    | "success"
-    | "error"
-    | "info";
+  type?: "success" | "error" | "info";
 
   message?: string;
   email?: string;
 };
 
-const AUTH_FLASH_KEY =
-  "lookup:auth-flash";
+const AUTH_FLASH_KEY = "lookup:auth-flash";
 
 export default function LoginPage() {
   const router = useRouter();
 
-  const {
-    user,
-    loading: authLoading,
-  } = useAuth();
+  const { user, loading: authLoading } = useAuth();
 
-  const [
-    email,
-    setEmail,
-  ] = useState("");
+  const [email, setEmail] = useState("");
 
-  const [
-    password,
-    setPassword,
-  ] = useState("");
+  const [password, setPassword] = useState("");
 
-  const [
-    loading,
-    setLoading,
-  ] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const [
-    feedback,
-    setFeedback,
-  ] =
-    useState<FeedbackType>({
-      type: "info",
-      message:
-        "Inicia sesión con tu cuenta para continuar.",
-    });
+  const [feedback, setFeedback] = useState<FeedbackType>({
+    type: "info",
+    message: "Inicia sesión con tu cuenta para continuar.",
+  });
 
-  const [
-    fieldErrors,
-    setFieldErrors,
-  ] =
-    useState<FieldErrors>({});
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
 
-  const cleanEmail =
-    useMemo(
-      () =>
-        normalizeEmail(email),
-      [email],
-    );
+  const cleanEmail = useMemo(() => normalizeEmail(email), [email]);
 
   /*
    * Si Supabase ya restauró una sesión,
@@ -110,10 +60,7 @@ export default function LoginPage() {
    * por el resto de la aplicación.
    */
   useEffect(() => {
-    if (
-      authLoading ||
-      !user
-    ) {
+    if (authLoading || !user) {
       return;
     }
 
@@ -121,37 +68,21 @@ export default function LoginPage() {
 
     async function redirectAuthenticatedUser() {
       try {
-        const {
-          data,
-          error,
-        } =
-          await getMyProfile(
-            user!.id,
-          );
+        const { data, error } = await getMyProfile(user!.id);
 
         if (!active) {
           return;
         }
 
         if (error) {
-          console.error(
-            "❌ Error resolviendo perfil después del login",
-            error,
-          );
+          console.error("❌ Error resolviendo perfil después del login", error);
 
           return;
         }
 
-        router.replace(
-          getAuthenticatedDestination(
-            data as ProfileRow | null,
-          ),
-        );
+        router.replace(getAuthenticatedDestination(data as ProfileRow | null));
       } catch (error) {
-        console.error(
-          "❌ Error resolviendo destino autenticado",
-          error,
-        );
+        console.error("❌ Error resolviendo destino autenticado", error);
       }
     }
 
@@ -160,66 +91,36 @@ export default function LoginPage() {
     return () => {
       active = false;
     };
-  }, [
-    authLoading,
-    user,
-    router,
-  ]);
+  }, [authLoading, user, router]);
 
   /*
    * Feedback procedente del signup.
    */
   useEffect(() => {
-    if (
-      typeof window ===
-      "undefined"
-    ) {
+    if (typeof window === "undefined") {
       return;
     }
 
-    const raw =
-      window.sessionStorage.getItem(
-        AUTH_FLASH_KEY,
-      );
+    const raw = window.sessionStorage.getItem(AUTH_FLASH_KEY);
 
     if (raw) {
-      window.sessionStorage.removeItem(
-        AUTH_FLASH_KEY,
-      );
+      window.sessionStorage.removeItem(AUTH_FLASH_KEY);
 
       try {
-        const flash =
-          JSON.parse(
-            raw,
-          ) as AuthFlash;
+        const flash = JSON.parse(raw) as AuthFlash;
 
-        if (
-          typeof flash.email ===
-            "string" &&
-          flash.email
-        ) {
-          setEmail(
-            flash.email,
-          );
+        if (typeof flash.email === "string" && flash.email) {
+          setEmail(flash.email);
         }
 
-        if (
-          typeof flash.message ===
-            "string" &&
-          flash.message
-        ) {
+        if (typeof flash.message === "string" && flash.message) {
           setFeedback({
-            type:
-              flash.type ??
-              "info",
-            message:
-              flash.message,
+            type: flash.type ?? "info",
+            message: flash.message,
           });
         }
       } catch {
-        window.sessionStorage.removeItem(
-          AUTH_FLASH_KEY,
-        );
+        window.sessionStorage.removeItem(AUTH_FLASH_KEY);
       }
     }
 
@@ -227,48 +128,32 @@ export default function LoginPage() {
      * Mensaje posterior a la
      * verificación por correo.
      */
-    const params =
-      new URLSearchParams(
-        window.location.search,
-      );
+    const params = new URLSearchParams(window.location.search);
 
-    if (
-      params.get(
-        "verified",
-      ) === "1"
-    ) {
+    if (params.get("verified") === "1") {
       setFeedback({
         type: "success",
-        message:
-          "Correo verificado correctamente. Ya puedes iniciar sesión.",
+        message: "Correo verificado correctamente. Ya puedes iniciar sesión.",
       });
 
-      window.history.replaceState(
-        {},
-        "",
-        window.location.pathname,
-      );
+      window.history.replaceState({}, "", window.location.pathname);
     }
   }, []);
 
   function resetErrors() {
     setFieldErrors({});
 
-    setFeedback(
-      (current) =>
-        current.type ===
-        "info"
-          ? current
-          : {
-              type: null,
-              message: "",
-            },
+    setFeedback((current) =>
+      current.type === "info"
+        ? current
+        : {
+            type: null,
+            message: "",
+          },
     );
   }
 
-  function getInputClasses(
-    hasError: boolean,
-  ) {
+  function getInputClasses(hasError: boolean) {
     return `
       h-[68px]
       w-full
@@ -291,45 +176,27 @@ export default function LoginPage() {
     `;
   }
 
-  async function handleLogin(
-    event: FormEvent<HTMLFormElement>,
-  ) {
+  async function handleLogin(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (
-      loading ||
-      authLoading
-    ) {
+    if (loading || authLoading) {
       return;
     }
 
     resetErrors();
 
-    const errors: FieldErrors =
-      {};
+    const errors: FieldErrors = {};
 
-    if (
-      !isValidEmail(
-        cleanEmail,
-      )
-    ) {
-      errors.email =
-        "Introduce un email válido";
+    if (!isValidEmail(cleanEmail)) {
+      errors.email = "Introduce un email válido";
     }
 
     if (!password) {
-      errors.password =
-        "Introduce tu contraseña";
+      errors.password = "Introduce tu contraseña";
     }
 
-    if (
-      Object.keys(
-        errors,
-      ).length > 0
-    ) {
-      setFieldErrors(
-        errors,
-      );
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
 
       return;
     }
@@ -337,17 +204,10 @@ export default function LoginPage() {
     try {
       setLoading(true);
 
-      const {
-        data,
-        error,
-      } =
-        await supabase.auth.signInWithPassword(
-          {
-            email:
-              cleanEmail,
-            password,
-          },
-        );
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: cleanEmail,
+        password,
+      });
 
       if (error) {
         /*
@@ -365,40 +225,26 @@ export default function LoginPage() {
       }
 
       if (!data.user) {
-        throw new Error(
-          "No se pudo recuperar la sesión.",
-        );
+        throw new Error("No se pudo recuperar la sesión.");
       }
 
-      const {
-        data:
-          profileData,
-        error:
-          profileError,
-      } =
-        await getMyProfile(
-          data.user.id,
-        );
+      const { data: profileData, error: profileError } = await getMyProfile(
+        data.user.id,
+      );
 
       if (profileError) {
         throw profileError;
       }
 
       router.replace(
-        getAuthenticatedDestination(
-          profileData as ProfileRow | null,
-        ),
+        getAuthenticatedDestination(profileData as ProfileRow | null),
       );
     } catch (error) {
-      console.error(
-        "❌ Error iniciando sesión",
-        error,
-      );
+      console.error("❌ Error iniciando sesión", error);
 
       setFeedback({
         type: "error",
-        message:
-          "No se pudo iniciar sesión. Inténtalo de nuevo.",
+        message: "No se pudo iniciar sesión. Inténtalo de nuevo.",
       });
     } finally {
       setLoading(false);
@@ -419,9 +265,7 @@ export default function LoginPage() {
         </header>
 
         <form
-          onSubmit={
-            handleLogin
-          }
+          onSubmit={handleLogin}
           noValidate
           className="mt-14 w-full space-y-4"
         >
@@ -430,48 +274,29 @@ export default function LoginPage() {
               type="email"
               placeholder="Email"
               value={email}
-              onChange={(
-                event,
-              ) => {
-                setEmail(
-                  event.target
-                    .value,
-                );
+              onChange={(event) => {
+                setEmail(event.target.value);
 
-                setFieldErrors(
-                  (
-                    current,
-                  ) => {
-                    const next =
-                      {
-                        ...current,
-                      };
+                setFieldErrors((current) => {
+                  const next = {
+                    ...current,
+                  };
 
-                    delete next.email;
+                  delete next.email;
 
-                    return next;
-                  },
-                );
+                  return next;
+                });
               }}
-              disabled={
-                loading ||
-                authLoading
-              }
+              disabled={loading || authLoading}
               autoComplete="email"
               spellCheck={false}
               inputMode="email"
-              className={getInputClasses(
-                Boolean(
-                  fieldErrors.email,
-                ),
-              )}
+              className={getInputClasses(Boolean(fieldErrors.email))}
             />
 
             {fieldErrors.email ? (
               <p className="mt-2 px-2 text-sm text-red-500">
-                {
-                  fieldErrors.email
-                }
+                {fieldErrors.email}
               </p>
             ) : null}
           </div>
@@ -481,56 +306,34 @@ export default function LoginPage() {
               type="password"
               placeholder="Contraseña"
               value={password}
-              onChange={(
-                event,
-              ) => {
-                setPassword(
-                  event.target
-                    .value,
-                );
+              onChange={(event) => {
+                setPassword(event.target.value);
 
-                setFieldErrors(
-                  (
-                    current,
-                  ) => {
-                    const next =
-                      {
-                        ...current,
-                      };
+                setFieldErrors((current) => {
+                  const next = {
+                    ...current,
+                  };
 
-                    delete next.password;
+                  delete next.password;
 
-                    return next;
-                  },
-                );
+                  return next;
+                });
               }}
-              disabled={
-                loading ||
-                authLoading
-              }
+              disabled={loading || authLoading}
               autoComplete="current-password"
-              className={getInputClasses(
-                Boolean(
-                  fieldErrors.password,
-                ),
-              )}
+              className={getInputClasses(Boolean(fieldErrors.password))}
             />
 
             {fieldErrors.password ? (
               <p className="mt-2 px-2 text-sm text-red-500">
-                {
-                  fieldErrors.password
-                }
+                {fieldErrors.password}
               </p>
             ) : null}
           </div>
 
           <button
             type="submit"
-            disabled={
-              loading ||
-              authLoading
-            }
+            disabled={loading || authLoading}
             className="
               h-[68px]
               w-full
@@ -548,26 +351,20 @@ export default function LoginPage() {
               disabled:opacity-60
             "
           >
-            {loading
-              ? "ENTRANDO..."
-              : "INICIAR SESIÓN"}
+            {loading ? "ENTRANDO..." : "INICIAR SESIÓN"}
           </button>
 
           {feedback.message ? (
             <p
               className={`pt-2 text-center text-sm font-medium ${
-                feedback.type ===
-                "error"
+                feedback.type === "error"
                   ? "text-red-500"
-                  : feedback.type ===
-                      "success"
+                  : feedback.type === "success"
                     ? "text-emerald-600"
                     : "text-slate-500"
               }`}
             >
-              {
-                feedback.message
-              }
+              {feedback.message}
             </p>
           ) : null}
 
@@ -576,8 +373,7 @@ export default function LoginPage() {
               href="/login/signup"
               className="text-sm font-semibold text-[#5D5FEF] underline underline-offset-4"
             >
-              ¿No tienes cuenta?
-              Regístrate
+              ¿No tienes cuenta? Regístrate
             </Link>
           </div>
         </form>

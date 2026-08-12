@@ -4,9 +4,7 @@ import {
   saveProfileLink,
 } from "@lookup/services";
 
-import type {
-  OnboardingData,
-} from "../types";
+import type { OnboardingData } from "../types";
 
 type SaveProfileParams = {
   userId: string;
@@ -26,41 +24,30 @@ export async function saveProfile({
   data,
   completeOnboarding = false,
 }: SaveProfileParams) {
-  const profile =
-    await saveMyProfile({
-      id: userId,
-      email,
+  const profile = await saveMyProfile({
+    id: userId,
+    email,
 
-      full_name:
-        data.fullName.trim(),
+    full_name: data.fullName.trim(),
 
-      username:
-        data.username.trim(),
+    username: data.username.trim(),
 
-      avatar_url:
-        data.avatarUrl || null,
+    avatar_url: data.avatarUrl || null,
 
-      bio:
-        data.bio.trim() || null,
+    bio: data.bio.trim() || null,
 
-      profession:
-        data.profession.trim() ||
-        null,
+    profession: data.profession.trim() || null,
 
-      interests:
-        data.interests
-          .map((interest) =>
-            interest.trim(),
-          )
-          .filter(Boolean),
+    interests: data.interests
+      .map((interest) => interest.trim())
+      .filter(Boolean),
 
-      account_type: "person",
+    account_type: "person",
 
-      visibility: true,
+    visibility: true,
 
-      onboarding_completed:
-        completeOnboarding,
-    });
+    onboarding_completed: completeOnboarding,
+  });
 
   if (profile.error) {
     throw profile.error;
@@ -71,29 +58,18 @@ export async function saveProfile({
    * la única fuente de verdad para
    * las redes sociales.
    */
-  await deleteProfileLinks(
-    userId,
-  );
+  await deleteProfileLinks(userId);
 
-  for (
-    const link of
-    data.socialLinks
-  ) {
-    const platform =
-      link.platform.trim();
+  for (const link of data.socialLinks) {
+    const platform = link.platform.trim();
 
-    const url =
-      link.url.trim();
+    const url = link.url.trim();
 
     if (!platform || !url) {
       continue;
     }
 
-    await saveProfileLink(
-      userId,
-      platform,
-      url,
-    );
+    await saveProfileLink(userId, platform, url);
   }
 
   return profile.data;

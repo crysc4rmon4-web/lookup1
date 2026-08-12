@@ -1,8 +1,6 @@
 "use client";
 
-import {
-  useEffect,
-} from "react";
+import { useEffect } from "react";
 
 import { useAuth } from "../components/auth-provider";
 
@@ -45,10 +43,7 @@ export function useSyncLocation({
         longitude,
         accuracy ?? undefined,
       ).catch((error) => {
-        console.error(
-          "❌ Error sincronizando ubicación",
-          error,
-        );
+        console.error("❌ Error sincronizando ubicación", error);
       });
     };
 
@@ -67,20 +62,10 @@ export function useSyncLocation({
      * mantener viva la presencia mientras el radar
      * está activo.
      */
-    const interval = window.setInterval(
-      sync,
-      LOCATION_HEARTBEAT_MS,
-    );
+    const interval = window.setInterval(sync, LOCATION_HEARTBEAT_MS);
 
     return () => {
       window.clearInterval(interval);
     };
-  }, [
-    enabled,
-    loading,
-    user,
-    latitude,
-    longitude,
-    accuracy,
-  ]);
+  }, [enabled, loading, user, latitude, longitude, accuracy]);
 }

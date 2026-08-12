@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  Globe,
-  Briefcase,
-  Gamepad2,
-} from "lucide-react";
+import { Globe, Briefcase, Gamepad2 } from "lucide-react";
 
 import {
   SiInstagram,
@@ -40,10 +36,7 @@ type Props = {
   size?: number;
 };
 
-export function SocialIcon({
-  platform,
-  size = 22,
-}: Props) {
+export function SocialIcon({ platform, size = 22 }: Props) {
   switch (platform) {
     case "instagram":
       return <SiInstagram size={size} />;

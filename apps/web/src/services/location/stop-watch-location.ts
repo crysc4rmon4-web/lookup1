@@ -1,7 +1,3 @@
-export function stopWatchLocation(
-  watchId: number,
-) {
-  navigator.geolocation.clearWatch(
-    watchId,
-  );
+export function stopWatchLocation(watchId: number) {
+  navigator.geolocation.clearWatch(watchId);
 }

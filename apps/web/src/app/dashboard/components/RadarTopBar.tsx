@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  Crosshair,
-  MapPinned,
-  RefreshCw,
-  Users,
-} from "lucide-react";
+import { Crosshair, MapPinned, RefreshCw, Users } from "lucide-react";
 
 type Props = {
   enabled: boolean;
@@ -30,46 +25,30 @@ export function RadarTopBar({
         <span
           className={[
             "text-[11px] font-black uppercase tracking-[0.32em]",
-            enabled
-              ? "text-[#16A34A]"
-              : "text-[#EF4444]",
+            enabled ? "text-[#16A34A]" : "text-[#EF4444]",
           ].join(" ")}
         >
-          {toggleLoading
-            ? "ACTUALIZANDO"
-            : enabled
-              ? "ACTIVO"
-              : "INACTIVO"}
+          {toggleLoading ? "ACTUALIZANDO" : enabled ? "ACTIVO" : "INACTIVO"}
         </span>
 
         <button
           type="button"
           onClick={onToggle}
           disabled={toggleLoading}
-          aria-label={
-            enabled
-              ? "Desactivar radar"
-              : "Activar radar"
-          }
+          aria-label={enabled ? "Desactivar radar" : "Activar radar"}
           aria-pressed={enabled}
           className={[
             "relative h-8 w-14 shrink-0 rounded-full transition-all duration-300",
             "focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5D5FEF]/40",
-            toggleLoading
-              ? "cursor-wait opacity-60"
-              : "cursor-pointer",
-            enabled
-              ? "bg-[#22C55E]"
-              : "bg-[#D7DCE8]",
+            toggleLoading ? "cursor-wait opacity-60" : "cursor-pointer",
+            enabled ? "bg-[#22C55E]" : "bg-[#D7DCE8]",
           ].join(" ")}
         >
           <span
             className={[
               "absolute top-1 h-6 w-6 rounded-full bg-white shadow-md",
               "transition-all duration-300",
-              enabled
-                ? "left-7"
-                : "left-1",
+              enabled ? "left-7" : "left-1",
             ].join(" ")}
           />
         </button>
@@ -84,9 +63,7 @@ export function RadarTopBar({
               className="shrink-0 text-[#5D5FEF]"
             />
 
-            <span className="text-xs font-bold text-slate-700">
-              {radius} m
-            </span>
+            <span className="text-xs font-bold text-slate-700">{radius} m</span>
           </div>
 
           <div className="flex items-center gap-2">
@@ -107,25 +84,18 @@ export function RadarTopBar({
               aria-hidden="true"
               className={[
                 "shrink-0",
-                enabled
-                  ? "text-[#22C55E]"
-                  : "text-slate-300",
+                enabled ? "text-[#22C55E]" : "text-slate-300",
               ].join(" ")}
             />
 
-            <span className="text-xs font-bold text-slate-700">
-              GPS
-            </span>
+            <span className="text-xs font-bold text-slate-700">GPS</span>
           </div>
         </div>
 
         <button
           type="button"
           onClick={onRefresh}
-          disabled={
-            toggleLoading ||
-            !enabled
-          }
+          disabled={toggleLoading || !enabled}
           aria-label="Escanear personas cercanas"
           className={[
             "flex w-full shrink-0 items-center justify-center gap-2",
@@ -134,8 +104,7 @@ export function RadarTopBar({
             "transition-all",
             "focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5D5FEF]/40",
             "sm:w-auto",
-            toggleLoading ||
-            !enabled
+            toggleLoading || !enabled
               ? "cursor-not-allowed bg-[#F1F3F8] text-slate-300"
               : "cursor-pointer bg-[#EEF2FF] text-[#5D5FEF] hover:bg-[#E3E8FF]",
           ].join(" ")}
@@ -143,16 +112,10 @@ export function RadarTopBar({
           <RefreshCw
             size={13}
             aria-hidden="true"
-            className={
-              toggleLoading
-                ? "animate-spin"
-                : ""
-            }
+            className={toggleLoading ? "animate-spin" : ""}
           />
 
-          {toggleLoading
-            ? "ACTUALIZANDO"
-            : "ESCANEAR"}
+          {toggleLoading ? "ACTUALIZANDO" : "ESCANEAR"}
         </button>
       </div>
     </section>

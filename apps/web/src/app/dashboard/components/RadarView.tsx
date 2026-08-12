@@ -1,8 +1,6 @@
 "use client";
 
-import type {
-  NearbyProfile,
-} from "@lookup/types";
+import type { NearbyProfile } from "@lookup/types";
 
 import { RadarCanvas } from "../../../components/RadarCanvas";
 
@@ -49,17 +47,11 @@ export function RadarView({
         />
 
         <div className="mt-6 flex w-full justify-center">
-          <RadarCanvas
-            enabled={enabled}
-            profiles={profiles}
-          />
+          <RadarCanvas enabled={enabled} profiles={profiles} />
         </div>
       </div>
 
-      <NearbyProfiles
-        enabled={enabled}
-        profiles={profiles}
-      />
+      <NearbyProfiles enabled={enabled} profiles={profiles} />
     </section>
   );
 }

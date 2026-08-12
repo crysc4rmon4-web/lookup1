@@ -8,10 +8,7 @@ import { useAuth } from "../components/auth-provider";
 export function useGuestRoute() {
   const router = useRouter();
 
-  const {
-    user,
-    loading,
-  } = useAuth();
+  const { user, loading } = useAuth();
 
   useEffect(() => {
     if (loading) return;

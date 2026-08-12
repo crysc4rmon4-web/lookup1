@@ -6,9 +6,7 @@ export type UserLocation = {
 
 export async function getCurrentLocation(): Promise<UserLocation> {
   if (!("geolocation" in navigator)) {
-    throw new Error(
-      "Este navegador no soporta geolocalización.",
-    );
+    throw new Error("Este navegador no soporta geolocalización.");
   }
 
   return new Promise((resolve, reject) => {

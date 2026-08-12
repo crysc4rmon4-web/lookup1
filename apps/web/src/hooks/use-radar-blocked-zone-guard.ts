@@ -30,13 +30,9 @@ function getDistanceInMeters(
 ) {
   const earthRadius = 6_371_000;
 
-  const latitudeDifference = toRadians(
-    latitudeB - latitudeA,
-  );
+  const latitudeDifference = toRadians(latitudeB - latitudeA);
 
-  const longitudeDifference = toRadians(
-    longitudeB - longitudeA,
-  );
+  const longitudeDifference = toRadians(longitudeB - longitudeA);
 
   const a =
     Math.sin(latitudeDifference / 2) ** 2 +
@@ -44,24 +40,13 @@ function getDistanceInMeters(
       Math.cos(toRadians(latitudeB)) *
       Math.sin(longitudeDifference / 2) ** 2;
 
-  const c =
-    2 *
-    Math.atan2(
-      Math.sqrt(a),
-      Math.sqrt(1 - a),
-    );
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
   return earthRadius * c;
 }
 
-function isInsideBlockedZone(
-  coordinates: Coordinates,
-  zone: RadarBlockedZone,
-) {
-  if (
-    coordinates.latitude === null ||
-    coordinates.longitude === null
-  ) {
+function isInsideBlockedZone(coordinates: Coordinates, zone: RadarBlockedZone) {
+  if (coordinates.latitude === null || coordinates.longitude === null) {
     return false;
   }
 
@@ -103,10 +88,7 @@ export function useRadarBlockedZoneGuard({
     };
 
     const blockedZone = zones.find((zone) =>
-      isInsideBlockedZone(
-        coordinates,
-        zone,
-      ),
+      isInsideBlockedZone(coordinates, zone),
     );
 
     if (!blockedZone) {
@@ -125,12 +107,5 @@ export function useRadarBlockedZoneGuard({
       .finally(() => {
         disablingRef.current = false;
       });
-  }, [
-    enabled,
-    zones,
-    latitude,
-    longitude,
-    loading,
-    onBlockedZoneDetected,
-  ]);
+  }, [enabled, zones, latitude, longitude, loading, onBlockedZoneDetected]);
 }

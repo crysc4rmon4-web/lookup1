@@ -3,18 +3,13 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-
 import { useProfileStatus } from "./use-profile-status";
 
 export function useProtectedRoute() {
   const router = useRouter();
 
-  const {
-    user,
-    authLoading,
-    profileLoading,
-    needsOnboarding,
-  } = useProfileStatus();
+  const { user, authLoading, profileLoading, needsOnboarding } =
+    useProfileStatus();
 
   const loading = authLoading || profileLoading;
 
@@ -30,12 +25,7 @@ export function useProtectedRoute() {
       router.replace("/onboarding");
       return;
     }
-  }, [
-    loading,
-    user,
-    needsOnboarding,
-    router,
-  ]);
+  }, [loading, user, needsOnboarding, router]);
 
   return {
     user,

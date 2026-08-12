@@ -17,22 +17,15 @@ import { saveProfile } from "./services/save-profile";
 export default function OnboardingPage() {
   const router = useRouter();
 
-  const { user, loading: authLoading } =
-    useAuth();
+  const { user, loading: authLoading } = useAuth();
 
-  const {
-    isProfileComplete,
-    loading: profileLoading,
-  } = useProfileStatus();
+  const { isProfileComplete, loading: profileLoading } = useProfileStatus();
 
-  const [loading, setLoading] =
-    useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const [showWelcome, setShowWelcome] =
-    useState(false);
+  const [showWelcome, setShowWelcome] = useState(false);
 
-  const onboarding =
-    useOnboarding();
+  const onboarding = useOnboarding();
 
   useEffect(() => {
     if (authLoading || profileLoading) {
@@ -46,17 +39,9 @@ export default function OnboardingPage() {
     if (isProfileComplete) {
       router.replace("/dashboard");
     }
-  }, [
-    authLoading,
-    profileLoading,
-    user,
-    isProfileComplete,
-    router,
-  ]);
+  }, [authLoading, profileLoading, user, isProfileComplete, router]);
 
-  async function handleAvatar(
-    file: File,
-  ) {
+  async function handleAvatar(file: File) {
     if (!user) {
       return;
     }
@@ -64,36 +49,24 @@ export default function OnboardingPage() {
     try {
       setLoading(true);
 
-      const url =
-        await uploadAvatar(
-          user.id,
-          file,
-        );
+      const url = await uploadAvatar(user.id, file);
 
       onboarding.update({
         avatarUrl: url,
       });
     } catch {
-      alert(
-        "No se pudo subir la imagen.",
-      );
+      alert("No se pudo subir la imagen.");
     } finally {
       setLoading(false);
     }
   }
 
   async function handleNext() {
-    if (
-      !onboarding.canContinue ||
-      loading
-    ) {
+    if (!onboarding.canContinue || loading) {
       return;
     }
 
-    if (
-      onboarding.stepIndex <
-      onboarding.totalSteps - 1
-    ) {
+    if (onboarding.stepIndex < onboarding.totalSteps - 1) {
       onboarding.next();
       return;
     }
@@ -113,25 +86,17 @@ export default function OnboardingPage() {
       });
 
       setShowWelcome(true);
-
     } catch (error) {
-
       if (error instanceof Error) {
         alert(error.message);
       } else {
         alert(JSON.stringify(error));
       }
-
     } finally {
-
       setLoading(false);
-
     }
   }
-  if (
-    authLoading ||
-    profileLoading
-  ) {
+  if (authLoading || profileLoading) {
     return (
       <main className="flex min-h-screen items-center justify-center">
         Cargando...
@@ -146,24 +111,17 @@ export default function OnboardingPage() {
   if (showWelcome) {
     return (
       <main className="min-h-screen bg-[#F7F8FC] px-6 py-10">
-
         <section className="mx-auto flex min-h-[85vh] w-full max-w-[430px] items-center">
-
           <StepWelcome
             fullName={onboarding.data.fullName}
-            onFinish={() =>
-              router.replace("/dashboard")
-            }
+            onFinish={() => router.replace("/dashboard")}
           />
-
         </section>
-
       </main>
     );
   }
 
   return (
-
     <OnboardingForm
       step={onboarding.step}
       stepIndex={onboarding.stepIndex}
@@ -177,6 +135,5 @@ export default function OnboardingPage() {
       onBack={onboarding.previous}
       onNext={handleNext}
     />
-
   );
 }

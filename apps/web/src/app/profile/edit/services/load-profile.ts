@@ -1,7 +1,4 @@
-import {
-  getMyProfile,
-  getProfileLinks,
-} from "@lookup/services";
+import { getMyProfile, getProfileLinks } from "@lookup/services";
 
 import type { OnboardingData } from "../../../onboarding/types";
 
@@ -23,7 +20,7 @@ export async function loadProfile(userId: string): Promise<OnboardingData> {
 
     interests: [],
     acceptedTerms: true,
-    
+
     socialLinks: links.map((link) => ({
       platform: link.platform,
       url: link.url,

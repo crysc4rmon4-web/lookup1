@@ -24,7 +24,6 @@ export function EventsView({
 }: EventsViewProps) {
   return (
     <section className="space-y-5">
-
       <button
         onClick={onCreateEvent}
         className="w-full rounded-2xl bg-[#5D5FEF] py-4 font-bold text-white transition hover:opacity-90"
@@ -34,20 +33,13 @@ export function EventsView({
 
       {events.length === 0 ? (
         <div className="rounded-[2rem] bg-white p-10 text-center shadow-sm">
+          <CalendarDays size={40} className="mx-auto text-[#5D5FEF]" />
 
-          <CalendarDays
-            size={40}
-            className="mx-auto text-[#5D5FEF]"
-          />
-
-          <h2 className="mt-5 text-2xl font-black">
-            No hay eventos cerca
-          </h2>
+          <h2 className="mt-5 text-2xl font-black">No hay eventos cerca</h2>
 
           <p className="mt-3 text-slate-500">
             Sé el primero en organizar una actividad.
           </p>
-
         </div>
       ) : (
         events.map((event) => (
@@ -55,16 +47,11 @@ export function EventsView({
             key={event.id}
             className="rounded-[2rem] bg-white p-6 shadow-sm"
           >
-            <h2 className="text-2xl font-black">
-              {event.title}
-            </h2>
+            <h2 className="text-2xl font-black">{event.title}</h2>
 
-            <p className="mt-3 text-slate-500">
-              {event.description}
-            </p>
+            <p className="mt-3 text-slate-500">{event.description}</p>
 
             <div className="mt-6 space-y-2 text-sm">
-
               <div className="flex items-center gap-2">
                 <MapPin size={18} />
                 {event.place}
@@ -79,7 +66,6 @@ export function EventsView({
                 <Users size={18} />
                 {event.attendees} asistentes
               </div>
-
             </div>
 
             <button

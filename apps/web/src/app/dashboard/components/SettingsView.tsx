@@ -22,12 +22,7 @@ import type {
 import { BlockedZonesSection } from "./BlockedZonesSection";
 
 export type SettingsEditSection =
-  | "profile"
-  | "name"
-  | "profession"
-  | "bio"
-  | "socials"
-  | "interests";
+  "profile" | "name" | "profession" | "bio" | "socials" | "interests";
 
 type SettingsViewProps = {
   profile: ProfileRow;
@@ -44,12 +39,8 @@ type SettingsViewProps = {
   maxBlockedZones: number;
 
   onAddBlockedZone: () => void;
-  onEditBlockedZone: (
-    zone: RadarBlockedZone,
-  ) => void;
-  onDeleteBlockedZone: (
-    zone: RadarBlockedZone,
-  ) => void;
+  onEditBlockedZone: (zone: RadarBlockedZone) => void;
+  onDeleteBlockedZone: (zone: RadarBlockedZone) => void;
 
   /**
    * Abre la edición puntual desde Ajustes.
@@ -57,9 +48,7 @@ type SettingsViewProps = {
    * Importante:
    * esto NO debe navegar al onboarding.
    */
-  onEditProfile: (
-    section?: SettingsEditSection,
-  ) => void;
+  onEditProfile: (section?: SettingsEditSection) => void;
 
   onLogout: () => void;
 };
@@ -69,10 +58,7 @@ function getInitials(name: string) {
     .split(" ")
     .filter(Boolean)
     .slice(0, 2)
-    .map(
-      (part) =>
-        part[0]?.toUpperCase() ?? "",
-    )
+    .map((part) => part[0]?.toUpperCase() ?? "")
     .join("");
 }
 
@@ -80,11 +66,7 @@ function formatPlatform(platform: string) {
   return platform
     .replace(/[_-]/g, " ")
     .trim()
-    .replace(
-      /\b\w/g,
-      (letter) =>
-        letter.toUpperCase(),
-    );
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
 
 function EditButton({
@@ -137,10 +119,7 @@ export function SettingsView({
   onEditProfile,
   onLogout,
 }: SettingsViewProps) {
-  const name =
-    profile.full_name ??
-    profile.username ??
-    "Usuario";
+  const name = profile.full_name ?? profile.username ?? "Usuario";
 
   const city = profile.city?.trim();
 
@@ -307,12 +286,7 @@ export function SettingsView({
               </p>
             </div>
 
-            <EditButton
-              label="nombre"
-              onClick={() =>
-                onEditProfile("name")
-              }
-            />
+            <EditButton label="nombre" onClick={() => onEditProfile("name")} />
           </div>
 
           {/* Profesión */}
@@ -347,18 +321,13 @@ export function SettingsView({
                   text-slate-800
                 "
               >
-                {profile.profession ||
-                  "Sin profesión"}
+                {profile.profession || "Sin profesión"}
               </p>
             </div>
 
             <EditButton
               label="profesión"
-              onClick={() =>
-                onEditProfile(
-                  "profession",
-                )
-              }
+              onClick={() => onEditProfile("profession")}
             />
           </div>
 
@@ -393,16 +362,13 @@ export function SettingsView({
                   text-slate-600
                 "
               >
-                {profile.bio ||
-                  "Todavía no has añadido una biografía."}
+                {profile.bio || "Todavía no has añadido una biografía."}
               </p>
             </div>
 
             <EditButton
               label="biografía"
-              onClick={() =>
-                onEditProfile("bio")
-              }
+              onClick={() => onEditProfile("bio")}
             />
           </div>
 
@@ -410,9 +376,7 @@ export function SettingsView({
           <div className="p-5">
             <button
               type="button"
-              onClick={() =>
-                onEditProfile("profile")
-              }
+              onClick={() => onEditProfile("profile")}
               className="
                 flex
                 w-full
@@ -466,9 +430,10 @@ export function SettingsView({
               items-center
               justify-center
               rounded-2xl
-              ${radarEnabled
-                ? "bg-[#EEF2FF] text-[#5D5FEF]"
-                : "bg-slate-100 text-slate-500"
+              ${
+                radarEnabled
+                  ? "bg-[#EEF2FF] text-[#5D5FEF]"
+                  : "bg-slate-100 text-slate-500"
               }
             `}
           >
@@ -505,11 +470,7 @@ export function SettingsView({
             type="button"
             role="switch"
             aria-checked={radarEnabled}
-            aria-label={
-              radarEnabled
-                ? "Desactivar radar"
-                : "Activar radar"
-            }
+            aria-label={radarEnabled ? "Desactivar radar" : "Activar radar"}
             disabled={radarToggleLoading}
             onClick={onToggleRadar}
             className={`
@@ -522,10 +483,7 @@ export function SettingsView({
               duration-200
               disabled:cursor-not-allowed
               disabled:opacity-60
-              ${radarEnabled
-                ? "bg-[#5D5FEF]"
-                : "bg-slate-300"
-              }
+              ${radarEnabled ? "bg-[#5D5FEF]" : "bg-slate-300"}
             `}
           >
             <span
@@ -539,10 +497,7 @@ export function SettingsView({
                 shadow-sm
                 transition
                 duration-200
-                ${radarEnabled
-                  ? "left-6"
-                  : "left-1"
-                }
+                ${radarEnabled ? "left-6" : "left-1"}
               `}
             />
           </button>
@@ -585,16 +540,13 @@ export function SettingsView({
                 text-slate-500
               "
             >
-              Las personas pueden usarlas para
-              conectar contigo.
+              Las personas pueden usarlas para conectar contigo.
             </p>
           </div>
 
           <EditButton
             label="redes sociales"
-            onClick={() =>
-              onEditProfile("socials")
-            }
+            onClick={() => onEditProfile("socials")}
           />
         </div>
 
@@ -620,9 +572,7 @@ export function SettingsView({
 
             <button
               type="button"
-              onClick={() =>
-                onEditProfile("socials")
-              }
+              onClick={() => onEditProfile("socials")}
               className="
                 mt-2
                 text-sm
@@ -675,9 +625,7 @@ export function SettingsView({
                       font-black
                     "
                   >
-                    {formatPlatform(
-                      link.platform,
-                    ).slice(0, 1)}
+                    {formatPlatform(link.platform).slice(0, 1)}
                   </span>
                 </div>
 
@@ -689,9 +637,7 @@ export function SettingsView({
                       text-slate-800
                     "
                   >
-                    {formatPlatform(
-                      link.platform,
-                    )}
+                    {formatPlatform(link.platform)}
                   </p>
 
                   <p
@@ -800,9 +746,7 @@ export function SettingsView({
               Términos y condiciones
             </span>
 
-            <span className="text-slate-300">
-              ›
-            </span>
+            <span className="text-slate-300">›</span>
           </Link>
 
           <Link
@@ -838,9 +782,7 @@ export function SettingsView({
               Privacidad
             </span>
 
-            <span className="text-slate-300">
-              ›
-            </span>
+            <span className="text-slate-300">›</span>
           </Link>
 
           <a
@@ -890,9 +832,7 @@ export function SettingsView({
               </span>
             </span>
 
-            <span className="text-slate-300">
-              ›
-            </span>
+            <span className="text-slate-300">›</span>
           </a>
 
           <button
@@ -931,9 +871,7 @@ export function SettingsView({
               Cerrar sesión
             </span>
 
-            <span className="text-red-300">
-              ›
-            </span>
+            <span className="text-red-300">›</span>
           </button>
         </nav>
       </section>

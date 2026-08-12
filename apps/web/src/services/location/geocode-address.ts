@@ -10,8 +10,7 @@ type NominatimResult = {
   lon?: string;
 };
 
-const NOMINATIM_URL =
-  "https://nominatim.openstreetmap.org/search";
+const NOMINATIM_URL = "https://nominatim.openstreetmap.org/search";
 
 export async function geocodeAddress(
   address: string,
@@ -19,9 +18,7 @@ export async function geocodeAddress(
   const normalizedAddress = address.trim();
 
   if (!normalizedAddress) {
-    throw new Error(
-      "Introduce una dirección.",
-    );
+    throw new Error("Introduce una dirección.");
   }
 
   const params = new URLSearchParams({
@@ -32,33 +29,23 @@ export async function geocodeAddress(
     countrycodes: "es",
   });
 
-  const response = await fetch(
-    `${NOMINATIM_URL}?${params.toString()}`,
-    {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-      },
-      cache: "no-store",
+  const response = await fetch(`${NOMINATIM_URL}?${params.toString()}`, {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
     },
-  );
+    cache: "no-store",
+  });
 
   if (!response.ok) {
-    throw new Error(
-      "No se pudo localizar la dirección.",
-    );
+    throw new Error("No se pudo localizar la dirección.");
   }
 
-  const results =
-    (await response.json()) as NominatimResult[];
+  const results = (await response.json()) as NominatimResult[];
 
   const result = results[0];
 
-  if (
-    !result ||
-    !result.lat ||
-    !result.lon
-  ) {
+  if (!result || !result.lat || !result.lon) {
     throw new Error(
       "No encontramos esa dirección. Comprueba que esté escrita correctamente.",
     );
@@ -67,19 +54,12 @@ export async function geocodeAddress(
   const latitude = Number(result.lat);
   const longitude = Number(result.lon);
 
-  if (
-    !Number.isFinite(latitude) ||
-    !Number.isFinite(longitude)
-  ) {
-    throw new Error(
-      "La ubicación obtenida no es válida.",
-    );
+  if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+    throw new Error("La ubicación obtenida no es válida.");
   }
 
   return {
-    address:
-      result.display_name ??
-      normalizedAddress,
+    address: result.display_name ?? normalizedAddress,
     latitude,
     longitude,
   };

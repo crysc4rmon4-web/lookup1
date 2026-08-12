@@ -1,8 +1,6 @@
 import { supabase } from "./supabase/client";
 
-export type AccountType =
-  | "person"
-  | "business";
+export type AccountType = "person" | "business";
 
 export type ProfileRow = {
   id: string;
@@ -40,32 +38,19 @@ export type ProfileUpsertInput = {
   account_type?: AccountType | null;
 };
 
-export type ProfileUpdateInput =
-  Omit<
-    ProfileUpsertInput,
-    "id"
-  >;
+export type ProfileUpdateInput = Omit<ProfileUpsertInput, "id">;
 
-export async function getMyProfile(
-  userId: string,
-) {
-  return supabase
-    .from("profiles")
-    .select("*")
-    .eq("id", userId)
-    .maybeSingle();
+export async function getMyProfile(userId: string) {
+  return supabase.from("profiles").select("*").eq("id", userId).maybeSingle();
 }
 
-export async function saveMyProfile(
-  payload: ProfileUpsertInput,
-) {
+export async function saveMyProfile(payload: ProfileUpsertInput) {
   return supabase
     .from("profiles")
     .upsert(
       {
         ...payload,
-        updated_at:
-          new Date().toISOString(),
+        updated_at: new Date().toISOString(),
       },
       {
         onConflict: "id",
@@ -83,8 +68,7 @@ export async function updateMyProfile(
     .from("profiles")
     .update({
       ...payload,
-      updated_at:
-        new Date().toISOString(),
+      updated_at: new Date().toISOString(),
     })
     .eq("id", userId)
     .select("*")
@@ -105,17 +89,13 @@ export async function setMyAccountType(
    * Si ya existe, no lo modificamos
    * accidentalmente desde esta función.
    */
-  const currentProfile =
-    await getMyProfile(userId);
+  const currentProfile = await getMyProfile(userId);
 
   if (currentProfile.error) {
     return currentProfile;
   }
 
-  if (
-    currentProfile.data
-      ?.account_type
-  ) {
+  if (currentProfile.data?.account_type) {
     return currentProfile;
   }
 
@@ -127,38 +107,24 @@ export async function setMyAccountType(
   });
 }
 
-export async function getVisibleProfiles(
-  currentUserId?: string,
-) {
+export async function getVisibleProfiles(currentUserId?: string) {
   let query = supabase
     .from("profiles")
     .select("*")
     .eq("visibility", true)
-    .eq(
-      "onboarding_completed",
-      true,
-    )
+    .eq("onboarding_completed", true)
     .order("updated_at", {
       ascending: false,
     })
     .limit(20);
 
   if (currentUserId) {
-    query = query.neq(
-      "id",
-      currentUserId,
-    );
+    query = query.neq("id", currentUserId);
   }
 
   return query;
 }
 
-export async function getProfileById(
-  profileId: string,
-) {
-  return supabase
-    .from("profiles")
-    .select("*")
-    .eq("id", profileId)
-    .single();
+export async function getProfileById(profileId: string) {
+  return supabase.from("profiles").select("*").eq("id", profileId).single();
 }

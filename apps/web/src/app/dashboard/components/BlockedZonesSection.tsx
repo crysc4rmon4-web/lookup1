@@ -1,15 +1,8 @@
 "use client";
 
-import {
-  MapPin,
-  Pencil,
-  Plus,
-  Trash2,
-} from "lucide-react";
+import { MapPin, Pencil, Plus, Trash2 } from "lucide-react";
 
-import type {
-  RadarBlockedZone,
-} from "@lookup/services";
+import type { RadarBlockedZone } from "@lookup/services";
 
 type BlockedZonesSectionProps = {
   zones: RadarBlockedZone[];
@@ -18,12 +11,8 @@ type BlockedZonesSectionProps = {
   canAddZone: boolean;
   maxZones: number;
   onAdd: () => void;
-  onEdit: (
-    zone: RadarBlockedZone,
-  ) => void;
-  onDelete: (
-    zone: RadarBlockedZone,
-  ) => void;
+  onEdit: (zone: RadarBlockedZone) => void;
+  onDelete: (zone: RadarBlockedZone) => void;
 };
 
 export function BlockedZonesSection({
@@ -88,8 +77,8 @@ export function BlockedZonesSection({
                   text-slate-500
                 "
               >
-                Evita que tu radar permanezca activo
-                accidentalmente en lugares privados.
+                Evita que tu radar permanezca activo accidentalmente en lugares
+                privados.
               </p>
             </div>
 
@@ -129,10 +118,8 @@ export function BlockedZonesSection({
             text-slate-500
           "
         >
-          Si entras en una de estas zonas con el radar
-          activo, LookUp lo apagará automáticamente.
-          Al salir, tendrás que volver a activarlo
-          manualmente.
+          Si entras en una de estas zonas con el radar activo, LookUp lo apagará
+          automáticamente. Al salir, tendrás que volver a activarlo manualmente.
         </p>
       </div>
 
@@ -210,9 +197,8 @@ export function BlockedZonesSection({
                 text-slate-400
               "
             >
-              Puedes añadir hasta {maxZones} lugares
-              donde quieras que el radar se desactive
-              automáticamente.
+              Puedes añadir hasta {maxZones} lugares donde quieras que el radar
+              se desactive automáticamente.
             </p>
           </div>
         ) : (
@@ -280,8 +266,7 @@ export function BlockedZonesSection({
                         text-slate-400
                       "
                     >
-                      Radio de seguridad ·{" "}
-                      {zone.radius_meters} m
+                      Radio de seguridad · {zone.radius_meters} m
                     </p>
                   </div>
 
@@ -295,9 +280,7 @@ export function BlockedZonesSection({
                   >
                     <button
                       type="button"
-                      onClick={() =>
-                        onEdit(zone)
-                      }
+                      onClick={() => onEdit(zone)}
                       disabled={saving}
                       aria-label={`Editar ${zone.name}`}
                       title={`Editar ${zone.name}`}
@@ -321,9 +304,7 @@ export function BlockedZonesSection({
 
                     <button
                       type="button"
-                      onClick={() =>
-                        onDelete(zone)
-                      }
+                      onClick={() => onDelete(zone)}
                       disabled={saving}
                       aria-label={`Eliminar ${zone.name}`}
                       title={`Eliminar ${zone.name}`}
@@ -355,11 +336,7 @@ export function BlockedZonesSection({
       <button
         type="button"
         onClick={onAdd}
-        disabled={
-          !canAddZone ||
-          loading ||
-          saving
-        }
+        disabled={!canAddZone || loading || saving}
         className="
           mt-4
           flex

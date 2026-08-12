@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  useEffect,
-  useState,
-} from "react";
+import { useEffect, useState } from "react";
 
 import {
   getMyProfile,
@@ -20,9 +17,7 @@ import {
 } from "../lib/account-routing";
 
 type UseProfileStatusResult = {
-  user: ReturnType<
-    typeof useAuth
-  >["user"];
+  user: ReturnType<typeof useAuth>["user"];
 
   profile: ProfileRow | null;
 
@@ -38,43 +33,19 @@ type UseProfileStatusResult = {
   needsOnboarding: boolean;
   isProfileComplete: boolean;
 
-  onboardingRoute:
-    | "/onboarding"
-    | "/onboarding/business"
-    | null;
+  onboardingRoute: "/onboarding" | "/onboarding/business" | null;
 
-  authenticatedDestination:
-    AuthenticatedDestination;
+  authenticatedDestination: AuthenticatedDestination;
 };
 
-export function useProfileStatus():
-  UseProfileStatusResult {
-  const {
-    user,
-    loading: authLoading,
-  } = useAuth();
+export function useProfileStatus(): UseProfileStatusResult {
+  const { user, loading: authLoading } = useAuth();
 
-  const [
-    profile,
-    setProfile,
-  ] =
-    useState<ProfileRow | null>(
-      null,
-    );
+  const [profile, setProfile] = useState<ProfileRow | null>(null);
 
-  const [
-    profileLoading,
-    setProfileLoading,
-  ] =
-    useState(true);
+  const [profileLoading, setProfileLoading] = useState(true);
 
-  const [
-    profileError,
-    setProfileError,
-  ] =
-    useState<string | null>(
-      null,
-    );
+  const [profileError, setProfileError] = useState<string | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -105,13 +76,7 @@ export function useProfileStatus():
       setProfileError(null);
 
       try {
-        const {
-          data,
-          error,
-        } =
-          await getMyProfile(
-            user.id,
-          );
+        const { data, error } = await getMyProfile(user.id);
 
         if (!active) {
           return;
@@ -119,16 +84,12 @@ export function useProfileStatus():
 
         if (error) {
           setProfile(null);
-          setProfileError(
-            error.message,
-          );
+          setProfileError(error.message);
 
           return;
         }
 
-        setProfile(
-          data as ProfileRow | null,
-        );
+        setProfile(data as ProfileRow | null);
       } catch (error) {
         if (!active) {
           return;
@@ -153,23 +114,13 @@ export function useProfileStatus():
     return () => {
       active = false;
     };
-  }, [
-    authLoading,
-    user,
-  ]);
+  }, [authLoading, user]);
 
-  const loading =
-    authLoading ||
-    profileLoading;
+  const loading = authLoading || profileLoading;
 
-  const accountType =
-    profile?.account_type ??
-    null;
+  const accountType = profile?.account_type ?? null;
 
-  const isProfileComplete =
-    profile
-      ?.onboarding_completed ===
-    true;
+  const isProfileComplete = profile?.onboarding_completed === true;
 
   /*
    * Una cuenta nueva puede estar
@@ -180,9 +131,7 @@ export function useProfileStatus():
    * su tipo de cuenta.
    */
   const needsAccountType =
-    !loading &&
-    Boolean(user) &&
-    (!profile || !accountType);
+    !loading && Boolean(user) && (!profile || !accountType);
 
   const needsOnboarding =
     !loading &&
@@ -191,17 +140,9 @@ export function useProfileStatus():
     Boolean(accountType) &&
     !isProfileComplete;
 
-  const onboardingRoute =
-    accountType
-      ? getOnboardingRoute(
-          accountType,
-        )
-      : null;
+  const onboardingRoute = accountType ? getOnboardingRoute(accountType) : null;
 
-  const authenticatedDestination =
-    getAuthenticatedDestination(
-      profile,
-    );
+  const authenticatedDestination = getAuthenticatedDestination(profile);
 
   return {
     user,

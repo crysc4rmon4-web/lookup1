@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  useCallback,
-  useEffect,
-  useState,
-} from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import {
   createRadarBlockedZone,
@@ -43,15 +39,10 @@ export function useRadarBlockedZones() {
 
       setZones(data);
     } catch (err) {
-      console.error(
-        "❌ Error cargando zonas bloqueadas del radar",
-        err,
-      );
+      console.error("❌ Error cargando zonas bloqueadas del radar", err);
 
       setZones([]);
-      setError(
-        "No se pudieron cargar las zonas bloqueadas.",
-      );
+      setError("No se pudieron cargar las zonas bloqueadas.");
     } finally {
       setLoading(false);
     }
@@ -62,45 +53,29 @@ export function useRadarBlockedZones() {
   }, [loadZones]);
 
   const addZone = useCallback(
-    async (
-      input: Omit<
-        CreateRadarBlockedZoneInput,
-        "profile_id"
-      >,
-    ) => {
+    async (input: Omit<CreateRadarBlockedZoneInput, "profile_id">) => {
       if (!user) {
-        throw new Error(
-          "Usuario no autenticado.",
-        );
+        throw new Error("Usuario no autenticado.");
       }
 
       if (zones.length >= MAX_BLOCKED_ZONES) {
-        throw new Error(
-          "Puedes configurar un máximo de 3 zonas bloqueadas.",
-        );
+        throw new Error("Puedes configurar un máximo de 3 zonas bloqueadas.");
       }
 
       setSaving(true);
       setError(null);
 
       try {
-        const zone =
-          await createRadarBlockedZone({
-            ...input,
-            profile_id: user.id,
-          });
+        const zone = await createRadarBlockedZone({
+          ...input,
+          profile_id: user.id,
+        });
 
-        setZones((current) => [
-          ...current,
-          zone,
-        ]);
+        setZones((current) => [...current, zone]);
 
         return zone;
       } catch (err) {
-        console.error(
-          "❌ Error creando zona bloqueada",
-          err,
-        );
+        console.error("❌ Error creando zona bloqueada", err);
 
         const message =
           err instanceof Error
@@ -118,34 +93,20 @@ export function useRadarBlockedZones() {
   );
 
   const updateZone = useCallback(
-    async (
-      zoneId: string,
-      input: UpdateRadarBlockedZoneInput,
-    ) => {
+    async (zoneId: string, input: UpdateRadarBlockedZoneInput) => {
       setSaving(true);
       setError(null);
 
       try {
-        const updatedZone =
-          await updateRadarBlockedZone(
-            zoneId,
-            input,
-          );
+        const updatedZone = await updateRadarBlockedZone(zoneId, input);
 
         setZones((current) =>
-          current.map((zone) =>
-            zone.id === zoneId
-              ? updatedZone
-              : zone,
-          ),
+          current.map((zone) => (zone.id === zoneId ? updatedZone : zone)),
         );
 
         return updatedZone;
       } catch (err) {
-        console.error(
-          "❌ Error actualizando zona bloqueada",
-          err,
-        );
+        console.error("❌ Error actualizando zona bloqueada", err);
 
         const message =
           err instanceof Error
@@ -162,42 +123,31 @@ export function useRadarBlockedZones() {
     [],
   );
 
-  const removeZone = useCallback(
-    async (zoneId: string) => {
-      setSaving(true);
-      setError(null);
+  const removeZone = useCallback(async (zoneId: string) => {
+    setSaving(true);
+    setError(null);
 
-      try {
-        await deleteRadarBlockedZone(zoneId);
+    try {
+      await deleteRadarBlockedZone(zoneId);
 
-        setZones((current) =>
-          current.filter(
-            (zone) => zone.id !== zoneId,
-          ),
-        );
-      } catch (err) {
-        console.error(
-          "❌ Error eliminando zona bloqueada",
-          err,
-        );
+      setZones((current) => current.filter((zone) => zone.id !== zoneId));
+    } catch (err) {
+      console.error("❌ Error eliminando zona bloqueada", err);
 
-        const message =
-          err instanceof Error
-            ? err.message
-            : "No se pudo eliminar la zona bloqueada.";
+      const message =
+        err instanceof Error
+          ? err.message
+          : "No se pudo eliminar la zona bloqueada.";
 
-        setError(message);
+      setError(message);
 
-        throw new Error(message);
-      } finally {
-        setSaving(false);
-      }
-    },
-    [],
-  );
+      throw new Error(message);
+    } finally {
+      setSaving(false);
+    }
+  }, []);
 
-  const canAddZone =
-    zones.length < MAX_BLOCKED_ZONES;
+  const canAddZone = zones.length < MAX_BLOCKED_ZONES;
 
   return {
     zones,

@@ -29,10 +29,7 @@ import { useRadar } from "./hooks/useRadar";
 import { DashboardHeader } from "./components/DashboardHeader";
 import { RadarView } from "./components/RadarView";
 
-import {
-  EventsView,
-  type EventCard,
-} from "./components/EventsView";
+import { EventsView, type EventCard } from "./components/EventsView";
 
 import {
   SettingsView,
@@ -51,10 +48,7 @@ import {
 
 import { saveSettingsProfile } from "./services/save-settings-profile";
 
-type Section =
-  | "radar"
-  | "events"
-  | "settings";
+type Section = "radar" | "events" | "settings";
 
 const MAX_BLOCKED_ZONES = 3;
 
@@ -63,12 +57,7 @@ export default function DashboardPage() {
 
   const { signOut } = useAuth();
 
-  const {
-    user,
-    profile,
-    loading,
-    needsOnboarding,
-  } = useProfileStatus();
+  const { user, profile, loading, needsOnboarding } = useProfileStatus();
 
   /*
    * ÚNICA instancia de geolocalización.
@@ -83,50 +72,34 @@ export default function DashboardPage() {
    * Arranca OFF por seguridad.
    * Después recuperamos el estado real desde Supabase.
    */
-  const [
-    radarEnabled,
-    setRadarEnabled,
-  ] = useState(false);
+  const [radarEnabled, setRadarEnabled] = useState(false);
 
-  const [
-    radarPresenceLoading,
-    setRadarPresenceLoading,
-  ] = useState(true);
+  const [radarPresenceLoading, setRadarPresenceLoading] = useState(true);
 
   /*
    * Evita múltiples cambios simultáneos
    * del toggle mientras Supabase responde.
    */
-  const [
-    radarToggleLoading,
-    setRadarToggleLoading,
-  ] = useState(false);
+  const [radarToggleLoading, setRadarToggleLoading] = useState(false);
 
   /*
    * Enlaces del perfil.
    */
-  const [
-    profileLinks,
-    setProfileLinks,
-  ] = useState<ProfileLink[]>([]);
+  const [profileLinks, setProfileLinks] = useState<ProfileLink[]>([]);
 
   /*
    * Perfil local para que Ajustes pueda
    * actualizarse inmediatamente después
    * de guardar.
    */
-  const [
-    settingsProfile,
-    setSettingsProfile,
-  ] = useState<ProfileRow | null>(null);
+  const [settingsProfile, setSettingsProfile] = useState<ProfileRow | null>(
+    null,
+  );
 
   /*
    * Navegación interna del dashboard.
    */
-  const [
-    section,
-    setSection,
-  ] = useState<Section>("radar");
+  const [section, setSection] = useState<Section>("radar");
 
   /*
    * ============================================================
@@ -134,17 +107,10 @@ export default function DashboardPage() {
    * ============================================================
    */
 
-  const [
-    settingsEditorSection,
-    setSettingsEditorSection,
-  ] = useState<
-    SettingsEditSection | null
-  >(null);
+  const [settingsEditorSection, setSettingsEditorSection] =
+    useState<SettingsEditSection | null>(null);
 
-  const [
-    settingsEditorSaving,
-    setSettingsEditorSaving,
-  ] = useState(false);
+  const [settingsEditorSaving, setSettingsEditorSaving] = useState(false);
 
   /*
    * ============================================================
@@ -152,32 +118,16 @@ export default function DashboardPage() {
    * ============================================================
    */
 
-  const [
-    blockedZones,
-    setBlockedZones,
-  ] = useState<RadarBlockedZone[]>([]);
+  const [blockedZones, setBlockedZones] = useState<RadarBlockedZone[]>([]);
 
-  const [
-    blockedZonesLoading,
-    setBlockedZonesLoading,
-  ] = useState(true);
+  const [blockedZonesLoading, setBlockedZonesLoading] = useState(true);
 
-  const [
-    blockedZonesSaving,
-    setBlockedZonesSaving,
-  ] = useState(false);
+  const [blockedZonesSaving, setBlockedZonesSaving] = useState(false);
 
-  const [
-    blockedZoneFormOpen,
-    setBlockedZoneFormOpen,
-  ] = useState(false);
+  const [blockedZoneFormOpen, setBlockedZoneFormOpen] = useState(false);
 
-  const [
-    editingBlockedZone,
-    setEditingBlockedZone,
-  ] = useState<
-    RadarBlockedZone | null
-  >(null);
+  const [editingBlockedZone, setEditingBlockedZone] =
+    useState<RadarBlockedZone | null>(null);
 
   /*
    * ============================================================
@@ -194,17 +144,13 @@ export default function DashboardPage() {
 
     async function loadRadarPresence() {
       try {
-        const enabled =
-          await getRadarPresence();
+        const enabled = await getRadarPresence();
 
         if (mounted) {
           setRadarEnabled(enabled);
         }
       } catch (error) {
-        console.error(
-          "❌ Error cargando presencia del radar",
-          error,
-        );
+        console.error("❌ Error cargando presencia del radar", error);
 
         /*
          * Fail-safe:
@@ -234,22 +180,14 @@ export default function DashboardPage() {
    * ============================================================
    */
 
-  const {
-    profiles,
-    refresh,
-  } = useRadar({
-    enabled:
-      radarEnabled &&
-      !radarPresenceLoading,
+  const { profiles, refresh } = useRadar({
+    enabled: radarEnabled && !radarPresenceLoading,
 
-    latitude:
-      location.latitude,
+    latitude: location.latitude,
 
-    longitude:
-      location.longitude,
+    longitude: location.longitude,
 
-    loading:
-      location.loading,
+    loading: location.loading,
   });
 
   /*
@@ -259,21 +197,15 @@ export default function DashboardPage() {
    */
 
   useSyncLocation({
-    enabled:
-      radarEnabled &&
-      !radarPresenceLoading,
+    enabled: radarEnabled && !radarPresenceLoading,
 
-    latitude:
-      location.latitude,
+    latitude: location.latitude,
 
-    longitude:
-      location.longitude,
+    longitude: location.longitude,
 
-    accuracy:
-      location.accuracy,
+    accuracy: location.accuracy,
 
-    loading:
-      location.loading,
+    loading: location.loading,
   });
 
   /*
@@ -295,12 +227,7 @@ export default function DashboardPage() {
     if (needsOnboarding) {
       router.replace("/onboarding");
     }
-  }, [
-    loading,
-    user,
-    needsOnboarding,
-    router,
-  ]);
+  }, [loading, user, needsOnboarding, router]);
 
   /*
    * ============================================================
@@ -327,28 +254,19 @@ export default function DashboardPage() {
       return;
     }
 
-    const profileId =
-      profile.id;
+    const profileId = profile.id;
 
     let mounted = true;
 
     async function loadLinks() {
       try {
-        const links =
-          await getProfileLinks(
-            profileId,
-          );
+        const links = await getProfileLinks(profileId);
 
         if (mounted) {
-          setProfileLinks(
-            links ?? [],
-          );
+          setProfileLinks(links ?? []);
         }
       } catch (error) {
-        console.error(
-          "❌ Error cargando enlaces del perfil",
-          error,
-        );
+        console.error("❌ Error cargando enlaces del perfil", error);
 
         if (mounted) {
           setProfileLinks([]);
@@ -374,8 +292,7 @@ export default function DashboardPage() {
       return;
     }
 
-    const profileId =
-      profile.id;
+    const profileId = profile.id;
 
     let mounted = true;
 
@@ -383,21 +300,13 @@ export default function DashboardPage() {
       setBlockedZonesLoading(true);
 
       try {
-        const zones =
-          await getRadarBlockedZones(
-            profileId,
-          );
+        const zones = await getRadarBlockedZones(profileId);
 
         if (mounted) {
-          setBlockedZones(
-            zones ?? [],
-          );
+          setBlockedZones(zones ?? []);
         }
       } catch (error) {
-        console.error(
-          "❌ Error cargando zonas bloqueadas",
-          error,
-        );
+        console.error("❌ Error cargando zonas bloqueadas", error);
 
         if (mounted) {
           setBlockedZones([]);
@@ -432,39 +341,25 @@ export default function DashboardPage() {
    * ============================================================
    */
 
-  const handleRadarToggle =
-    async () => {
-      if (
-        radarToggleLoading ||
-        !user
-      ) {
-        return;
-      }
+  const handleRadarToggle = async () => {
+    if (radarToggleLoading || !user) {
+      return;
+    }
 
-      const nextEnabled =
-        !radarEnabled;
+    const nextEnabled = !radarEnabled;
 
-      setRadarToggleLoading(true);
+    setRadarToggleLoading(true);
 
-      try {
-        await setRadarPresence(
-          nextEnabled,
-        );
+    try {
+      await setRadarPresence(nextEnabled);
 
-        setRadarEnabled(
-          nextEnabled,
-        );
-      } catch (error) {
-        console.error(
-          "❌ Error cambiando presencia del radar",
-          error,
-        );
-      } finally {
-        setRadarToggleLoading(
-          false,
-        );
-      }
-    };
+      setRadarEnabled(nextEnabled);
+    } catch (error) {
+      console.error("❌ Error cambiando presencia del radar", error);
+    } finally {
+      setRadarToggleLoading(false);
+    }
+  };
 
   /*
    * ============================================================
@@ -472,13 +367,8 @@ export default function DashboardPage() {
    * ============================================================
    */
 
-  const handleEditProfile = (
-    editSection: SettingsEditSection =
-      "profile",
-  ) => {
-    setSettingsEditorSection(
-      editSection,
-    );
+  const handleEditProfile = (editSection: SettingsEditSection = "profile") => {
+    setSettingsEditorSection(editSection);
   };
 
   /*
@@ -487,16 +377,13 @@ export default function DashboardPage() {
    * ============================================================
    */
 
-  const handleCloseProfileEditor =
-    () => {
-      if (settingsEditorSaving) {
-        return;
-      }
+  const handleCloseProfileEditor = () => {
+    if (settingsEditorSaving) {
+      return;
+    }
 
-      setSettingsEditorSection(
-        null,
-      );
-    };
+    setSettingsEditorSection(null);
+  };
 
   /*
    * ============================================================
@@ -504,96 +391,61 @@ export default function DashboardPage() {
    * ============================================================
    */
 
-  const handleSaveProfile =
-    async (
-      data: SettingsProfileEditorData,
-    ) => {
-      if (
-        !user ||
-        !settingsProfile
-      ) {
-        return;
+  const handleSaveProfile = async (data: SettingsProfileEditorData) => {
+    if (!user || !settingsProfile) {
+      return;
+    }
+
+    setSettingsEditorSaving(true);
+
+    try {
+      let avatarUrl = settingsProfile.avatar_url ?? "";
+
+      /*
+       * La imagen solo se sube si el usuario
+       * realmente seleccionó una nueva.
+       */
+      if (data.avatarFile) {
+        avatarUrl = await uploadAvatar(user.id, data.avatarFile);
       }
 
-      setSettingsEditorSaving(
-        true,
-      );
+      const result = await saveSettingsProfile({
+        userId: user.id,
+        email: user.email ?? "",
+        profile: settingsProfile,
+        data,
+        avatarUrl,
+      });
 
-      try {
-        let avatarUrl =
-          settingsProfile.avatar_url ??
-          "";
-
-        /*
-         * La imagen solo se sube si el usuario
-         * realmente seleccionó una nueva.
-         */
-        if (data.avatarFile) {
-          avatarUrl =
-            await uploadAvatar(
-              user.id,
-              data.avatarFile,
-            );
-        }
-
-        const result =
-          await saveSettingsProfile({
-            userId: user.id,
-            email:
-              user.email ?? "",
-            profile:
-              settingsProfile,
-            data,
-            avatarUrl,
-          });
-
-        /*
-         * Actualizamos la vista inmediatamente
-         * sin obligar a recargar toda la aplicación.
-         */
-        if (result.profile) {
-          setSettingsProfile(
-            result.profile,
-          );
-        }
-
-        /*
-         * Recargamos los links reales desde Supabase
-         * para no depender del objeto temporal del editor.
-         */
-        const updatedLinks =
-          await getProfileLinks(
-            user.id,
-          );
-
-        setProfileLinks(
-          updatedLinks ?? [],
-        );
-
-        setSettingsEditorSection(
-          null,
-        );
-      } catch (error) {
-        console.error(
-          "❌ Error guardando edición de perfil",
-          error,
-        );
-
-        if (error instanceof Error) {
-          window.alert(
-            error.message,
-          );
-        } else {
-          window.alert(
-            "No se pudieron guardar los cambios.",
-          );
-        }
-      } finally {
-        setSettingsEditorSaving(
-          false,
-        );
+      /*
+       * Actualizamos la vista inmediatamente
+       * sin obligar a recargar toda la aplicación.
+       */
+      if (result.profile) {
+        setSettingsProfile(result.profile);
       }
-    };
+
+      /*
+       * Recargamos los links reales desde Supabase
+       * para no depender del objeto temporal del editor.
+       */
+      const updatedLinks = await getProfileLinks(user.id);
+
+      setProfileLinks(updatedLinks ?? []);
+
+      setSettingsEditorSection(null);
+    } catch (error) {
+      console.error("❌ Error guardando edición de perfil", error);
+
+      if (error instanceof Error) {
+        window.alert(error.message);
+      } else {
+        window.alert("No se pudieron guardar los cambios.");
+      }
+    } finally {
+      setSettingsEditorSaving(false);
+    }
+  };
 
   /*
    * ============================================================
@@ -601,23 +453,15 @@ export default function DashboardPage() {
    * ============================================================
    */
 
-  const handleAddBlockedZone =
-    () => {
-      if (
-        blockedZones.length >=
-        MAX_BLOCKED_ZONES
-      ) {
-        return;
-      }
+  const handleAddBlockedZone = () => {
+    if (blockedZones.length >= MAX_BLOCKED_ZONES) {
+      return;
+    }
 
-      setEditingBlockedZone(
-        null,
-      );
+    setEditingBlockedZone(null);
 
-      setBlockedZoneFormOpen(
-        true,
-      );
-    };
+    setBlockedZoneFormOpen(true);
+  };
 
   /*
    * ============================================================
@@ -625,18 +469,11 @@ export default function DashboardPage() {
    * ============================================================
    */
 
-  const handleEditBlockedZone =
-    (
-      zone: RadarBlockedZone,
-    ) => {
-      setEditingBlockedZone(
-        zone,
-      );
+  const handleEditBlockedZone = (zone: RadarBlockedZone) => {
+    setEditingBlockedZone(zone);
 
-      setBlockedZoneFormOpen(
-        true,
-      );
-    };
+    setBlockedZoneFormOpen(true);
+  };
 
   /*
    * ============================================================
@@ -644,20 +481,15 @@ export default function DashboardPage() {
    * ============================================================
    */
 
-  const handleCloseBlockedZoneForm =
-    () => {
-      if (blockedZonesSaving) {
-        return;
-      }
+  const handleCloseBlockedZoneForm = () => {
+    if (blockedZonesSaving) {
+      return;
+    }
 
-      setBlockedZoneFormOpen(
-        false,
-      );
+    setBlockedZoneFormOpen(false);
 
-      setEditingBlockedZone(
-        null,
-      );
-    };
+    setEditingBlockedZone(null);
+  };
 
   /*
    * ============================================================
@@ -665,105 +497,60 @@ export default function DashboardPage() {
    * ============================================================
    */
 
-  const handleSaveBlockedZone =
-    async (
-      data: BlockedZoneFormData,
-    ) => {
-      if (!profile) {
-        return;
-      }
+  const handleSaveBlockedZone = async (data: BlockedZoneFormData) => {
+    if (!profile) {
+      return;
+    }
 
-      setBlockedZonesSaving(
-        true,
-      );
+    setBlockedZonesSaving(true);
 
-      try {
-        if (editingBlockedZone) {
-          const updated =
-            await updateRadarBlockedZone(
-              editingBlockedZone.id,
-              {
-                name: data.name,
-                address: data.address,
-                latitude:
-                  data.latitude,
-                longitude:
-                  data.longitude,
-                radius_meters:
-                  data.radiusMeters,
-              },
-            );
+    try {
+      if (editingBlockedZone) {
+        const updated = await updateRadarBlockedZone(editingBlockedZone.id, {
+          name: data.name,
+          address: data.address,
+          latitude: data.latitude,
+          longitude: data.longitude,
+          radius_meters: data.radiusMeters,
+        });
 
-          setBlockedZones(
-            (current) =>
-              current.map((zone) =>
-                zone.id ===
-                  updated.id
-                  ? updated
-                  : zone,
-              ),
-          );
-        } else {
-          if (
-            blockedZones.length >=
-            MAX_BLOCKED_ZONES
-          ) {
-            throw new Error(
-              `Solo puedes tener ${MAX_BLOCKED_ZONES} zonas bloqueadas.`,
-            );
-          }
-
-          const created =
-            await createRadarBlockedZone({
-              profile_id:
-                profile.id,
-              name: data.name,
-              address:
-                data.address,
-              latitude:
-                data.latitude,
-              longitude:
-                data.longitude,
-              radius_meters:
-                data.radiusMeters,
-            });
-
-          setBlockedZones(
-            (current) => [
-              ...current,
-              created,
-            ],
+        setBlockedZones((current) =>
+          current.map((zone) => (zone.id === updated.id ? updated : zone)),
+        );
+      } else {
+        if (blockedZones.length >= MAX_BLOCKED_ZONES) {
+          throw new Error(
+            `Solo puedes tener ${MAX_BLOCKED_ZONES} zonas bloqueadas.`,
           );
         }
 
-        setBlockedZoneFormOpen(
-          false,
-        );
+        const created = await createRadarBlockedZone({
+          profile_id: profile.id,
+          name: data.name,
+          address: data.address,
+          latitude: data.latitude,
+          longitude: data.longitude,
+          radius_meters: data.radiusMeters,
+        });
 
-        setEditingBlockedZone(
-          null,
-        );
-      } catch (error) {
-        console.error(
-          "❌ Error guardando zona bloqueada",
-          error,
-        );
-
-        if (error instanceof Error) {
-          window.alert(
-            error.message,
-          );
-        } else {
-          window.alert(
-            "No se pudo guardar la zona bloqueada.",
-          );
-        }
-      } finally {
-        setBlockedZonesSaving(
-          false,
-        );
+        setBlockedZones((current) => [...current, created]);
       }
-    };
+
+      setBlockedZoneFormOpen(false);
+
+      setEditingBlockedZone(null);
+    } catch (error) {
+      console.error("❌ Error guardando zona bloqueada", error);
+
+      if (error instanceof Error) {
+        window.alert(error.message);
+      } else {
+        window.alert("No se pudo guardar la zona bloqueada.");
+      }
+    } finally {
+      setBlockedZonesSaving(false);
+    }
+  };
 
   /*
    * ============================================================
@@ -771,56 +558,35 @@ export default function DashboardPage() {
    * ============================================================
    */
 
-  const handleDeleteBlockedZone =
-    async (
-      zone: RadarBlockedZone,
-    ) => {
-      const confirmed =
-        window.confirm(
-          `¿Quieres eliminar la zona "${zone.name}"?`,
-        );
+  const handleDeleteBlockedZone = async (zone: RadarBlockedZone) => {
+    const confirmed = window.confirm(
+      `¿Quieres eliminar la zona "${zone.name}"?`,
+    );
 
-      if (!confirmed) {
-        return;
-      }
+    if (!confirmed) {
+      return;
+    }
 
-      setBlockedZonesSaving(
-        true,
+    setBlockedZonesSaving(true);
+
+    try {
+      await deleteRadarBlockedZone(zone.id);
+
+      setBlockedZones((current) =>
+        current.filter((item) => item.id !== zone.id),
       );
+    } catch (error) {
+      console.error("❌ Error eliminando zona bloqueada", error);
 
-      try {
-        await deleteRadarBlockedZone(
-          zone.id,
-        );
-
-        setBlockedZones(
-          (current) =>
-            current.filter(
-              (item) =>
-                item.id !== zone.id,
-            ),
-        );
-      } catch (error) {
-        console.error(
-          "❌ Error eliminando zona bloqueada",
-          error,
-        );
-
-        if (error instanceof Error) {
-          window.alert(
-            error.message,
-          );
-        } else {
-          window.alert(
-            "No se pudo eliminar la zona bloqueada.",
-          );
-        }
-      } finally {
-        setBlockedZonesSaving(
-          false,
-        );
+      if (error instanceof Error) {
+        window.alert(error.message);
+      } else {
+        window.alert("No se pudo eliminar la zona bloqueada.");
       }
-    };
+    } finally {
+      setBlockedZonesSaving(false);
+    }
+  };
 
   /*
    * ============================================================
@@ -828,25 +594,19 @@ export default function DashboardPage() {
    * ============================================================
    */
 
-  const handleLogout =
-    async () => {
-      try {
-        await setRadarPresence(
-          false,
-        );
+  const handleLogout = async () => {
+    try {
+      await setRadarPresence(false);
 
-        setRadarEnabled(false);
-      } catch (error) {
-        console.error(
-          "❌ Error apagando radar antes de cerrar sesión",
-          error,
-        );
-      }
+      setRadarEnabled(false);
+    } catch (error) {
+      console.error("❌ Error apagando radar antes de cerrar sesión", error);
+    }
 
-      await signOut();
+    await signOut();
 
-      router.replace("/login");
-    };
+    router.replace("/login");
+  };
 
   /*
    * ============================================================
@@ -854,18 +614,11 @@ export default function DashboardPage() {
    * ============================================================
    */
 
-  if (
-    loading ||
-    radarPresenceLoading ||
-    !user
-  ) {
+  if (loading || radarPresenceLoading || !user) {
     return null;
   }
 
-  if (
-    !profile ||
-    !settingsProfile
-  ) {
+  if (!profile || !settingsProfile) {
     return null;
   }
 
@@ -897,15 +650,9 @@ export default function DashboardPage() {
 
         {section === "radar" && (
           <RadarView
-            enabled={
-              radarEnabled
-            }
-            toggleLoading={
-              radarToggleLoading
-            }
-            onToggle={
-              handleRadarToggle
-            }
+            enabled={radarEnabled}
+            toggleLoading={radarToggleLoading}
+            onToggle={handleRadarToggle}
             profiles={profiles}
             onRefresh={refresh}
           />
@@ -914,80 +661,34 @@ export default function DashboardPage() {
         {section === "events" && (
           <EventsView
             events={events}
-            onCreateEvent={() =>
-              console.log(
-                "Crear evento",
-              )
-            }
-            onJoinEvent={(id) =>
-              console.log(
-                "Unirse",
-                id,
-              )
-            }
+            onCreateEvent={() => console.log("Crear evento")}
+            onJoinEvent={(id) => console.log("Unirse", id)}
           />
         )}
 
         {section === "settings" && (
           <SettingsView
-            profile={
-              settingsProfile
-            }
-            links={
-              profileLinks
-            }
-            radarEnabled={
-              radarEnabled
-            }
-            radarToggleLoading={
-              radarToggleLoading
-            }
-            onToggleRadar={
-              handleRadarToggle
-            }
-            blockedZones={
-              blockedZones
-            }
-            blockedZonesLoading={
-              blockedZonesLoading
-            }
-            blockedZonesSaving={
-              blockedZonesSaving
-            }
-            canAddBlockedZone={
-              blockedZones.length <
-              MAX_BLOCKED_ZONES
-            }
-            maxBlockedZones={
-              MAX_BLOCKED_ZONES
-            }
-            onAddBlockedZone={
-              handleAddBlockedZone
-            }
-            onEditBlockedZone={
-              handleEditBlockedZone
-            }
-            onDeleteBlockedZone={
-              handleDeleteBlockedZone
-            }
-            onEditProfile={
-              handleEditProfile
-            }
-            onLogout={
-              handleLogout
-            }
+            profile={settingsProfile}
+            links={profileLinks}
+            radarEnabled={radarEnabled}
+            radarToggleLoading={radarToggleLoading}
+            onToggleRadar={handleRadarToggle}
+            blockedZones={blockedZones}
+            blockedZonesLoading={blockedZonesLoading}
+            blockedZonesSaving={blockedZonesSaving}
+            canAddBlockedZone={blockedZones.length < MAX_BLOCKED_ZONES}
+            maxBlockedZones={MAX_BLOCKED_ZONES}
+            onAddBlockedZone={handleAddBlockedZone}
+            onEditBlockedZone={handleEditBlockedZone}
+            onDeleteBlockedZone={handleDeleteBlockedZone}
+            onEditProfile={handleEditProfile}
+            onLogout={handleLogout}
           />
         )}
 
         <BottomNav
           active={section}
-          onChange={(
-            nextSection,
-          ) =>
-            setSection(
-              nextSection as Section,
-            )
-          }
+          onChange={(nextSection) => setSection(nextSection as Section)}
         />
       </div>
 
@@ -997,22 +698,12 @@ export default function DashboardPage() {
 
       {settingsEditorSection && (
         <SettingsProfileEditor
-          profile={
-            settingsProfile
-          }
+          profile={settingsProfile}
           links={profileLinks}
-          section={
-            settingsEditorSection
-          }
-          saving={
-            settingsEditorSaving
-          }
-          onSave={
-            handleSaveProfile
-          }
-          onClose={
-            handleCloseProfileEditor
-          }
+          section={settingsEditorSection}
+          saving={settingsEditorSaving}
+          onSave={handleSaveProfile}
+          onClose={handleCloseProfileEditor}
         />
       )}
 
@@ -1022,18 +713,10 @@ export default function DashboardPage() {
 
       {blockedZoneFormOpen && (
         <BlockedZoneForm
-          zone={
-            editingBlockedZone
-          }
-          saving={
-            blockedZonesSaving
-          }
-          onSubmit={
-            handleSaveBlockedZone
-          }
-          onCancel={
-            handleCloseBlockedZoneForm
-          }
+          zone={editingBlockedZone}
+          saving={blockedZonesSaving}
+          onSubmit={handleSaveBlockedZone}
+          onCancel={handleCloseBlockedZoneForm}
         />
       )}
     </main>

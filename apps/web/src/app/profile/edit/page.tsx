@@ -21,8 +21,8 @@ export default function EditProfilePage() {
   const onboarding = useOnboarding(
     data
       ? {
-        initialData: data,
-      }
+          initialData: data,
+        }
       : undefined,
   );
 

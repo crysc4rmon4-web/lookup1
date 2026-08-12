@@ -1,19 +1,10 @@
 "use client";
 
-import {
-  Building2,
-  ChevronRight,
-  UserRound,
-} from "lucide-react";
+import { Building2, ChevronRight, UserRound } from "lucide-react";
 
-import {
-  useEffect,
-  useState,
-} from "react";
+import { useEffect, useState } from "react";
 
-import {
-  useRouter,
-} from "next/navigation";
+import { useRouter } from "next/navigation";
 
 import {
   setMyAccountType,
@@ -34,17 +25,14 @@ type AccountOption = {
   type: AccountType;
   title: string;
   description: string;
-  icon:
-  | typeof UserRound
-  | typeof Building2;
+  icon: typeof UserRound | typeof Building2;
 };
 
 const ACCOUNT_OPTIONS: AccountOption[] = [
   {
     type: "person",
     title: "Persona",
-    description:
-      "Descubre personas, actividades y oportunidades cerca de ti.",
+    description: "Descubre personas, actividades y oportunidades cerca de ti.",
     icon: UserRound,
   },
   {
@@ -56,12 +44,8 @@ const ACCOUNT_OPTIONS: AccountOption[] = [
   },
 ];
 
-function getUnknownErrorMessage(
-  error: unknown,
-) {
-  if (
-    error instanceof Error
-  ) {
+function getUnknownErrorMessage(error: unknown) {
+  if (error instanceof Error) {
     return error.message;
   }
 
@@ -69,8 +53,7 @@ function getUnknownErrorMessage(
     typeof error === "object" &&
     error !== null &&
     "message" in error &&
-    typeof error.message ===
-    "string"
+    typeof error.message === "string"
   ) {
     return error.message;
   }
@@ -79,48 +62,23 @@ function getUnknownErrorMessage(
 }
 
 export default function AccountTypePage() {
-  const router =
-    useRouter();
+  const router = useRouter();
 
-  const {
-    user,
-    loading: authLoading,
-  } = useAuth();
+  const { user, loading: authLoading } = useAuth();
 
-  const {
-    profile,
-    profileError,
-    loading: profileLoading,
-  } = useProfileStatus();
+  const { profile, profileError, loading: profileLoading } = useProfileStatus();
 
-  const [
-    savingType,
-    setSavingType,
-  ] =
-    useState<AccountType | null>(
-      null,
-    );
+  const [savingType, setSavingType] = useState<AccountType | null>(null);
 
-  const [
-    error,
-    setError,
-  ] =
-    useState<string | null>(
-      null,
-    );
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (
-      authLoading ||
-      profileLoading
-    ) {
+    if (authLoading || profileLoading) {
       return;
     }
 
     if (!user) {
-      router.replace(
-        "/login",
-      );
+      router.replace("/login");
 
       return;
     }
@@ -139,37 +97,17 @@ export default function AccountTypePage() {
      * asignado no puede volver a
      * elegirlo desde esta pantalla.
      */
-    if (
-      profile?.account_type
-    ) {
-      router.replace(
-        getAuthenticatedDestination(
-          profile,
-        ),
-      );
+    if (profile?.account_type) {
+      router.replace(getAuthenticatedDestination(profile));
     }
-  }, [
-    authLoading,
-    profileLoading,
-    user,
-    profile,
-    profileError,
-    router,
-  ]);
+  }, [authLoading, profileLoading, user, profile, profileError, router]);
 
-  async function handleSelect(
-    accountType: AccountType,
-  ) {
-    if (
-      !user ||
-      savingType
-    ) {
+  async function handleSelect(accountType: AccountType) {
+    if (!user || savingType) {
       return;
     }
 
-    setSavingType(
-      accountType,
-    );
+    setSavingType(accountType);
 
     setError(null);
 
@@ -179,47 +117,27 @@ export default function AccountTypePage() {
        * la sesión sigue siendo válida
        * antes de escribir en profiles.
        */
-      const {
-        data: authData,
-        error: authError,
-      } =
+      const { data: authData, error: authError } =
         await supabase.auth.getUser();
 
-      if (
-        authError ||
-        !authData.user ||
-        authData.user.id !==
-        user.id
-      ) {
-        throw new Error(
-          "Tu sesión ha expirado. Inicia sesión de nuevo.",
-        );
+      if (authError || !authData.user || authData.user.id !== user.id) {
+        throw new Error("Tu sesión ha expirado. Inicia sesión de nuevo.");
       }
 
-      const {
-        data,
-        error: saveError,
-      } =
-        await setMyAccountType(
-          user.id,
-          accountType,
-          user.email ?? null,
-        );
+      const { data, error: saveError } = await setMyAccountType(
+        user.id,
+        accountType,
+        user.email ?? null,
+      );
 
       if (saveError) {
         throw saveError;
       }
 
-      const savedProfile =
-        data as ProfileRow | null;
+      const savedProfile = data as ProfileRow | null;
 
-      if (
-        !savedProfile
-          ?.account_type
-      ) {
-        throw new Error(
-          "No se pudo confirmar el tipo de cuenta.",
-        );
+      if (!savedProfile?.account_type) {
+        throw new Error("No se pudo confirmar el tipo de cuenta.");
       }
 
       /*
@@ -227,37 +145,25 @@ export default function AccountTypePage() {
        * realmente persistido, no el
        * valor solicitado en memoria.
        */
-      router.replace(
-        getOnboardingRoute(
-          savedProfile.account_type,
-        ),
-      );
+      router.replace(getOnboardingRoute(savedProfile.account_type));
     } catch (error) {
       console.error(
         "❌ Error guardando tipo de cuenta:",
-        getUnknownErrorMessage(
-          error,
-        ),
+        getUnknownErrorMessage(error),
         error,
       );
 
-      setError(
-        "No se pudo guardar el tipo de cuenta. Inténtalo de nuevo.",
-      );
+      setError("No se pudo guardar el tipo de cuenta. Inténtalo de nuevo.");
     } finally {
       setSavingType(null);
     }
   }
 
-  if (
-    authLoading ||
-    profileLoading
-  ) {
+  if (authLoading || profileLoading) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-[#F7F8FC] px-6">
         <p className="text-sm font-semibold text-slate-400">
-          Preparando tu
-          cuenta...
+          Preparando tu cuenta...
         </p>
       </main>
     );
@@ -272,21 +178,16 @@ export default function AccountTypePage() {
           </p>
 
           <h1 className="mt-4 text-2xl font-black text-slate-900">
-            No pudimos cargar
-            tu cuenta
+            No pudimos cargar tu cuenta
           </h1>
 
           <p className="mt-3 text-sm leading-6 text-slate-500">
-            Comprueba tu
-            conexión e inténtalo
-            nuevamente.
+            Comprueba tu conexión e inténtalo nuevamente.
           </p>
 
           <button
             type="button"
-            onClick={() =>
-              window.location.reload()
-            }
+            onClick={() => window.location.reload()}
             className="mt-6 h-12 w-full rounded-2xl bg-[#5D5FEF] font-bold text-white transition hover:bg-[#5153e6]"
           >
             Reintentar
@@ -296,10 +197,7 @@ export default function AccountTypePage() {
     );
   }
 
-  if (
-    !user ||
-    profile?.account_type
-  ) {
+  if (!user || profile?.account_type) {
     return null;
   }
 
@@ -316,38 +214,23 @@ export default function AccountTypePage() {
           </h1>
 
           <p className="mt-4 max-w-sm text-base leading-7 text-slate-500">
-            ¿Qué tipo de
-            cuenta quieres
-            crear?
+            ¿Qué tipo de cuenta quieres crear?
           </p>
         </header>
 
         <div className="mt-9 space-y-4">
-          {ACCOUNT_OPTIONS.map(
-            (option) => {
-              const Icon =
-                option.icon;
+          {ACCOUNT_OPTIONS.map((option) => {
+            const Icon = option.icon;
 
-              const isSaving =
-                savingType ===
-                option.type;
+            const isSaving = savingType === option.type;
 
-              return (
-                <button
-                  key={
-                    option.type
-                  }
-                  type="button"
-                  disabled={
-                    savingType !==
-                    null
-                  }
-                  onClick={() =>
-                    void handleSelect(
-                      option.type,
-                    )
-                  }
-                  className="
+            return (
+              <button
+                key={option.type}
+                type="button"
+                disabled={savingType !== null}
+                onClick={() => void handleSelect(option.type)}
+                className="
                     group
                     flex
                     w-full
@@ -369,45 +252,31 @@ export default function AccountTypePage() {
                     disabled:cursor-not-allowed
                     disabled:opacity-60
                   "
-                >
-                  <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[20px] bg-[#EEF2FF] text-[#5D5FEF]">
-                    <Icon
-                      size={25}
-                      strokeWidth={
-                        2.2
-                      }
-                    />
-                  </div>
+              >
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[20px] bg-[#EEF2FF] text-[#5D5FEF]">
+                  <Icon size={25} strokeWidth={2.2} />
+                </div>
 
-                  <div className="min-w-0 flex-1">
-                    <h2 className="text-lg font-black text-slate-900">
-                      {
-                        option.title
-                      }
-                    </h2>
+                <div className="min-w-0 flex-1">
+                  <h2 className="text-lg font-black text-slate-900">
+                    {option.title}
+                  </h2>
 
-                    <p className="mt-1 text-sm leading-5 text-slate-500">
-                      {
-                        option.description
-                      }
-                    </p>
-                  </div>
+                  <p className="mt-1 text-sm leading-5 text-slate-500">
+                    {option.description}
+                  </p>
+                </div>
 
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-50 text-slate-400 transition group-hover:bg-[#EEF2FF] group-hover:text-[#5D5FEF]">
-                    {isSaving ? (
-                      <span className="h-4 w-4 animate-spin rounded-full border-2 border-[#5D5FEF] border-t-transparent" />
-                    ) : (
-                      <ChevronRight
-                        size={
-                          18
-                        }
-                      />
-                    )}
-                  </div>
-                </button>
-              );
-            },
-          )}
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-50 text-slate-400 transition group-hover:bg-[#EEF2FF] group-hover:text-[#5D5FEF]">
+                  {isSaving ? (
+                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-[#5D5FEF] border-t-transparent" />
+                  ) : (
+                    <ChevronRight size={18} />
+                  )}
+                </div>
+              </button>
+            );
+          })}
         </div>
 
         {error && (
@@ -420,10 +289,7 @@ export default function AccountTypePage() {
         )}
 
         <p className="mx-auto mt-7 max-w-sm text-center text-xs leading-5 text-slate-400">
-          Esta elección
-          define la
-          experiencia inicial
-          de tu cuenta.
+          Esta elección define la experiencia inicial de tu cuenta.
         </p>
       </section>
     </main>

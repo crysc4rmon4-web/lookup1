@@ -80,32 +80,23 @@ function normalizeExternalUrl(url: string) {
     return "#";
   }
 
-  if (
-    trimmed.startsWith("http://") ||
-    trimmed.startsWith("https://")
-  ) {
+  if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) {
     return trimmed;
   }
 
   return `https://${trimmed}`;
 }
 
-export default function ProfilePage({
-  params,
-}: Props) {
+export default function ProfilePage({ params }: Props) {
   const { id } = use(params);
 
-  const [profile, setProfile] =
-    useState<ProfileRow | null>(null);
+  const [profile, setProfile] = useState<ProfileRow | null>(null);
 
-  const [links, setLinks] =
-    useState<ProfileLink[]>([]);
+  const [links, setLinks] = useState<ProfileLink[]>([]);
 
-  const [loading, setLoading] =
-    useState(true);
+  const [loading, setLoading] = useState(true);
 
-  const [error, setError] =
-    useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -115,10 +106,7 @@ export default function ProfilePage({
       setError(null);
 
       try {
-        const [
-          profileResult,
-          linksResult,
-        ] = await Promise.all([
+        const [profileResult, linksResult] = await Promise.all([
           getProfileById(id),
           getProfileLinks(id),
         ]);
@@ -131,29 +119,20 @@ export default function ProfilePage({
           return;
         }
 
-        setProfile(
-          profileResult.data,
-        );
+        setProfile(profileResult.data);
 
         setLinks(
           (linksResult ?? []).filter(
-            (link) =>
-              link.is_public &&
-              link.url.trim(),
+            (link) => link.is_public && link.url.trim(),
           ),
         );
       } catch (loadError) {
-        console.error(
-          "❌ Error cargando perfil público",
-          loadError,
-        );
+        console.error("❌ Error cargando perfil público", loadError);
 
         if (!cancelled) {
           setProfile(null);
           setLinks([]);
-          setError(
-            "No hemos podido cargar este perfil.",
-          );
+          setError("No hemos podido cargar este perfil.");
         }
       } finally {
         if (!cancelled) {
@@ -199,10 +178,7 @@ export default function ProfilePage({
         <div className="mx-auto flex min-h-[70vh] w-full max-w-2xl items-center justify-center">
           <section className="w-full rounded-[2rem] border border-[#ECEFF5] bg-white p-8 text-center shadow-sm">
             <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#EEF2FF]">
-              <UserRound
-                size={24}
-                className="text-[#5D5FEF]"
-              />
+              <UserRound size={24} className="text-[#5D5FEF]" />
             </div>
 
             <h1 className="mt-5 text-xl font-black text-slate-900">
@@ -210,8 +186,7 @@ export default function ProfilePage({
             </h1>
 
             <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-slate-500">
-              {error ??
-                "Este perfil no existe o ya no está disponible."}
+              {error ?? "Este perfil no existe o ya no está disponible."}
             </p>
 
             <Link
@@ -228,27 +203,19 @@ export default function ProfilePage({
   }
 
   const fullName =
-    profile.full_name?.trim() ||
-    profile.username?.trim() ||
-    "Usuario LookUp";
+    profile.full_name?.trim() || profile.username?.trim() || "Usuario LookUp";
 
-  const profession =
-    profile.profession?.trim();
+  const profession = profile.profession?.trim();
 
-  const city =
-    profile.city?.trim();
+  const city = profile.city?.trim();
 
-  const bio =
-    profile.bio?.trim();
+  const bio = profile.bio?.trim();
 
-  const interests =
-    Array.isArray(profile.interests)
-      ? profile.interests.filter(
-        (interest) =>
-          typeof interest === "string" &&
-          interest.trim(),
+  const interests = Array.isArray(profile.interests)
+    ? profile.interests.filter(
+        (interest) => typeof interest === "string" && interest.trim(),
       )
-      : [];
+    : [];
 
   return (
     <main className="min-h-screen bg-[#F7F8FC] px-4 py-5 sm:px-6 sm:py-8">
@@ -331,16 +298,14 @@ export default function ProfilePage({
                 </p>
 
                 <div className="mt-3 flex flex-wrap gap-2">
-                  {interests.map(
-                    (interest) => (
-                      <span
-                        key={interest}
-                        className="rounded-full border border-[#E5E7FF] bg-[#F5F5FF] px-3.5 py-2 text-xs font-bold text-[#5D5FEF]"
-                      >
-                        {interest}
-                      </span>
-                    ),
-                  )}
+                  {interests.map((interest) => (
+                    <span
+                      key={interest}
+                      className="rounded-full border border-[#E5E7FF] bg-[#F5F5FF] px-3.5 py-2 text-xs font-bold text-[#5D5FEF]"
+                    >
+                      {interest}
+                    </span>
+                  ))}
                 </div>
               </section>
             )}
@@ -352,34 +317,25 @@ export default function ProfilePage({
                     REDES Y ENLACES
                   </p>
 
-                  <Globe2
-                    size={15}
-                    className="text-slate-300"
-                  />
+                  <Globe2 size={15} className="text-slate-300" />
                 </div>
 
                 <div className="mt-3 grid gap-3 sm:grid-cols-2">
                   {links.map((link) => (
                     <a
                       key={link.id}
-                      href={normalizeExternalUrl(
-                        link.url,
-                      )}
+                      href={normalizeExternalUrl(link.url)}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="group flex min-w-0 items-center gap-3 rounded-2xl border border-[#ECEFF5] bg-white p-3.5 transition hover:-translate-y-0.5 hover:border-[#DCDFFF] hover:bg-[#FAFAFF]"
                     >
                       <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#EEF2FF] text-xs font-black text-[#5D5FEF]">
-                        {getPlatformInitial(
-                          link.platform,
-                        )}
+                        {getPlatformInitial(link.platform)}
                       </span>
 
                       <span className="min-w-0 flex-1">
                         <span className="block text-sm font-black text-slate-800">
-                          {getPlatformLabel(
-                            link.platform,
-                          )}
+                          {getPlatformLabel(link.platform)}
                         </span>
 
                         <span className="mt-0.5 block truncate text-xs text-slate-400">
@@ -397,15 +353,13 @@ export default function ProfilePage({
               </section>
             )}
 
-            {!bio &&
-              interests.length === 0 &&
-              links.length === 0 && (
-                <section className="mt-7 rounded-2xl bg-slate-50 p-5 text-center">
-                  <p className="text-sm font-semibold text-slate-500">
-                    Este perfil todavía no ha añadido más información pública.
-                  </p>
-                </section>
-              )}
+            {!bio && interests.length === 0 && links.length === 0 && (
+              <section className="mt-7 rounded-2xl bg-slate-50 p-5 text-center">
+                <p className="text-sm font-semibold text-slate-500">
+                  Este perfil todavía no ha añadido más información pública.
+                </p>
+              </section>
+            )}
           </div>
         </section>
       </div>

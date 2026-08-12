@@ -5,15 +5,10 @@ type StepProfessionProps = {
   onChange: (value: string) => void;
 };
 
-export function StepProfession({
-  profession,
-  onChange,
-}: StepProfessionProps) {
+export function StepProfession({ profession, onChange }: StepProfessionProps) {
   return (
     <section className="flex min-h-[560px] flex-col">
-
       <div>
-
         <p className="text-xs font-black uppercase tracking-[0.3em] text-[#5D5FEF]">
           PERFIL
         </p>
@@ -25,16 +20,12 @@ export function StepProfession({
         <p className="mt-4 text-base leading-7 text-slate-500">
           Opcional. Ayudará a que otras personas sepan a qué te dedicas.
         </p>
-
       </div>
 
       <div className="mt-14">
-
         <input
           value={profession}
-          onChange={(e) =>
-            onChange(e.target.value)
-          }
+          onChange={(e) => onChange(e.target.value)}
           placeholder="Ej. Diseñador UX, Desarrollador..."
           autoComplete="organization-title"
           className="
@@ -54,17 +45,11 @@ export function StepProfession({
             focus:border-[#5D5FEF]
           "
         />
-
       </div>
 
       <div className="mt-auto pt-8">
-
-        <p className="text-sm text-slate-500">
-          Este campo es opcional.
-        </p>
-
+        <p className="text-sm text-slate-500">Este campo es opcional.</p>
       </div>
-
     </section>
   );
 }

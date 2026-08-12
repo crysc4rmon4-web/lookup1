@@ -8,10 +8,7 @@ export type PlatformCategory =
   | "creator"
   | "website";
 
-export type PlatformType =
-  | "username"
-  | "url"
-  | "phone";
+export type PlatformType = "username" | "url" | "phone";
 
 export type Platform = {
   id: string;

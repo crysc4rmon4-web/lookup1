@@ -2,9 +2,7 @@ type DashboardHeaderProps = {
   section: "radar" | "events" | "settings";
 };
 
-export function DashboardHeader({
-  section,
-}: DashboardHeaderProps) {
+export function DashboardHeader({ section }: DashboardHeaderProps) {
   const title =
     section === "radar"
       ? "LookUp"

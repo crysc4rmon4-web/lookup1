@@ -12,10 +12,7 @@ import { StepInterests } from "./StepInterests";
 import { StepReview } from "./StepReview";
 import { StepTerms } from "./StepTerms";
 
-import type {
-  OnboardingData,
-  OnboardingStep,
-} from "../types";
+import type { OnboardingData, OnboardingStep } from "../types";
 
 type Props = {
   step: OnboardingStep;
@@ -28,13 +25,9 @@ type Props = {
   loading: boolean;
   canContinue: boolean;
 
-  update: (
-    values: Partial<OnboardingData>,
-  ) => void;
+  update: (values: Partial<OnboardingData>) => void;
 
-  onAvatar: (
-    file: File,
-  ) => void | Promise<void>;
+  onAvatar: (file: File) => void | Promise<void>;
 
   onBack: () => void;
   onNext: () => void;
@@ -61,17 +54,13 @@ export function OnboardingForm({
 }: Props) {
   return (
     <main className="min-h-screen bg-[#F7F8FC] px-6 py-10">
-
       <section className="mx-auto w-full max-w-[430px]">
-
         <p className="text-xs font-black uppercase tracking-[0.35em] text-slate-400">
           LOOKUP
         </p>
 
         <h1 className="mt-2 text-4xl font-black italic text-[#5D5FEF]">
-          {isEditing
-            ? "Editar perfil"
-            : "Completa tu perfil"}
+          {isEditing ? "Editar perfil" : "Completa tu perfil"}
         </h1>
 
         <p className="mt-3 text-sm text-slate-500">
@@ -79,26 +68,15 @@ export function OnboardingForm({
         </p>
 
         <div className="mt-6">
-
-          <ProgressBar
-            progress={progress}
-          />
-
+          <ProgressBar progress={progress} />
         </div>
 
         <div className="mt-10 rounded-[2rem] bg-white p-8 shadow-sm">
-
           {step === "photo" && (
-
-            <StepPhoto
-              avatarUrl={data.avatarUrl}
-              onSelect={onAvatar}
-            />
-
+            <StepPhoto avatarUrl={data.avatarUrl} onSelect={onAvatar} />
           )}
 
           {step === "name" && (
-
             <StepName
               fullName={data.fullName}
               onChange={(value) =>
@@ -114,11 +92,9 @@ export function OnboardingForm({
                 })
               }
             />
-
           )}
 
           {step === "profession" && (
-
             <StepProfession
               profession={data.profession}
               onChange={(value) =>
@@ -127,11 +103,9 @@ export function OnboardingForm({
                 })
               }
             />
-
           )}
 
           {step === "socials" && (
-
             <StepSocials
               links={data.socialLinks}
               onChange={(value) =>
@@ -140,11 +114,9 @@ export function OnboardingForm({
                 })
               }
             />
-
           )}
 
           {step === "bio" && (
-
             <StepBio
               bio={data.bio}
               onChange={(value) =>
@@ -153,11 +125,9 @@ export function OnboardingForm({
                 })
               }
             />
-
           )}
 
           {step === "interests" && (
-
             <StepInterests
               interests={data.interests}
               onChange={(value) =>
@@ -166,11 +136,9 @@ export function OnboardingForm({
                 })
               }
             />
-
           )}
 
           {step === "review" && (
-
             <StepReview
               avatarUrl={data.avatarUrl}
               fullName={data.fullName}
@@ -180,11 +148,9 @@ export function OnboardingForm({
               interests={data.interests}
               socialLinks={data.socialLinks}
             />
-
           )}
 
           {step === "terms" && (
-
             <StepTerms
               accepted={data.acceptedTerms}
               onChange={(value) =>
@@ -193,34 +159,19 @@ export function OnboardingForm({
                 })
               }
             />
-
           )}
-
         </div>
 
         <Navigation
-          canGoBack={
-            stepIndex > 0 &&
-            !loading
-          }
-          canContinue={
-            canContinue &&
-            !loading
-          }
-          isLastStep={
-            stepIndex ===
-            totalSteps - 1
-          }
+          canGoBack={stepIndex > 0 && !loading}
+          canContinue={canContinue && !loading}
+          isLastStep={stepIndex === totalSteps - 1}
           onBack={onBack}
           onNext={onNext}
           isEditing={isEditing}
-          {...(onCancel
-            ? { onCancel }
-            : {})}
+          {...(onCancel ? { onCancel } : {})}
         />
-
       </section>
-
     </main>
   );
 }

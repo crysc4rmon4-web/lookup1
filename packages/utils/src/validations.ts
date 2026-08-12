@@ -9,8 +9,7 @@ export const normalizeEmail = (email: string) => {
 export const validateFullName = (name: string) => {
   const cleaned = normalizeSpaces(name);
 
-  const validCharacters =
-    /^[A-Za-zÀ-ÿ]+(?:\s[A-Za-zÀ-ÿ]+)+$/;
+  const validCharacters = /^[A-Za-zÀ-ÿ]+(?:\s[A-Za-zÀ-ÿ]+)+$/;
 
   if (!cleaned) {
     return "El nombre es obligatorio";
@@ -34,8 +33,7 @@ export const validateFullName = (name: string) => {
 export const validateEmail = (email: string) => {
   const cleaned = normalizeEmail(email);
 
-  const pattern =
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   if (!cleaned) {
     return "Email obligatorio";
@@ -48,10 +46,7 @@ export const validateEmail = (email: string) => {
   return "";
 };
 
-export const validatePassword = (
-  password: string,
-) => {
-
+export const validatePassword = (password: string) => {
   if (password.length < 8) {
     return "Debe tener mínimo 8 caracteres";
   }

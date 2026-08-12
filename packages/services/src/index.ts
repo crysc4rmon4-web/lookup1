@@ -6,7 +6,4 @@ export * from "./storage";
 export * from "./locations";
 export * from "./radar-blocked-zones";
 
-export {
-  getRadarPresence,
-  setRadarPresence,
-} from "./radar-presence";
+export { getRadarPresence, setRadarPresence } from "./radar-presence";

@@ -1,6 +1,4 @@
-import {
-  updateMyLocation,
-} from "@lookup/services";
+import { updateMyLocation } from "@lookup/services";
 
 export async function updateLocation(
   userId: string,
@@ -8,10 +6,5 @@ export async function updateLocation(
   longitude: number,
   accuracy?: number,
 ) {
-  return updateMyLocation(
-    userId,
-    latitude,
-    longitude,
-    accuracy,
-  );
+  return updateMyLocation(userId, latitude, longitude, accuracy);
 }

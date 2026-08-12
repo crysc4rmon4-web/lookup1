@@ -30,23 +30,16 @@ export function PlatformCard({
       <div
         className={[
           "flex h-14 w-14 items-center justify-center rounded-2xl transition-all",
-          selected
-            ? "bg-[#5D5FEF] text-white"
-            : "bg-slate-100 text-slate-700",
+          selected ? "bg-[#5D5FEF] text-white" : "bg-slate-100 text-slate-700",
         ].join(" ")}
       >
-        <SocialIcon
-          platform={platform}
-          size={26}
-        />
+        <SocialIcon platform={platform} size={26} />
       </div>
 
       <span
         className={[
           "mt-4 text-xs font-bold",
-          selected
-            ? "text-[#5D5FEF]"
-            : "text-slate-700",
+          selected ? "text-[#5D5FEF]" : "text-slate-700",
         ].join(" ")}
       >
         {label}

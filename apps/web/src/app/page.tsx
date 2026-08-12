@@ -8,22 +8,13 @@ import { useAuth } from "../components/auth-provider";
 export default function HomePage() {
   const router = useRouter();
 
-  const {
-    user,
-    loading,
-  } = useAuth();
+  const { user, loading } = useAuth();
 
   useEffect(() => {
     if (loading) return;
 
-    router.replace(
-      user
-        ? "/dashboard"
-        : "/login",
-    );
+    router.replace(user ? "/dashboard" : "/login");
   }, [loading, user, router]);
 
-  return (
-    <main className="min-h-screen bg-white" />
-  );
+  return <main className="min-h-screen bg-white" />;
 }

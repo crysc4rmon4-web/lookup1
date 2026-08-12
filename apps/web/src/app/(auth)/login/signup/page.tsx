@@ -1,18 +1,10 @@
 "use client";
 
-import {
-  FormEvent,
-  useMemo,
-  useState,
-} from "react";
+import { FormEvent, useMemo, useState } from "react";
 
-import {
-  useRouter,
-} from "next/navigation";
+import { useRouter } from "next/navigation";
 
-import {
-  supabase,
-} from "@lookup/services";
+import { supabase } from "@lookup/services";
 
 import {
   getPasswordError,
@@ -28,92 +20,43 @@ type FieldErrors = {
 };
 
 type FeedbackType = {
-  type:
-  | "success"
-  | "error"
-  | null;
+  type: "success" | "error" | null;
 
   message: string;
 };
 
 type AuthFlash = {
-  type:
-  | "success"
-  | "error"
-  | "info";
+  type: "success" | "error" | "info";
 
   message: string;
   email?: string;
 };
 
-const AUTH_FLASH_KEY =
-  "lookup:auth-flash";
+const AUTH_FLASH_KEY = "lookup:auth-flash";
 
 export default function SignupPage() {
-  const router =
-    useRouter();
+  const router = useRouter();
 
-  const [
-    fullName,
-    setFullName,
-  ] = useState("");
+  const [fullName, setFullName] = useState("");
 
-  const [
-    email,
-    setEmail,
-  ] = useState("");
+  const [email, setEmail] = useState("");
 
-  const [
-    password,
-    setPassword,
-  ] = useState("");
+  const [password, setPassword] = useState("");
 
-  const [
-    loading,
-    setLoading,
-  ] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const [
-    feedback,
-    setFeedback,
-  ] =
-    useState<FeedbackType>({
-      type: null,
-      message: "",
-    });
+  const [feedback, setFeedback] = useState<FeedbackType>({
+    type: null,
+    message: "",
+  });
 
-  const [
-    fieldErrors,
-    setFieldErrors,
-  ] =
-    useState<FieldErrors>({});
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
 
-  const cleanName =
-    useMemo(
-      () =>
-        normalizeFullName(
-          fullName,
-        ),
-      [fullName],
-    );
+  const cleanName = useMemo(() => normalizeFullName(fullName), [fullName]);
 
-  const cleanEmail =
-    useMemo(
-      () =>
-        normalizeEmail(
-          email,
-        ),
-      [email],
-    );
+  const cleanEmail = useMemo(() => normalizeEmail(email), [email]);
 
-  const passwordError =
-    useMemo(
-      () =>
-        getPasswordError(
-          password,
-        ),
-      [password],
-    );
+  const passwordError = useMemo(() => getPasswordError(password), [password]);
 
   function clearErrors() {
     setFieldErrors({});
@@ -124,9 +67,7 @@ export default function SignupPage() {
     });
   }
 
-  function getInputClasses(
-    hasError: boolean,
-  ) {
+  function getInputClasses(hasError: boolean) {
     return `
       h-[68px]
       w-full
@@ -141,16 +82,15 @@ export default function SignupPage() {
       transition-all
       placeholder:text-slate-400
       focus:border-[#5D5FEF]
-      ${hasError
-        ? "border-red-400 shadow-[0_0_0_4px_rgba(239,68,68,0.12)]"
-        : "border-slate-200"
+      ${
+        hasError
+          ? "border-red-400 shadow-[0_0_0_4px_rgba(239,68,68,0.12)]"
+          : "border-slate-200"
       }
     `;
   }
 
-  async function handleSignup(
-    event: FormEvent<HTMLFormElement>,
-  ) {
+  async function handleSignup(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     if (loading) {
@@ -159,42 +99,24 @@ export default function SignupPage() {
 
     clearErrors();
 
-    const errors: FieldErrors =
-      {};
+    const errors: FieldErrors = {};
 
     if (!cleanName) {
-      errors.fullName =
-        "Introduce nombre y apellido";
-    } else if (
-      cleanName.split(" ")
-        .length < 2
-    ) {
-      errors.fullName =
-        "Introduce nombre y apellido completos";
+      errors.fullName = "Introduce nombre y apellido";
+    } else if (cleanName.split(" ").length < 2) {
+      errors.fullName = "Introduce nombre y apellido completos";
     }
 
-    if (
-      !isValidEmail(
-        cleanEmail,
-      )
-    ) {
-      errors.email =
-        "Introduce un email válido";
+    if (!isValidEmail(cleanEmail)) {
+      errors.email = "Introduce un email válido";
     }
 
     if (passwordError) {
-      errors.password =
-        passwordError;
+      errors.password = passwordError;
     }
 
-    if (
-      Object.keys(
-        errors,
-      ).length > 0
-    ) {
-      setFieldErrors(
-        errors,
-      );
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
 
       return;
     }
@@ -202,115 +124,78 @@ export default function SignupPage() {
     try {
       setLoading(true);
 
-      const {
-        data,
-        error,
-      } =
-        await supabase.auth.signUp(
-          {
-            email:
-              cleanEmail,
+      const { data, error } = await supabase.auth.signUp({
+        email: cleanEmail,
 
-            password,
+        password,
 
-            options: {
-              data: {
-                full_name:
-                  cleanName,
-              },
-
-              /*
-               * La confirmación establece
-               * la sesión de Supabase.
-               *
-               * Entramos directamente en
-               * la selección de tipo de
-               * cuenta sin pasar por un
-               * login intermedio.
-               */
-              emailRedirectTo:
-                `${window.location.origin}/account-type`,
-            },
+        options: {
+          data: {
+            full_name: cleanName,
           },
-        );
+
+          /*
+           * La confirmación establece
+           * la sesión de Supabase.
+           *
+           * Entramos directamente en
+           * la selección de tipo de
+           * cuenta sin pasar por un
+           * login intermedio.
+           */
+          emailRedirectTo: `${window.location.origin}/account-type`,
+        },
+      });
 
       if (error) {
-        const errorMessage =
-          error.message.toLowerCase();
+        const errorMessage = error.message.toLowerCase();
 
         setFeedback({
           type: "error",
 
-          message:
-            errorMessage.includes(
-              "rate limit",
-            )
-              ? "Demasiados intentos. Espera un momento y vuelve a intentarlo."
-              : "No se pudo completar el registro. Revisa los datos e inténtalo de nuevo.",
+          message: errorMessage.includes("rate limit")
+            ? "Demasiados intentos. Espera un momento y vuelve a intentarlo."
+            : "No se pudo completar el registro. Revisa los datos e inténtalo de nuevo.",
         });
 
         return;
       }
 
-      if (
-        process.env
-          .NODE_ENV ===
-        "development"
-      ) {
-        console.log(
-          "USER CREATED:",
-          data.user?.id,
-        );
+      if (process.env.NODE_ENV === "development") {
+        console.log("USER CREATED:", data.user?.id);
       }
 
-      const flash: AuthFlash =
-      {
+      const flash: AuthFlash = {
         type: "info",
 
-        email:
-          cleanEmail,
+        email: cleanEmail,
 
         message:
           "Cuenta creada correctamente. Revisa tu correo para verificarla.",
       };
 
-      window.sessionStorage.setItem(
-        AUTH_FLASH_KEY,
-        JSON.stringify(
-          flash,
-        ),
-      );
+      window.sessionStorage.setItem(AUTH_FLASH_KEY, JSON.stringify(flash));
 
       setFeedback({
         type: "success",
 
-        message:
-          "Cuenta creada. Revisa tu correo para verificarla.",
+        message: "Cuenta creada. Revisa tu correo para verificarla.",
       });
 
       setFullName("");
       setEmail("");
       setPassword("");
 
-      window.setTimeout(
-        () => {
-          router.replace(
-            "/login",
-          );
-        },
-        1000,
-      );
+      window.setTimeout(() => {
+        router.replace("/login");
+      }, 1000);
     } catch (error) {
-      console.error(
-        "❌ Error creando cuenta",
-        error,
-      );
+      console.error("❌ Error creando cuenta", error);
 
       setFeedback({
         type: "error",
 
-        message:
-          "Ha ocurrido un error inesperado.",
+        message: "Ha ocurrido un error inesperado.",
       });
     } finally {
       setLoading(false);
@@ -331,9 +216,7 @@ export default function SignupPage() {
         </header>
 
         <form
-          onSubmit={
-            handleSignup
-          }
+          onSubmit={handleSignup}
           noValidate
           className="mt-14 w-full space-y-4"
         >
@@ -341,35 +224,20 @@ export default function SignupPage() {
             <input
               type="text"
               placeholder="Nombre completo"
-              value={
-                fullName
-              }
-              onChange={(
-                event,
-              ) => {
-                setFullName(
-                  event.target
-                    .value,
-                );
+              value={fullName}
+              onChange={(event) => {
+                setFullName(event.target.value);
 
                 clearErrors();
               }}
-              disabled={
-                loading
-              }
+              disabled={loading}
               autoComplete="name"
-              className={getInputClasses(
-                Boolean(
-                  fieldErrors.fullName,
-                ),
-              )}
+              className={getInputClasses(Boolean(fieldErrors.fullName))}
             />
 
             {fieldErrors.fullName && (
               <p className="mt-2 px-2 text-sm text-red-500">
-                {
-                  fieldErrors.fullName
-                }
+                {fieldErrors.fullName}
               </p>
             )}
           </div>
@@ -378,39 +246,22 @@ export default function SignupPage() {
             <input
               type="email"
               placeholder="Email"
-              value={
-                email
-              }
-              onChange={(
-                event,
-              ) => {
-                setEmail(
-                  event.target
-                    .value,
-                );
+              value={email}
+              onChange={(event) => {
+                setEmail(event.target.value);
 
                 clearErrors();
               }}
-              disabled={
-                loading
-              }
+              disabled={loading}
               autoComplete="email"
-              spellCheck={
-                false
-              }
+              spellCheck={false}
               inputMode="email"
-              className={getInputClasses(
-                Boolean(
-                  fieldErrors.email,
-                ),
-              )}
+              className={getInputClasses(Boolean(fieldErrors.email))}
             />
 
             {fieldErrors.email && (
               <p className="mt-2 px-2 text-sm text-red-500">
-                {
-                  fieldErrors.email
-                }
+                {fieldErrors.email}
               </p>
             )}
           </div>
@@ -419,53 +270,32 @@ export default function SignupPage() {
             <input
               type="password"
               placeholder="Contraseña"
-              value={
-                password
-              }
-              onChange={(
-                event,
-              ) => {
-                setPassword(
-                  event.target
-                    .value,
-                );
+              value={password}
+              onChange={(event) => {
+                setPassword(event.target.value);
 
                 clearErrors();
               }}
-              disabled={
-                loading
-              }
+              disabled={loading}
               autoComplete="new-password"
-              className={getInputClasses(
-                Boolean(
-                  fieldErrors.password,
-                ),
-              )}
+              className={getInputClasses(Boolean(fieldErrors.password))}
             />
 
             {fieldErrors.password && (
               <p className="mt-2 px-2 text-sm text-red-500">
-                {
-                  fieldErrors.password
-                }
+                {fieldErrors.password}
               </p>
             )}
           </div>
 
           <p className="px-2 text-[0.78rem] leading-5 text-slate-500">
-            La contraseña debe
-            tener mínimo 8
-            caracteres, una
-            mayúscula, una
-            minúscula, un número
-            y un símbolo.
+            La contraseña debe tener mínimo 8 caracteres, una mayúscula, una
+            minúscula, un número y un símbolo.
           </p>
 
           <button
             type="submit"
-            disabled={
-              loading
-            }
+            disabled={loading}
             className="
               h-[68px]
               w-full
@@ -482,22 +312,16 @@ export default function SignupPage() {
               disabled:opacity-60
             "
           >
-            {loading
-              ? "CREANDO..."
-              : "CREAR CUENTA"}
+            {loading ? "CREANDO..." : "CREAR CUENTA"}
           </button>
 
           {feedback.message && (
             <p
-              className={`text-center text-sm font-medium ${feedback.type ===
-                  "error"
-                  ? "text-red-500"
-                  : "text-emerald-600"
-                }`}
+              className={`text-center text-sm font-medium ${
+                feedback.type === "error" ? "text-red-500" : "text-emerald-600"
+              }`}
             >
-              {
-                feedback.message
-              }
+              {feedback.message}
             </p>
           )}
         </form>

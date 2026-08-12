@@ -1,8 +1,6 @@
 import { supabase } from "@lookup/services";
 
-import type {
-  NearbyProfile,
-} from "@lookup/types";
+import type { NearbyProfile } from "@lookup/types";
 
 type Params = {
   currentUserId: string;
@@ -17,7 +15,6 @@ export async function loadNearbyProfiles({
   longitude,
   radius = 25,
 }: Params) {
-
   console.group("📡 nearby_profiles RPC");
 
   console.log("Parámetros:", {
@@ -27,16 +24,12 @@ export async function loadNearbyProfiles({
     radius,
   });
 
-  const { data, error } =
-    await supabase.rpc(
-      "nearby_profiles",
-      {
-        current_user_id: currentUserId,
-        my_lat: latitude,
-        my_lon: longitude,
-        radius,
-      },
-    );
+  const { data, error } = await supabase.rpc("nearby_profiles", {
+    current_user_id: currentUserId,
+    my_lat: latitude,
+    my_lon: longitude,
+    radius,
+  });
 
   console.log("Respuesta:", data);
 
@@ -48,6 +41,5 @@ export async function loadNearbyProfiles({
     throw error;
   }
 
-  return (data ??
-    []) as NearbyProfile[];
+  return (data ?? []) as NearbyProfile[];
 }

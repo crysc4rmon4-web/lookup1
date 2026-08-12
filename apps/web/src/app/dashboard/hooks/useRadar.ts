@@ -1,15 +1,8 @@
 "use client";
 
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
-import type {
-  NearbyProfile,
-} from "@lookup/types";
+import type { NearbyProfile } from "@lookup/types";
 
 import { useAuth } from "../../../components/auth-provider";
 
@@ -36,84 +29,62 @@ export function useRadar({
 }: Props): RadarState {
   const { user } = useAuth();
 
-  const [
-    profiles,
-    setProfiles,
-  ] = useState<NearbyProfile[]>([]);
+  const [profiles, setProfiles] = useState<NearbyProfile[]>([]);
 
-  const [
-    loading,
-    setLoading,
-  ] = useState(true);
+  const [loading, setLoading] = useState(true);
 
-  const initialized =
-    useRef(false);
+  const initialized = useRef(false);
 
-  const refresh =
-    useCallback(async () => {
-      /*
-       * Radar apagado:
-       * no mostramos ni consultamos personas.
-       */
-      if (!enabled) {
-        setProfiles([]);
+  const refresh = useCallback(async () => {
+    /*
+     * Radar apagado:
+     * no mostramos ni consultamos personas.
+     */
+    if (!enabled) {
+      setProfiles([]);
+      setLoading(false);
+      return;
+    }
+
+    /*
+     * Todavía no tenemos usuario o GPS.
+     */
+    if (!user || latitude === null || longitude === null) {
+      setProfiles([]);
+
+      if (!initialized.current) {
+        initialized.current = true;
         setLoading(false);
-        return;
       }
+
+      return;
+    }
+
+    try {
+      const nearby = await loadNearbyProfiles({
+        currentUserId: user.id,
+
+        latitude,
+
+        longitude,
+      });
+
+      setProfiles(nearby);
+    } catch (error) {
+      console.error("❌ Error Radar", error);
 
       /*
-       * Todavía no tenemos usuario o GPS.
+       * Ante un error no mostramos
+       * datos potencialmente obsoletos.
        */
-      if (
-        !user ||
-        latitude === null ||
-        longitude === null
-      ) {
-        setProfiles([]);
-
-        if (!initialized.current) {
-          initialized.current = true;
-          setLoading(false);
-        }
-
-        return;
+      setProfiles([]);
+    } finally {
+      if (!initialized.current) {
+        initialized.current = true;
+        setLoading(false);
       }
-
-      try {
-        const nearby =
-          await loadNearbyProfiles({
-            currentUserId:
-              user.id,
-
-            latitude,
-
-            longitude,
-          });
-
-        setProfiles(nearby);
-      } catch (error) {
-        console.error(
-          "❌ Error Radar",
-          error,
-        );
-
-        /*
-         * Ante un error no mostramos
-         * datos potencialmente obsoletos.
-         */
-        setProfiles([]);
-      } finally {
-        if (!initialized.current) {
-          initialized.current = true;
-          setLoading(false);
-        }
-      }
-    }, [
-      enabled,
-      user,
-      latitude,
-      longitude,
-    ]);
+    }
+  }, [enabled, user, latitude, longitude]);
 
   /*
    * Consulta inicial y cada vez que
@@ -125,42 +96,25 @@ export function useRadar({
     }
 
     void refresh();
-  }, [
-    refresh,
-    locationLoading,
-  ]);
+  }, [refresh, locationLoading]);
 
   /*
    * Mientras el radar está activo,
    * refrescamos presencia cada 5 segundos.
    */
   useEffect(() => {
-    if (
-      !enabled ||
-      !user ||
-      latitude === null ||
-      longitude === null
-    ) {
+    if (!enabled || !user || latitude === null || longitude === null) {
       return;
     }
 
-    const interval =
-      window.setInterval(() => {
-        void refresh();
-      }, 5000);
+    const interval = window.setInterval(() => {
+      void refresh();
+    }, 5000);
 
     return () => {
-      window.clearInterval(
-        interval,
-      );
+      window.clearInterval(interval);
     };
-  }, [
-    enabled,
-    user,
-    latitude,
-    longitude,
-    refresh,
-  ]);
+  }, [enabled, user, latitude, longitude, refresh]);
 
   /*
    * Si se apaga el radar, limpiamos
