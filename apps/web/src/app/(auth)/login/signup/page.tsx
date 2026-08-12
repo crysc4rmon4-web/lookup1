@@ -6,7 +6,9 @@ import {
   useState,
 } from "react";
 
-import { useRouter } from "next/navigation";
+import {
+  useRouter,
+} from "next/navigation";
 
 import {
   supabase,
@@ -27,18 +29,18 @@ type FieldErrors = {
 
 type FeedbackType = {
   type:
-    | "success"
-    | "error"
-    | null;
+  | "success"
+  | "error"
+  | null;
 
   message: string;
 };
 
 type AuthFlash = {
   type:
-    | "success"
-    | "error"
-    | "info";
+  | "success"
+  | "error"
+  | "info";
 
   message: string;
   email?: string;
@@ -139,10 +141,9 @@ export default function SignupPage() {
       transition-all
       placeholder:text-slate-400
       focus:border-[#5D5FEF]
-      ${
-        hasError
-          ? "border-red-400 shadow-[0_0_0_4px_rgba(239,68,68,0.12)]"
-          : "border-slate-200"
+      ${hasError
+        ? "border-red-400 shadow-[0_0_0_4px_rgba(239,68,68,0.12)]"
+        : "border-slate-200"
       }
     `;
   }
@@ -209,6 +210,7 @@ export default function SignupPage() {
           {
             email:
               cleanEmail,
+
             password,
 
             options: {
@@ -218,11 +220,16 @@ export default function SignupPage() {
               },
 
               /*
-               * Al verificar el correo
-               * regresamos al login.
+               * La confirmación establece
+               * la sesión de Supabase.
+               *
+               * Entramos directamente en
+               * la selección de tipo de
+               * cuenta sin pasar por un
+               * login intermedio.
                */
               emailRedirectTo:
-                `${window.location.origin}/login?verified=1`,
+                `${window.location.origin}/account-type`,
             },
           },
         );
@@ -233,6 +240,7 @@ export default function SignupPage() {
 
         setFeedback({
           type: "error",
+
           message:
             errorMessage.includes(
               "rate limit",
@@ -256,13 +264,15 @@ export default function SignupPage() {
       }
 
       const flash: AuthFlash =
-        {
-          type: "info",
-          email:
-            cleanEmail,
-          message:
-            "Cuenta creada correctamente. Revisa tu correo para verificarla antes de iniciar sesión.",
-        };
+      {
+        type: "info",
+
+        email:
+          cleanEmail,
+
+        message:
+          "Cuenta creada correctamente. Revisa tu correo para verificarla.",
+      };
 
       window.sessionStorage.setItem(
         AUTH_FLASH_KEY,
@@ -273,8 +283,9 @@ export default function SignupPage() {
 
       setFeedback({
         type: "success",
+
         message:
-          "Cuenta creada. Te llevamos al login...",
+          "Cuenta creada. Revisa tu correo para verificarla.",
       });
 
       setFullName("");
@@ -297,6 +308,7 @@ export default function SignupPage() {
 
       setFeedback({
         type: "error",
+
         message:
           "Ha ocurrido un error inesperado.",
       });
@@ -366,7 +378,9 @@ export default function SignupPage() {
             <input
               type="email"
               placeholder="Email"
-              value={email}
+              value={
+                email
+              }
               onChange={(
                 event,
               ) => {
@@ -381,7 +395,9 @@ export default function SignupPage() {
                 loading
               }
               autoComplete="email"
-              spellCheck={false}
+              spellCheck={
+                false
+              }
               inputMode="email"
               className={getInputClasses(
                 Boolean(
@@ -473,12 +489,11 @@ export default function SignupPage() {
 
           {feedback.message && (
             <p
-              className={`text-center text-sm font-medium ${
-                feedback.type ===
-                "error"
+              className={`text-center text-sm font-medium ${feedback.type ===
+                  "error"
                   ? "text-red-500"
                   : "text-emerald-600"
-              }`}
+                }`}
             >
               {
                 feedback.message

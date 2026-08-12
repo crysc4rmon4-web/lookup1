@@ -96,6 +96,29 @@ export async function setMyAccountType(
   accountType: AccountType,
   email?: string | null,
 ) {
+  /*
+   * Primero comprobamos si ya existe
+   * un perfil.
+   *
+   * account_type se considera una
+   * decisión inicial de la cuenta.
+   * Si ya existe, no lo modificamos
+   * accidentalmente desde esta función.
+   */
+  const currentProfile =
+    await getMyProfile(userId);
+
+  if (currentProfile.error) {
+    return currentProfile;
+  }
+
+  if (
+    currentProfile.data
+      ?.account_type
+  ) {
+    return currentProfile;
+  }
+
   return saveMyProfile({
     id: userId,
     email: email ?? null,

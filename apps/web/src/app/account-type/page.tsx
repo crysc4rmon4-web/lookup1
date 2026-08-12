@@ -11,11 +11,15 @@ import {
   useState,
 } from "react";
 
-import { useRouter } from "next/navigation";
+import {
+  useRouter,
+} from "next/navigation";
 
 import {
   setMyAccountType,
+  supabase,
   type AccountType,
+  type ProfileRow,
 } from "@lookup/services";
 
 import { useAuth } from "../../components/auth-provider";
@@ -31,8 +35,8 @@ type AccountOption = {
   title: string;
   description: string;
   icon:
-    | typeof UserRound
-    | typeof Building2;
+  | typeof UserRound
+  | typeof Building2;
 };
 
 const ACCOUNT_OPTIONS: AccountOption[] = [
@@ -52,8 +56,31 @@ const ACCOUNT_OPTIONS: AccountOption[] = [
   },
 ];
 
+function getUnknownErrorMessage(
+  error: unknown,
+) {
+  if (
+    error instanceof Error
+  ) {
+    return error.message;
+  }
+
+  if (
+    typeof error === "object" &&
+    error !== null &&
+    "message" in error &&
+    typeof error.message ===
+    "string"
+  ) {
+    return error.message;
+  }
+
+  return "Error desconocido";
+}
+
 export default function AccountTypePage() {
-  const router = useRouter();
+  const router =
+    useRouter();
 
   const {
     user,
@@ -62,6 +89,7 @@ export default function AccountTypePage() {
 
   const {
     profile,
+    profileError,
     loading: profileLoading,
   } = useProfileStatus();
 
@@ -90,16 +118,30 @@ export default function AccountTypePage() {
     }
 
     if (!user) {
-      router.replace("/login");
+      router.replace(
+        "/login",
+      );
+
       return;
     }
 
     /*
-     * Si la cuenta ya eligió tipo,
-     * jamás mostramos nuevamente
-     * este selector.
+     * Si hubo un error cargando
+     * el perfil no tomamos ninguna
+     * decisión de routing.
      */
-    if (profile?.account_type) {
+    if (profileError) {
+      return;
+    }
+
+    /*
+     * Una cuenta que ya tiene tipo
+     * asignado no puede volver a
+     * elegirlo desde esta pantalla.
+     */
+    if (
+      profile?.account_type
+    ) {
       router.replace(
         getAuthenticatedDestination(
           profile,
@@ -111,6 +153,7 @@ export default function AccountTypePage() {
     profileLoading,
     user,
     profile,
+    profileError,
     router,
   ]);
 
@@ -124,14 +167,38 @@ export default function AccountTypePage() {
       return;
     }
 
-    setSavingType(accountType);
+    setSavingType(
+      accountType,
+    );
+
     setError(null);
 
     try {
+      /*
+       * Verificamos con Supabase que
+       * la sesión sigue siendo válida
+       * antes de escribir en profiles.
+       */
+      const {
+        data: authData,
+        error: authError,
+      } =
+        await supabase.auth.getUser();
+
+      if (
+        authError ||
+        !authData.user ||
+        authData.user.id !==
+        user.id
+      ) {
+        throw new Error(
+          "Tu sesión ha expirado. Inicia sesión de nuevo.",
+        );
+      }
+
       const {
         data,
-        error:
-          saveError,
+        error: saveError,
       } =
         await setMyAccountType(
           user.id,
@@ -143,27 +210,39 @@ export default function AccountTypePage() {
         throw saveError;
       }
 
-      if (!data) {
+      const savedProfile =
+        data as ProfileRow | null;
+
+      if (
+        !savedProfile
+          ?.account_type
+      ) {
         throw new Error(
-          "No se pudo crear el perfil.",
+          "No se pudo confirmar el tipo de cuenta.",
         );
       }
 
+      /*
+       * Navegamos utilizando el valor
+       * realmente persistido, no el
+       * valor solicitado en memoria.
+       */
       router.replace(
         getOnboardingRoute(
-          accountType,
+          savedProfile.account_type,
         ),
       );
     } catch (error) {
       console.error(
-        "❌ Error guardando tipo de cuenta",
+        "❌ Error guardando tipo de cuenta:",
+        getUnknownErrorMessage(
+          error,
+        ),
         error,
       );
 
       setError(
-        error instanceof Error
-          ? error.message
-          : "No se pudo guardar el tipo de cuenta.",
+        "No se pudo guardar el tipo de cuenta. Inténtalo de nuevo.",
       );
     } finally {
       setSavingType(null);
@@ -177,8 +256,42 @@ export default function AccountTypePage() {
     return (
       <main className="flex min-h-screen items-center justify-center bg-[#F7F8FC] px-6">
         <p className="text-sm font-semibold text-slate-400">
-          Preparando tu cuenta...
+          Preparando tu
+          cuenta...
         </p>
+      </main>
+    );
+  }
+
+  if (profileError) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-[#F7F8FC] px-6">
+        <section className="w-full max-w-[420px] rounded-[2rem] bg-white p-8 text-center shadow-sm">
+          <p className="text-xs font-black uppercase tracking-[0.3em] text-[#5D5FEF]">
+            LOOKUP
+          </p>
+
+          <h1 className="mt-4 text-2xl font-black text-slate-900">
+            No pudimos cargar
+            tu cuenta
+          </h1>
+
+          <p className="mt-3 text-sm leading-6 text-slate-500">
+            Comprueba tu
+            conexión e inténtalo
+            nuevamente.
+          </p>
+
+          <button
+            type="button"
+            onClick={() =>
+              window.location.reload()
+            }
+            className="mt-6 h-12 w-full rounded-2xl bg-[#5D5FEF] font-bold text-white transition hover:bg-[#5153e6]"
+          >
+            Reintentar
+          </button>
+        </section>
       </main>
     );
   }
@@ -203,7 +316,9 @@ export default function AccountTypePage() {
           </h1>
 
           <p className="mt-4 max-w-sm text-base leading-7 text-slate-500">
-            ¿Qué tipo de cuenta quieres crear?
+            ¿Qué tipo de
+            cuenta quieres
+            crear?
           </p>
         </header>
 
@@ -219,7 +334,9 @@ export default function AccountTypePage() {
 
               return (
                 <button
-                  key={option.type}
+                  key={
+                    option.type
+                  }
                   type="button"
                   disabled={
                     savingType !==
@@ -253,19 +370,7 @@ export default function AccountTypePage() {
                     disabled:opacity-60
                   "
                 >
-                  <div
-                    className="
-                      flex
-                      h-14
-                      w-14
-                      shrink-0
-                      items-center
-                      justify-center
-                      rounded-[20px]
-                      bg-[#EEF2FF]
-                      text-[#5D5FEF]
-                    "
-                  >
+                  <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[20px] bg-[#EEF2FF] text-[#5D5FEF]">
                     <Icon
                       size={25}
                       strokeWidth={
@@ -276,11 +381,15 @@ export default function AccountTypePage() {
 
                   <div className="min-w-0 flex-1">
                     <h2 className="text-lg font-black text-slate-900">
-                      {option.title}
+                      {
+                        option.title
+                      }
                     </h2>
 
                     <p className="mt-1 text-sm leading-5 text-slate-500">
-                      {option.description}
+                      {
+                        option.description
+                      }
                     </p>
                   </div>
 
@@ -289,7 +398,9 @@ export default function AccountTypePage() {
                       <span className="h-4 w-4 animate-spin rounded-full border-2 border-[#5D5FEF] border-t-transparent" />
                     ) : (
                       <ChevronRight
-                        size={18}
+                        size={
+                          18
+                        }
                       />
                     )}
                   </div>
@@ -309,7 +420,10 @@ export default function AccountTypePage() {
         )}
 
         <p className="mx-auto mt-7 max-w-sm text-center text-xs leading-5 text-slate-400">
-          Esta elección define la experiencia inicial de tu cuenta.
+          Esta elección
+          define la
+          experiencia inicial
+          de tu cuenta.
         </p>
       </section>
     </main>
