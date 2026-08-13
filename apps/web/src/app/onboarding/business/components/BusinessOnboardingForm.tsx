@@ -167,6 +167,34 @@ function StepBusinessDetails({
             ))}
           </select>
         </div>
+
+        <div>
+          <div className="flex items-center justify-between gap-4">
+            <FieldLabel>Sobre tu negocio</FieldLabel>
+
+            <span className="text-xs font-semibold text-slate-400">
+              {data.bio.length}/500
+            </span>
+          </div>
+
+          <textarea
+            value={data.bio}
+            onChange={(event) =>
+              update({
+                bio: event.target.value.slice(0, 500),
+              })
+            }
+            placeholder="Cuenta brevemente qué hace tu negocio, qué ofrece y qué lo hace especial."
+            rows={5}
+            maxLength={500}
+            className={`${INPUT_CLASS_NAME} resize-none leading-6`}
+          />
+
+          <p className="mt-2 text-xs leading-5 text-slate-400">
+            Mínimo 20 caracteres. Esta descripción aparecerá en tu perfil
+            público.
+          </p>
+        </div>
       </div>
     </section>
   );
@@ -457,6 +485,8 @@ function StepBusinessReview({ data }: { data: BusinessOnboardingData }) {
               <p className="mt-1 text-xs text-slate-400">{data.legalName}</p>
             </div>
           </div>
+
+          <p className="mt-6 text-sm leading-6 text-slate-600">{data.bio}</p>
 
           <div className="mt-7 space-y-4">
             <div className="flex items-start gap-3">

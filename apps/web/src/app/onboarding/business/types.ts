@@ -24,6 +24,7 @@ export type BusinessOnboardingData = {
   tradeName: string;
   taxId: string;
   sector: string;
+  bio: string;
 
   avatarUrl: string;
 

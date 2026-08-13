@@ -11,7 +11,7 @@ import {
   type BusinessOnboardingData,
 } from "../types";
 
-const DRAFT_VERSION = 3;
+const DRAFT_VERSION = 4;
 
 const DRAFT_STORAGE_PREFIX = "lookup:business-onboarding-draft";
 
@@ -20,6 +20,7 @@ const INITIAL_DATA: BusinessOnboardingData = {
   tradeName: "",
   taxId: "",
   sector: "",
+  bio: "",
 
   avatarUrl: "",
 
@@ -61,6 +62,8 @@ function restoreDraftData(
   return {
     ...INITIAL_DATA,
     ...value,
+
+    bio: typeof value.bio === "string" ? value.bio : "",
 
     avatarUrl: typeof value.avatarUrl === "string" ? value.avatarUrl : "",
 
@@ -109,7 +112,6 @@ export function useBusinessOnboarding() {
         setData(INITIAL_DATA);
         setStepIndex(0);
         setDraftReady(true);
-
         return;
       }
 
@@ -126,7 +128,6 @@ export function useBusinessOnboarding() {
         setData(INITIAL_DATA);
         setStepIndex(0);
         setDraftReady(true);
-
         return;
       }
 
@@ -172,7 +173,9 @@ export function useBusinessOnboarding() {
           data.legalName.trim().length >= 2 &&
           data.tradeName.trim().length >= 2 &&
           data.taxId.trim().length >= 5 &&
-          data.sector.trim().length >= 2
+          data.sector.trim().length >= 2 &&
+          data.bio.trim().length >= 20 &&
+          data.bio.trim().length <= 500
         );
 
       case "photo":

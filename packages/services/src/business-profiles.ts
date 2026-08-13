@@ -57,6 +57,7 @@ export type CompleteBusinessOnboardingInput = {
   tradeName: string;
   taxId: string;
   sector: string;
+  bio: string;
 
   address: string;
   city: string;
@@ -127,29 +128,21 @@ export async function saveMyBusinessProfile(
         profile_id: input.profile_id,
 
         legal_name: input.legal_name.trim(),
-
         trade_name: input.trade_name.trim(),
-
         tax_id: input.tax_id.trim().toUpperCase(),
-
         sector: input.sector.trim(),
 
         address: input.address.trim(),
-
         city: input.city.trim(),
-
         province: input.province.trim(),
-
         postal_code: input.postal_code.trim(),
 
         latitude: input.latitude ?? null,
-
         longitude: input.longitude ?? null,
 
         contact_email: input.contact_email.trim().toLowerCase(),
 
         contact_phone: normalizeOptionalValue(input.contact_phone),
-
         website: normalizeOptionalValue(input.website),
       },
       {
@@ -171,25 +164,18 @@ export async function completeBusinessOnboarding(
 ): Promise<string> {
   const { data, error } = await supabase.rpc("complete_business_onboarding", {
     p_legal_name: input.legalName.trim(),
-
     p_trade_name: input.tradeName.trim(),
-
     p_tax_id: input.taxId.trim().toUpperCase(),
-
     p_sector: input.sector.trim(),
+    p_bio: input.bio.trim(),
 
     p_address: input.address.trim(),
-
     p_city: input.city.trim(),
-
     p_province: input.province.trim(),
-
     p_postal_code: input.postalCode.trim(),
 
     p_contact_email: input.contactEmail.trim().toLowerCase(),
-
     p_contact_phone: normalizeOptionalValue(input.contactPhone),
-
     p_website: normalizeOptionalValue(input.website),
 
     p_social_links: input.socialLinks,
@@ -197,7 +183,6 @@ export async function completeBusinessOnboarding(
     p_avatar_url: input.avatarUrl,
 
     p_latitude: input.latitude,
-
     p_longitude: input.longitude,
   });
 

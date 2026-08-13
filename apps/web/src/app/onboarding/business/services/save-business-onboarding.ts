@@ -31,6 +31,12 @@ export async function saveBusinessOnboarding({
     throw new Error("No se pudo recuperar el email de la cuenta.");
   }
 
+  if (data.bio.trim().length < 20 || data.bio.trim().length > 500) {
+    throw new Error(
+      "La descripción del negocio debe tener entre 20 y 500 caracteres.",
+    );
+  }
+
   if (data.latitude === null || data.longitude === null) {
     throw new Error("Debes verificar la dirección del negocio.");
   }
@@ -42,6 +48,7 @@ export async function saveBusinessOnboarding({
     tradeName: data.tradeName,
     taxId: data.taxId,
     sector: data.sector,
+    bio: data.bio,
 
     address: data.address,
     city: data.city,
