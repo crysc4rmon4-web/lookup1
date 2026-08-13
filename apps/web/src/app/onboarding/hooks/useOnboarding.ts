@@ -1,22 +1,14 @@
 "use client";
 
-import {
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { useAuth } from "../../../components/auth-provider";
 
-import {
-  ONBOARDING_STEPS,
-  type OnboardingData,
-} from "../types";
+import { ONBOARDING_STEPS, type OnboardingData } from "../types";
 
 const DRAFT_VERSION = 1;
 
-const DRAFT_STORAGE_PREFIX =
-  "lookup:person-onboarding-draft";
+const DRAFT_STORAGE_PREFIX = "lookup:person-onboarding-draft";
 
 const INITIAL_DATA: OnboardingData = {
   avatarUrl: "",
@@ -37,30 +29,15 @@ type StoredOnboardingDraft = {
 
 type UseOnboardingOptions = {
   initialData?: Partial<OnboardingData>;
-
-  /**
-   * Solo el onboarding inicial debe
-   * persistir un borrador.
-   *
-   * Las pantallas de edición de perfil
-   * no activan esta opción.
-   */
   persistDraft?: boolean;
 };
 
-function getDraftStorageKey(
-  userId: string,
-) {
+function getDraftStorageKey(userId: string) {
   return `${DRAFT_STORAGE_PREFIX}:${userId}`;
 }
 
-function clampStepIndex(
-  value: number,
-) {
-  return Math.min(
-    Math.max(value, 0),
-    ONBOARDING_STEPS.length - 1,
-  );
+function clampStepIndex(value: number) {
+  return Math.min(Math.max(value, 0), ONBOARDING_STEPS.length - 1);
 }
 
 function restoreDraftData(
@@ -70,68 +47,37 @@ function restoreDraftData(
     ...INITIAL_DATA,
     ...value,
 
-    interests: Array.isArray(
-      value.interests,
-    )
-      ? value.interests
-      : [],
+    interests: Array.isArray(value.interests) ? value.interests : [],
 
-    socialLinks: Array.isArray(
-      value.socialLinks,
-    )
+    socialLinks: Array.isArray(value.socialLinks)
       ? value.socialLinks
       : [],
 
-    acceptedTerms:
-      value.acceptedTerms === true,
+    acceptedTerms: value.acceptedTerms === true,
   };
 }
 
-export function useOnboarding(
-  options?: UseOnboardingOptions,
-) {
+export function useOnboarding(options?: UseOnboardingOptions) {
   const { user } = useAuth();
 
-  const shouldPersistDraft =
-    options?.persistDraft === true;
+  const shouldPersistDraft = options?.persistDraft === true;
 
-  const [
-    stepIndex,
-    setStepIndex,
-  ] = useState(0);
+  const [stepIndex, setStepIndex] = useState(0);
 
-  const [
-    data,
-    setData,
-  ] = useState<OnboardingData>({
+  const [data, setData] = useState<OnboardingData>({
     ...INITIAL_DATA,
     ...options?.initialData,
   });
 
-  const [
-    draftReady,
-    setDraftReady,
-  ] = useState(
-    !shouldPersistDraft,
-  );
+  const [draftReady, setDraftReady] = useState(!shouldPersistDraft);
 
   const draftStorageKey =
-    shouldPersistDraft &&
-    user?.id
-      ? getDraftStorageKey(
-          user.id,
-        )
+    shouldPersistDraft && user?.id
+      ? getDraftStorageKey(user.id)
       : null;
 
-  /**
-   * Mantiene el comportamiento existente
-   * para las pantallas que utilizan
-   * initialData, por ejemplo edición.
-   */
   useEffect(() => {
-    if (
-      !options?.initialData
-    ) {
+    if (!options?.initialData) {
       return;
     }
 
@@ -139,29 +85,15 @@ export function useOnboarding(
       ...INITIAL_DATA,
       ...options.initialData,
     });
-  }, [
-    options?.initialData,
-  ]);
+  }, [options?.initialData]);
 
-  /**
-   * Recupera el onboarding exclusivamente
-   * para el usuario autenticado.
-   *
-   * Cada cuenta tiene su propia clave,
-   * por lo que dos usuarios no pueden
-   * compartir accidentalmente un borrador.
-   */
   useEffect(() => {
-    if (
-      !shouldPersistDraft
-    ) {
+    if (!shouldPersistDraft) {
       setDraftReady(true);
       return;
     }
 
-    if (
-      !draftStorageKey
-    ) {
+    if (!draftStorageKey) {
       setDraftReady(false);
       return;
     }
@@ -169,84 +101,45 @@ export function useOnboarding(
     setDraftReady(false);
 
     try {
-      const raw =
-        window.localStorage.getItem(
-          draftStorageKey,
-        );
+      const raw = window.localStorage.getItem(draftStorageKey);
 
       if (!raw) {
         setStepIndex(0);
-
-        setData({
-          ...INITIAL_DATA,
-        });
-
+        setData({ ...INITIAL_DATA });
         setDraftReady(true);
+
         return;
       }
 
-      const parsed =
-        JSON.parse(
-          raw,
-        ) as StoredOnboardingDraft;
+      const parsed = JSON.parse(raw) as StoredOnboardingDraft;
 
       if (
-        parsed.version !==
-          DRAFT_VERSION ||
-        typeof parsed.stepIndex !==
-          "number" ||
+        parsed.version !== DRAFT_VERSION ||
+        typeof parsed.stepIndex !== "number" ||
         !parsed.data ||
-        typeof parsed.data !==
-          "object"
+        typeof parsed.data !== "object"
       ) {
-        window.localStorage.removeItem(
-          draftStorageKey,
-        );
+        window.localStorage.removeItem(draftStorageKey);
 
         setStepIndex(0);
-
-        setData({
-          ...INITIAL_DATA,
-        });
-
+        setData({ ...INITIAL_DATA });
         setDraftReady(true);
+
         return;
       }
 
-      setStepIndex(
-        clampStepIndex(
-          parsed.stepIndex,
-        ),
-      );
-
-      setData(
-        restoreDraftData(
-          parsed.data,
-        ),
-      );
+      setStepIndex(clampStepIndex(parsed.stepIndex));
+      setData(restoreDraftData(parsed.data));
     } catch {
-      window.localStorage.removeItem(
-        draftStorageKey,
-      );
+      window.localStorage.removeItem(draftStorageKey);
 
       setStepIndex(0);
-
-      setData({
-        ...INITIAL_DATA,
-      });
+      setData({ ...INITIAL_DATA });
     } finally {
       setDraftReady(true);
     }
-  }, [
-    draftStorageKey,
-    shouldPersistDraft,
-  ]);
+  }, [draftStorageKey, shouldPersistDraft]);
 
-  /**
-   * Guarda automáticamente cada cambio
-   * y cada avance de paso una vez que
-   * el borrador inicial ha sido cargado.
-   */
   useEffect(() => {
     if (
       !shouldPersistDraft ||
@@ -256,21 +149,15 @@ export function useOnboarding(
       return;
     }
 
-    const draft:
-      StoredOnboardingDraft = {
-        version:
-          DRAFT_VERSION,
-
-        stepIndex,
-
-        data,
-      };
+    const draft: StoredOnboardingDraft = {
+      version: DRAFT_VERSION,
+      stepIndex,
+      data,
+    };
 
     window.localStorage.setItem(
       draftStorageKey,
-      JSON.stringify(
-        draft,
-      ),
+      JSON.stringify(draft),
     );
   }, [
     data,
@@ -280,109 +167,76 @@ export function useOnboarding(
     stepIndex,
   ]);
 
-  function update(
-    values: Partial<OnboardingData>,
-  ) {
-    setData(
-      (current) => ({
-        ...current,
-        ...values,
-      }),
-    );
+  function update(values: Partial<OnboardingData>) {
+    setData((current) => ({
+      ...current,
+      ...values,
+    }));
   }
 
-  const canContinue =
-    useMemo(() => {
-      const step =
-        ONBOARDING_STEPS[
-          stepIndex
-        ];
+  const canContinue = useMemo(() => {
+    const step = ONBOARDING_STEPS[stepIndex];
 
-      switch (step) {
-        case "photo":
-          return true;
+    switch (step) {
+      case "photo":
+        return true;
 
-        case "name":
-          return (
-            data.fullName
-              .trim()
-              .length >= 2
-          );
+      case "name":
+        return data.fullName.trim().length >= 2;
 
-        case "profession":
-          return true;
+      case "profession":
+        return true;
 
-        case "bio":
-          return true;
+      case "socials":
+        return true;
 
-        case "interests":
-          return true;
+      case "bio":
+        return true;
 
-        case "terms":
-          return (
-            data.acceptedTerms
-          );
+      case "interests":
+        return true;
 
-        default:
-          return true;
-      }
-    }, [
-      data,
-      stepIndex,
-    ]);
+      case "review":
+        return true;
+
+      case "terms":
+        return data.acceptedTerms;
+
+      default:
+        return false;
+    }
+  }, [data, stepIndex]);
 
   function next() {
     if (!canContinue) {
       return;
     }
 
-    setStepIndex(
-      (current) =>
-        Math.min(
-          current + 1,
-          ONBOARDING_STEPS.length -
-            1,
-        ),
+    setStepIndex((current) =>
+      Math.min(current + 1, ONBOARDING_STEPS.length - 1),
     );
   }
 
   function previous() {
-    setStepIndex(
-      (current) =>
-        Math.max(
-          current - 1,
-          0,
-        ),
-    );
+    setStepIndex((current) => Math.max(current - 1, 0));
   }
 
-  function clearDraft() {
-    if (
-      !draftStorageKey
-    ) {
+  const clearDraft = useCallback(() => {
+    if (!draftStorageKey) {
       return;
     }
 
-    window.localStorage.removeItem(
-      draftStorageKey,
-    );
-  }
+    window.localStorage.removeItem(draftStorageKey);
+  }, [draftStorageKey]);
 
   return {
     stepIndex,
 
-    step:
-      ONBOARDING_STEPS[
-        stepIndex
-      ]!,
+    step: ONBOARDING_STEPS[stepIndex]!,
 
-    totalSteps:
-      ONBOARDING_STEPS.length,
+    totalSteps: ONBOARDING_STEPS.length,
 
-    progress:
-      ((stepIndex + 1) /
-        ONBOARDING_STEPS.length) *
-      100,
+    progress: ((stepIndex + 1) / ONBOARDING_STEPS.length) * 100,
 
     data,
 

@@ -1,10 +1,17 @@
 import type { SocialLink } from "../types";
 
 export type BusinessOnboardingStep =
-  "details" | "location" | "contact" | "socials" | "review" | "terms";
+  | "details"
+  | "photo"
+  | "location"
+  | "contact"
+  | "socials"
+  | "review"
+  | "terms";
 
 export const BUSINESS_ONBOARDING_STEPS: BusinessOnboardingStep[] = [
   "details",
+  "photo",
   "location",
   "contact",
   "socials",
@@ -18,10 +25,16 @@ export type BusinessOnboardingData = {
   taxId: string;
   sector: string;
 
+  avatarUrl: string;
+
   address: string;
   city: string;
   province: string;
   postalCode: string;
+
+  latitude: number | null;
+  longitude: number | null;
+  verifiedAddress: string;
 
   contactEmail: string;
   contactPhone: string;

@@ -1,15 +1,24 @@
 "use client";
 
-import { Building2, Globe2, Mail, MapPin, Phone } from "lucide-react";
+import {
+  Building2,
+  CheckCircle2,
+  Globe2,
+  Loader2,
+  Mail,
+  MapPin,
+  Phone,
+} from "lucide-react";
 
 import { SOCIAL_PLATFORMS } from "@lookup/config";
 
+import { SocialIcon } from "@/components/ui/SocialIcon";
+
 import { Navigation } from "../../components/Navigation";
 import { ProgressBar } from "../../components/ProgressBar";
+import { StepPhoto } from "../../components/StepPhoto";
 import { StepSocials } from "../../components/StepSocials";
 import { StepTerms } from "../../components/StepTerms";
-
-import { SocialIcon } from "@/components/ui/SocialIcon";
 
 import { BUSINESS_SECTORS } from "../constants";
 
@@ -28,6 +37,9 @@ type Props = {
   canContinue: boolean;
 
   update: (values: Partial<BusinessOnboardingData>) => void;
+
+  onAvatar: (file: File) => void;
+  onVerifyLocation: () => void;
 
   onBack: () => void;
   onNext: () => void;
@@ -66,7 +78,6 @@ function StepBusinessDetails({
   update,
 }: {
   data: BusinessOnboardingData;
-
   update: (values: Partial<BusinessOnboardingData>) => void;
 }) {
   return (
@@ -164,11 +175,25 @@ function StepBusinessDetails({
 function StepBusinessLocation({
   data,
   update,
+  loading,
+  onVerifyLocation,
 }: {
   data: BusinessOnboardingData;
-
   update: (values: Partial<BusinessOnboardingData>) => void;
+  loading: boolean;
+  onVerifyLocation: () => void;
 }) {
+  function invalidateLocation(values: Partial<BusinessOnboardingData>) {
+    update({
+      ...values,
+      latitude: null,
+      longitude: null,
+      verifiedAddress: "",
+    });
+  }
+
+  const isVerified = data.latitude !== null && data.longitude !== null;
+
   return (
     <section>
       <p className="text-xs font-black uppercase tracking-[0.3em] text-[#5D5FEF]">
@@ -180,8 +205,8 @@ function StepBusinessLocation({
       </h2>
 
       <p className="mt-4 text-sm leading-6 text-slate-500">
-        La ubicación nos permitirá relacionar tu negocio con la actividad local
-        de LookUp.
+        Verificaremos la dirección para ubicar correctamente tu negocio en
+        LookUp.
       </p>
 
       <div className="mt-9 space-y-6">
@@ -192,7 +217,7 @@ function StepBusinessLocation({
             type="text"
             value={data.address}
             onChange={(event) =>
-              update({
+              invalidateLocation({
                 address: event.target.value,
               })
             }
@@ -209,7 +234,7 @@ function StepBusinessLocation({
             type="text"
             value={data.city}
             onChange={(event) =>
-              update({
+              invalidateLocation({
                 city: event.target.value,
               })
             }
@@ -226,7 +251,7 @@ function StepBusinessLocation({
             type="text"
             value={data.province}
             onChange={(event) =>
-              update({
+              invalidateLocation({
                 province: event.target.value,
               })
             }
@@ -243,7 +268,7 @@ function StepBusinessLocation({
             type="text"
             value={data.postalCode}
             onChange={(event) =>
-              update({
+              invalidateLocation({
                 postalCode: event.target.value,
               })
             }
@@ -253,6 +278,51 @@ function StepBusinessLocation({
             className={INPUT_CLASS_NAME}
           />
         </div>
+
+        <button
+          type="button"
+          disabled={loading}
+          onClick={onVerifyLocation}
+          className="flex h-14 w-full items-center justify-center gap-2 rounded-2xl border border-[#D8DBFF] bg-[#F5F6FF] px-5 text-sm font-black text-[#5D5FEF] transition hover:bg-[#ECEEFF] disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {loading ? (
+            <>
+              <Loader2 size={18} className="animate-spin" />
+              VERIFICANDO...
+            </>
+          ) : isVerified ? (
+            <>
+              <CheckCircle2 size={18} />
+              DIRECCIÓN VERIFICADA
+            </>
+          ) : (
+            <>
+              <MapPin size={18} />
+              VERIFICAR DIRECCIÓN
+            </>
+          )}
+        </button>
+
+        {isVerified && data.verifiedAddress ? (
+          <div className="rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-4">
+            <div className="flex items-start gap-3">
+              <CheckCircle2
+                size={19}
+                className="mt-0.5 shrink-0 text-emerald-600"
+              />
+
+              <div>
+                <p className="text-sm font-black text-emerald-900">
+                  Ubicación encontrada
+                </p>
+
+                <p className="mt-1 text-xs leading-5 text-emerald-700">
+                  {data.verifiedAddress}
+                </p>
+              </div>
+            </div>
+          </div>
+        ) : null}
       </div>
     </section>
   );
@@ -263,7 +333,6 @@ function StepBusinessContact({
   update,
 }: {
   data: BusinessOnboardingData;
-
   update: (values: Partial<BusinessOnboardingData>) => void;
 }) {
   return (
@@ -361,9 +430,20 @@ function StepBusinessReview({ data }: { data: BusinessOnboardingData }) {
       <div className="mt-9 overflow-hidden rounded-[28px] border border-[#E7E9F2] bg-[#FAFAFC]">
         <div className="p-6">
           <div className="flex items-center gap-4">
-            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-[22px] bg-[#EEF2FF] text-[#5D5FEF]">
-              <Building2 size={29} strokeWidth={2} />
-            </div>
+            {data.avatarUrl ? (
+              <div
+                role="img"
+                aria-label={`Foto de ${data.tradeName}`}
+                className="h-16 w-16 shrink-0 rounded-[22px] bg-cover bg-center bg-no-repeat shadow-sm"
+                style={{
+                  backgroundImage: `url("${data.avatarUrl}")`,
+                }}
+              />
+            ) : (
+              <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-[22px] bg-[#EEF2FF] text-[#5D5FEF]">
+                <Building2 size={29} strokeWidth={2} />
+              </div>
+            )}
 
             <div className="min-w-0">
               <h3 className="truncate text-xl font-black text-slate-950">
@@ -460,6 +540,8 @@ export function BusinessOnboardingForm({
   loading,
   canContinue,
   update,
+  onAvatar,
+  onVerifyLocation,
   onBack,
   onNext,
 }: Props) {
@@ -487,8 +569,23 @@ export function BusinessOnboardingForm({
             <StepBusinessDetails data={data} update={update} />
           )}
 
+          {step === "photo" && (
+            <StepPhoto
+              avatarUrl={data.avatarUrl}
+              onSelect={onAvatar}
+              title="Foto de tu negocio"
+              description="Añade tu logotipo o una imagen que permita reconocer tu negocio fácilmente en LookUp."
+              optionalLabel="OPCIONAL · PUEDES AÑADIRLA MÁS ADELANTE"
+            />
+          )}
+
           {step === "location" && (
-            <StepBusinessLocation data={data} update={update} />
+            <StepBusinessLocation
+              data={data}
+              update={update}
+              loading={loading}
+              onVerifyLocation={onVerifyLocation}
+            />
           )}
 
           {step === "contact" && (

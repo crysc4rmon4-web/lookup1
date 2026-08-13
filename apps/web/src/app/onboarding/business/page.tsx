@@ -6,10 +6,14 @@ import { useEffect, useState } from "react";
 
 import { useRouter } from "next/navigation";
 
+import { uploadAvatar } from "@lookup/services";
+
 import { useAuth } from "../../../components/auth-provider";
 import { useProfileStatus } from "../../../hooks/use-profile-status";
 
 import { getAuthenticatedDestination } from "../../../lib/account-routing";
+
+import { geocodeAddress } from "../../../services/location/geocode-address";
 
 import { BusinessOnboardingForm } from "./components/BusinessOnboardingForm";
 
@@ -119,7 +123,6 @@ export default function BusinessOnboardingPage() {
 
     if (!user) {
       router.replace("/login");
-
       return;
     }
 
@@ -129,13 +132,11 @@ export default function BusinessOnboardingPage() {
 
     if (!profile || !accountType) {
       router.replace("/account-type");
-
       return;
     }
 
     if (accountType !== "business") {
       router.replace(getAuthenticatedDestination(profile));
-
       return;
     }
 
@@ -153,6 +154,80 @@ export default function BusinessOnboardingPage() {
     router,
   ]);
 
+  async function handleAvatar(file: File) {
+    if (!user) {
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+
+      const avatarUrl = await uploadAvatar(user.id, file);
+
+      onboarding.update({
+        avatarUrl,
+      });
+    } catch (error) {
+      setError(
+        error instanceof Error
+          ? error.message
+          : "No se pudo subir la imagen del negocio.",
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleVerifyLocation() {
+    const { address, city, province, postalCode } = onboarding.data;
+
+    if (
+      address.trim().length < 3 ||
+      city.trim().length < 2 ||
+      province.trim().length < 2 ||
+      postalCode.trim().length < 3
+    ) {
+      setError("Completa la dirección antes de verificarla.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+
+      const searchAddress = [
+        address.trim(),
+        postalCode.trim(),
+        city.trim(),
+        province.trim(),
+        "España",
+      ].join(", ");
+
+      const result = await geocodeAddress(searchAddress);
+
+      onboarding.update({
+        latitude: result.latitude,
+        longitude: result.longitude,
+        verifiedAddress: result.address,
+      });
+    } catch (error) {
+      onboarding.update({
+        latitude: null,
+        longitude: null,
+        verifiedAddress: "",
+      });
+
+      setError(
+        error instanceof Error
+          ? error.message
+          : "No se pudo verificar la dirección.",
+      );
+    } finally {
+      setLoading(false);
+    }
+  }
+
   async function handleNext() {
     if (loading || !onboarding.canContinue) {
       return;
@@ -165,7 +240,6 @@ export default function BusinessOnboardingPage() {
 
     if (!user?.email) {
       setError("No pudimos recuperar el email de tu cuenta.");
-
       return;
     }
 
@@ -175,17 +249,10 @@ export default function BusinessOnboardingPage() {
 
       await saveBusinessOnboarding({
         userId: user.id,
-
         email: user.email,
-
         data: onboarding.data,
       });
 
-      /*
-       * Supabase ya confirmó toda la
-       * operación. Solo entonces
-       * eliminamos el borrador local.
-       */
       onboarding.clearDraft();
 
       setShowWelcome(true);
@@ -262,6 +329,8 @@ export default function BusinessOnboardingPage() {
         loading={loading}
         canContinue={onboarding.canContinue}
         update={onboarding.update}
+        onAvatar={(file) => void handleAvatar(file)}
+        onVerifyLocation={() => void handleVerifyLocation()}
         onBack={onboarding.previous}
         onNext={() => void handleNext()}
       />
