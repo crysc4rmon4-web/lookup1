@@ -1,52 +1,37 @@
 import { supabase } from "./supabase/client";
 
 export async function updateMyLocation(
-  userId: string,
+  _userId: string,
   latitude: number,
   longitude: number,
   accuracy?: number,
-) {
-  console.log("📍 updateMyLocation", {
-    userId,
-    latitude,
-    longitude,
-    accuracy,
+): Promise<boolean> {
+  const { data, error } = await supabase.rpc("sync_radar_location", {
+    p_latitude: latitude,
+    p_longitude: longitude,
+    p_accuracy: accuracy ?? null,
   });
 
-  const result = await supabase
-    .from("user_locations")
-    .upsert({
-      user_id: userId,
-      latitude,
-      longitude,
-      accuracy,
-      updated_at: new Date().toISOString(),
-    })
-    .select();
-
-  if (result.error) {
-    throw result.error;
+  if (error) {
+    throw error;
   }
 
-  return result.data;
+  return data === true;
 }
 
 export async function disableMyLocation(userId: string) {
-  console.log("📍 disableMyLocation", {
-    userId,
-  });
-
-  const result = await supabase
+  const { data, error } = await supabase
     .from("user_locations")
     .update({
       is_active: false,
       updated_at: new Date().toISOString(),
     })
-    .eq("user_id", userId);
+    .eq("user_id", userId)
+    .select();
 
-  if (result.error) {
-    throw result.error;
+  if (error) {
+    throw error;
   }
 
-  return result.data;
+  return data;
 }

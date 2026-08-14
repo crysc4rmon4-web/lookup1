@@ -1,18 +1,14 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import type { NearbyProfile } from "@lookup/types";
-
-import { useAuth } from "../../../components/auth-provider";
 
 import { loadNearbyProfiles } from "../services/load-nearby-profiles";
 
 type Props = {
   enabled: boolean;
-  latitude: number | null;
-  longitude: number | null;
-  loading: boolean;
+  ready: boolean;
 };
 
 type RadarState = {
@@ -21,110 +17,61 @@ type RadarState = {
   refresh: () => Promise<void>;
 };
 
+const RADAR_REFRESH_MS = 5_000;
+
 export function useRadar({
   enabled,
-  latitude,
-  longitude,
-  loading: locationLoading,
+  ready,
 }: Props): RadarState {
-  const { user } = useAuth();
-
   const [profiles, setProfiles] = useState<NearbyProfile[]>([]);
 
-  const [loading, setLoading] = useState(true);
-
-  const initialized = useRef(false);
+  const [loading, setLoading] = useState(false);
 
   const refresh = useCallback(async () => {
-    /*
-     * Radar apagado:
-     * no mostramos ni consultamos personas.
-     */
-    if (!enabled) {
+    if (!enabled || !ready) {
       setProfiles([]);
       setLoading(false);
       return;
     }
 
-    /*
-     * Todavía no tenemos usuario o GPS.
-     */
-    if (!user || latitude === null || longitude === null) {
-      setProfiles([]);
-
-      if (!initialized.current) {
-        initialized.current = true;
-        setLoading(false);
-      }
-
-      return;
-    }
-
     try {
-      const nearby = await loadNearbyProfiles({
-        currentUserId: user.id,
-
-        latitude,
-
-        longitude,
-      });
+      const nearby = await loadNearbyProfiles();
 
       setProfiles(nearby);
     } catch (error) {
-      console.error("❌ Error Radar", error);
+      console.error("❌ Error cargando Radar", error);
 
-      /*
-       * Ante un error no mostramos
-       * datos potencialmente obsoletos.
-       */
       setProfiles([]);
     } finally {
-      if (!initialized.current) {
-        initialized.current = true;
-        setLoading(false);
-      }
+      setLoading(false);
     }
-  }, [enabled, user, latitude, longitude]);
+  }, [enabled, ready]);
 
-  /*
-   * Consulta inicial y cada vez que
-   * cambia el estado del radar/GPS.
-   */
   useEffect(() => {
-    if (locationLoading) {
+    if (!enabled || !ready) {
+      setProfiles([]);
+      setLoading(false);
       return;
     }
 
-    void refresh();
-  }, [refresh, locationLoading]);
+    setLoading(true);
 
-  /*
-   * Mientras el radar está activo,
-   * refrescamos presencia cada 5 segundos.
-   */
+    void refresh();
+  }, [enabled, ready, refresh]);
+
   useEffect(() => {
-    if (!enabled || !user || latitude === null || longitude === null) {
+    if (!enabled || !ready) {
       return;
     }
 
     const interval = window.setInterval(() => {
       void refresh();
-    }, 5000);
+    }, RADAR_REFRESH_MS);
 
     return () => {
       window.clearInterval(interval);
     };
-  }, [enabled, user, latitude, longitude, refresh]);
-
-  /*
-   * Si se apaga el radar, limpiamos
-   * inmediatamente la UI.
-   */
-  useEffect(() => {
-    if (!enabled) {
-      setProfiles([]);
-    }
-  }, [enabled]);
+  }, [enabled, ready, refresh]);
 
   return {
     profiles,

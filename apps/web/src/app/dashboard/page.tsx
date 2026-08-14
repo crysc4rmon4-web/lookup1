@@ -59,64 +59,55 @@ export default function DashboardPage() {
 
   const { user, profile, loading, needsOnboarding } = useProfileStatus();
 
-  /*
-   * ÚNICA instancia de geolocalización.
-   *
-   * Toda la aplicación comparte esta ubicación.
-   */
-  const location = useLocation();
-
-  /*
-   * Estado local del radar.
-   *
-   * Arranca OFF por seguridad.
-   * Después recuperamos el estado real desde Supabase.
-   */
   const [radarEnabled, setRadarEnabled] = useState(false);
 
   const [radarPresenceLoading, setRadarPresenceLoading] = useState(true);
 
-  /*
-   * Evita múltiples cambios simultáneos
-   * del toggle mientras Supabase responde.
-   */
   const [radarToggleLoading, setRadarToggleLoading] = useState(false);
 
   /*
-   * Enlaces del perfil.
+   * El GPS solo existe mientras Radar
+   * esté realmente activado.
    */
-  const [profileLinks, setProfileLinks] = useState<ProfileLink[]>([]);
+  const location = useLocation(
+    radarEnabled && !radarPresenceLoading,
+  );
 
   /*
-   * Perfil local para que Ajustes pueda
-   * actualizarse inmediatamente después
-   * de guardar.
+   * Sincronización segura:
+   *
+   * Browser
+   *   ↓
+   * sync_radar_location()
+   *   ↓
+   * auth.uid()
+   *   ↓
+   * zona privada
+   *   ↓
+   * user_locations
    */
+  const locationSync = useSyncLocation({
+    enabled: radarEnabled && !radarPresenceLoading,
+
+    latitude: location.latitude,
+    longitude: location.longitude,
+    accuracy: location.accuracy,
+
+    loading: location.loading,
+  });
+
+  const [profileLinks, setProfileLinks] = useState<ProfileLink[]>([]);
+
   const [settingsProfile, setSettingsProfile] = useState<ProfileRow | null>(
     null,
   );
 
-  /*
-   * Navegación interna del dashboard.
-   */
   const [section, setSection] = useState<Section>("radar");
-
-  /*
-   * ============================================================
-   * EDITOR PUNTUAL DE AJUSTES
-   * ============================================================
-   */
 
   const [settingsEditorSection, setSettingsEditorSection] =
     useState<SettingsEditSection | null>(null);
 
   const [settingsEditorSaving, setSettingsEditorSaving] = useState(false);
-
-  /*
-   * ============================================================
-   * ZONAS BLOQUEADAS
-   * ============================================================
-   */
 
   const [blockedZones, setBlockedZones] = useState<RadarBlockedZone[]>([]);
 
@@ -131,7 +122,7 @@ export default function DashboardPage() {
 
   /*
    * ============================================================
-   * RECUPERAR PRESENCIA DEL RADAR
+   * RECUPERAR PRESENCIA
    * ============================================================
    */
 
@@ -152,11 +143,6 @@ export default function DashboardPage() {
       } catch (error) {
         console.error("❌ Error cargando presencia del radar", error);
 
-        /*
-         * Fail-safe:
-         * si no podemos determinar el estado,
-         * el radar queda apagado.
-         */
         if (mounted) {
           setRadarEnabled(false);
         }
@@ -182,31 +168,23 @@ export default function DashboardPage() {
 
   const { profiles, refresh } = useRadar({
     enabled: radarEnabled && !radarPresenceLoading,
-
-    latitude: location.latitude,
-
-    longitude: location.longitude,
-
-    loading: location.loading,
+    ready: locationSync.ready,
   });
 
   /*
-   * ============================================================
-   * SINCRONIZACIÓN DE UBICACIÓN
-   * ============================================================
+   * El servidor puede rechazar la presencia
+   * si la ubicación está dentro de una zona
+   * privada.
+   *
+   * La UX específica llegará en 2E.
    */
+  useEffect(() => {
+    if (!radarEnabled || locationSync.radarAllowed !== false) {
+      return;
+    }
 
-  useSyncLocation({
-    enabled: radarEnabled && !radarPresenceLoading,
-
-    latitude: location.latitude,
-
-    longitude: location.longitude,
-
-    accuracy: location.accuracy,
-
-    loading: location.loading,
-  });
+    setRadarEnabled(false);
+  }, [radarEnabled, locationSync.radarAllowed]);
 
   /*
    * ============================================================
@@ -245,7 +223,7 @@ export default function DashboardPage() {
 
   /*
    * ============================================================
-   * CARGA DE ENLACES
+   * CARGA DE LINKS
    * ============================================================
    */
 
@@ -283,7 +261,7 @@ export default function DashboardPage() {
 
   /*
    * ============================================================
-   * CARGA DE ZONAS BLOQUEADAS
+   * ZONAS BLOQUEADAS
    * ============================================================
    */
 
@@ -329,8 +307,6 @@ export default function DashboardPage() {
    * ============================================================
    * EVENTOS
    * ============================================================
-   *
-   * Contrato preparado para el siguiente sprint.
    */
 
   const events: EventCard[] = [];
@@ -351,9 +327,28 @@ export default function DashboardPage() {
     setRadarToggleLoading(true);
 
     try {
-      await setRadarPresence(nextEnabled);
+      /*
+       * ACTIVAR:
+       *
+       * No llamamos set_radar_presence(true).
+       *
+       * Activamos el flujo local y la primera
+       * ubicación válida ejecutará
+       * sync_radar_location(), que crea o
+       * actualiza la fila de forma segura.
+       */
+      if (nextEnabled) {
+        setRadarEnabled(true);
+        return;
+      }
 
-      setRadarEnabled(nextEnabled);
+      /*
+       * DESACTIVAR:
+       * apagamos primero la presencia real.
+       */
+      await setRadarPresence(false);
+
+      setRadarEnabled(false);
     } catch (error) {
       console.error("❌ Error cambiando presencia del radar", error);
     } finally {
@@ -363,19 +358,13 @@ export default function DashboardPage() {
 
   /*
    * ============================================================
-   * EDITOR DE PERFIL — ABRIR
+   * EDITOR PERFIL
    * ============================================================
    */
 
   const handleEditProfile = (editSection: SettingsEditSection = "profile") => {
     setSettingsEditorSection(editSection);
   };
-
-  /*
-   * ============================================================
-   * EDITOR DE PERFIL — CERRAR
-   * ============================================================
-   */
 
   const handleCloseProfileEditor = () => {
     if (settingsEditorSaving) {
@@ -384,12 +373,6 @@ export default function DashboardPage() {
 
     setSettingsEditorSection(null);
   };
-
-  /*
-   * ============================================================
-   * EDITOR DE PERFIL — GUARDAR
-   * ============================================================
-   */
 
   const handleSaveProfile = async (data: SettingsProfileEditorData) => {
     if (!user || !settingsProfile) {
@@ -401,10 +384,6 @@ export default function DashboardPage() {
     try {
       let avatarUrl = settingsProfile.avatar_url ?? "";
 
-      /*
-       * La imagen solo se sube si el usuario
-       * realmente seleccionó una nueva.
-       */
       if (data.avatarFile) {
         avatarUrl = await uploadAvatar(user.id, data.avatarFile);
       }
@@ -417,18 +396,10 @@ export default function DashboardPage() {
         avatarUrl,
       });
 
-      /*
-       * Actualizamos la vista inmediatamente
-       * sin obligar a recargar toda la aplicación.
-       */
       if (result.profile) {
         setSettingsProfile(result.profile);
       }
 
-      /*
-       * Recargamos los links reales desde Supabase
-       * para no depender del objeto temporal del editor.
-       */
       const updatedLinks = await getProfileLinks(user.id);
 
       setProfileLinks(updatedLinks ?? []);
@@ -449,7 +420,7 @@ export default function DashboardPage() {
 
   /*
    * ============================================================
-   * ZONAS BLOQUEADAS — ABRIR CREACIÓN
+   * ZONAS BLOQUEADAS — CREAR
    * ============================================================
    */
 
@@ -459,25 +430,23 @@ export default function DashboardPage() {
     }
 
     setEditingBlockedZone(null);
-
     setBlockedZoneFormOpen(true);
   };
 
   /*
    * ============================================================
-   * ZONAS BLOQUEADAS — ABRIR EDICIÓN
+   * ZONAS BLOQUEADAS — EDITAR
    * ============================================================
    */
 
   const handleEditBlockedZone = (zone: RadarBlockedZone) => {
     setEditingBlockedZone(zone);
-
     setBlockedZoneFormOpen(true);
   };
 
   /*
    * ============================================================
-   * ZONAS BLOQUEADAS — CERRAR FORMULARIO
+   * ZONAS BLOQUEADAS — CERRAR
    * ============================================================
    */
 
@@ -487,7 +456,6 @@ export default function DashboardPage() {
     }
 
     setBlockedZoneFormOpen(false);
-
     setEditingBlockedZone(null);
   };
 
@@ -537,7 +505,6 @@ export default function DashboardPage() {
       }
 
       setBlockedZoneFormOpen(false);
-
       setEditingBlockedZone(null);
     } catch (error) {
       console.error("❌ Error guardando zona bloqueada", error);
@@ -610,7 +577,7 @@ export default function DashboardPage() {
 
   /*
    * ============================================================
-   * ESTADO DE CARGA
+   * LOADING
    * ============================================================
    */
 
@@ -629,23 +596,8 @@ export default function DashboardPage() {
    */
 
   return (
-    <main
-      className="
-        min-h-screen
-        bg-[#F7F8FC]
-      "
-    >
-      <div
-        className="
-          mx-auto
-          w-full
-          max-w-2xl
-          px-4
-          pb-6
-          pt-4
-          sm:px-6
-        "
-      >
+    <main className="min-h-screen bg-[#F7F8FC]">
+      <div className="mx-auto w-full max-w-2xl px-4 pb-6 pt-4 sm:px-6">
         <DashboardHeader section={section} />
 
         {section === "radar" && (
@@ -692,10 +644,6 @@ export default function DashboardPage() {
         />
       </div>
 
-      {/* ========================================================
-          EDITOR PUNTUAL DE AJUSTES
-          ======================================================== */}
-
       {settingsEditorSection && (
         <SettingsProfileEditor
           profile={settingsProfile}
@@ -706,10 +654,6 @@ export default function DashboardPage() {
           onClose={handleCloseProfileEditor}
         />
       )}
-
-      {/* ========================================================
-          FORMULARIO DE ZONA BLOQUEADA
-          ======================================================== */}
 
       {blockedZoneFormOpen && (
         <BlockedZoneForm
