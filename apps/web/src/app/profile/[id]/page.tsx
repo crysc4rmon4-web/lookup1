@@ -8,8 +8,10 @@ import {
   ExternalLink,
   Globe2,
   MapPin,
+  Maximize2,
   Sparkles,
   UserRound,
+  X,
 } from "lucide-react";
 
 import Image from "next/image";
@@ -29,7 +31,16 @@ import {
   type PublicProfile,
 } from "@lookup/services";
 
-import { SocialIcon } from "@/components/ui/SocialIcon";
+import {
+  SocialIcon,
+} from "@/components/ui/SocialIcon";
+
+import {
+  buildSocialProfileUrl,
+  getSocialPlatformLabel,
+  normalizeSocialPlatform,
+  normalizeWebsiteUrl,
+} from "@/lib/social-profile-url";
 
 type Props = {
   params: Promise<{
@@ -37,116 +48,66 @@ type Props = {
   }>;
 };
 
-function getInitials(name: string) {
+function getInitials(
+  name: string,
+) {
   return name
     .split(" ")
     .filter(Boolean)
-    .map((part) => part.charAt(0))
+    .map(
+      (part) =>
+        part.charAt(0),
+    )
     .slice(0, 2)
     .join("")
     .toUpperCase();
 }
 
-function normalizePlatform(platform: string) {
-  const normalized = platform
-    .trim()
-    .toLowerCase();
+function normalizeComparableUrl(
+  value: string,
+) {
+  const normalized =
+    normalizeWebsiteUrl(
+      value,
+    );
 
-  if (normalized === "twitter") {
-    return "x";
+  if (!normalized) {
+    return "";
   }
 
-  if (normalized === "web") {
-    return "website";
-  }
-
-  return normalized;
-}
-
-function getPlatformLabel(platform: string) {
-  const normalized = normalizePlatform(platform);
-
-  const labels: Record<string, string> = {
-    instagram: "Instagram",
-    tiktok: "TikTok",
-    threads: "Threads",
-    x: "X",
-    facebook: "Facebook",
-    linkedin: "LinkedIn",
-    github: "GitHub",
-    gitlab: "GitLab",
-    behance: "Behance",
-    dribbble: "Dribbble",
-    youtube: "YouTube",
-    twitch: "Twitch",
-    kick: "Kick",
-    discord: "Discord",
-    telegram: "Telegram",
-    whatsapp: "WhatsApp",
-    spotify: "Spotify",
-    steam: "Steam",
-    playstation: "PlayStation",
-    xbox: "Xbox",
-    patreon: "Patreon",
-    kofi: "Ko-fi",
-    buymeacoffee: "Buy Me a Coffee",
-    onlyfans: "OnlyFans",
-    reddit: "Reddit",
-    pinterest: "Pinterest",
-    bluesky: "Bluesky",
-    snapchat: "Snapchat",
-    website: "Web",
-  };
-
-  return labels[normalized] ?? platform;
-}
-
-function normalizeExternalUrl(url: string) {
-  const trimmed = url.trim();
-
-  if (!trimmed) {
-    return "#";
-  }
-
-  if (
-    trimmed.startsWith("http://") ||
-    trimmed.startsWith("https://")
-  ) {
-    return trimmed;
-  }
-
-  return `https://${trimmed}`;
-}
-
-function normalizeComparableUrl(url: string) {
-  return normalizeExternalUrl(url)
-    .replace(/^https?:\/\//, "")
-    .replace(/^www\./, "")
-    .replace(/\/+$/, "")
+  return normalized
+    .replace(
+      /^https?:\/\//i,
+      "",
+    )
+    .replace(
+      /^www\./i,
+      "",
+    )
+    .replace(
+      /\/+$/,
+      "",
+    )
     .toLowerCase();
 }
 
 function ProfileSkeleton() {
   return (
-    <main className="min-h-screen bg-[#F7F8FC] px-4 py-6 sm:px-6">
+    <main className="min-h-screen bg-[#F7F8FC] px-4 py-5 sm:px-6 sm:py-8">
       <div className="mx-auto w-full max-w-2xl">
-        <div className="h-10 w-32 animate-pulse rounded-full bg-white" />
-
-        <div className="mt-5 overflow-hidden rounded-[2rem] border border-[#ECEFF5] bg-white shadow-sm">
-          <div className="h-32 animate-pulse bg-[#EEF2FF]" />
+        <section className="overflow-hidden rounded-[36px] border border-[#ECEFF5] bg-white shadow-sm">
+          <div className="h-56 animate-pulse bg-[#EEF2FF] sm:h-64" />
 
           <div className="px-5 pb-8 sm:px-8">
-            <div className="-mt-14 h-28 w-28 animate-pulse rounded-full border-4 border-white bg-slate-200" />
+            <div className="mx-auto -mt-[74px] h-[148px] w-[148px] animate-pulse rounded-full border-[5px] border-white bg-slate-200" />
 
-            <div className="mt-5 h-8 w-52 animate-pulse rounded-lg bg-slate-200" />
+            <div className="mx-auto mt-6 h-9 w-52 animate-pulse rounded-lg bg-slate-200" />
 
-            <div className="mt-3 h-4 w-32 animate-pulse rounded bg-slate-100" />
+            <div className="mx-auto mt-3 h-4 w-32 animate-pulse rounded bg-slate-100" />
 
             <div className="mt-8 h-24 animate-pulse rounded-2xl bg-slate-50" />
-
-            <div className="mt-5 h-24 animate-pulse rounded-2xl bg-slate-50" />
           </div>
-        </div>
+        </section>
       </div>
     </main>
   );
@@ -157,43 +118,81 @@ function SocialLinks({
 }: {
   links: ProfileLink[];
 }) {
-  if (links.length === 0) {
+  const resolvedLinks =
+    links
+      .map((link) => {
+        const platform =
+          normalizeSocialPlatform(
+            link.platform,
+          );
+
+        const href =
+          buildSocialProfileUrl(
+            platform,
+            link.url,
+          );
+
+        if (!href) {
+          return null;
+        }
+
+        return {
+          link,
+          platform,
+          href,
+        };
+      })
+      .filter(
+        (
+          item,
+        ): item is {
+          link: ProfileLink;
+          platform: string;
+          href: string;
+        } =>
+          item !== null,
+      );
+
+  if (
+    resolvedLinks.length ===
+    0
+  ) {
     return null;
   }
 
   return (
-    <section className="mt-8">
-      <div className="flex items-center justify-between gap-3">
+    <section className="mt-9">
+      <div className="flex items-end justify-between gap-4">
         <div>
-          <p className="text-[10px] font-black uppercase tracking-[0.25em] text-slate-400">
+          <p className="text-[10px] font-black uppercase tracking-[0.28em] text-[#5D5FEF]">
             CONECTA
           </p>
 
-          <h2 className="mt-1 text-lg font-black text-slate-900">
-            Redes y enlaces
+          <h2 className="mt-1.5 text-xl font-black tracking-tight text-slate-900">
+            Continúa la conexión
           </h2>
+
+          <p className="mt-2 max-w-lg text-xs leading-5 text-slate-500">
+            Descubre su contenido, trabajo y comunidad también fuera de LookUp.
+          </p>
         </div>
 
         <Globe2
           size={18}
-          className="shrink-0 text-slate-300"
-          aria-hidden="true"
+          className="mb-1 shrink-0 text-slate-300"
         />
       </div>
 
-      <p className="mt-2 max-w-lg text-xs leading-5 text-slate-500">
-        Sigue su trabajo, contenido o proyectos fuera de LookUp.
-      </p>
-
-      <div className="mt-4 grid gap-3 sm:grid-cols-2">
-        {links.map((link) => {
-          const platform =
-            normalizePlatform(link.platform);
-
-          return (
+      <div className="mt-5 grid gap-3 sm:grid-cols-2">
+        {resolvedLinks.map(
+          ({
+            link,
+            platform,
+            href,
+          }) => (
             <a
               key={link.id}
-              href={normalizeExternalUrl(link.url)}
+              href={href}
               target="_blank"
               rel="noopener noreferrer"
               className="
@@ -202,64 +201,46 @@ function SocialLinks({
                 min-w-0
                 items-center
                 gap-3
-                rounded-2xl
+                rounded-[22px]
                 border
-                border-[#ECEFF5]
+                border-[#E9ECF4]
                 bg-white
-                p-3.5
+                p-4
                 transition-all
                 duration-200
-                hover:-translate-y-0.5
-                hover:border-[#DCDFFF]
-                hover:bg-[#FAFAFF]
-                hover:shadow-sm
+                hover:-translate-y-1
+                hover:border-[#D6DAFF]
+                hover:shadow-[0_14px_35px_rgba(73,72,180,0.10)]
               "
             >
-              <span
-                className="
-                  flex
-                  h-11
-                  w-11
-                  shrink-0
-                  items-center
-                  justify-center
-                  rounded-2xl
-                  bg-[#EEF2FF]
-                  text-[#5D5FEF]
-                  transition
-                  group-hover:bg-[#5D5FEF]
-                  group-hover:text-white
-                "
-              >
+              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#F0F2FF] text-[#5D5FEF] transition-all group-hover:scale-105 group-hover:bg-[#5D5FEF] group-hover:text-white">
                 <SocialIcon
-                  platform={platform}
-                  size={20}
+                  platform={
+                    platform
+                  }
+                  size={21}
                 />
               </span>
 
               <span className="min-w-0 flex-1">
-                <span className="block text-sm font-black text-slate-800">
-                  {getPlatformLabel(platform)}
+                <span className="block text-sm font-black text-slate-900">
+                  {getSocialPlatformLabel(
+                    platform,
+                  )}
                 </span>
 
-                <span className="mt-0.5 block truncate text-xs text-slate-400">
+                <span className="mt-1 block truncate text-xs font-medium text-slate-400">
                   {link.url}
                 </span>
               </span>
 
               <ArrowUpRight
                 size={16}
-                className="
-                  shrink-0
-                  text-slate-300
-                  transition
-                  group-hover:text-[#5D5FEF]
-                "
-                aria-hidden="true"
+                className="shrink-0 text-slate-300 transition group-hover:text-[#5D5FEF]"
               />
             </a>
-          );
-        })}
+          ),
+        )}
       </div>
     </section>
   );
@@ -268,43 +249,87 @@ function SocialLinks({
 export default function ProfilePage({
   params,
 }: Props) {
-  const { id } = use(params);
+  const {
+    id,
+  } = use(params);
 
-  const [profile, setProfile] =
-    useState<PublicProfile | null>(null);
+  const [
+    profile,
+    setProfile,
+  ] =
+    useState<PublicProfile | null>(
+      null,
+    );
 
-  const [links, setLinks] =
-    useState<ProfileLink[]>([]);
+  const [
+    links,
+    setLinks,
+  ] =
+    useState<ProfileLink[]>(
+      [],
+    );
 
-  const [loading, setLoading] =
+  const [
+    loading,
+    setLoading,
+  ] =
     useState(true);
 
-  const [error, setError] =
-    useState<string | null>(null);
+  const [
+    error,
+    setError,
+  ] =
+    useState<string | null>(
+      null,
+    );
+
+  const [
+    photoOpen,
+    setPhotoOpen,
+  ] =
+    useState(false);
 
   useEffect(() => {
-    let cancelled = false;
+    let cancelled =
+      false;
 
     async function loadProfile() {
-      setLoading(true);
-      setError(null);
+      setLoading(
+        true,
+      );
+
+      setError(
+        null,
+      );
 
       try {
         const [
           publicProfile,
           publicLinks,
-        ] = await Promise.all([
-          getPublicProfileById(id),
-          getPublicProfileLinks(id),
-        ]);
+        ] =
+          await Promise.all([
+            getPublicProfileById(
+              id,
+            ),
+
+            getPublicProfileLinks(
+              id,
+            ),
+          ]);
 
         if (cancelled) {
           return;
         }
 
         if (!publicProfile) {
-          setProfile(null);
-          setLinks([]);
+          setProfile(
+            null,
+          );
+
+          setLinks(
+            [],
+          );
+
           setError(
             "Este perfil no existe o no está disponible públicamente.",
           );
@@ -312,11 +337,17 @@ export default function ProfilePage({
           return;
         }
 
-        setProfile(publicProfile);
+        setProfile(
+          publicProfile,
+        );
 
         setLinks(
           publicLinks.filter(
-            (link) => link.url.trim().length > 0,
+            (link) =>
+              link.url
+                .trim()
+                .length >
+              0,
           ),
         );
       } catch (loadError) {
@@ -326,15 +357,23 @@ export default function ProfilePage({
         );
 
         if (!cancelled) {
-          setProfile(null);
-          setLinks([]);
+          setProfile(
+            null,
+          );
+
+          setLinks(
+            [],
+          );
+
           setError(
             "No hemos podido cargar este perfil.",
           );
         }
       } finally {
         if (!cancelled) {
-          setLoading(false);
+          setLoading(
+            false,
+          );
         }
       }
     }
@@ -342,56 +381,114 @@ export default function ProfilePage({
     void loadProfile();
 
     return () => {
-      cancelled = true;
+      cancelled =
+        true;
     };
-  }, [id]);
+  }, [
+    id,
+  ]);
 
-  const visibleLinks = useMemo(() => {
-    if (!profile) {
-      return [];
+  useEffect(() => {
+    if (!photoOpen) {
+      return;
     }
 
-    /*
-     * Si Business ya tiene website en su perfil
-     * comercial y profile_links contiene exactamente
-     * la misma URL, evitamos mostrarla dos veces.
-     */
-    if (
-      profile.account_type !== "business" ||
-      !profile.business_website?.trim()
-    ) {
-      return links;
-    }
+    const previousOverflow =
+      document.body.style
+        .overflow;
 
-    const businessWebsite =
-      normalizeComparableUrl(
-        profile.business_website,
+    document.body.style.overflow =
+      "hidden";
+
+    const handleKeyDown = (
+      event:
+        KeyboardEvent,
+    ) => {
+      if (
+        event.key ===
+        "Escape"
+      ) {
+        setPhotoOpen(
+          false,
+        );
+      }
+    };
+
+    window.addEventListener(
+      "keydown",
+      handleKeyDown,
+    );
+
+    return () => {
+      document.body.style.overflow =
+        previousOverflow;
+
+      window.removeEventListener(
+        "keydown",
+        handleKeyDown,
       );
+    };
+  }, [
+    photoOpen,
+  ]);
 
-    return links.filter((link) => {
-      const platform =
-        normalizePlatform(link.platform);
-
-      if (platform !== "website") {
-        return true;
+  const visibleLinks =
+    useMemo(() => {
+      if (!profile) {
+        return links;
       }
 
-      return (
-        normalizeComparableUrl(link.url) !==
-        businessWebsite
+      if (
+        profile.account_type !==
+          "business" ||
+        !profile.business_website
+          ?.trim()
+      ) {
+        return links;
+      }
+
+      const website =
+        normalizeComparableUrl(
+          profile.business_website,
+        );
+
+      return links.filter(
+        (link) => {
+          if (
+            normalizeSocialPlatform(
+              link.platform,
+            ) !==
+            "website"
+          ) {
+            return true;
+          }
+
+          return (
+            normalizeComparableUrl(
+              link.url,
+            ) !== website
+          );
+        },
       );
-    });
-  }, [links, profile]);
+    }, [
+      links,
+      profile,
+    ]);
 
   if (loading) {
-    return <ProfileSkeleton />;
+    return (
+      <ProfileSkeleton />
+    );
   }
 
-  if (error || !profile) {
+  if (
+    error ||
+    !profile
+  ) {
     return (
       <main className="min-h-screen bg-[#F7F8FC] px-4 py-6 sm:px-6">
         <div className="mx-auto flex min-h-[70vh] w-full max-w-2xl items-center justify-center">
-          <section className="w-full rounded-[2rem] border border-[#ECEFF5] bg-white p-8 text-center shadow-sm">
+          <section className="w-full rounded-[32px] border border-[#ECEFF5] bg-white p-8 text-center shadow-sm">
             <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#EEF2FF]">
               <UserRound
                 size={24}
@@ -410,23 +507,12 @@ export default function ProfilePage({
 
             <Link
               href="/dashboard"
-              className="
-                mt-6
-                inline-flex
-                items-center
-                gap-2
-                rounded-full
-                bg-[#5D5FEF]
-                px-5
-                py-3
-                text-sm
-                font-black
-                text-white
-                transition
-                hover:bg-[#4F51DC]
-              "
+              className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#5D5FEF] px-5 py-3 text-sm font-black text-white transition hover:bg-[#4F51DC]"
             >
-              <ArrowLeft size={16} />
+              <ArrowLeft
+                size={16}
+              />
+
               Volver al radar
             </Link>
           </section>
@@ -436,417 +522,544 @@ export default function ProfilePage({
   }
 
   const isBusiness =
-    profile.account_type === "business";
+    profile.account_type ===
+    "business";
 
   const displayName =
-    profile.display_name.trim() ||
-    (isBusiness
-      ? "Negocio LookUp"
-      : "Usuario LookUp");
+    profile.display_name
+      .trim() ||
+    (
+      isBusiness
+        ? "Negocio LookUp"
+        : "Usuario LookUp"
+    );
 
   const profession =
-    profile.profession?.trim();
+    profile.profession
+      ?.trim();
 
   const bio =
-    profile.bio?.trim();
+    profile.bio
+      ?.trim();
 
   const interests =
-    Array.isArray(profile.interests)
+    Array.isArray(
+      profile.interests,
+    )
       ? profile.interests.filter(
           (interest) =>
-            typeof interest === "string" &&
-            interest.trim().length > 0,
+            typeof interest ===
+              "string" &&
+            interest
+              .trim()
+              .length >
+              0,
         )
       : [];
 
   const businessSector =
-    profile.business_sector?.trim();
+    profile.business_sector
+      ?.trim();
 
   const businessCity =
-    profile.business_city?.trim();
+    profile.business_city
+      ?.trim();
 
   const businessProvince =
-    profile.business_province?.trim();
+    profile.business_province
+      ?.trim();
 
   const businessWebsite =
-    profile.business_website?.trim();
+    profile.business_website
+      ?.trim();
+
+  const businessWebsiteHref =
+    businessWebsite
+      ? normalizeWebsiteUrl(
+          businessWebsite,
+        )
+      : null;
 
   const personCity =
-    profile.city?.trim();
+    profile.city
+      ?.trim();
 
-  const businessLocation = [
-    businessCity,
-    businessProvince &&
-    businessProvince.toLowerCase() !==
-      businessCity?.toLowerCase()
-      ? businessProvince
-      : null,
-  ]
-    .filter(Boolean)
-    .join(", ");
+  const businessLocation =
+    [
+      businessCity,
+
+      businessProvince &&
+      businessProvince
+        .toLowerCase() !==
+        businessCity
+          ?.toLowerCase()
+        ? businessProvince
+        : null,
+    ]
+      .filter(Boolean)
+      .join(", ");
 
   return (
-    <main className="min-h-screen bg-[#F7F8FC] px-4 py-5 sm:px-6 sm:py-8">
-      <div className="mx-auto w-full max-w-2xl">
-        <Link
-          href="/dashboard"
-          className="
-            inline-flex
-            items-center
-            gap-2
-            rounded-full
-            bg-white
-            px-4
-            py-2.5
-            text-sm
-            font-bold
-            text-slate-600
-            shadow-sm
-            transition
-            hover:text-[#5D5FEF]
-          "
-        >
-          <ArrowLeft size={16} />
-          Volver al radar
-        </Link>
-
-        <section className="mt-5 overflow-hidden rounded-[2rem] border border-[#ECEFF5] bg-white shadow-sm">
-          <div
-            className={[
-              "relative h-32 overflow-hidden sm:h-40",
-              isBusiness
-                ? "bg-gradient-to-br from-[#EDE9FE] via-[#F5F3FF] to-[#EEF2FF]"
-                : "bg-gradient-to-br from-[#EEF2FF] via-white to-[#F5F3FF]",
-            ].join(" ")}
-          >
-            <div className="absolute -right-16 -top-20 h-48 w-48 rounded-full bg-white/40 blur-3xl" />
-
-            <div className="absolute -bottom-20 -left-12 h-48 w-48 rounded-full bg-[#5D5FEF]/10 blur-3xl" />
-          </div>
-
-          <div className="px-5 pb-7 sm:px-8 sm:pb-9">
-            <div className="-mt-14 flex items-end justify-between gap-4 sm:-mt-16">
-              <div
-                className={[
-                  "relative h-28 w-28 shrink-0 overflow-hidden",
-                  "border-4 border-white bg-[#EEF2FF] shadow-md",
-                  "sm:h-32 sm:w-32",
-                  isBusiness
-                    ? "rounded-[2rem]"
-                    : "rounded-full",
-                ].join(" ")}
-              >
-                {profile.avatar_url ? (
+    <>
+      <main className="min-h-screen bg-[#F7F8FC] px-3 py-3 sm:px-6 sm:py-8">
+        <div className="mx-auto w-full max-w-2xl">
+          <section className="overflow-hidden rounded-[36px] border border-[#E7EAF2] bg-white shadow-[0_18px_60px_rgba(36,43,82,0.08)]">
+            <div className="relative h-56 overflow-hidden sm:h-64">
+              {profile.avatar_url ? (
+                <>
                   <Image
-                    src={profile.avatar_url}
-                    alt={
-                      isBusiness
-                        ? `Imagen de ${displayName}`
-                        : `Foto de ${displayName}`
+                    src={
+                      profile.avatar_url
                     }
+                    alt=""
                     fill
-                    sizes="128px"
-                    className="object-cover"
+                    sizes="672px"
+                    className="scale-125 object-cover opacity-45 blur-3xl"
                     priority
                   />
+
+                  <div className="absolute inset-0 bg-gradient-to-b from-[#3432A8]/25 via-[#5D5FEF]/10 to-white" />
+
+                  <div className="absolute inset-0 bg-white/15 backdrop-blur-[2px]" />
+                </>
+              ) : (
+                <>
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#5D5FEF] via-[#7774FF] to-[#E9E8FF]" />
+
+                  <div className="absolute -right-24 -top-24 h-72 w-72 rounded-full bg-white/30 blur-3xl" />
+
+                  <div className="absolute -bottom-28 -left-20 h-72 w-72 rounded-full bg-[#25228E]/20 blur-3xl" />
+                </>
+              )}
+
+              <Link
+                href="/dashboard"
+                className="
+                  absolute
+                  left-4
+                  top-4
+                  z-20
+                  inline-flex
+                  items-center
+                  gap-2
+                  rounded-full
+                  border
+                  border-white/50
+                  bg-white/80
+                  px-3.5
+                  py-2
+                  text-xs
+                  font-black
+                  text-slate-700
+                  shadow-sm
+                  backdrop-blur-xl
+                  transition-all
+                  hover:-translate-x-0.5
+                  hover:bg-white
+                  hover:text-[#5D5FEF]
+                  sm:left-6
+                  sm:top-6
+                "
+              >
+                <ArrowLeft
+                  size={14}
+                />
+
+                Radar
+              </Link>
+
+              <div className="absolute right-4 top-4 z-20 sm:right-6 sm:top-6">
+                <span className="inline-flex items-center gap-2 rounded-full border border-white/50 bg-white/80 px-3.5 py-2 text-[10px] font-black uppercase tracking-[0.13em] text-[#5D5FEF] shadow-sm backdrop-blur-xl">
+                  {isBusiness ? (
+                    <Building2
+                      size={12}
+                    />
+                  ) : (
+                    <UserRound
+                      size={12}
+                    />
+                  )}
+
+                  {isBusiness
+                    ? "Negocio local"
+                    : "Persona"}
+                </span>
+              </div>
+            </div>
+
+            <div className="relative px-5 pb-8 sm:px-8 sm:pb-10">
+              <div className="-mt-[74px] flex justify-center">
+                {profile.avatar_url ? (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setPhotoOpen(
+                        true,
+                      )
+                    }
+                    aria-label={`Ampliar imagen de ${displayName}`}
+                    className={[
+                      "group relative h-[148px] w-[148px] overflow-hidden",
+                      "border-[5px] border-white bg-[#EEF2FF]",
+                      "shadow-[0_16px_40px_rgba(45,48,120,0.20)]",
+                      "transition-transform duration-300 hover:scale-[1.025]",
+                      isBusiness
+                        ? "rounded-[36px]"
+                        : "rounded-full",
+                    ].join(" ")}
+                  >
+                    <Image
+                      src={
+                        profile.avatar_url
+                      }
+                      alt={
+                        isBusiness
+                          ? `Imagen de ${displayName}`
+                          : `Foto de ${displayName}`
+                      }
+                      fill
+                      sizes="148px"
+                      className="object-cover"
+                      priority
+                    />
+
+                    <span className="absolute bottom-2.5 right-2.5 flex h-8 w-8 items-center justify-center rounded-full bg-slate-950/55 text-white opacity-0 backdrop-blur transition-opacity group-hover:opacity-100">
+                      <Maximize2
+                        size={14}
+                      />
+                    </span>
+                  </button>
                 ) : (
-                  <div className="flex h-full w-full items-center justify-center text-3xl font-black text-[#5D5FEF]">
-                    {getInitials(displayName)}
+                  <div
+                    className={[
+                      "flex h-[148px] w-[148px] items-center justify-center",
+                      "border-[5px] border-white bg-[#EEF2FF]",
+                      "text-4xl font-black text-[#5D5FEF]",
+                      "shadow-[0_16px_40px_rgba(45,48,120,0.20)]",
+                      isBusiness
+                        ? "rounded-[36px]"
+                        : "rounded-full",
+                    ].join(" ")}
+                  >
+                    {getInitials(
+                      displayName,
+                    )}
                   </div>
                 )}
               </div>
 
-              <span
-                className="
-                  mb-2
-                  inline-flex
-                  shrink-0
-                  items-center
-                  gap-1.5
-                  rounded-full
-                  bg-[#EEF2FF]
-                  px-3
-                  py-1.5
-                  text-[10px]
-                  font-black
-                  uppercase
-                  tracking-[0.1em]
-                  text-[#5D5FEF]
-                "
-              >
-                {isBusiness ? (
-                  <Building2 size={12} />
-                ) : (
-                  <UserRound size={12} />
-                )}
+              <div className="mt-6 text-center">
+                <h1 className="break-words text-3xl font-black tracking-[-0.035em] text-slate-950 sm:text-4xl">
+                  {displayName}
+                </h1>
 
-                {isBusiness
-                  ? "Negocio local"
-                  : "Persona"}
-              </span>
-            </div>
-
-            <div className="mt-5">
-              <h1 className="break-words text-2xl font-black tracking-tight text-slate-900 sm:text-3xl">
-                {displayName}
-              </h1>
-
-              {profile.username ? (
-                <p className="mt-1 text-sm font-semibold text-slate-400">
-                  @{profile.username}
-                </p>
-              ) : null}
-
-              <div className="mt-4 flex flex-wrap gap-2">
-                {isBusiness ? (
-                  <>
-                    {businessSector ? (
-                      <span
-                        className="
-                          inline-flex
-                          items-center
-                          gap-1.5
-                          rounded-full
-                          bg-[#EEF2FF]
-                          px-3
-                          py-1.5
-                          text-xs
-                          font-bold
-                          text-[#5D5FEF]
-                        "
-                      >
-                        <BriefcaseBusiness size={13} />
-                        {businessSector}
-                      </span>
-                    ) : null}
-
-                    {businessLocation ? (
-                      <span
-                        className="
-                          inline-flex
-                          items-center
-                          gap-1.5
-                          rounded-full
-                          bg-slate-50
-                          px-3
-                          py-1.5
-                          text-xs
-                          font-bold
-                          text-slate-600
-                        "
-                      >
-                        <MapPin size={13} />
-                        {businessLocation}
-                      </span>
-                    ) : null}
-                  </>
-                ) : (
-                  <>
-                    {profession ? (
-                      <span
-                        className="
-                          inline-flex
-                          items-center
-                          gap-1.5
-                          rounded-full
-                          bg-[#EEF2FF]
-                          px-3
-                          py-1.5
-                          text-xs
-                          font-bold
-                          text-[#5D5FEF]
-                        "
-                      >
-                        <BriefcaseBusiness size={13} />
-                        {profession}
-                      </span>
-                    ) : null}
-
-                    {personCity ? (
-                      <span
-                        className="
-                          inline-flex
-                          items-center
-                          gap-1.5
-                          rounded-full
-                          bg-slate-50
-                          px-3
-                          py-1.5
-                          text-xs
-                          font-bold
-                          text-slate-600
-                        "
-                      >
-                        <MapPin size={13} />
-                        {personCity}
-                      </span>
-                    ) : null}
-                  </>
-                )}
-              </div>
-            </div>
-
-            {isBusiness && businessWebsite ? (
-              <a
-                href={normalizeExternalUrl(
-                  businessWebsite,
-                )}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="
-                  mt-6
-                  flex
-                  w-full
-                  items-center
-                  justify-between
-                  gap-4
-                  rounded-2xl
-                  bg-[#5D5FEF]
-                  px-4
-                  py-3.5
-                  text-white
-                  shadow-sm
-                  transition-all
-                  hover:-translate-y-0.5
-                  hover:bg-[#5153E6]
-                  hover:shadow-md
-                "
-              >
-                <span className="flex min-w-0 items-center gap-3">
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/15">
-                    <Globe2 size={18} />
-                  </span>
-
-                  <span className="min-w-0">
-                    <span className="block text-xs font-bold text-white/70">
-                      Sitio web
-                    </span>
-
-                    <span className="block truncate text-sm font-black">
-                      {businessWebsite}
-                    </span>
-                  </span>
-                </span>
-
-                <ExternalLink
-                  size={16}
-                  className="shrink-0"
-                />
-              </a>
-            ) : null}
-
-            {bio ? (
-              <section className="mt-8">
-                <p className="text-[10px] font-black uppercase tracking-[0.25em] text-slate-400">
-                  {isBusiness
-                    ? "SOBRE EL NEGOCIO"
-                    : "SOBRE MÍ"}
-                </p>
-
-                <p className="mt-3 whitespace-pre-line text-sm leading-7 text-slate-600 sm:text-base">
-                  {bio}
-                </p>
-              </section>
-            ) : null}
-
-            {interests.length > 0 ? (
-              <section className="mt-8">
-                <div className="flex items-center gap-2">
-                  <Sparkles
-                    size={14}
-                    className="text-[#5D5FEF]"
-                  />
-
-                  <p className="text-[10px] font-black uppercase tracking-[0.25em] text-slate-400">
-                    {isBusiness
-                      ? "TEMAS Y CATEGORÍAS"
-                      : "INTERESES"}
+                {profile.username ? (
+                  <p className="mt-1.5 text-sm font-bold text-slate-400">
+                    @{profile.username}
                   </p>
+                ) : null}
+
+                <div className="mt-5 flex flex-wrap justify-center gap-2">
+                  {isBusiness ? (
+                    <>
+                      {businessSector ? (
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-[#F0F2FF] px-3.5 py-2 text-xs font-black text-[#5D5FEF]">
+                          <BriefcaseBusiness
+                            size={13}
+                          />
+
+                          {businessSector}
+                        </span>
+                      ) : null}
+
+                      {businessLocation ? (
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-50 px-3.5 py-2 text-xs font-bold text-slate-600">
+                          <MapPin
+                            size={13}
+                          />
+
+                          {businessLocation}
+                        </span>
+                      ) : null}
+                    </>
+                  ) : (
+                    <>
+                      {profession ? (
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-[#F0F2FF] px-3.5 py-2 text-xs font-black text-[#5D5FEF]">
+                          <BriefcaseBusiness
+                            size={13}
+                          />
+
+                          {profession}
+                        </span>
+                      ) : null}
+
+                      {personCity ? (
+                        <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-50 px-3.5 py-2 text-xs font-bold text-slate-600">
+                          <MapPin
+                            size={13}
+                          />
+
+                          {personCity}
+                        </span>
+                      ) : null}
+                    </>
+                  )}
                 </div>
+              </div>
 
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {interests.map((interest) => (
-                    <span
-                      key={interest}
-                      className="
-                        rounded-full
-                        border
-                        border-[#E5E7FF]
-                        bg-[#F5F5FF]
-                        px-3.5
-                        py-2
-                        text-xs
-                        font-bold
-                        text-[#5D5FEF]
-                      "
-                    >
-                      {interest}
-                    </span>
-                  ))}
-                </div>
-              </section>
-            ) : null}
-
-            <SocialLinks
-              links={visibleLinks}
-            />
-
-            {!bio &&
-            interests.length === 0 &&
-            visibleLinks.length === 0 &&
-            !businessWebsite ? (
-              <section className="mt-8 rounded-2xl bg-slate-50 p-5 text-center">
-                <p className="text-sm font-semibold text-slate-500">
-                  {isBusiness
-                    ? "Este negocio todavía no ha añadido más información pública."
-                    : "Esta persona todavía no ha añadido más información pública."}
-                </p>
-              </section>
-            ) : null}
-
-            <section
-              className="
-                mt-8
-                rounded-2xl
-                border
-                border-[#E8E9FF]
-                bg-[#F8F8FF]
-                p-4
-              "
-            >
-              <div className="flex items-start gap-3">
-                <div
+              {isBusiness &&
+              businessWebsite &&
+              businessWebsiteHref ? (
+                <a
+                  href={
+                    businessWebsiteHref
+                  }
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="
+                    group
+                    mt-7
                     flex
-                    h-9
-                    w-9
-                    shrink-0
+                    w-full
                     items-center
-                    justify-center
-                    rounded-xl
-                    bg-[#EEF2FF]
-                    text-[#5D5FEF]
+                    justify-between
+                    gap-4
+                    rounded-[22px]
+                    bg-gradient-to-r
+                    from-[#5654F5]
+                    to-[#6D69FF]
+                    px-4
+                    py-4
+                    text-white
+                    shadow-[0_14px_30px_rgba(93,95,239,0.22)]
+                    transition-all
+                    hover:-translate-y-0.5
+                    hover:shadow-[0_18px_38px_rgba(93,95,239,0.28)]
                   "
                 >
-                  <Sparkles size={16} />
-                </div>
+                  <span className="flex min-w-0 items-center gap-3">
+                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white/15">
+                      <Globe2
+                        size={18}
+                      />
+                    </span>
 
-                <div>
-                  <p className="text-sm font-black text-slate-800">
-                    Descubierto con LookUp
-                  </p>
+                    <span className="min-w-0 text-left">
+                      <span className="block text-[11px] font-bold uppercase tracking-[0.14em] text-white/65">
+                        Sitio web
+                      </span>
 
-                  <p className="mt-1 text-xs leading-5 text-slate-500">
+                      <span className="mt-0.5 block truncate text-sm font-black">
+                        {businessWebsite}
+                      </span>
+                    </span>
+                  </span>
+
+                  <ExternalLink
+                    size={16}
+                    className="shrink-0 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                  />
+                </a>
+              ) : null}
+
+              {bio ? (
+                <section className="mt-9">
+                  <p className="text-[10px] font-black uppercase tracking-[0.28em] text-slate-400">
                     {isBusiness
-                      ? "LookUp te ayuda a descubrir negocios y actividades relevantes cerca de ti."
-                      : "LookUp te ayuda a descubrir personas relevantes cerca de ti según contexto e intereses."}
+                      ? "SOBRE EL NEGOCIO"
+                      : "SOBRE MÍ"}
                   </p>
+
+                  <p className="mt-3 whitespace-pre-line text-[15px] leading-7 text-slate-600 sm:text-base">
+                    {bio}
+                  </p>
+                </section>
+              ) : null}
+
+              {interests.length >
+              0 ? (
+                <section className="mt-9">
+                  <div className="flex items-center gap-2">
+                    <Sparkles
+                      size={14}
+                      className="text-[#5D5FEF]"
+                    />
+
+                    <p className="text-[10px] font-black uppercase tracking-[0.28em] text-slate-400">
+                      {isBusiness
+                        ? "TEMAS Y CATEGORÍAS"
+                        : "INTERESES"}
+                    </p>
+                  </div>
+
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {interests.map(
+                      (
+                        interest,
+                      ) => (
+                        <span
+                          key={
+                            interest
+                          }
+                          className="rounded-full border border-[#E2E5FF] bg-[#F7F7FF] px-3.5 py-2 text-xs font-black text-[#5D5FEF]"
+                        >
+                          {interest}
+                        </span>
+                      ),
+                    )}
+                  </div>
+                </section>
+              ) : null}
+
+              <SocialLinks
+                links={
+                  visibleLinks
+                }
+              />
+
+              <section className="relative mt-9 overflow-hidden rounded-[26px] bg-[#12142A] p-5 text-white sm:p-6">
+                <div className="absolute -right-16 -top-16 h-40 w-40 rounded-full bg-[#5D5FEF]/35 blur-3xl" />
+
+                <div className="absolute -bottom-20 left-16 h-40 w-40 rounded-full bg-[#8F8CFF]/15 blur-3xl" />
+
+                <div className="relative flex items-start gap-4">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white/10 text-[#A9A7FF]">
+                    <Sparkles
+                      size={19}
+                    />
+                  </div>
+
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#9E9CFF]">
+                      LOOKUP DISCOVERY
+                    </p>
+
+                    <h2 className="mt-2 text-lg font-black tracking-tight text-white">
+                      {isBusiness
+                        ? "Tu entorno también puede descubrirte."
+                        : "Tu entorno también es una red."}
+                    </h2>
+
+                    <p className="mt-2 text-sm leading-6 text-slate-300">
+                      {isBusiness
+                        ? "LookUp hace visible lo que haces a personas que ya están cerca, para que puedan descubrir tu negocio y continuar la conexión en tus canales."
+                        : "LookUp convierte la proximidad real en una oportunidad para descubrir personas, conocer lo que hacen y continuar la conexión también en sus redes."}
+                    </p>
+                  </div>
                 </div>
+              </section>
+
+              {!bio &&
+              interests.length ===
+                0 &&
+              visibleLinks.length ===
+                0 &&
+              !businessWebsite ? (
+                <section className="mt-8 rounded-2xl bg-slate-50 p-5 text-center">
+                  <p className="text-sm font-semibold text-slate-500">
+                    {isBusiness
+                      ? "Este negocio todavía no ha añadido más información pública."
+                      : "Esta persona todavía no ha añadido más información pública."}
+                  </p>
+                </section>
+              ) : null}
+            </div>
+          </section>
+        </div>
+      </main>
+
+      {photoOpen &&
+      profile.avatar_url ? (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label={`Imagen ampliada de ${displayName}`}
+          className="
+            fixed
+            inset-0
+            z-[100]
+            flex
+            items-center
+            justify-center
+            bg-slate-950/40
+            p-5
+            backdrop-blur-md
+          "
+          onMouseDown={() =>
+            setPhotoOpen(
+              false,
+            )
+          }
+        >
+          <div
+            className="
+              relative
+              w-full
+              max-w-[430px]
+              overflow-hidden
+              rounded-[32px]
+              border
+              border-white/25
+              bg-white/90
+              p-3
+              shadow-[0_30px_90px_rgba(5,8,25,0.35)]
+              backdrop-blur-2xl
+            "
+            onMouseDown={(
+              event,
+            ) =>
+              event.stopPropagation()
+            }
+          >
+            <div className="relative aspect-square w-full overflow-hidden rounded-[25px] bg-slate-100">
+              <Image
+                src={
+                  profile.avatar_url
+                }
+                alt={
+                  isBusiness
+                    ? `Imagen ampliada de ${displayName}`
+                    : `Foto ampliada de ${displayName}`
+                }
+                fill
+                sizes="430px"
+                className="object-contain"
+                priority
+              />
+            </div>
+
+            <div className="flex items-center justify-between gap-4 px-2 pb-1 pt-3">
+              <div className="min-w-0">
+                <p className="truncate text-sm font-black text-slate-900">
+                  {displayName}
+                </p>
+
+                {profile.username ? (
+                  <p className="mt-0.5 truncate text-xs font-semibold text-slate-400">
+                    @{profile.username}
+                  </p>
+                ) : null}
               </div>
-            </section>
+
+              <button
+                type="button"
+                onClick={() =>
+                  setPhotoOpen(
+                    false,
+                  )
+                }
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-500 transition hover:bg-slate-200 hover:text-slate-900"
+                aria-label="Cerrar imagen"
+              >
+                <X
+                  size={17}
+                />
+              </button>
+            </div>
           </div>
-        </section>
-      </div>
-    </main>
+        </div>
+      ) : null}
+    </>
   );
 }

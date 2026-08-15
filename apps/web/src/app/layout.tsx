@@ -1,6 +1,14 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+
+import {
+  Geist,
+  Geist_Mono,
+} from "next/font/google";
+
 import { AuthProvider } from "../components/auth-provider";
+
+import { RadarProvider } from "../components/radar-provider";
+
 import "./globals.css";
 
 const geistSans = Geist({
@@ -15,7 +23,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "LookUp",
-  description: "LookUp networking real",
+  description:
+    "LookUp networking real",
 };
 
 export default function RootLayout({
@@ -28,8 +37,12 @@ export default function RootLayout({
       lang="es"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-white">
-        <AuthProvider>{children}</AuthProvider>
+      <body className="flex min-h-full flex-col bg-white">
+        <AuthProvider>
+          <RadarProvider>
+            {children}
+          </RadarProvider>
+        </AuthProvider>
       </body>
     </html>
   );
