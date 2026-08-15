@@ -24,19 +24,53 @@ export async function getProfileLinks(
   return (data ?? []) as ProfileLink[];
 }
 
+/*
+ * ============================================================
+ * LINKS PÚBLICOS
+ * ============================================================
+ *
+ * Utilizado por /profile/[id].
+ *
+ * Aunque RLS ya protege la tabla,
+ * expresamos explícitamente la intención
+ * de la consulta:
+ *
+ * únicamente enlaces publicados.
+ */
+export async function getPublicProfileLinks(
+  profileId: string,
+): Promise<ProfileLink[]> {
+  const { data, error } = await supabase
+    .from("profile_links")
+    .select("*")
+    .eq("profile_id", profileId)
+    .eq("is_public", true)
+    .order("platform");
+
+  if (error) {
+    throw error;
+  }
+
+  return (data ?? []) as ProfileLink[];
+}
+
 export async function saveProfileLink(
   profileId: string,
   platform: string,
   url: string,
 ): Promise<void> {
-  if (!url.trim()) return;
+  if (!url.trim()) {
+    return;
+  }
 
-  const { error } = await supabase.from("profile_links").insert({
-    profile_id: profileId,
-    platform,
-    url,
-    is_public: true,
-  });
+  const { error } = await supabase
+    .from("profile_links")
+    .insert({
+      profile_id: profileId,
+      platform,
+      url,
+      is_public: true,
+    });
 
   if (error) {
     throw error;
@@ -46,8 +80,13 @@ export async function saveProfileLink(
 /**
  * Elimina una red concreta.
  */
-export async function deleteProfileLink(id: string): Promise<void> {
-  const { error } = await supabase.from("profile_links").delete().eq("id", id);
+export async function deleteProfileLink(
+  id: string,
+): Promise<void> {
+  const { error } = await supabase
+    .from("profile_links")
+    .delete()
+    .eq("id", id);
 
   if (error) {
     throw error;
@@ -59,7 +98,9 @@ export async function deleteProfileLink(id: string): Promise<void> {
  * Se utiliza antes de volver a guardarlas
  * para mantener la sincronización.
  */
-export async function deleteProfileLinks(profileId: string): Promise<void> {
+export async function deleteProfileLinks(
+  profileId: string,
+): Promise<void> {
   const { error } = await supabase
     .from("profile_links")
     .delete()

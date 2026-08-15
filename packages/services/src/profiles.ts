@@ -21,6 +21,24 @@ export type ProfileRow = {
   updated_at: string;
 };
 
+export type PublicProfile = {
+  id: string;
+  username: string | null;
+  display_name: string;
+  avatar_url: string | null;
+  bio: string | null;
+  profession: string | null;
+  city: string | null;
+  account_type: AccountType;
+  interests: string[];
+
+  business_trade_name: string | null;
+  business_sector: string | null;
+  business_city: string | null;
+  business_province: string | null;
+  business_website: string | null;
+};
+
 export type ProfileUpsertInput = {
   id: string;
   email?: string | null;
@@ -41,7 +59,11 @@ export type ProfileUpsertInput = {
 export type ProfileUpdateInput = Omit<ProfileUpsertInput, "id">;
 
 export async function getMyProfile(userId: string) {
-  return supabase.from("profiles").select("*").eq("id", userId).maybeSingle();
+  return supabase
+    .from("profiles")
+    .select("*")
+    .eq("id", userId)
+    .maybeSingle();
 }
 
 export async function saveMyProfile(payload: ProfileUpsertInput) {
@@ -125,6 +147,46 @@ export async function getVisibleProfiles(currentUserId?: string) {
   return query;
 }
 
-export async function getProfileById(profileId: string) {
-  return supabase.from("profiles").select("*").eq("id", profileId).single();
+/*
+ * ============================================================
+ * PERFIL PÚBLICO
+ * ============================================================
+ *
+ * Esta es la única vía que debe utilizar la UI pública
+ * para cargar una Persona o Business.
+ *
+ * La RPC devuelve exclusivamente la proyección pública
+ * definida en PostgreSQL.
+ *
+ * Nunca exponemos mediante esta función:
+ *
+ * - email
+ * - tax_id
+ * - legal_name
+ * - contact_email
+ * - contact_phone
+ * - dirección exacta
+ * - postal_code
+ * - latitude
+ * - longitude
+ */
+export async function getPublicProfileById(
+  profileId: string,
+): Promise<PublicProfile | null> {
+  const { data, error } = await supabase.rpc(
+    "get_public_profile",
+    {
+      p_profile_id: profileId,
+    },
+  );
+
+  if (error) {
+    throw error;
+  }
+
+  if (!Array.isArray(data) || data.length === 0) {
+    return null;
+  }
+
+  return data[0] as PublicProfile;
 }
