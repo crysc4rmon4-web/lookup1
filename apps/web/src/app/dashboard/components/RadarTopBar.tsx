@@ -4,31 +4,170 @@ import { Crosshair, MapPinned, RefreshCw, Users } from "lucide-react";
 
 type Props = {
   enabled: boolean;
+  radarReady: boolean;
+
   toggleLoading: boolean;
+  locationLoading: boolean;
+  locationSyncing: boolean;
+
+  locationError: string | null;
+  accuracy: number | null;
+
   radius: number;
   nearbyCount: number;
+
   onToggle(): void;
   onRefresh(): void;
 };
 
+function getRadarStatus({
+  enabled,
+  radarReady,
+  toggleLoading,
+  locationLoading,
+  locationSyncing,
+  locationError,
+}: Pick<
+  Props,
+  | "enabled"
+  | "radarReady"
+  | "toggleLoading"
+  | "locationLoading"
+  | "locationSyncing"
+  | "locationError"
+>) {
+  if (toggleLoading) {
+    return {
+      label: "ACTUALIZANDO",
+      className: "text-slate-400",
+    };
+  }
+
+  if (!enabled) {
+    return {
+      label: "INACTIVO",
+      className: "text-[#EF4444]",
+    };
+  }
+
+  if (locationError) {
+    return {
+      label: "NO DISPONIBLE",
+      className: "text-[#EF4444]",
+    };
+  }
+
+  if (locationLoading) {
+    return {
+      label: "LOCALIZANDO",
+      className: "text-amber-500",
+    };
+  }
+
+  if (locationSyncing || !radarReady) {
+    return {
+      label: "SINCRONIZANDO",
+      className: "text-amber-500",
+    };
+  }
+
+  return {
+    label: "ACTIVO",
+    className: "text-[#16A34A]",
+  };
+}
+
+function getGpsStatus({
+  enabled,
+  accuracy,
+  locationLoading,
+  locationError,
+}: Pick<Props, "enabled" | "accuracy" | "locationLoading" | "locationError">) {
+  if (!enabled) {
+    return {
+      label: "GPS",
+      className: "text-slate-300",
+    };
+  }
+
+  if (locationError) {
+    return {
+      label: "GPS · error",
+      className: "text-[#EF4444]",
+    };
+  }
+
+  if (locationLoading || accuracy === null) {
+    return {
+      label: "GPS · buscando",
+      className: "text-amber-500",
+    };
+  }
+
+  const roundedAccuracy = Math.max(1, Math.round(accuracy));
+
+  if (accuracy <= 15) {
+    return {
+      label: `GPS preciso · ±${roundedAccuracy} m`,
+      className: "text-[#16A34A]",
+    };
+  }
+
+  if (accuracy <= 35) {
+    return {
+      label: `GPS aceptable · ±${roundedAccuracy} m`,
+      className: "text-amber-500",
+    };
+  }
+
+  return {
+    label: `GPS débil · ±${roundedAccuracy} m`,
+    className: "text-orange-500",
+  };
+}
+
 export function RadarTopBar({
   enabled,
+  radarReady,
   toggleLoading,
+  locationLoading,
+  locationSyncing,
+  locationError,
+  accuracy,
   radius,
   nearbyCount,
   onToggle,
   onRefresh,
 }: Props) {
+  const radarStatus = getRadarStatus({
+    enabled,
+    radarReady,
+    toggleLoading,
+    locationLoading,
+    locationSyncing,
+    locationError,
+  });
+
+  const gpsStatus = getGpsStatus({
+    enabled,
+    accuracy,
+    locationLoading,
+    locationError,
+  });
+
+  const scanDisabled = toggleLoading || !enabled || !radarReady;
+
   return (
     <section className="w-full space-y-4">
       <div className="flex items-center justify-between gap-4">
         <span
+          aria-live="polite"
           className={[
             "text-[11px] font-black uppercase tracking-[0.32em]",
-            enabled ? "text-[#16A34A]" : "text-[#EF4444]",
+            radarStatus.className,
           ].join(" ")}
         >
-          {toggleLoading ? "ACTUALIZANDO" : enabled ? "ACTIVO" : "INACTIVO"}
+          {radarStatus.label}
         </span>
 
         <button
@@ -63,7 +202,9 @@ export function RadarTopBar({
               className="shrink-0 text-[#5D5FEF]"
             />
 
-            <span className="text-xs font-bold text-slate-700">{radius} m</span>
+            <span className="text-xs font-bold text-slate-700">
+              {radius} m
+            </span>
           </div>
 
           <div className="flex items-center gap-2">
@@ -74,7 +215,7 @@ export function RadarTopBar({
             />
 
             <span className="text-xs font-bold text-slate-700">
-              {nearbyCount} cerca
+              {radarReady ? `${nearbyCount} cerca` : "— cerca"}
             </span>
           </div>
 
@@ -82,21 +223,25 @@ export function RadarTopBar({
             <MapPinned
               size={14}
               aria-hidden="true"
-              className={[
-                "shrink-0",
-                enabled ? "text-[#22C55E]" : "text-slate-300",
-              ].join(" ")}
+              className={["shrink-0", gpsStatus.className].join(" ")}
             />
 
-            <span className="text-xs font-bold text-slate-700">GPS</span>
+            <span
+              className={[
+                "text-xs font-bold",
+                gpsStatus.className,
+              ].join(" ")}
+            >
+              {gpsStatus.label}
+            </span>
           </div>
         </div>
 
         <button
           type="button"
           onClick={onRefresh}
-          disabled={toggleLoading || !enabled}
-          aria-label="Escanear personas cercanas"
+          disabled={scanDisabled}
+          aria-label="Escanear conexiones cercanas"
           className={[
             "flex w-full shrink-0 items-center justify-center gap-2",
             "rounded-full px-3.5 py-2",
@@ -104,18 +249,14 @@ export function RadarTopBar({
             "transition-all",
             "focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5D5FEF]/40",
             "sm:w-auto",
-            toggleLoading || !enabled
+            scanDisabled
               ? "cursor-not-allowed bg-[#F1F3F8] text-slate-300"
               : "cursor-pointer bg-[#EEF2FF] text-[#5D5FEF] hover:bg-[#E3E8FF]",
           ].join(" ")}
         >
-          <RefreshCw
-            size={13}
-            aria-hidden="true"
-            className={toggleLoading ? "animate-spin" : ""}
-          />
+          <RefreshCw size={13} aria-hidden="true" />
 
-          {toggleLoading ? "ACTUALIZANDO" : "ESCANEAR"}
+          ESCANEAR
         </button>
       </div>
     </section>

@@ -60,40 +60,45 @@ export default function DashboardPage() {
   const { user, profile, loading, needsOnboarding } = useProfileStatus();
 
   const [radarEnabled, setRadarEnabled] = useState(false);
-
   const [radarPresenceLoading, setRadarPresenceLoading] = useState(true);
-
   const [radarToggleLoading, setRadarToggleLoading] = useState(false);
 
-  /*
-   * El GPS solo existe mientras Radar
-   * esté realmente activado.
-   */
-  const location = useLocation(
-    radarEnabled && !radarPresenceLoading,
-  );
+  const radarRequested = radarEnabled && !radarPresenceLoading;
 
   /*
-   * Sincronización segura:
-   *
-   * Browser
-   *   ↓
-   * sync_radar_location()
-   *   ↓
-   * auth.uid()
-   *   ↓
-   * zona privada
-   *   ↓
-   * user_locations
+   * El GPS solo se solicita cuando Radar
+   * está realmente solicitado.
+   */
+  const location = useLocation(radarRequested);
+
+  /*
+   * Sincronización segura con Supabase.
    */
   const locationSync = useSyncLocation({
-    enabled: radarEnabled && !radarPresenceLoading,
-
+    enabled: radarRequested,
     latitude: location.latitude,
     longitude: location.longitude,
     accuracy: location.accuracy,
-
     loading: location.loading,
+  });
+
+  /*
+   * Nunca exponemos mensajes internos de DB.
+   */
+  const radarLocationError =
+    location.error ??
+    (locationSync.error
+      ? "No pudimos sincronizar tu ubicación con el Radar."
+      : null);
+
+  const radarReady =
+    radarRequested &&
+    locationSync.ready &&
+    radarLocationError === null;
+
+  const { profiles, refresh } = useRadar({
+    enabled: radarRequested,
+    ready: radarReady,
   });
 
   const [profileLinks, setProfileLinks] = useState<ProfileLink[]>([]);
@@ -110,11 +115,8 @@ export default function DashboardPage() {
   const [settingsEditorSaving, setSettingsEditorSaving] = useState(false);
 
   const [blockedZones, setBlockedZones] = useState<RadarBlockedZone[]>([]);
-
   const [blockedZonesLoading, setBlockedZonesLoading] = useState(true);
-
   const [blockedZonesSaving, setBlockedZonesSaving] = useState(false);
-
   const [blockedZoneFormOpen, setBlockedZoneFormOpen] = useState(false);
 
   const [editingBlockedZone, setEditingBlockedZone] =
@@ -141,7 +143,7 @@ export default function DashboardPage() {
           setRadarEnabled(enabled);
         }
       } catch (error) {
-        console.error("❌ Error cargando presencia del radar", error);
+        console.error("❌ Error cargando presencia del Radar", error);
 
         if (mounted) {
           setRadarEnabled(false);
@@ -161,22 +163,10 @@ export default function DashboardPage() {
   }, [loading, user]);
 
   /*
-   * ============================================================
-   * RADAR
-   * ============================================================
-   */
-
-  const { profiles, refresh } = useRadar({
-    enabled: radarEnabled && !radarPresenceLoading,
-    ready: locationSync.ready,
-  });
-
-  /*
-   * El servidor puede rechazar la presencia
-   * si la ubicación está dentro de una zona
-   * privada.
+   * Una zona privada puede impedir
+   * server-side que Radar permanezca activo.
    *
-   * La UX específica llegará en 2E.
+   * La UX específica se cierra en 2E.
    */
   useEffect(() => {
     if (!radarEnabled || locationSync.radarAllowed !== false) {
@@ -223,7 +213,7 @@ export default function DashboardPage() {
 
   /*
    * ============================================================
-   * CARGA DE LINKS
+   * LINKS
    * ============================================================
    */
 
@@ -327,30 +317,22 @@ export default function DashboardPage() {
     setRadarToggleLoading(true);
 
     try {
-      /*
-       * ACTIVAR:
-       *
-       * No llamamos set_radar_presence(true).
-       *
-       * Activamos el flujo local y la primera
-       * ubicación válida ejecutará
-       * sync_radar_location(), que crea o
-       * actualiza la fila de forma segura.
-       */
       if (nextEnabled) {
+        /*
+         * La primera posición válida será
+         * quien active realmente la presencia
+         * mediante sync_radar_location().
+         */
         setRadarEnabled(true);
+
         return;
       }
 
-      /*
-       * DESACTIVAR:
-       * apagamos primero la presencia real.
-       */
       await setRadarPresence(false);
 
       setRadarEnabled(false);
     } catch (error) {
-      console.error("❌ Error cambiando presencia del radar", error);
+      console.error("❌ Error cambiando presencia del Radar", error);
     } finally {
       setRadarToggleLoading(false);
     }
@@ -567,7 +549,7 @@ export default function DashboardPage() {
 
       setRadarEnabled(false);
     } catch (error) {
-      console.error("❌ Error apagando radar antes de cerrar sesión", error);
+      console.error("❌ Error apagando Radar antes de cerrar sesión", error);
     }
 
     await signOut();
@@ -602,8 +584,13 @@ export default function DashboardPage() {
 
         {section === "radar" && (
           <RadarView
-            enabled={radarEnabled}
+            enabled={radarRequested}
+            radarReady={radarReady}
             toggleLoading={radarToggleLoading}
+            locationLoading={location.loading}
+            locationSyncing={locationSync.syncing}
+            locationError={radarLocationError}
+            accuracy={location.accuracy}
             onToggle={handleRadarToggle}
             profiles={profiles}
             onRefresh={refresh}
