@@ -41,6 +41,8 @@ type UseProfileStatusResult = {
 export function useProfileStatus(): UseProfileStatusResult {
   const { user, loading: authLoading } = useAuth();
 
+  const userId = user?.id ?? null;
+
   const [profile, setProfile] = useState<ProfileRow | null>(null);
 
   const [profileLoading, setProfileLoading] = useState(true);
@@ -52,15 +54,14 @@ export function useProfileStatus(): UseProfileStatusResult {
 
     async function loadProfile() {
       /*
-       * Mientras Auth todavía está
-       * resolviendo la sesión no debemos
-       * decidir nada sobre el perfil.
+       * Mientras Auth resuelve la sesión todavía
+       * no tomamos decisiones sobre el perfil.
        */
       if (authLoading) {
         return;
       }
 
-      if (!user) {
+      if (!userId) {
         if (!active) {
           return;
         }
@@ -76,7 +77,7 @@ export function useProfileStatus(): UseProfileStatusResult {
       setProfileError(null);
 
       try {
-        const { data, error } = await getMyProfile(user.id);
+        const { data, error } = await getMyProfile(userId);
 
         if (!active) {
           return;
@@ -114,7 +115,7 @@ export function useProfileStatus(): UseProfileStatusResult {
     return () => {
       active = false;
     };
-  }, [authLoading, user]);
+  }, [authLoading, userId]);
 
   const loading = authLoading || profileLoading;
 
@@ -122,27 +123,24 @@ export function useProfileStatus(): UseProfileStatusResult {
 
   const isProfileComplete = profile?.onboarding_completed === true;
 
-  /*
-   * Una cuenta nueva puede estar
-   * autenticada pero todavía no tener
-   * fila en profiles.
-   *
-   * Ese caso significa que debe elegir
-   * su tipo de cuenta.
-   */
   const needsAccountType =
-    !loading && Boolean(user) && (!profile || !accountType);
+    !loading &&
+    Boolean(userId) &&
+    (!profile || !accountType);
 
   const needsOnboarding =
     !loading &&
-    Boolean(user) &&
+    Boolean(userId) &&
     Boolean(profile) &&
     Boolean(accountType) &&
     !isProfileComplete;
 
-  const onboardingRoute = accountType ? getOnboardingRoute(accountType) : null;
+  const onboardingRoute = accountType
+    ? getOnboardingRoute(accountType)
+    : null;
 
-  const authenticatedDestination = getAuthenticatedDestination(profile);
+  const authenticatedDestination =
+    getAuthenticatedDestination(profile);
 
   return {
     user,

@@ -59,32 +59,61 @@ export default function DashboardPage() {
 
   const { user, profile, loading, needsOnboarding } = useProfileStatus();
 
+  /*
+   * ============================================================
+   * RADAR — ESTADO GENERAL
+   * ============================================================
+   */
+
   const [radarEnabled, setRadarEnabled] = useState(false);
+
   const [radarPresenceLoading, setRadarPresenceLoading] = useState(true);
+
   const [radarToggleLoading, setRadarToggleLoading] = useState(false);
+
+  const [radarScanLoading, setRadarScanLoading] = useState(false);
+
+  /*
+   * El servidor es la autoridad para decidir
+   * si una ubicación está protegida.
+   */
+  const [radarPrivacyBlocked, setRadarPrivacyBlocked] = useState(false);
 
   const radarRequested = radarEnabled && !radarPresenceLoading;
 
   /*
-   * El GPS solo se solicita cuando Radar
-   * está realmente solicitado.
+   * ============================================================
+   * GEOLOCALIZACIÓN
+   * ============================================================
+   *
+   * El GPS solo se solicita cuando Radar está activo.
    */
+
   const location = useLocation(radarRequested);
 
   /*
-   * Sincronización segura con Supabase.
+   * ============================================================
+   * SINCRONIZACIÓN DE PRESENCIA
+   * ============================================================
    */
+
   const locationSync = useSyncLocation({
     enabled: radarRequested,
+
     latitude: location.latitude,
+
     longitude: location.longitude,
+
     accuracy: location.accuracy,
+
     loading: location.loading,
   });
 
   /*
-   * Nunca exponemos mensajes internos de DB.
+   * Nunca exponemos detalles internos de Supabase
+   * o PostgreSQL al usuario.
    */
+
   const radarLocationError =
     location.error ??
     (locationSync.error
@@ -94,12 +123,26 @@ export default function DashboardPage() {
   const radarReady =
     radarRequested &&
     locationSync.ready &&
+    !radarPrivacyBlocked &&
     radarLocationError === null;
+
+  /*
+   * ============================================================
+   * DESCUBRIMIENTO
+   * ============================================================
+   */
 
   const { profiles, refresh } = useRadar({
     enabled: radarRequested,
+
     ready: radarReady,
   });
+
+  /*
+   * ============================================================
+   * PERFIL / AJUSTES
+   * ============================================================
+   */
 
   const [profileLinks, setProfileLinks] = useState<ProfileLink[]>([]);
 
@@ -114,9 +157,18 @@ export default function DashboardPage() {
 
   const [settingsEditorSaving, setSettingsEditorSaving] = useState(false);
 
+  /*
+   * ============================================================
+   * ZONAS PRIVADAS
+   * ============================================================
+   */
+
   const [blockedZones, setBlockedZones] = useState<RadarBlockedZone[]>([]);
+
   const [blockedZonesLoading, setBlockedZonesLoading] = useState(true);
+
   const [blockedZonesSaving, setBlockedZonesSaving] = useState(false);
+
   const [blockedZoneFormOpen, setBlockedZoneFormOpen] = useState(false);
 
   const [editingBlockedZone, setEditingBlockedZone] =
@@ -124,7 +176,7 @@ export default function DashboardPage() {
 
   /*
    * ============================================================
-   * RECUPERAR PRESENCIA
+   * RECUPERAR PRESENCIA DEL RADAR
    * ============================================================
    */
 
@@ -163,18 +215,33 @@ export default function DashboardPage() {
   }, [loading, user]);
 
   /*
-   * Una zona privada puede impedir
-   * server-side que Radar permanezca activo.
+   * ============================================================
+   * PROTECCIÓN DE ZONA PRIVADA
+   * ============================================================
    *
-   * La UX específica se cierra en 2E.
+   * sync_radar_location() devuelve false cuando:
+   *
+   * - la ubicación es válida;
+   * - pero está dentro de una zona privada.
+   *
+   * La propia RPC deja is_active = false.
    */
+
   useEffect(() => {
-    if (!radarEnabled || locationSync.radarAllowed !== false) {
+    if (locationSync.radarAllowed === false) {
+      setRadarPrivacyBlocked(true);
+
+      if (radarEnabled) {
+        setRadarEnabled(false);
+      }
+
       return;
     }
 
-    setRadarEnabled(false);
-  }, [radarEnabled, locationSync.radarAllowed]);
+    if (locationSync.radarAllowed === true) {
+      setRadarPrivacyBlocked(false);
+    }
+  }, [locationSync.radarAllowed, radarEnabled]);
 
   /*
    * ============================================================
@@ -189,6 +256,7 @@ export default function DashboardPage() {
 
     if (!user) {
       router.replace("/login");
+
       return;
     }
 
@@ -251,7 +319,7 @@ export default function DashboardPage() {
 
   /*
    * ============================================================
-   * ZONAS BLOQUEADAS
+   * CARGA DE ZONAS PRIVADAS
    * ============================================================
    */
 
@@ -274,7 +342,7 @@ export default function DashboardPage() {
           setBlockedZones(zones ?? []);
         }
       } catch (error) {
-        console.error("❌ Error cargando zonas bloqueadas", error);
+        console.error("❌ Error cargando zonas privadas", error);
 
         if (mounted) {
           setBlockedZones([]);
@@ -297,6 +365,8 @@ export default function DashboardPage() {
    * ============================================================
    * EVENTOS
    * ============================================================
+   *
+   * Se implementará en su bloque dedicado.
    */
 
   const events: EventCard[] = [];
@@ -308,7 +378,7 @@ export default function DashboardPage() {
    */
 
   const handleRadarToggle = async () => {
-    if (radarToggleLoading || !user) {
+    if (radarToggleLoading || radarScanLoading || !user) {
       return;
     }
 
@@ -317,20 +387,33 @@ export default function DashboardPage() {
     setRadarToggleLoading(true);
 
     try {
+      /*
+       * ACTIVAR
+       *
+       * No utilizamos setRadarPresence(true).
+       *
+       * La única operación autorizada para activar
+       * presencia es sync_radar_location(), que exige
+       * una ubicación válida y comprueba privacidad.
+       */
+
       if (nextEnabled) {
-        /*
-         * La primera posición válida será
-         * quien active realmente la presencia
-         * mediante sync_radar_location().
-         */
+        setRadarPrivacyBlocked(false);
+
         setRadarEnabled(true);
 
         return;
       }
 
+      /*
+       * DESACTIVAR
+       */
+
       await setRadarPresence(false);
 
       setRadarEnabled(false);
+
+      setRadarPrivacyBlocked(false);
     } catch (error) {
       console.error("❌ Error cambiando presencia del Radar", error);
     } finally {
@@ -340,13 +423,67 @@ export default function DashboardPage() {
 
   /*
    * ============================================================
-   * EDITOR PERFIL
+   * ESCANEAR AHORA
+   * ============================================================
+   *
+   * A diferencia del refresco automático:
+   *
+   * 1. sincroniza nuestra ubicación/presencia;
+   * 2. el servidor vuelve a comprobar zonas privadas;
+   * 3. solo si seguimos siendo visibles,
+   *    consulta candidatos ≤25 m.
+   */
+
+  const handleRadarRefresh = async () => {
+    if (
+      radarScanLoading ||
+      radarToggleLoading ||
+      !radarRequested ||
+      !radarReady
+    ) {
+      return;
+    }
+
+    setRadarScanLoading(true);
+
+    try {
+      const radarAllowed = await locationSync.syncNow();
+
+      /*
+       * Si hemos entrado en una zona privada,
+       * sync_radar_location() ya ha desactivado
+       * nuestra presencia.
+       *
+       * No consultamos candidatos.
+       */
+
+      if (!radarAllowed) {
+        return;
+      }
+
+      await refresh();
+    } catch (error) {
+      console.error("❌ Error escaneando conexiones cercanas", error);
+    } finally {
+      setRadarScanLoading(false);
+    }
+  };
+
+  /*
+   * ============================================================
+   * EDITOR PERFIL — ABRIR
    * ============================================================
    */
 
   const handleEditProfile = (editSection: SettingsEditSection = "profile") => {
     setSettingsEditorSection(editSection);
   };
+
+  /*
+   * ============================================================
+   * EDITOR PERFIL — CERRAR
+   * ============================================================
+   */
 
   const handleCloseProfileEditor = () => {
     if (settingsEditorSaving) {
@@ -355,6 +492,12 @@ export default function DashboardPage() {
 
     setSettingsEditorSection(null);
   };
+
+  /*
+   * ============================================================
+   * EDITOR PERFIL — GUARDAR
+   * ============================================================
+   */
 
   const handleSaveProfile = async (data: SettingsProfileEditorData) => {
     if (!user || !settingsProfile) {
@@ -372,9 +515,13 @@ export default function DashboardPage() {
 
       const result = await saveSettingsProfile({
         userId: user.id,
+
         email: user.email ?? "",
+
         profile: settingsProfile,
+
         data,
+
         avatarUrl,
       });
 
@@ -402,7 +549,7 @@ export default function DashboardPage() {
 
   /*
    * ============================================================
-   * ZONAS BLOQUEADAS — CREAR
+   * ZONAS PRIVADAS — CREAR
    * ============================================================
    */
 
@@ -412,23 +559,25 @@ export default function DashboardPage() {
     }
 
     setEditingBlockedZone(null);
+
     setBlockedZoneFormOpen(true);
   };
 
   /*
    * ============================================================
-   * ZONAS BLOQUEADAS — EDITAR
+   * ZONAS PRIVADAS — EDITAR
    * ============================================================
    */
 
   const handleEditBlockedZone = (zone: RadarBlockedZone) => {
     setEditingBlockedZone(zone);
+
     setBlockedZoneFormOpen(true);
   };
 
   /*
    * ============================================================
-   * ZONAS BLOQUEADAS — CERRAR
+   * ZONAS PRIVADAS — CERRAR
    * ============================================================
    */
 
@@ -438,12 +587,13 @@ export default function DashboardPage() {
     }
 
     setBlockedZoneFormOpen(false);
+
     setEditingBlockedZone(null);
   };
 
   /*
    * ============================================================
-   * ZONAS BLOQUEADAS — GUARDAR
+   * ZONAS PRIVADAS — GUARDAR
    * ============================================================
    */
 
@@ -458,9 +608,13 @@ export default function DashboardPage() {
       if (editingBlockedZone) {
         const updated = await updateRadarBlockedZone(editingBlockedZone.id, {
           name: data.name,
+
           address: data.address,
+
           latitude: data.latitude,
+
           longitude: data.longitude,
+
           radius_meters: data.radiusMeters,
         });
 
@@ -470,16 +624,21 @@ export default function DashboardPage() {
       } else {
         if (blockedZones.length >= MAX_BLOCKED_ZONES) {
           throw new Error(
-            `Solo puedes tener ${MAX_BLOCKED_ZONES} zonas bloqueadas.`,
+            `Solo puedes tener ${MAX_BLOCKED_ZONES} zonas privadas.`,
           );
         }
 
         const created = await createRadarBlockedZone({
           profile_id: profile.id,
+
           name: data.name,
+
           address: data.address,
+
           latitude: data.latitude,
+
           longitude: data.longitude,
+
           radius_meters: data.radiusMeters,
         });
 
@@ -487,14 +646,15 @@ export default function DashboardPage() {
       }
 
       setBlockedZoneFormOpen(false);
+
       setEditingBlockedZone(null);
     } catch (error) {
-      console.error("❌ Error guardando zona bloqueada", error);
+      console.error("❌ Error guardando zona privada", error);
 
       if (error instanceof Error) {
         window.alert(error.message);
       } else {
-        window.alert("No se pudo guardar la zona bloqueada.");
+        window.alert("No se pudo guardar la zona privada.");
       }
     } finally {
       setBlockedZonesSaving(false);
@@ -503,7 +663,7 @@ export default function DashboardPage() {
 
   /*
    * ============================================================
-   * ZONAS BLOQUEADAS — ELIMINAR
+   * ZONAS PRIVADAS — ELIMINAR
    * ============================================================
    */
 
@@ -525,12 +685,12 @@ export default function DashboardPage() {
         current.filter((item) => item.id !== zone.id),
       );
     } catch (error) {
-      console.error("❌ Error eliminando zona bloqueada", error);
+      console.error("❌ Error eliminando zona privada", error);
 
       if (error instanceof Error) {
         window.alert(error.message);
       } else {
-        window.alert("No se pudo eliminar la zona bloqueada.");
+        window.alert("No se pudo eliminar la zona privada.");
       }
     } finally {
       setBlockedZonesSaving(false);
@@ -548,6 +708,8 @@ export default function DashboardPage() {
       await setRadarPresence(false);
 
       setRadarEnabled(false);
+
+      setRadarPrivacyBlocked(false);
     } catch (error) {
       console.error("❌ Error apagando Radar antes de cerrar sesión", error);
     }
@@ -586,14 +748,16 @@ export default function DashboardPage() {
           <RadarView
             enabled={radarRequested}
             radarReady={radarReady}
+            privacyBlocked={radarPrivacyBlocked}
             toggleLoading={radarToggleLoading}
+            scanLoading={radarScanLoading}
             locationLoading={location.loading}
             locationSyncing={locationSync.syncing}
             locationError={radarLocationError}
             accuracy={location.accuracy}
             onToggle={handleRadarToggle}
+            onRefresh={handleRadarRefresh}
             profiles={profiles}
-            onRefresh={refresh}
           />
         )}
 

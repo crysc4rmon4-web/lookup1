@@ -10,8 +10,10 @@ import { RadarTopBar } from "./RadarTopBar";
 type RadarViewProps = {
   enabled: boolean;
   radarReady: boolean;
+  privacyBlocked: boolean;
 
   toggleLoading: boolean;
+  scanLoading: boolean;
   locationLoading: boolean;
   locationSyncing: boolean;
 
@@ -27,7 +29,9 @@ type RadarViewProps = {
 export function RadarView({
   enabled,
   radarReady,
+  privacyBlocked,
   toggleLoading,
+  scanLoading,
   locationLoading,
   locationSyncing,
   locationError,
@@ -42,7 +46,9 @@ export function RadarView({
         <RadarTopBar
           enabled={enabled}
           radarReady={radarReady}
+          privacyBlocked={privacyBlocked}
           toggleLoading={toggleLoading}
+          scanLoading={scanLoading}
           locationLoading={locationLoading}
           locationSyncing={locationSyncing}
           locationError={locationError}
@@ -55,8 +61,8 @@ export function RadarView({
 
         <div className="mt-6 flex w-full justify-center">
           <RadarCanvas
-            enabled={enabled && radarReady}
-            profiles={radarReady ? profiles : []}
+            enabled={enabled && radarReady && !privacyBlocked}
+            profiles={radarReady && !privacyBlocked ? profiles : []}
           />
         </div>
       </div>
@@ -64,6 +70,7 @@ export function RadarView({
       <NearbyProfiles
         enabled={enabled}
         ready={radarReady}
+        privacyBlocked={privacyBlocked}
         locationLoading={locationLoading || locationSyncing}
         locationError={locationError}
         profiles={profiles}

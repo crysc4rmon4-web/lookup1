@@ -11,6 +11,11 @@ import {
   type GeocodedAddress,
 } from "../../../services/location/geocode-address";
 
+import {
+  getCurrentLocation,
+  normalizeLocationError,
+} from "../../../services/location/get-current-location";
+
 type BlockedZoneFormProps = {
   zone?: RadarBlockedZone | null;
   saving?: boolean;
@@ -28,6 +33,10 @@ export type BlockedZoneFormData = {
 
 const DEFAULT_RADIUS = 100;
 
+const CURRENT_LOCATION_LABEL = "Ubicación actual";
+
+type LocationSource = "address" | "current" | null;
+
 export function BlockedZoneForm({
   zone,
   saving = false,
@@ -35,6 +44,7 @@ export function BlockedZoneForm({
   onCancel,
 }: BlockedZoneFormProps) {
   const [name, setName] = useState("");
+
   const [address, setAddress] = useState("");
 
   const [latitude, setLatitude] = useState<number | null>(null);
@@ -51,47 +61,75 @@ export function BlockedZoneForm({
 
   const [formError, setFormError] = useState<string | null>(null);
 
-  const [locationSource, setLocationSource] = useState<
-    "address" | "current" | null
-  >(null);
+  const [locationSource, setLocationSource] =
+    useState<LocationSource>(null);
 
   useEffect(() => {
     if (zone) {
+      const usesCurrentLocation =
+        zone.address.trim() === CURRENT_LOCATION_LABEL;
+
       setName(zone.name);
-      setAddress(zone.address);
+
+      setAddress(
+        usesCurrentLocation
+          ? ""
+          : zone.address,
+      );
+
       setLatitude(zone.latitude);
+
       setLongitude(zone.longitude);
+
       setRadiusMeters(zone.radius_meters);
+
       setLocationError(null);
+
       setFormError(null);
-      setLocationSource("address");
+
+      setLocationSource(
+        usesCurrentLocation
+          ? "current"
+          : "address",
+      );
 
       return;
     }
 
     setName("");
+
     setAddress("");
+
     setLatitude(null);
+
     setLongitude(null);
+
     setRadiusMeters(DEFAULT_RADIUS);
+
     setLocationError(null);
+
     setFormError(null);
+
     setLocationSource(null);
   }, [zone]);
+
+  function handleNameChange(value: string) {
+    setName(value);
+
+    setFormError(null);
+  }
 
   function handleAddressChange(value: string) {
     setAddress(value);
 
-    /*
-     * La dirección ha cambiado.
-     * Las coordenadas anteriores ya no se consideran
-     * fiables hasta volver a localizar la dirección.
-     */
     setLatitude(null);
+
     setLongitude(null);
+
     setLocationSource(null);
 
     setLocationError(null);
+
     setFormError(null);
   }
 
@@ -99,141 +137,176 @@ export function BlockedZoneForm({
     const cleanAddress = address.trim();
 
     if (!cleanAddress) {
-      setLocationError("Introduce una dirección antes de localizarla.");
+      setLocationError(
+        "Escribe una dirección antes de localizarla.",
+      );
 
       return;
     }
 
     setGeocodingLoading(true);
+
     setLocationError(null);
+
     setFormError(null);
 
     try {
-      const result: GeocodedAddress = await geocodeAddress(cleanAddress);
+      const result: GeocodedAddress =
+        await geocodeAddress(cleanAddress);
 
       setAddress(result.address);
+
       setLatitude(result.latitude);
+
       setLongitude(result.longitude);
+
       setLocationSource("address");
     } catch (error) {
-      console.error("❌ Error geocodificando dirección", error);
-
       const message =
         error instanceof Error
           ? error.message
           : "No se pudo localizar la dirección.";
 
       setLatitude(null);
+
       setLongitude(null);
+
       setLocationSource(null);
+
       setLocationError(message);
     } finally {
       setGeocodingLoading(false);
     }
   }
 
-  function handleUseCurrentLocation() {
-    if (!navigator.geolocation) {
-      setLocationError("Tu navegador no permite obtener la ubicación.");
-
-      return;
-    }
-
+  async function handleUseCurrentLocation() {
     setLocationLoading(true);
+
     setLocationError(null);
+
     setFormError(null);
 
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        setLatitude(position.coords.latitude);
+    try {
+      const currentLocation =
+        await getCurrentLocation();
 
-        setLongitude(position.coords.longitude);
+      setLatitude(currentLocation.latitude);
 
-        setLocationSource("current");
-        setLocationLoading(false);
-      },
-      (error) => {
-        console.error(
-          "❌ Error obteniendo ubicación para zona bloqueada",
-          error,
-        );
+      setLongitude(currentLocation.longitude);
 
-        setLocationLoading(false);
+      setAddress("");
 
-        if (error.code === error.PERMISSION_DENIED) {
-          setLocationError(
-            "Necesitamos permiso de ubicación para usar tu posición actual.",
-          );
+      setLocationSource("current");
+    } catch (error) {
+      const normalizedError =
+        normalizeLocationError(error);
 
-          return;
-        }
+      setLatitude(null);
 
-        if (error.code === error.TIMEOUT) {
-          setLocationError(
-            "No hemos podido obtener tu ubicación a tiempo. Inténtalo de nuevo.",
-          );
+      setLongitude(null);
 
-          return;
-        }
+      setLocationSource(null);
 
-        setLocationError("No hemos podido obtener tu ubicación.");
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 0,
-      },
-    );
+      setLocationError(normalizedError.message);
+    } finally {
+      setLocationLoading(false);
+    }
   }
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(
+    event: React.FormEvent<HTMLFormElement>,
+  ) {
     event.preventDefault();
 
     setFormError(null);
-    setLocationError(null);
 
     const cleanName = name.trim();
 
     const cleanAddress = address.trim();
 
-    if (!cleanName) {
-      setFormError("Indica un nombre para esta zona.");
+    const hasName = cleanName.length > 0;
 
-      return;
-    }
+    const hasLocation =
+      latitude !== null &&
+      longitude !== null &&
+      locationSource !== null;
 
-    if (!cleanAddress) {
-      setFormError("Indica la dirección de la zona.");
-
-      return;
-    }
-
-    if (latitude === null || longitude === null) {
+    /*
+     * Damos un mensaje específico según
+     * exactamente qué información falta.
+     */
+    if (!hasName && !hasLocation) {
       setFormError(
-        "Localiza la dirección o utiliza tu ubicación actual antes de guardar.",
+        "Añade un nombre y selecciona una ubicación para crear esta zona.",
       );
 
       return;
     }
 
-    if (radiusMeters < 50 || radiusMeters > 500) {
-      setFormError("El radio debe estar entre 50 y 500 metros.");
+    if (!hasName) {
+      setFormError(
+        "Pon un nombre a esta zona, por ejemplo Casa, Trabajo o Gimnasio.",
+      );
+
+      return;
+    }
+
+    if (!hasLocation) {
+      setFormError(
+        "Selecciona una ubicación antes de guardar. Puedes localizar una dirección o usar tu ubicación actual.",
+      );
+
+      return;
+    }
+
+    if (
+      locationSource === "address" &&
+      !cleanAddress
+    ) {
+      setFormError(
+        "Localiza nuevamente la dirección antes de guardar.",
+      );
+
+      return;
+    }
+
+    if (
+      radiusMeters < 50 ||
+      radiusMeters > 500
+    ) {
+      setFormError(
+        "El radio debe estar entre 50 y 500 metros.",
+      );
 
       return;
     }
 
     await onSubmit({
       name: cleanName,
-      address: cleanAddress,
+
+      address:
+        locationSource === "current"
+          ? CURRENT_LOCATION_LABEL
+          : cleanAddress,
+
       latitude,
+
       longitude,
+
       radiusMeters,
     });
   }
 
   const isEditing = Boolean(zone);
 
-  const isLocationBusy = locationLoading || geocodingLoading;
+  const isLocationBusy =
+    locationLoading ||
+    geocodingLoading;
+
+  const locationSelected =
+    latitude !== null &&
+    longitude !== null &&
+    locationSource !== null;
 
   return (
     <div
@@ -265,16 +338,18 @@ export function BlockedZoneForm({
         "
       >
         <div className="flex items-center justify-between border-b border-[#EEF0F5] px-5 py-4 sm:px-6">
-          <div>
+          <div className="pr-4">
             <h2
               id="blocked-zone-form-title"
               className="text-lg font-black text-slate-900"
             >
-              {isEditing ? "Editar zona" : "Nueva zona bloqueada"}
+              {isEditing
+                ? "Editar zona privada"
+                : "Nueva zona privada"}
             </h2>
 
-            <p className="mt-1 text-xs text-slate-500">
-              El radar se apagará automáticamente cuando estés aquí.
+            <p className="mt-1 text-xs leading-5 text-slate-500">
+              LookUp ocultará automáticamente tu presencia cuando estés aquí.
             </p>
           </div>
 
@@ -287,6 +362,7 @@ export function BlockedZoneForm({
               flex
               h-9
               w-9
+              shrink-0
               items-center
               justify-center
               rounded-full
@@ -312,15 +388,17 @@ export function BlockedZoneForm({
                 htmlFor="blocked-zone-name"
                 className="mb-2 block text-xs font-black uppercase tracking-[0.12em] text-slate-500"
               >
-                Nombre
+                Nombre de la zona
               </label>
 
               <input
                 id="blocked-zone-name"
                 type="text"
                 value={name}
-                onChange={(event) => setName(event.target.value)}
-                placeholder="Casa, trabajo..."
+                onChange={(event) =>
+                  handleNameChange(event.target.value)
+                }
+                placeholder="Casa, trabajo, gimnasio..."
                 maxLength={60}
                 autoComplete="off"
                 disabled={saving || isLocationBusy}
@@ -344,6 +422,10 @@ export function BlockedZoneForm({
                   disabled:bg-slate-50
                 "
               />
+
+              <p className="mt-2 text-xs leading-5 text-slate-400">
+                El nombre solo te ayuda a reconocer esta zona dentro de LookUp.
+              </p>
             </div>
 
             <div>
@@ -372,8 +454,12 @@ export function BlockedZoneForm({
                   id="blocked-zone-address"
                   type="text"
                   value={address}
-                  onChange={(event) => handleAddressChange(event.target.value)}
-                  placeholder="Escribe la dirección exacta"
+                  onChange={(event) =>
+                    handleAddressChange(
+                      event.target.value,
+                    )
+                  }
+                  placeholder="Escribe una dirección"
                   maxLength={255}
                   autoComplete="street-address"
                   disabled={saving || isLocationBusy}
@@ -401,13 +487,20 @@ export function BlockedZoneForm({
               </div>
 
               <p className="mt-2 text-xs leading-5 text-slate-400">
-                Introduce una dirección concreta para localizar el punto exacto.
+                Puedes localizar una dirección o usar tu ubicación actual.
+                No necesitas hacer ambas cosas.
               </p>
 
               <button
                 type="button"
-                onClick={() => void handleGeocodeAddress()}
-                disabled={saving || isLocationBusy || !address.trim()}
+                onClick={() =>
+                  void handleGeocodeAddress()
+                }
+                disabled={
+                  saving ||
+                  isLocationBusy ||
+                  !address.trim()
+                }
                 className="
                   mt-3
                   inline-flex
@@ -428,7 +521,9 @@ export function BlockedZoneForm({
               >
                 <Search size={13} />
 
-                {geocodingLoading ? "Localizando..." : "Localizar dirección"}
+                {geocodingLoading
+                  ? "Localizando..."
+                  : "Localizar dirección"}
               </button>
             </div>
 
@@ -461,17 +556,19 @@ export function BlockedZoneForm({
 
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-black text-slate-800">
-                    Ubicación exacta
+                    Usar donde estoy ahora
                   </p>
 
                   <p className="mt-1 text-xs leading-5 text-slate-500">
-                    Necesitamos las coordenadas del lugar para detectar cuándo
-                    entras en la zona.
+                    Si estás físicamente en el lugar que quieres proteger,
+                    LookUp puede guardar directamente sus coordenadas.
                   </p>
 
                   <button
                     type="button"
-                    onClick={handleUseCurrentLocation}
+                    onClick={() =>
+                      void handleUseCurrentLocation()
+                    }
                     disabled={saving || isLocationBusy}
                     className="
                       mt-3
@@ -503,26 +600,27 @@ export function BlockedZoneForm({
                 </div>
               </div>
 
-              {latitude !== null && longitude !== null && (
+              {locationSelected ? (
                 <div
                   className="
-                      mt-3
-                      rounded-xl
-                      bg-emerald-50
-                      px-3
-                      py-2
-                      text-xs
-                      font-semibold
-                      text-emerald-700
-                    "
+                    mt-3
+                    rounded-xl
+                    bg-emerald-50
+                    px-3
+                    py-2
+                    text-xs
+                    font-semibold
+                    leading-5
+                    text-emerald-700
+                  "
                 >
                   {locationSource === "current"
-                    ? "Ubicación actual seleccionada correctamente."
+                    ? "Tu ubicación actual está lista. No necesitas escribir una dirección."
                     : "Dirección localizada correctamente."}
                 </div>
-              )}
+              ) : null}
 
-              {locationError && (
+              {locationError ? (
                 <p
                   className="
                     mt-3
@@ -535,7 +633,7 @@ export function BlockedZoneForm({
                 >
                   {locationError}
                 </p>
-              )}
+              ) : null}
             </div>
 
             <div>
@@ -544,7 +642,7 @@ export function BlockedZoneForm({
                   htmlFor="blocked-zone-radius"
                   className="text-xs font-black uppercase tracking-[0.12em] text-slate-500"
                 >
-                  Radio de seguridad
+                  Radio de privacidad
                 </label>
 
                 <span className="rounded-full bg-[#EEF2FF] px-3 py-1 text-xs font-black text-[#5D5FEF]">
@@ -560,7 +658,9 @@ export function BlockedZoneForm({
                 step={10}
                 value={radiusMeters}
                 onChange={(event) =>
-                  setRadiusMeters(Number(event.target.value))
+                  setRadiusMeters(
+                    Number(event.target.value),
+                  )
                 }
                 disabled={saving || isLocationBusy}
                 className="
@@ -573,16 +673,17 @@ export function BlockedZoneForm({
 
               <div className="mt-1 flex justify-between text-[10px] font-bold text-slate-400">
                 <span>50 m</span>
+
                 <span>500 m</span>
               </div>
 
               <p className="mt-2 text-xs leading-5 text-slate-400">
-                Recomendación: 100 m suele ser un buen equilibrio para una zona
-                como casa o trabajo.
+                100 m suele funcionar bien para proteger lugares como casa o
+                trabajo frente a variaciones normales del GPS.
               </p>
             </div>
 
-            {formError && (
+            {formError ? (
               <div
                 className="
                   rounded-2xl
@@ -598,7 +699,7 @@ export function BlockedZoneForm({
               >
                 {formError}
               </div>
-            )}
+            ) : null}
           </div>
 
           <div className="mt-6 flex gap-3 border-t border-[#EEF0F5] pt-5">
@@ -648,7 +749,7 @@ export function BlockedZoneForm({
                 ? "Guardando..."
                 : isEditing
                   ? "Guardar cambios"
-                  : "Añadir zona"}
+                  : "Añadir zona privada"}
             </button>
           </div>
         </form>

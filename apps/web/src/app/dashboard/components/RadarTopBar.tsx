@@ -5,8 +5,10 @@ import { Crosshair, MapPinned, RefreshCw, Users } from "lucide-react";
 type Props = {
   enabled: boolean;
   radarReady: boolean;
+  privacyBlocked: boolean;
 
   toggleLoading: boolean;
+  scanLoading: boolean;
   locationLoading: boolean;
   locationSyncing: boolean;
 
@@ -23,6 +25,7 @@ type Props = {
 function getRadarStatus({
   enabled,
   radarReady,
+  privacyBlocked,
   toggleLoading,
   locationLoading,
   locationSyncing,
@@ -31,6 +34,7 @@ function getRadarStatus({
   Props,
   | "enabled"
   | "radarReady"
+  | "privacyBlocked"
   | "toggleLoading"
   | "locationLoading"
   | "locationSyncing"
@@ -40,6 +44,13 @@ function getRadarStatus({
     return {
       label: "ACTUALIZANDO",
       className: "text-slate-400",
+    };
+  }
+
+  if (privacyBlocked) {
+    return {
+      label: "PROTEGIDO",
+      className: "text-[#5D5FEF]",
     };
   }
 
@@ -79,10 +90,25 @@ function getRadarStatus({
 
 function getGpsStatus({
   enabled,
+  privacyBlocked,
   accuracy,
   locationLoading,
   locationError,
-}: Pick<Props, "enabled" | "accuracy" | "locationLoading" | "locationError">) {
+}: Pick<
+  Props,
+  | "enabled"
+  | "privacyBlocked"
+  | "accuracy"
+  | "locationLoading"
+  | "locationError"
+>) {
+  if (privacyBlocked) {
+    return {
+      label: "Ubicación protegida",
+      className: "text-[#5D5FEF]",
+    };
+  }
+
   if (!enabled) {
     return {
       label: "GPS",
@@ -129,7 +155,9 @@ function getGpsStatus({
 export function RadarTopBar({
   enabled,
   radarReady,
+  privacyBlocked,
   toggleLoading,
+  scanLoading,
   locationLoading,
   locationSyncing,
   locationError,
@@ -142,6 +170,7 @@ export function RadarTopBar({
   const radarStatus = getRadarStatus({
     enabled,
     radarReady,
+    privacyBlocked,
     toggleLoading,
     locationLoading,
     locationSyncing,
@@ -150,12 +179,18 @@ export function RadarTopBar({
 
   const gpsStatus = getGpsStatus({
     enabled,
+    privacyBlocked,
     accuracy,
     locationLoading,
     locationError,
   });
 
-  const scanDisabled = toggleLoading || !enabled || !radarReady;
+  const scanDisabled =
+    toggleLoading ||
+    scanLoading ||
+    !enabled ||
+    !radarReady ||
+    privacyBlocked;
 
   return (
     <section className="w-full space-y-4">
@@ -227,10 +262,7 @@ export function RadarTopBar({
             />
 
             <span
-              className={[
-                "text-xs font-bold",
-                gpsStatus.className,
-              ].join(" ")}
+              className={["text-xs font-bold", gpsStatus.className].join(" ")}
             >
               {gpsStatus.label}
             </span>
@@ -254,9 +286,13 @@ export function RadarTopBar({
               : "cursor-pointer bg-[#EEF2FF] text-[#5D5FEF] hover:bg-[#E3E8FF]",
           ].join(" ")}
         >
-          <RefreshCw size={13} aria-hidden="true" />
+          <RefreshCw
+            size={13}
+            aria-hidden="true"
+            className={scanLoading ? "animate-spin" : ""}
+          />
 
-          ESCANEAR
+          {scanLoading ? "ESCANEANDO" : "ESCANEAR"}
         </button>
       </div>
     </section>
