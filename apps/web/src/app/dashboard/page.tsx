@@ -16,6 +16,7 @@ import {
   getMyBusinessProfile,
   getProfileLinks,
   getRadarBlockedZones,
+  supabase,
   updateMyProfile,
   updateRadarBlockedZone,
   uploadAvatar,
@@ -78,6 +79,10 @@ import {
 } from "./components/ConfirmDialog";
 
 import {
+  DeleteAccountDialog,
+} from "./components/DeleteAccountDialog";
+
+import {
   AppToast,
   type AppToastKind,
 } from "./components/AppToast";
@@ -97,6 +102,11 @@ type ToastState = {
   message: string;
 };
 
+type DeleteAccountResponse = {
+  success?: boolean;
+  error?: string;
+};
+
 const MAX_BLOCKED_ZONES = 3;
 
 function isSection(
@@ -114,6 +124,7 @@ export default function DashboardPage() {
     useRouter();
 
   const {
+    session,
     signOut,
   } = useAuth();
 
@@ -133,12 +144,6 @@ export default function DashboardPage() {
   ] =
     useState(false);
 
-  /*
-   * ============================================================
-   * RADAR / DESCUBRIMIENTO
-   * ============================================================
-   */
-
   const {
     profiles,
     refresh,
@@ -149,12 +154,6 @@ export default function DashboardPage() {
     ready:
       radarPresence.ready,
   });
-
-  /*
-   * ============================================================
-   * PERFIL / SETTINGS
-   * ============================================================
-   */
 
   const [
     profileLinks,
@@ -222,12 +221,6 @@ export default function DashboardPage() {
   ] =
     useState(false);
 
-  /*
-   * ============================================================
-   * ZONAS PRIVADAS
-   * ============================================================
-   */
-
   const [
     blockedZones,
     setBlockedZones,
@@ -270,11 +263,25 @@ export default function DashboardPage() {
       null,
     );
 
-  /*
-   * ============================================================
-   * FEEDBACK
-   * ============================================================
-   */
+  const [
+    deleteAccountOpen,
+    setDeleteAccountOpen,
+  ] =
+    useState(false);
+
+  const [
+    deleteAccountLoading,
+    setDeleteAccountLoading,
+  ] =
+    useState(false);
+
+  const [
+    deleteAccountError,
+    setDeleteAccountError,
+  ] =
+    useState<string | null>(
+      null,
+    );
 
   const [
     toast,
@@ -299,12 +306,6 @@ export default function DashboardPage() {
       [],
     );
 
-  /*
-   * ============================================================
-   * SECCIÓN INICIAL DESDE URL
-   * ============================================================
-   */
-
   useEffect(() => {
     const params =
       new URLSearchParams(
@@ -326,12 +327,6 @@ export default function DashboardPage() {
       );
     }
   }, []);
-
-  /*
-   * ============================================================
-   * PROTECCIÓN DE RUTA
-   * ============================================================
-   */
 
   useEffect(() => {
     if (loading) {
@@ -360,12 +355,6 @@ export default function DashboardPage() {
     router,
   ]);
 
-  /*
-   * ============================================================
-   * SINCRONIZAR PERFIL LOCAL
-   * ============================================================
-   */
-
   useEffect(() => {
     if (!profile) {
       return;
@@ -377,17 +366,6 @@ export default function DashboardPage() {
   }, [
     profile,
   ]);
-
-  /*
-   * ============================================================
-   * CARGAR LINKS
-   * ============================================================
-   *
-   * Capturamos profileId antes de entrar en la función async.
-   *
-   * Esto evita que TypeScript pierda el narrowing de `profile`
-   * dentro del closure asíncrono.
-   */
 
   useEffect(() => {
     if (!profile) {
@@ -433,12 +411,6 @@ export default function DashboardPage() {
   }, [
     profile,
   ]);
-
-  /*
-   * ============================================================
-   * CARGAR BUSINESS PROFILE
-   * ============================================================
-   */
 
   useEffect(() => {
     if (
@@ -507,12 +479,6 @@ export default function DashboardPage() {
     profile,
   ]);
 
-  /*
-   * ============================================================
-   * CARGAR ZONAS PRIVADAS
-   * ============================================================
-   */
-
   useEffect(() => {
     if (!profile) {
       return;
@@ -568,20 +534,8 @@ export default function DashboardPage() {
     profile,
   ]);
 
-  /*
-   * ============================================================
-   * EVENTOS
-   * ============================================================
-   */
-
   const events: EventCard[] =
     [];
-
-  /*
-   * ============================================================
-   * NAVEGACIÓN
-   * ============================================================
-   */
 
   function handleSectionChange(
     nextSection: Section,
@@ -597,12 +551,6 @@ export default function DashboardPage() {
       },
     );
   }
-
-  /*
-   * ============================================================
-   * SINCRONIZACIÓN PRIVACIDAD / RADAR
-   * ============================================================
-   */
 
   async function refreshRadarPrivacyState(
     reactivateIfProtected = false,
@@ -629,12 +577,6 @@ export default function DashboardPage() {
       );
     }
   }
-
-  /*
-   * ============================================================
-   * RADAR
-   * ============================================================
-   */
 
   const handleRadarToggle =
     async () => {
@@ -690,12 +632,6 @@ export default function DashboardPage() {
       }
     };
 
-  /*
-   * ============================================================
-   * ABRIR EDITOR
-   * ============================================================
-   */
-
   const handleEditProfile = (
     editSection:
       SettingsEditSection =
@@ -726,12 +662,6 @@ export default function DashboardPage() {
     );
   };
 
-  /*
-   * ============================================================
-   * CERRAR EDITOR
-   * ============================================================
-   */
-
   const handleCloseProfileEditor =
     () => {
       if (
@@ -748,12 +678,6 @@ export default function DashboardPage() {
         null,
       );
     };
-
-  /*
-   * ============================================================
-   * GUARDAR PERFIL
-   * ============================================================
-   */
 
   const handleSaveProfile =
     async (
@@ -815,18 +739,6 @@ export default function DashboardPage() {
           );
         }
 
-        /*
-         * ======================================================
-         * SINCRONÍA BUSINESS LOCAL
-         * ======================================================
-         *
-         * PostgreSQL ya guardó profiles + business_profiles +
-         * profile_links dentro de la misma transacción.
-         *
-         * Aquí simplemente reflejamos los nuevos valores en la UI
-         * sin obligar al usuario a recargar.
-         */
-
         if (
           currentAccountType ===
             "business"
@@ -859,12 +771,6 @@ export default function DashboardPage() {
                 : current,
           );
         }
-
-        /*
-         * ======================================================
-         * RECARGAR REDES
-         * ======================================================
-         */
 
         try {
           const updatedLinks =
@@ -918,12 +824,6 @@ export default function DashboardPage() {
       }
     };
 
-  /*
-   * ============================================================
-   * VISIBILIDAD DEL PERFIL
-   * ============================================================
-   */
-
   const handleToggleProfileVisibility =
     async () => {
       if (
@@ -961,12 +861,6 @@ export default function DashboardPage() {
           result.data,
         );
 
-        /*
-         * Si el Radar está activo, solicitamos una nueva
-         * sincronización para que el estado de descubrimiento
-         * refleje inmediatamente la nueva visibilidad.
-         */
-
         if (
           radarPresence.requested
         ) {
@@ -1003,12 +897,6 @@ export default function DashboardPage() {
       }
     };
 
-  /*
-   * ============================================================
-   * AÑADIR ZONA PRIVADA
-   * ============================================================
-   */
-
   const handleAddBlockedZone =
     () => {
       if (
@@ -1027,12 +915,6 @@ export default function DashboardPage() {
       );
     };
 
-  /*
-   * ============================================================
-   * EDITAR ZONA PRIVADA
-   * ============================================================
-   */
-
   const handleEditBlockedZone =
     (
       zone:
@@ -1046,12 +928,6 @@ export default function DashboardPage() {
         true,
       );
     };
-
-  /*
-   * ============================================================
-   * CERRAR FORM ZONA PRIVADA
-   * ============================================================
-   */
 
   const handleCloseBlockedZoneForm =
     () => {
@@ -1069,12 +945,6 @@ export default function DashboardPage() {
         null,
       );
     };
-
-  /*
-   * ============================================================
-   * GUARDAR ZONA PRIVADA
-   * ============================================================
-   */
 
   const handleSaveBlockedZone =
     async (
@@ -1207,12 +1077,6 @@ export default function DashboardPage() {
       }
     };
 
-  /*
-   * ============================================================
-   * SOLICITAR BORRADO ZONA
-   * ============================================================
-   */
-
   const handleDeleteBlockedZone =
     (
       zone:
@@ -1222,12 +1086,6 @@ export default function DashboardPage() {
         zone,
       );
     };
-
-  /*
-   * ============================================================
-   * CONFIRMAR BORRADO ZONA
-   * ============================================================
-   */
 
   const handleConfirmDeleteBlockedZone =
     async () => {
@@ -1291,9 +1149,180 @@ export default function DashboardPage() {
 
   /*
    * ============================================================
-   * LOGOUT
+   * ELIMINAR CUENTA
    * ============================================================
    */
+
+  const handleOpenDeleteAccount =
+    () => {
+      setDeleteAccountError(
+        null,
+      );
+
+      setDeleteAccountOpen(
+        true,
+      );
+    };
+
+  const handleCloseDeleteAccount =
+    () => {
+      if (
+        deleteAccountLoading
+      ) {
+        return;
+      }
+
+      setDeleteAccountError(
+        null,
+      );
+
+      setDeleteAccountOpen(
+        false,
+      );
+    };
+
+  const handleDeleteAccount =
+    async () => {
+      if (
+        deleteAccountLoading
+      ) {
+        return;
+      }
+
+      const accessToken =
+        session?.access_token;
+
+      if (!accessToken) {
+        setDeleteAccountError(
+          "Tu sesión no es válida. Vuelve a iniciar sesión antes de eliminar la cuenta.",
+        );
+
+        return;
+      }
+
+      setDeleteAccountError(
+        null,
+      );
+
+      setDeleteAccountLoading(
+        true,
+      );
+
+      try {
+        /*
+         * Intentamos apagar Radar antes del borrado.
+         *
+         * Si esta operación puntual falla no bloqueamos la
+         * eliminación porque las cascadas de cuenta eliminarán
+         * igualmente los datos persistentes asociados.
+         */
+
+        try {
+          await radarPresence.disable();
+        } catch (radarError) {
+          console.error(
+            "❌ No se pudo apagar Radar antes de eliminar la cuenta",
+            radarError,
+          );
+        }
+
+        const response =
+          await fetch(
+            "/api/account/delete",
+            {
+              method:
+                "DELETE",
+
+              headers: {
+                Authorization:
+                  `Bearer ${accessToken}`,
+
+                "Content-Type":
+                  "application/json",
+              },
+
+              body:
+                JSON.stringify({
+                  confirmation:
+                    "ELIMINAR",
+                }),
+            },
+          );
+
+        let payload:
+          DeleteAccountResponse | null =
+          null;
+
+        try {
+          payload =
+            (await response.json()) as DeleteAccountResponse;
+        } catch {
+          payload =
+            null;
+        }
+
+        if (
+          !response.ok
+        ) {
+          throw new Error(
+            payload?.error ??
+              "No se pudo eliminar la cuenta.",
+          );
+        }
+
+        /*
+         * La cuenta ya ha sido eliminada en servidor.
+         *
+         * Limpiamos ahora únicamente la sesión almacenada en
+         * este navegador. Si el logout local falla, NO debemos
+         * decir al usuario que la eliminación falló: la cuenta
+         * ya no existe.
+         */
+
+        const {
+          error:
+            localSignOutError,
+        } =
+          await supabase.auth.signOut({
+            scope:
+              "local",
+          });
+
+        if (
+          localSignOutError
+        ) {
+          console.error(
+            "❌ La cuenta fue eliminada pero no se pudo limpiar la sesión local",
+            localSignOutError,
+          );
+        }
+
+        setDeleteAccountOpen(
+          false,
+        );
+
+        router.replace(
+          "/login",
+        );
+
+        router.refresh();
+      } catch (error) {
+        console.error(
+          "❌ Error eliminando cuenta",
+          error,
+        );
+
+        setDeleteAccountError(
+          error instanceof Error
+            ? error.message
+            : "No se pudo eliminar la cuenta.",
+        );
+      } finally {
+        setDeleteAccountLoading(
+          false,
+        );
+      }
+    };
 
   const handleLogout =
     async () => {
@@ -1313,12 +1342,6 @@ export default function DashboardPage() {
       );
     };
 
-  /*
-   * ============================================================
-   * LOADING
-   * ============================================================
-   */
-
   if (
     loading ||
     radarPresence.presenceLoading ||
@@ -1334,11 +1357,15 @@ export default function DashboardPage() {
     return null;
   }
 
-  /*
-   * ============================================================
-   * UI
-   * ============================================================
-   */
+  const accountName =
+    settingsProfile.full_name?.trim() ||
+    settingsProfile.username?.trim() ||
+    (
+      settingsProfile.account_type ===
+        "business"
+        ? "tu negocio"
+        : "tu perfil"
+    );
 
   return (
     <main className="min-h-screen bg-[#F7F8FC]">
@@ -1494,6 +1521,10 @@ export default function DashboardPage() {
               handleEditProfile
             }
 
+            onDeleteAccount={
+              handleOpenDeleteAccount
+            }
+
             onLogout={
               handleLogout
             }
@@ -1605,6 +1636,38 @@ export default function DashboardPage() {
 
         onConfirm={
           handleConfirmDeleteBlockedZone
+        }
+      />
+
+      <DeleteAccountDialog
+        open={
+          deleteAccountOpen
+        }
+
+        loading={
+          deleteAccountLoading
+        }
+
+        error={
+          deleteAccountError
+        }
+
+        accountName={
+          accountName
+        }
+
+        onCancel={
+          handleCloseDeleteAccount
+        }
+
+        onClearError={() =>
+          setDeleteAccountError(
+            null,
+          )
+        }
+
+        onConfirm={
+          handleDeleteAccount
         }
       />
 

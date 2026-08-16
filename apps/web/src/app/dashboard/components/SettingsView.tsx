@@ -14,6 +14,7 @@ import {
   Pencil,
   Radar,
   ShieldCheck,
+  Trash2,
   UserRound,
 } from "lucide-react";
 
@@ -65,9 +66,11 @@ type SettingsViewProps = {
   maxBlockedZones: number;
 
   onAddBlockedZone: () => void;
+
   onEditBlockedZone: (
     zone: RadarBlockedZone,
   ) => void;
+
   onDeleteBlockedZone: (
     zone: RadarBlockedZone,
   ) => void;
@@ -75,6 +78,8 @@ type SettingsViewProps = {
   onEditProfile: (
     section?: SettingsEditSection,
   ) => void;
+
+  onDeleteAccount: () => void;
 
   onLogout: () => void;
 };
@@ -118,6 +123,7 @@ export function SettingsView({
   onDeleteBlockedZone,
 
   onEditProfile,
+  onDeleteAccount,
   onLogout,
 }: SettingsViewProps) {
   const isBusiness =
@@ -596,6 +602,84 @@ export function SettingsView({
               />
             </button>
           </nav>
+        </div>
+      </section>
+
+      <section>
+        <p className="mb-3 px-1 text-[10px] font-black uppercase tracking-[0.2em] text-red-400">
+          ZONA DE RIESGO
+        </p>
+
+        <div
+          className="
+            overflow-hidden
+            rounded-[28px]
+            border
+            border-red-100
+            bg-gradient-to-br
+            from-white
+            to-red-50/60
+            shadow-sm
+          "
+        >
+          <div className="flex items-start gap-4 px-5 py-5">
+            <div
+              className="
+                flex
+                h-11
+                w-11
+                shrink-0
+                items-center
+                justify-center
+                rounded-2xl
+                bg-red-50
+                text-red-500
+              "
+            >
+              <Trash2 size={18} />
+            </div>
+
+            <div className="min-w-0 flex-1">
+              <h2 className="text-sm font-black text-slate-900">
+                Eliminar cuenta
+              </h2>
+
+              <p className="mt-1 text-xs font-medium leading-5 text-slate-500">
+                Elimina permanentemente tu cuenta
+                de LookUp y los datos personales
+                asociados.
+              </p>
+
+              <button
+                type="button"
+                onClick={
+                  onDeleteAccount
+                }
+                className="
+                  mt-4
+                  inline-flex
+                  items-center
+                  gap-2
+                  rounded-xl
+                  border
+                  border-red-200
+                  bg-white
+                  px-3.5
+                  py-2.5
+                  text-xs
+                  font-black
+                  text-red-500
+                  shadow-sm
+                  transition
+                  hover:border-red-300
+                  hover:bg-red-50
+                "
+              >
+                <Trash2 size={13} />
+                Eliminar cuenta
+              </button>
+            </div>
+          </div>
         </div>
       </section>
     </section>

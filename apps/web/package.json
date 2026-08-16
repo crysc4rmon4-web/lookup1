@@ -16,6 +16,7 @@
     "@lookup/types": "workspace:*",
     "@lookup/ui": "workspace:*",
     "@lookup/utils": "workspace:*",
+    "@supabase/supabase-js": "^2.106.1",
     "framer-motion": "^12.43.0",
     "lucide-react": "^1.24.0",
     "next": "15.5.9",
