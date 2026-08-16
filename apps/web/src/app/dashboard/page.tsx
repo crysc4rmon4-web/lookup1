@@ -91,6 +91,10 @@ import {
   saveSettingsProfile,
 } from "./services/save-settings-profile";
 
+import {
+  syncCurrentProfileEmbedding,
+} from "./services/sync-profile-embedding";
+
 type Section =
   | "radar"
   | "events"
@@ -578,6 +582,44 @@ export default function DashboardPage() {
     }
   }
 
+  async function syncSemanticProfileAfterSave() {
+    const accessToken =
+      session?.access_token;
+
+    if (!accessToken) {
+      console.warn(
+        "⚠️ Perfil guardado sin sincronización semántica: no existe una sesión activa.",
+      );
+
+      return;
+    }
+
+    try {
+      const result =
+        await syncCurrentProfileEmbedding(
+          accessToken,
+        );
+
+      console.info(
+        "🧠 Perfil semántico sincronizado:",
+        result.status,
+      );
+    } catch (error) {
+      /*
+       * El perfil ya está guardado.
+       *
+       * La IA es una capacidad secundaria y recuperable:
+       * un fallo de OpenAI o de sincronización nunca debe
+       * convertir en fallido el guardado del perfil.
+       */
+
+      console.error(
+        "❌ El perfil se guardó, pero no pudo sincronizarse su embedding",
+        error,
+      );
+    }
+  }
+
   const handleRadarToggle =
     async () => {
       if (
@@ -791,6 +833,14 @@ export default function DashboardPage() {
             data.socialLinks,
           );
         }
+
+        /*
+         * El perfil ya está persistido antes de entrar aquí.
+         *
+         * OpenAI nunca controla si el usuario puede o no guardar
+         * sus datos. Un fallo de IA queda aislado.
+         */
+        await syncSemanticProfileAfterSave();
 
         setSettingsEditorSection(
           null,
@@ -1209,14 +1259,6 @@ export default function DashboardPage() {
       );
 
       try {
-        /*
-         * Intentamos apagar Radar antes del borrado.
-         *
-         * Si esta operación puntual falla no bloqueamos la
-         * eliminación porque las cascadas de cuenta eliminarán
-         * igualmente los datos persistentes asociados.
-         */
-
         try {
           await radarPresence.disable();
         } catch (radarError) {
@@ -1269,15 +1311,6 @@ export default function DashboardPage() {
               "No se pudo eliminar la cuenta.",
           );
         }
-
-        /*
-         * La cuenta ya ha sido eliminada en servidor.
-         *
-         * Limpiamos ahora únicamente la sesión almacenada en
-         * este navegador. Si el logout local falla, NO debemos
-         * decir al usuario que la eliminación falló: la cuenta
-         * ya no existe.
-         */
 
         const {
           error:

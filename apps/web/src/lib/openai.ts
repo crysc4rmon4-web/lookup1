@@ -1,13 +1,26 @@
+import "server-only";
+
 import OpenAI from "openai";
 
-const apiKey = process.env.OPENAI_API_KEY;
+let openAIClient: OpenAI | null = null;
 
-if (!apiKey) {
-  throw new Error(
-    "OPENAI_API_KEY no está configurada en las variables de entorno.",
-  );
+export function getOpenAIClient(): OpenAI {
+  if (openAIClient) {
+    return openAIClient;
+  }
+
+  const apiKey =
+    process.env.OPENAI_API_KEY?.trim();
+
+  if (!apiKey) {
+    throw new Error(
+      "OPENAI_API_KEY no está configurada en el servidor.",
+    );
+  }
+
+  openAIClient = new OpenAI({
+    apiKey,
+  });
+
+  return openAIClient;
 }
-
-export const openai = new OpenAI({
-  apiKey,
-});
