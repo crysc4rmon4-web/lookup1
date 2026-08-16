@@ -37,14 +37,18 @@ import {
 
 import {
   buildSocialProfileUrl,
-  getSocialPlatformLabel,
   normalizeSocialPlatform,
+  getSocialPlatformLabel,
   normalizeWebsiteUrl,
 } from "@/lib/social-profile-url";
 
 type Props = {
   params: Promise<{
     id: string;
+  }>;
+
+  searchParams: Promise<{
+    from?: string | string[];
   }>;
 };
 
@@ -248,10 +252,51 @@ function SocialLinks({
 
 export default function ProfilePage({
   params,
+  searchParams,
 }: Props) {
   const {
     id,
   } = use(params);
+
+  const query =
+    use(searchParams);
+
+  const rawFrom =
+    query.from;
+
+  const from =
+    Array.isArray(
+      rawFrom,
+    )
+      ? rawFrom[0]
+      : rawFrom;
+
+  const fromSettings =
+    from === "settings";
+
+  /*
+   * ============================================================
+   * NAVEGACIÓN CONTEXTUAL
+   * ============================================================
+   *
+   * Perfil propio:
+   * Ajustes → Ver mi perfil
+   * → vuelve a Ajustes
+   *
+   * Perfil descubierto:
+   * Radar → Perfil
+   * → vuelve al Radar
+   */
+
+  const backHref =
+    fromSettings
+      ? "/dashboard?section=settings"
+      : "/dashboard?section=radar";
+
+  const backLabel =
+    fromSettings
+      ? "Ajustes"
+      : "Radar";
 
   const [
     profile,
@@ -506,14 +551,14 @@ export default function ProfilePage({
             </p>
 
             <Link
-              href="/dashboard"
+              href={backHref}
               className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#5D5FEF] px-5 py-3 text-sm font-black text-white transition hover:bg-[#4F51DC]"
             >
               <ArrowLeft
                 size={16}
               />
 
-              Volver al radar
+              Volver a {backLabel}
             </Link>
           </section>
         </div>
@@ -633,7 +678,7 @@ export default function ProfilePage({
               )}
 
               <Link
-                href="/dashboard"
+                href={backHref}
                 className="
                   absolute
                   left-4
@@ -665,7 +710,7 @@ export default function ProfilePage({
                   size={14}
                 />
 
-                Radar
+                {backLabel}
               </Link>
 
               <div className="absolute right-4 top-4 z-20 sm:right-6 sm:top-6">

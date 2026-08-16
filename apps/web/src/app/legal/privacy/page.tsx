@@ -1,9 +1,37 @@
-export default function PrivacyPage() {
+import Link from "next/link";
+
+type PrivacyPageProps = {
+  searchParams: Promise<{
+    from?: string;
+  }>;
+};
+
+export default async function PrivacyPage({
+  searchParams,
+}: PrivacyPageProps) {
+  const {
+    from,
+  } =
+    await searchParams;
+
+  const fromSettings =
+    from === "settings";
+
+  const backHref =
+    fromSettings
+      ? "/dashboard?section=settings"
+      : "/onboarding";
+
+  const backLabel =
+    fromSettings
+      ? "Volver a Ajustes"
+      : "Volver al registro";
+
   return (
     <main className="min-h-screen bg-[#F7F8FC]">
       <section className="mx-auto max-w-4xl px-6 py-16">
-        <a
-          href="/onboarding"
+        <Link
+          href={backHref}
           className="
             inline-flex
             items-center
@@ -23,8 +51,8 @@ export default function PrivacyPage() {
             hover:text-[#5D5FEF]
           "
         >
-          ← Volver al registro
-        </a>
+          ← {backLabel}
+        </Link>
 
         <div className="mt-10">
           <p className="text-xs font-black uppercase tracking-[0.35em] text-[#5D5FEF]">
@@ -121,7 +149,9 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="text-3xl font-black text-slate-900">6. Seguridad</h2>
+            <h2 className="text-3xl font-black text-slate-900">
+              6. Seguridad
+            </h2>
 
             <p className="mt-5">
               Aplicamos medidas técnicas y organizativas razonables para
@@ -144,7 +174,9 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="text-3xl font-black text-slate-900">8. Cookies</h2>
+            <h2 className="text-3xl font-black text-slate-900">
+              8. Cookies
+            </h2>
 
             <p className="mt-5">
               LookUp podrá utilizar cookies o tecnologías similares para mejorar
@@ -167,7 +199,9 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="text-3xl font-black text-slate-900">10. Contacto</h2>
+            <h2 className="text-3xl font-black text-slate-900">
+              10. Contacto
+            </h2>
 
             <p className="mt-5">
               Si tienes cualquier duda sobre esta Política de Privacidad o

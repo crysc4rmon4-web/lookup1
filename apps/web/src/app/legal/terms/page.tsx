@@ -1,9 +1,37 @@
-export default function TermsPage() {
+import Link from "next/link";
+
+type TermsPageProps = {
+  searchParams: Promise<{
+    from?: string;
+  }>;
+};
+
+export default async function TermsPage({
+  searchParams,
+}: TermsPageProps) {
+  const {
+    from,
+  } =
+    await searchParams;
+
+  const fromSettings =
+    from === "settings";
+
+  const backHref =
+    fromSettings
+      ? "/dashboard?section=settings"
+      : "/onboarding";
+
+  const backLabel =
+    fromSettings
+      ? "Volver a Ajustes"
+      : "Volver al registro";
+
   return (
     <main className="min-h-screen bg-[#F7F8FC]">
       <section className="mx-auto max-w-4xl px-6 py-16">
-        <a
-          href="/onboarding"
+        <Link
+          href={backHref}
           className="
             inline-flex
             items-center
@@ -23,8 +51,8 @@ export default function TermsPage() {
             hover:text-[#5D5FEF]
           "
         >
-          ← Volver al registro
-        </a>
+          ← {backLabel}
+        </Link>
 
         <div className="mt-10">
           <p className="text-xs font-black uppercase tracking-[0.35em] text-[#5D5FEF]">
@@ -73,7 +101,9 @@ export default function TermsPage() {
                 exija.
               </li>
 
-              <li>Proporcionar información veraz y actualizada.</li>
+              <li>
+                Proporcionar información veraz y actualizada.
+              </li>
 
               <li>
                 No crear cuentas falsas o suplantar la identidad de terceros.
@@ -103,15 +133,25 @@ export default function TermsPage() {
             </h2>
 
             <ul className="mt-5 list-disc space-y-3 pl-7">
-              <li>Acosar, amenazar o intimidar a otros usuarios.</li>
+              <li>
+                Acosar, amenazar o intimidar a otros usuarios.
+              </li>
 
-              <li>Publicar contenido ilegal, ofensivo o discriminatorio.</li>
+              <li>
+                Publicar contenido ilegal, ofensivo o discriminatorio.
+              </li>
 
-              <li>Compartir malware o realizar actividades fraudulentas.</li>
+              <li>
+                Compartir malware o realizar actividades fraudulentas.
+              </li>
 
-              <li>Automatizar el uso de la plataforma sin autorización.</li>
+              <li>
+                Automatizar el uso de la plataforma sin autorización.
+              </li>
 
-              <li>Intentar acceder a sistemas o información sin permiso.</li>
+              <li>
+                Intentar acceder a sistemas o información sin permiso.
+              </li>
             </ul>
           </section>
 

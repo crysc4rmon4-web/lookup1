@@ -70,6 +70,10 @@ import {
 } from "./components/BlockedZoneForm";
 
 import {
+  ConfirmDialog,
+} from "./components/ConfirmDialog";
+
+import {
   saveSettingsProfile,
 } from "./services/save-settings-profile";
 
@@ -79,6 +83,16 @@ type Section =
   | "settings";
 
 const MAX_BLOCKED_ZONES = 3;
+
+function isSection(
+  value: string | null,
+): value is Section {
+  return (
+    value === "radar" ||
+    value === "events" ||
+    value === "settings"
+  );
+}
 
 export default function DashboardPage() {
   const router =
@@ -101,13 +115,8 @@ export default function DashboardPage() {
   const [
     radarScanLoading,
     setRadarScanLoading,
-  ] = useState(false);
-
-  /*
-   * ============================================================
-   * DESCUBRIMIENTO
-   * ============================================================
-   */
+  ] =
+    useState(false);
 
   const {
     profiles,
@@ -119,12 +128,6 @@ export default function DashboardPage() {
     ready:
       radarPresence.ready,
   });
-
-  /*
-   * ============================================================
-   * PERFIL / AJUSTES
-   * ============================================================
-   */
 
   const [
     profileLinks,
@@ -164,12 +167,6 @@ export default function DashboardPage() {
   ] =
     useState(false);
 
-  /*
-   * ============================================================
-   * ZONAS PRIVADAS
-   * ============================================================
-   */
-
   const [
     blockedZones,
     setBlockedZones,
@@ -203,6 +200,42 @@ export default function DashboardPage() {
     useState<RadarBlockedZone | null>(
       null,
     );
+
+  const [
+    blockedZonePendingDelete,
+    setBlockedZonePendingDelete,
+  ] =
+    useState<RadarBlockedZone | null>(
+      null,
+    );
+
+  /*
+   * ============================================================
+   * SECCIÓN INICIAL
+   * ============================================================
+   */
+
+  useEffect(() => {
+    const params =
+      new URLSearchParams(
+        window.location.search,
+      );
+
+    const requestedSection =
+      params.get(
+        "section",
+      );
+
+    if (
+      isSection(
+        requestedSection,
+      )
+    ) {
+      setSection(
+        requestedSection,
+      );
+    }
+  }, []);
 
   /*
    * ============================================================
@@ -367,17 +400,82 @@ export default function DashboardPage() {
     profile,
   ]);
 
+  const events: EventCard[] =
+    [];
+
   /*
    * ============================================================
-   * EVENTOS
+   * NAVEGACIÓN
    * ============================================================
    */
 
-  const events: EventCard[] = [];
+  function handleSectionChange(
+    nextSection: Section,
+  ) {
+    setSection(
+      nextSection,
+    );
+
+    router.replace(
+      `/dashboard?section=${nextSection}`,
+      {
+        scroll: false,
+      },
+    );
+  }
 
   /*
    * ============================================================
-   * TOGGLE RADAR
+   * SINCRONIZAR RADAR TRAS MUTAR PRIVACIDAD
+   * ============================================================
+   */
+
+  async function refreshRadarPrivacyState(
+    reactivateIfProtected = false,
+  ) {
+    try {
+      if (
+        reactivateIfProtected &&
+        radarPresence.privacyBlocked
+      ) {
+        /*
+         * El usuario acaba de modificar/eliminar
+         * explícitamente la zona que lo estaba protegiendo.
+         *
+         * Volvemos a solicitar Radar ON.
+         *
+         * El servidor sigue siendo la autoridad:
+         * si otra zona privada también lo cubre,
+         * sync_radar_location volverá a bloquearlo.
+         */
+
+        await radarPresence.toggle();
+
+        return;
+      }
+
+      if (
+        radarPresence.requested
+      ) {
+        await radarPresence.syncNow();
+      }
+    } catch (error) {
+      /*
+       * La mutación de la zona ya ha sido correcta.
+       * Un fallo de resincronización no debe fingir
+       * que la zona no se guardó/eliminó.
+       */
+
+      console.error(
+        "❌ Error resincronizando Radar tras actualizar privacidad",
+        error,
+      );
+    }
+  }
+
+  /*
+   * ============================================================
+   * RADAR
    * ============================================================
    */
 
@@ -391,12 +489,6 @@ export default function DashboardPage() {
 
       await radarPresence.toggle();
     };
-
-  /*
-   * ============================================================
-   * ESCANEAR
-   * ============================================================
-   */
 
   const handleRadarRefresh =
     async () => {
@@ -622,6 +714,10 @@ export default function DashboardPage() {
         return;
       }
 
+      const wasEditing =
+        editingBlockedZone !==
+        null;
+
       setBlockedZonesSaving(
         true,
       );
@@ -707,6 +803,20 @@ export default function DashboardPage() {
         setEditingBlockedZone(
           null,
         );
+
+        /*
+         * Si el Radar estaba activo:
+         * reevaluamos inmediatamente la nueva zona.
+         *
+         * Si editamos justo la zona que nos estaba
+         * protegiendo:
+         * intentamos reactivar y el servidor vuelve
+         * a decidir si seguimos dentro o no.
+         */
+
+        await refreshRadarPrivacyState(
+          wasEditing,
+        );
       } catch (error) {
         console.error(
           "❌ Error guardando zona privada",
@@ -731,19 +841,32 @@ export default function DashboardPage() {
       }
     };
 
+  /*
+   * ============================================================
+   * ELIMINACIÓN DE ZONA
+   * ============================================================
+   */
+
   const handleDeleteBlockedZone =
-    async (
+    (
       zone:
         RadarBlockedZone,
     ) => {
-      const confirmed =
-        window.confirm(
-          `¿Quieres eliminar la zona "${zone.name}"?`,
-        );
+      setBlockedZonePendingDelete(
+        zone,
+      );
+    };
 
-      if (!confirmed) {
+  const handleConfirmDeleteBlockedZone =
+    async () => {
+      if (
+        !blockedZonePendingDelete
+      ) {
         return;
       }
+
+      const zoneId =
+        blockedZonePendingDelete.id;
 
       setBlockedZonesSaving(
         true,
@@ -751,7 +874,7 @@ export default function DashboardPage() {
 
       try {
         await deleteRadarBlockedZone(
-          zone.id,
+          zoneId,
         );
 
         setBlockedZones(
@@ -759,8 +882,27 @@ export default function DashboardPage() {
             current.filter(
               (item) =>
                 item.id !==
-                zone.id,
+                zoneId,
             ),
+        );
+
+        setBlockedZonePendingDelete(
+          null,
+        );
+
+        /*
+         * Si LookUp estaba en estado PROTEGIDO,
+         * eliminar una zona es una acción explícita
+         * del usuario.
+         *
+         * Intentamos recuperar Radar automáticamente.
+         *
+         * Si aún existe otra zona que lo cubre,
+         * el servidor lo volverá a proteger.
+         */
+
+        await refreshRadarPrivacyState(
+          true,
         );
       } catch (error) {
         console.error(
@@ -809,12 +951,6 @@ export default function DashboardPage() {
         "/login",
       );
     };
-
-  /*
-   * ============================================================
-   * LOADING
-   * ============================================================
-   */
 
   if (
     loading ||
@@ -926,6 +1062,10 @@ export default function DashboardPage() {
               radarPresence.enabled
             }
 
+            radarPrivacyBlocked={
+              radarPresence.privacyBlocked
+            }
+
             radarToggleLoading={
               radarPresence.toggleLoading
             }
@@ -978,19 +1118,21 @@ export default function DashboardPage() {
         )}
 
         <BottomNav
-          active={section}
+          active={
+            section
+          }
 
           onChange={(
             nextSection,
           ) =>
-            setSection(
+            handleSectionChange(
               nextSection as Section,
             )
           }
         />
       </div>
 
-      {settingsEditorSection && (
+      {settingsEditorSection ? (
         <SettingsProfileEditor
           profile={
             settingsProfile
@@ -1016,9 +1158,9 @@ export default function DashboardPage() {
             handleCloseProfileEditor
           }
         />
-      )}
+      ) : null}
 
-      {blockedZoneFormOpen && (
+      {blockedZoneFormOpen ? (
         <BlockedZoneForm
           zone={
             editingBlockedZone
@@ -1036,7 +1178,44 @@ export default function DashboardPage() {
             handleCloseBlockedZoneForm
           }
         />
-      )}
+      ) : null}
+
+      <ConfirmDialog
+        open={
+          blockedZonePendingDelete !==
+          null
+        }
+
+        variant="privacy"
+
+        title="Eliminar zona privada"
+
+        description={
+          blockedZonePendingDelete
+            ? `“${blockedZonePendingDelete.name}” dejará de proteger tu presencia. Si vuelves a ese lugar con el Radar activo, LookUp ya no lo desactivará automáticamente.`
+            : ""
+        }
+
+        confirmLabel="Eliminar"
+
+        loading={
+          blockedZonesSaving
+        }
+
+        onCancel={() => {
+          if (
+            !blockedZonesSaving
+          ) {
+            setBlockedZonePendingDelete(
+              null,
+            );
+          }
+        }}
+
+        onConfirm={
+          handleConfirmDeleteBlockedZone
+        }
+      />
     </main>
   );
 }
