@@ -945,7 +945,7 @@ export function SettingsProfileEditor({
                   }
                   maxLength={80}
                   disabled={saving}
-                  className="w-full rounded-2xl border border-[#E5E8F0] px-4 py-3 text-sm font-semibold text-slate-900 outline-none focus:border-[#5D5FEF] focus:ring-4 focus:ring-[#5D5FEF]/10"
+                  className="w-full rounded-2xl border border-[#E5E8F0] px-4 py-3 text-sm font-semibold text-slate-900 outline-none placeholder:text-slate-300 focus:border-[#5D5FEF] focus:ring-4 focus:ring-[#5D5FEF]/10"
                 />
 
                 <p className="mt-2 text-xs leading-5 text-slate-400">
@@ -1040,7 +1040,7 @@ export function SettingsProfileEditor({
                       saving
                     }
                     placeholder="Ej. Desarrollador Full Stack"
-                    className="w-full rounded-2xl border border-[#E5E8F0] px-4 py-3 text-sm font-semibold text-slate-900 outline-none focus:border-[#5D5FEF] focus:ring-4 focus:ring-[#5D5FEF]/10"
+                    className="w-full rounded-2xl border border-[#E5E8F0] px-4 py-3 text-sm font-semibold text-slate-900 outline-none placeholder:text-slate-300 focus:border-[#5D5FEF] focus:ring-4 focus:ring-[#5D5FEF]/10"
                   />
                 )}
               </div>
@@ -1074,7 +1074,7 @@ export function SettingsProfileEditor({
                   maxLength={300}
                   rows={5}
                   disabled={saving}
-                  className="w-full resize-none rounded-2xl border border-[#E5E8F0] px-4 py-3 text-sm font-semibold leading-6 text-slate-900 outline-none focus:border-[#5D5FEF] focus:ring-4 focus:ring-[#5D5FEF]/10"
+                  className="w-full resize-none rounded-2xl border border-[#E5E8F0] px-4 py-3 text-sm font-semibold leading-6 text-slate-900 outline-none placeholder:text-slate-300 focus:border-[#5D5FEF] focus:ring-4 focus:ring-[#5D5FEF]/10"
                 />
               </div>
             ) : null}
@@ -1085,7 +1085,7 @@ export function SettingsProfileEditor({
                   UBICACIÓN PÚBLICA
                 </p>
 
-                <p className="mt-1 text-xs leading-5 text-slate-400">
+                <p className="mt-1 text-xs leading-5 text-slate-500">
                   Solo mostramos ciudad y provincia. Tu dirección exacta no se publica.
                 </p>
 
@@ -1093,7 +1093,7 @@ export function SettingsProfileEditor({
                   <div>
                     <label
                       htmlFor="business-city"
-                      className="mb-2 block text-xs font-black text-slate-500"
+                      className="mb-2 block text-xs font-black text-slate-600"
                     >
                       Ciudad
                     </label>
@@ -1110,14 +1110,15 @@ export function SettingsProfileEditor({
                       }
                       maxLength={120}
                       disabled={saving}
-                      className="w-full rounded-2xl border border-[#E5E8F0] bg-white px-4 py-3 text-sm font-semibold outline-none focus:border-[#5D5FEF]"
+                      placeholder="Ej. Soria"
+                      className="w-full rounded-2xl border border-[#E5E8F0] bg-white px-4 py-3 text-sm font-semibold text-slate-900 outline-none placeholder:font-medium placeholder:text-slate-300 focus:border-[#5D5FEF] focus:ring-4 focus:ring-[#5D5FEF]/10"
                     />
                   </div>
 
                   <div>
                     <label
                       htmlFor="business-province"
-                      className="mb-2 block text-xs font-black text-slate-500"
+                      className="mb-2 block text-xs font-black text-slate-600"
                     >
                       Provincia
                     </label>
@@ -1134,7 +1135,8 @@ export function SettingsProfileEditor({
                       }
                       maxLength={120}
                       disabled={saving}
-                      className="w-full rounded-2xl border border-[#E5E8F0] bg-white px-4 py-3 text-sm font-semibold outline-none focus:border-[#5D5FEF]"
+                      placeholder="Ej. Soria"
+                      className="w-full rounded-2xl border border-[#E5E8F0] bg-white px-4 py-3 text-sm font-semibold text-slate-900 outline-none placeholder:font-medium placeholder:text-slate-300 focus:border-[#5D5FEF] focus:ring-4 focus:ring-[#5D5FEF]/10"
                     />
                   </div>
                 </div>
@@ -1142,7 +1144,7 @@ export function SettingsProfileEditor({
                 <div className="mt-4">
                   <label
                     htmlFor="business-website"
-                    className="mb-2 block text-xs font-black text-slate-500"
+                    className="mb-2 block text-xs font-black text-slate-600"
                   >
                     Sitio web
                   </label>
@@ -1161,7 +1163,7 @@ export function SettingsProfileEditor({
                     maxLength={500}
                     disabled={saving}
                     placeholder="https://tuempresa.com"
-                    className="w-full rounded-2xl border border-[#E5E8F0] bg-white px-4 py-3 text-sm font-semibold outline-none focus:border-[#5D5FEF]"
+                    className="w-full rounded-2xl border border-[#E5E8F0] bg-white px-4 py-3 text-sm font-semibold text-slate-900 outline-none placeholder:font-medium placeholder:text-slate-300 focus:border-[#5D5FEF] focus:ring-4 focus:ring-[#5D5FEF]/10"
                   />
                 </div>
               </section>
@@ -1425,7 +1427,7 @@ export function SettingsProfileEditor({
                                 platform.placeholder
                               }
                               disabled={saving}
-                              className="mt-2 w-full rounded-xl border border-[#E5E8F0] bg-white px-3 py-3 text-sm font-semibold text-slate-800 outline-none focus:border-[#5D5FEF]"
+                              className="mt-2 w-full rounded-xl border border-[#E5E8F0] bg-white px-3 py-3 text-sm font-semibold text-slate-900 outline-none placeholder:text-slate-300 focus:border-[#5D5FEF]"
                             />
                           </div>
                         );
