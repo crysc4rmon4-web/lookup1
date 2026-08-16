@@ -1,9 +1,8 @@
 import {
   deleteProfileLinks,
-  getMyBusinessProfile,
-  saveMyBusinessProfile,
-  saveMyProfile,
   saveProfileLink,
+  updateMyBusinessPublicProfile,
+  updateMyProfile,
   type ProfileRow,
 } from "@lookup/services";
 
@@ -13,7 +12,6 @@ import type {
 
 type SaveSettingsProfileParams = {
   userId: string;
-  email: string;
   profile: ProfileRow;
   data: SettingsProfileEditorData;
   avatarUrl?: string;
@@ -21,212 +19,88 @@ type SaveSettingsProfileParams = {
 
 export async function saveSettingsProfile({
   userId,
-  email,
   profile,
   data,
   avatarUrl,
 }: SaveSettingsProfileParams) {
-  const nextFullName =
-    data.fullName.trim();
-
-  const nextProfession =
-    data.profession.trim();
-
-  const nextBio =
-    data.bio.trim();
+  const nextFullName = data.fullName.trim();
+  const nextProfession = data.profession.trim();
+  const nextBio = data.bio.trim();
+  const nextAvatarUrl =
+    avatarUrl ?? profile.avatar_url ?? "";
 
   const isBusiness =
-    profile.account_type ===
-    "business";
+    profile.account_type === "business";
 
   /*
    * ============================================================
    * BUSINESS
    * ============================================================
    *
-   * Antes de tocar profiles verificamos que la entidad Business
-   * exista realmente.
-   *
-   * Así evitamos guardar solo media identidad si por algún motivo
-   * business_profiles estuviera incompleto.
+   * profiles + business_profiles + profile_links
+   * se actualizan dentro de UNA única transacción PostgreSQL.
    */
 
-  const businessProfile =
-    isBusiness
-      ? await getMyBusinessProfile(
-          userId,
-        )
-      : null;
+  if (isBusiness) {
+    const updatedProfile =
+      await updateMyBusinessPublicProfile({
+        fullName: nextFullName,
+        sector: nextProfession,
+        bio: nextBio,
+        city: data.businessCity.trim(),
+        province: data.businessProvince.trim(),
+        website: data.businessWebsite.trim(),
+        interests: data.interests,
+        avatarUrl: nextAvatarUrl,
+        visibility: profile.visibility,
+        links: data.socialLinks
+          .map((link) => ({
+            platform: link.platform.trim(),
+            url: link.url.trim(),
+          }))
+          .filter(
+            (link) =>
+              link.platform.length > 0 &&
+              link.url.length > 0,
+          ),
+      });
 
-  if (
-    isBusiness &&
-    !businessProfile
-  ) {
-    throw new Error(
-      "No se encontró la información del negocio asociada a esta cuenta.",
-    );
+    return {
+      profile: updatedProfile,
+      links: data.socialLinks,
+    };
   }
 
   /*
    * ============================================================
-   * USERNAME
+   * PERSON
    * ============================================================
    *
-   * Nombre visible y username son conceptos distintos.
+   * Username NO se toca.
    *
-   * Cambiar:
-   *
-   * Crystian
-   * → Crystian Carmona
-   *
-   * NO debe transformar automáticamente:
-   *
-   * @crystian
-   * → @crystian-carmona
-   *
-   * El username solo cambiará mediante una función específica
-   * con validación de disponibilidad.
+   * Cambiar el nombre visible jamás debe renombrar
+   * silenciosamente la identidad @username.
    */
 
-  const nextUsername =
-    profile.username ?? "";
+  const profileResult = await updateMyProfile(userId, {
+    full_name: nextFullName,
+    profession: nextProfession,
+    bio: nextBio,
+    interests: data.interests,
+    avatar_url: nextAvatarUrl,
+  });
 
-  /*
-   * ============================================================
-   * PERFIL CANÓNICO
-   * ============================================================
-   */
-
-  const profileResult =
-    await saveMyProfile({
-      id: userId,
-
-      email,
-
-      full_name:
-        nextFullName,
-
-      username:
-        nextUsername,
-
-      avatar_url:
-        avatarUrl ??
-        profile.avatar_url ??
-        "",
-
-      bio:
-        nextBio,
-
-      profession:
-        nextProfession,
-
-      visibility:
-        profile.visibility ??
-        true,
-
-      onboarding_completed:
-        profile.onboarding_completed ??
-        true,
-    });
-
-  if (
-    profileResult.error
-  ) {
+  if (profileResult.error) {
     throw profileResult.error;
   }
 
-  /*
-   * ============================================================
-   * SINCRONIZACIÓN BUSINESS
-   * ============================================================
-   *
-   * El perfil público de empresa utiliza business_profiles.
-   *
-   * Por tanto:
-   *
-   * profiles.full_name
-   * ↔ business_profiles.trade_name
-   *
-   * profiles.profession
-   * ↔ business_profiles.sector
-   *
-   * El resto de información privada o estructural del negocio
-   * se conserva intacta.
-   */
+  await deleteProfileLinks(userId);
 
-  if (
-    isBusiness &&
-    businessProfile
-  ) {
-    await saveMyBusinessProfile({
-      profile_id:
-        businessProfile.profile_id,
+  for (const link of data.socialLinks) {
+    const platform = link.platform.trim();
+    const url = link.url.trim();
 
-      legal_name:
-        businessProfile.legal_name,
-
-      trade_name:
-        nextFullName,
-
-      tax_id:
-        businessProfile.tax_id,
-
-      sector:
-        nextProfession,
-
-      address:
-        businessProfile.address,
-
-      city:
-        businessProfile.city,
-
-      province:
-        businessProfile.province,
-
-      postal_code:
-        businessProfile.postal_code,
-
-      latitude:
-        businessProfile.latitude,
-
-      longitude:
-        businessProfile.longitude,
-
-      contact_email:
-        businessProfile.contact_email,
-
-      contact_phone:
-        businessProfile.contact_phone,
-
-      website:
-        businessProfile.website,
-    });
-  }
-
-  /*
-   * ============================================================
-   * REDES
-   * ============================================================
-   */
-
-  await deleteProfileLinks(
-    userId,
-  );
-
-  for (
-    const link of
-    data.socialLinks
-  ) {
-    const platform =
-      link.platform.trim();
-
-    const url =
-      link.url.trim();
-
-    if (
-      !platform ||
-      !url
-    ) {
+    if (!platform || !url) {
       continue;
     }
 
@@ -238,10 +112,7 @@ export async function saveSettingsProfile({
   }
 
   return {
-    profile:
-      profileResult.data,
-
-    links:
-      data.socialLinks,
+    profile: profileResult.data,
+    links: data.socialLinks,
   };
 }

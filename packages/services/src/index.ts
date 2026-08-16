@@ -5,5 +5,6 @@ export * from "./profile-links";
 export * from "./storage";
 export * from "./locations";
 export * from "./radar-blocked-zones";
+export * from "./settings-profile";
 
 export { getRadarPresence, setRadarPresence } from "./radar-presence";

@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  useCallback,
   useEffect,
   useState,
 } from "react";
@@ -12,10 +13,13 @@ import {
 import {
   createRadarBlockedZone,
   deleteRadarBlockedZone,
+  getMyBusinessProfile,
   getProfileLinks,
   getRadarBlockedZones,
+  updateMyProfile,
   updateRadarBlockedZone,
   uploadAvatar,
+  type BusinessProfileRow,
   type ProfileLink,
   type ProfileRow,
   type RadarBlockedZone,
@@ -74,6 +78,11 @@ import {
 } from "./components/ConfirmDialog";
 
 import {
+  AppToast,
+  type AppToastKind,
+} from "./components/AppToast";
+
+import {
   saveSettingsProfile,
 } from "./services/save-settings-profile";
 
@@ -81,6 +90,12 @@ type Section =
   | "radar"
   | "events"
   | "settings";
+
+type ToastState = {
+  id: number;
+  kind: AppToastKind;
+  message: string;
+};
 
 const MAX_BLOCKED_ZONES = 3;
 
@@ -118,6 +133,12 @@ export default function DashboardPage() {
   ] =
     useState(false);
 
+  /*
+   * ============================================================
+   * RADAR / DESCUBRIMIENTO
+   * ============================================================
+   */
+
   const {
     profiles,
     refresh,
@@ -128,6 +149,12 @@ export default function DashboardPage() {
     ready:
       radarPresence.ready,
   });
+
+  /*
+   * ============================================================
+   * PERFIL / SETTINGS
+   * ============================================================
+   */
 
   const [
     profileLinks,
@@ -144,6 +171,20 @@ export default function DashboardPage() {
     useState<ProfileRow | null>(
       null,
     );
+
+  const [
+    businessProfile,
+    setBusinessProfile,
+  ] =
+    useState<BusinessProfileRow | null>(
+      null,
+    );
+
+  const [
+    businessProfileLoading,
+    setBusinessProfileLoading,
+  ] =
+    useState(false);
 
   const [
     section,
@@ -166,6 +207,26 @@ export default function DashboardPage() {
     setSettingsEditorSaving,
   ] =
     useState(false);
+
+  const [
+    settingsEditorError,
+    setSettingsEditorError,
+  ] =
+    useState<string | null>(
+      null,
+    );
+
+  const [
+    profileVisibilitySaving,
+    setProfileVisibilitySaving,
+  ] =
+    useState(false);
+
+  /*
+   * ============================================================
+   * ZONAS PRIVADAS
+   * ============================================================
+   */
 
   const [
     blockedZones,
@@ -211,7 +272,36 @@ export default function DashboardPage() {
 
   /*
    * ============================================================
-   * SECCIÓN INICIAL
+   * FEEDBACK
+   * ============================================================
+   */
+
+  const [
+    toast,
+    setToast,
+  ] =
+    useState<ToastState | null>(
+      null,
+    );
+
+  const showToast =
+    useCallback(
+      (
+        kind: AppToastKind,
+        message: string,
+      ) => {
+        setToast({
+          id: Date.now(),
+          kind,
+          message,
+        });
+      },
+      [],
+    );
+
+  /*
+   * ============================================================
+   * SECCIÓN INICIAL DESDE URL
    * ============================================================
    */
 
@@ -239,7 +329,7 @@ export default function DashboardPage() {
 
   /*
    * ============================================================
-   * PROTECCIÓN DE RUTAS
+   * PROTECCIÓN DE RUTA
    * ============================================================
    */
 
@@ -272,7 +362,7 @@ export default function DashboardPage() {
 
   /*
    * ============================================================
-   * PERFIL LOCAL
+   * SINCRONIZAR PERFIL LOCAL
    * ============================================================
    */
 
@@ -290,8 +380,13 @@ export default function DashboardPage() {
 
   /*
    * ============================================================
-   * LINKS
+   * CARGAR LINKS
    * ============================================================
+   *
+   * Capturamos profileId antes de entrar en la función async.
+   *
+   * Esto evita que TypeScript pierda el narrowing de `profile`
+   * dentro del closure asíncrono.
    */
 
   useEffect(() => {
@@ -341,7 +436,80 @@ export default function DashboardPage() {
 
   /*
    * ============================================================
-   * ZONAS PRIVADAS
+   * CARGAR BUSINESS PROFILE
+   * ============================================================
+   */
+
+  useEffect(() => {
+    if (
+      !profile ||
+      profile.account_type !==
+        "business"
+    ) {
+      setBusinessProfile(
+        null,
+      );
+
+      setBusinessProfileLoading(
+        false,
+      );
+
+      return;
+    }
+
+    const profileId =
+      profile.id;
+
+    let mounted = true;
+
+    async function loadBusinessProfile() {
+      setBusinessProfileLoading(
+        true,
+      );
+
+      try {
+        const result =
+          await getMyBusinessProfile(
+            profileId,
+          );
+
+        if (mounted) {
+          setBusinessProfile(
+            result,
+          );
+        }
+      } catch (error) {
+        console.error(
+          "❌ Error cargando perfil de empresa",
+          error,
+        );
+
+        if (mounted) {
+          setBusinessProfile(
+            null,
+          );
+        }
+      } finally {
+        if (mounted) {
+          setBusinessProfileLoading(
+            false,
+          );
+        }
+      }
+    }
+
+    void loadBusinessProfile();
+
+    return () => {
+      mounted = false;
+    };
+  }, [
+    profile,
+  ]);
+
+  /*
+   * ============================================================
+   * CARGAR ZONAS PRIVADAS
    * ============================================================
    */
 
@@ -400,6 +568,12 @@ export default function DashboardPage() {
     profile,
   ]);
 
+  /*
+   * ============================================================
+   * EVENTOS
+   * ============================================================
+   */
+
   const events: EventCard[] =
     [];
 
@@ -426,7 +600,7 @@ export default function DashboardPage() {
 
   /*
    * ============================================================
-   * SINCRONIZAR RADAR TRAS MUTAR PRIVACIDAD
+   * SINCRONIZACIÓN PRIVACIDAD / RADAR
    * ============================================================
    */
 
@@ -438,17 +612,6 @@ export default function DashboardPage() {
         reactivateIfProtected &&
         radarPresence.privacyBlocked
       ) {
-        /*
-         * El usuario acaba de modificar/eliminar
-         * explícitamente la zona que lo estaba protegiendo.
-         *
-         * Volvemos a solicitar Radar ON.
-         *
-         * El servidor sigue siendo la autoridad:
-         * si otra zona privada también lo cubre,
-         * sync_radar_location volverá a bloquearlo.
-         */
-
         await radarPresence.toggle();
 
         return;
@@ -460,12 +623,6 @@ export default function DashboardPage() {
         await radarPresence.syncNow();
       }
     } catch (error) {
-      /*
-       * La mutación de la zona ya ha sido correcta.
-       * Un fallo de resincronización no debe fingir
-       * que la zona no se guardó/eliminó.
-       */
-
       console.error(
         "❌ Error resincronizando Radar tras actualizar privacidad",
         error,
@@ -521,6 +678,11 @@ export default function DashboardPage() {
           "❌ Error escaneando conexiones cercanas",
           error,
         );
+
+        showToast(
+          "error",
+          "No se pudo actualizar el Radar.",
+        );
       } finally {
         setRadarScanLoading(
           false,
@@ -530,7 +692,7 @@ export default function DashboardPage() {
 
   /*
    * ============================================================
-   * EDITOR PERFIL
+   * ABRIR EDITOR
    * ============================================================
    */
 
@@ -539,10 +701,36 @@ export default function DashboardPage() {
       SettingsEditSection =
       "profile",
   ) => {
+    if (
+      settingsProfile?.account_type ===
+        "business" &&
+      (
+        businessProfileLoading ||
+        !businessProfile
+      )
+    ) {
+      showToast(
+        "error",
+        "Todavía no hemos podido cargar los datos del negocio.",
+      );
+
+      return;
+    }
+
+    setSettingsEditorError(
+      null,
+    );
+
     setSettingsEditorSection(
       editSection,
     );
   };
+
+  /*
+   * ============================================================
+   * CERRAR EDITOR
+   * ============================================================
+   */
 
   const handleCloseProfileEditor =
     () => {
@@ -552,10 +740,20 @@ export default function DashboardPage() {
         return;
       }
 
+      setSettingsEditorError(
+        null,
+      );
+
       setSettingsEditorSection(
         null,
       );
     };
+
+  /*
+   * ============================================================
+   * GUARDAR PERFIL
+   * ============================================================
+   */
 
   const handleSaveProfile =
     async (
@@ -568,6 +766,13 @@ export default function DashboardPage() {
       ) {
         return;
       }
+
+      const currentAccountType =
+        settingsProfile.account_type;
+
+      setSettingsEditorError(
+        null,
+      );
 
       setSettingsEditorSaving(
         true,
@@ -594,10 +799,6 @@ export default function DashboardPage() {
             userId:
               user.id,
 
-            email:
-              user.email ??
-              "",
-
             profile:
               settingsProfile,
 
@@ -614,17 +815,87 @@ export default function DashboardPage() {
           );
         }
 
-        const updatedLinks =
-          await getProfileLinks(
-            user.id,
+        /*
+         * ======================================================
+         * SINCRONÍA BUSINESS LOCAL
+         * ======================================================
+         *
+         * PostgreSQL ya guardó profiles + business_profiles +
+         * profile_links dentro de la misma transacción.
+         *
+         * Aquí simplemente reflejamos los nuevos valores en la UI
+         * sin obligar al usuario a recargar.
+         */
+
+        if (
+          currentAccountType ===
+            "business"
+        ) {
+          setBusinessProfile(
+            (current) =>
+              current
+                ? {
+                    ...current,
+
+                    trade_name:
+                      data.fullName,
+
+                    sector:
+                      data.profession,
+
+                    city:
+                      data.businessCity,
+
+                    province:
+                      data.businessProvince,
+
+                    website:
+                      data.businessWebsite ||
+                      null,
+
+                    updated_at:
+                      new Date().toISOString(),
+                  }
+                : current,
+          );
+        }
+
+        /*
+         * ======================================================
+         * RECARGAR REDES
+         * ======================================================
+         */
+
+        try {
+          const updatedLinks =
+            await getProfileLinks(
+              user.id,
+            );
+
+          setProfileLinks(
+            updatedLinks ?? [],
+          );
+        } catch (linksError) {
+          console.error(
+            "❌ El perfil se guardó, pero no se pudieron recargar las redes",
+            linksError,
           );
 
-        setProfileLinks(
-          updatedLinks ?? [],
-        );
+          setProfileLinks(
+            data.socialLinks,
+          );
+        }
 
         setSettingsEditorSection(
           null,
+        );
+
+        showToast(
+          "success",
+          currentAccountType ===
+            "business"
+            ? "Los datos públicos del negocio se actualizaron correctamente."
+            : "Tu perfil se actualizó correctamente.",
         );
       } catch (error) {
         console.error(
@@ -632,17 +903,14 @@ export default function DashboardPage() {
           error,
         );
 
-        if (
+        const message =
           error instanceof Error
-        ) {
-          window.alert(
-            error.message,
-          );
-        } else {
-          window.alert(
-            "No se pudieron guardar los cambios.",
-          );
-        }
+            ? error.message
+            : "No se pudieron guardar los cambios.";
+
+        setSettingsEditorError(
+          message,
+        );
       } finally {
         setSettingsEditorSaving(
           false,
@@ -652,7 +920,92 @@ export default function DashboardPage() {
 
   /*
    * ============================================================
-   * ZONAS PRIVADAS
+   * VISIBILIDAD DEL PERFIL
+   * ============================================================
+   */
+
+  const handleToggleProfileVisibility =
+    async () => {
+      if (
+        !user ||
+        !settingsProfile ||
+        profileVisibilitySaving
+      ) {
+        return;
+      }
+
+      const nextVisibility =
+        !settingsProfile.visibility;
+
+      setProfileVisibilitySaving(
+        true,
+      );
+
+      try {
+        const result =
+          await updateMyProfile(
+            user.id,
+            {
+              visibility:
+                nextVisibility,
+            },
+          );
+
+        if (
+          result.error
+        ) {
+          throw result.error;
+        }
+
+        setSettingsProfile(
+          result.data,
+        );
+
+        /*
+         * Si el Radar está activo, solicitamos una nueva
+         * sincronización para que el estado de descubrimiento
+         * refleje inmediatamente la nueva visibilidad.
+         */
+
+        if (
+          radarPresence.requested
+        ) {
+          try {
+            await radarPresence.syncNow();
+          } catch (radarError) {
+            console.error(
+              "❌ La visibilidad cambió pero Radar no pudo resincronizar inmediatamente",
+              radarError,
+            );
+          }
+        }
+
+        showToast(
+          "success",
+          nextVisibility
+            ? "Tu perfil vuelve a ser público."
+            : "Tu perfil ahora es privado y deja de descubrirse públicamente.",
+        );
+      } catch (error) {
+        console.error(
+          "❌ Error actualizando visibilidad del perfil",
+          error,
+        );
+
+        showToast(
+          "error",
+          "No se pudo cambiar la visibilidad del perfil.",
+        );
+      } finally {
+        setProfileVisibilitySaving(
+          false,
+        );
+      }
+    };
+
+  /*
+   * ============================================================
+   * AÑADIR ZONA PRIVADA
    * ============================================================
    */
 
@@ -674,6 +1027,12 @@ export default function DashboardPage() {
       );
     };
 
+  /*
+   * ============================================================
+   * EDITAR ZONA PRIVADA
+   * ============================================================
+   */
+
   const handleEditBlockedZone =
     (
       zone:
@@ -687,6 +1046,12 @@ export default function DashboardPage() {
         true,
       );
     };
+
+  /*
+   * ============================================================
+   * CERRAR FORM ZONA PRIVADA
+   * ============================================================
+   */
 
   const handleCloseBlockedZoneForm =
     () => {
@@ -705,6 +1070,12 @@ export default function DashboardPage() {
       );
     };
 
+  /*
+   * ============================================================
+   * GUARDAR ZONA PRIVADA
+   * ============================================================
+   */
+
   const handleSaveBlockedZone =
     async (
       data:
@@ -713,6 +1084,9 @@ export default function DashboardPage() {
       if (!profile) {
         return;
       }
+
+      const profileId =
+        profile.id;
 
       const wasEditing =
         editingBlockedZone !==
@@ -770,7 +1144,7 @@ export default function DashboardPage() {
           const created =
             await createRadarBlockedZone({
               profile_id:
-                profile.id,
+                profileId,
 
               name:
                 data.name,
@@ -804,18 +1178,15 @@ export default function DashboardPage() {
           null,
         );
 
-        /*
-         * Si el Radar estaba activo:
-         * reevaluamos inmediatamente la nueva zona.
-         *
-         * Si editamos justo la zona que nos estaba
-         * protegiendo:
-         * intentamos reactivar y el servidor vuelve
-         * a decidir si seguimos dentro o no.
-         */
-
         await refreshRadarPrivacyState(
           wasEditing,
+        );
+
+        showToast(
+          "success",
+          wasEditing
+            ? "La zona privada se actualizó correctamente."
+            : "La nueva zona privada ya está protegiendo tu privacidad.",
         );
       } catch (error) {
         console.error(
@@ -823,17 +1194,12 @@ export default function DashboardPage() {
           error,
         );
 
-        if (
+        showToast(
+          "error",
           error instanceof Error
-        ) {
-          window.alert(
-            error.message,
-          );
-        } else {
-          window.alert(
-            "No se pudo guardar la zona privada.",
-          );
-        }
+            ? error.message
+            : "No se pudo guardar la zona privada.",
+        );
       } finally {
         setBlockedZonesSaving(
           false,
@@ -843,7 +1209,7 @@ export default function DashboardPage() {
 
   /*
    * ============================================================
-   * ELIMINACIÓN DE ZONA
+   * SOLICITAR BORRADO ZONA
    * ============================================================
    */
 
@@ -856,6 +1222,12 @@ export default function DashboardPage() {
         zone,
       );
     };
+
+  /*
+   * ============================================================
+   * CONFIRMAR BORRADO ZONA
+   * ============================================================
+   */
 
   const handleConfirmDeleteBlockedZone =
     async () => {
@@ -890,19 +1262,13 @@ export default function DashboardPage() {
           null,
         );
 
-        /*
-         * Si LookUp estaba en estado PROTEGIDO,
-         * eliminar una zona es una acción explícita
-         * del usuario.
-         *
-         * Intentamos recuperar Radar automáticamente.
-         *
-         * Si aún existe otra zona que lo cubre,
-         * el servidor lo volverá a proteger.
-         */
-
         await refreshRadarPrivacyState(
           true,
+        );
+
+        showToast(
+          "success",
+          "La zona privada se eliminó.",
         );
       } catch (error) {
         console.error(
@@ -910,17 +1276,12 @@ export default function DashboardPage() {
           error,
         );
 
-        if (
+        showToast(
+          "error",
           error instanceof Error
-        ) {
-          window.alert(
-            error.message,
-          );
-        } else {
-          window.alert(
-            "No se pudo eliminar la zona privada.",
-          );
-        }
+            ? error.message
+            : "No se pudo eliminar la zona privada.",
+        );
       } finally {
         setBlockedZonesSaving(
           false,
@@ -952,6 +1313,12 @@ export default function DashboardPage() {
       );
     };
 
+  /*
+   * ============================================================
+   * LOADING
+   * ============================================================
+   */
+
   if (
     loading ||
     radarPresence.presenceLoading ||
@@ -966,6 +1333,12 @@ export default function DashboardPage() {
   ) {
     return null;
   }
+
+  /*
+   * ============================================================
+   * UI
+   * ============================================================
+   */
 
   return (
     <main className="min-h-screen bg-[#F7F8FC]">
@@ -1030,7 +1403,9 @@ export default function DashboardPage() {
         {section ===
           "events" && (
           <EventsView
-            events={events}
+            events={
+              events
+            }
 
             onCreateEvent={() =>
               console.log(
@@ -1070,8 +1445,16 @@ export default function DashboardPage() {
               radarPresence.toggleLoading
             }
 
+            profileVisibilitySaving={
+              profileVisibilitySaving
+            }
+
             onToggleRadar={
               handleRadarToggle
+            }
+
+            onToggleProfileVisibility={
+              handleToggleProfileVisibility
             }
 
             blockedZones={
@@ -1138,6 +1521,10 @@ export default function DashboardPage() {
             settingsProfile
           }
 
+          businessProfile={
+            businessProfile
+          }
+
           links={
             profileLinks
           }
@@ -1148,6 +1535,10 @@ export default function DashboardPage() {
 
           saving={
             settingsEditorSaving
+          }
+
+          saveError={
+            settingsEditorError
           }
 
           onSave={
@@ -1216,6 +1607,28 @@ export default function DashboardPage() {
           handleConfirmDeleteBlockedZone
         }
       />
+
+      {toast ? (
+        <AppToast
+          toastKey={
+            toast.id
+          }
+
+          kind={
+            toast.kind
+          }
+
+          message={
+            toast.message
+          }
+
+          onClose={() =>
+            setToast(
+              null,
+            )
+          }
+        />
+      ) : null}
     </main>
   );
 }

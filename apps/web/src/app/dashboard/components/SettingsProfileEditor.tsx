@@ -9,6 +9,7 @@ import {
   ChevronUp,
   Pencil,
   Plus,
+  Sparkles,
   Trash2,
   X,
 } from "lucide-react";
@@ -21,11 +22,13 @@ import {
 } from "react";
 
 import {
+  INTEREST_OPTIONS,
   SOCIAL_PLATFORMS,
   type Platform,
 } from "@lookup/config";
 
 import type {
+  BusinessProfileRow,
   ProfileLink,
   ProfileRow,
 } from "@lookup/services";
@@ -50,15 +53,22 @@ export type SettingsProfileEditorData = {
   fullName: string;
   profession: string;
   bio: string;
+  interests: string[];
   socialLinks: ProfileLink[];
   avatarFile: File | null;
+
+  businessCity: string;
+  businessProvince: string;
+  businessWebsite: string;
 };
 
 type SettingsProfileEditorProps = {
   profile: ProfileRow;
+  businessProfile: BusinessProfileRow | null;
   links: ProfileLink[];
   section: SettingsEditSection;
   saving: boolean;
+  saveError: string | null;
 
   onSave: (
     data: SettingsProfileEditorData,
@@ -105,6 +115,11 @@ function getTitle(
         ? "Editar descripción"
         : "Editar biografía";
 
+    case "interests":
+      return isBusiness
+        ? "Temas y categorías"
+        : "Editar intereses";
+
     case "profile":
     default:
       return isBusiness
@@ -120,7 +135,7 @@ function getDescription(
   switch (section) {
     case "socials":
       return isBusiness
-        ? "Elige los canales donde quieres que los clientes puedan encontrar tu negocio."
+        ? "Elige los canales donde quieres que los clientes puedan encontrarte."
         : "Elige dónde quieres que otras personas puedan encontrarte.";
 
     case "name":
@@ -130,13 +145,18 @@ function getDescription(
 
     case "profession":
       return isBusiness
-        ? "Selecciona el sector que mejor representa la actividad de tu negocio."
+        ? "Selecciona el sector que mejor representa tu actividad."
         : "Actualiza a qué te dedicas.";
 
     case "bio":
       return isBusiness
-        ? "Describe brevemente qué hace tu negocio y qué puede encontrar la gente."
+        ? "Describe brevemente qué hace tu negocio."
         : "Cuenta brevemente quién eres y qué haces.";
+
+    case "interests":
+      return isBusiness
+        ? "Selecciona los temas que ayudan a entender qué ofrece tu negocio."
+        : "Selecciona los temas que mejor representan tus intereses.";
 
     case "profile":
     default:
@@ -161,28 +181,49 @@ function createProfileLink(
 function getInputLabel(
   platform: Platform,
 ) {
-  if (
-    platform.type ===
-    "phone"
-  ) {
+  if (platform.type === "phone") {
     return "Número de teléfono";
   }
 
-  if (
-    platform.type ===
-    "url"
-  ) {
+  if (platform.type === "url") {
     return "Enlace";
   }
 
   return "Usuario";
 }
 
+function isValidWebsite(
+  value: string,
+) {
+  const normalized =
+    value.trim();
+
+  if (!normalized) {
+    return true;
+  }
+
+  try {
+    new URL(
+      /^https?:\/\//i.test(
+        normalized,
+      )
+        ? normalized
+        : `https://${normalized}`,
+    );
+
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export function SettingsProfileEditor({
   profile,
+  businessProfile,
   links,
   section,
   saving,
+  saveError,
   onSave,
   onClose,
 }: SettingsProfileEditorProps) {
@@ -198,28 +239,55 @@ export function SettingsProfileEditor({
   const [
     fullName,
     setFullName,
-  ] =
-    useState(
-      profile.full_name ??
-        "",
-    );
+  ] = useState(
+    profile.full_name ?? "",
+  );
 
   const [
     profession,
     setProfession,
-  ] =
-    useState(
-      profile.profession ??
-        "",
-    );
+  ] = useState(
+    profile.profession ?? "",
+  );
 
   const [
     bio,
     setBio,
-  ] =
-    useState(
-      profile.bio ?? "",
-    );
+  ] = useState(
+    profile.bio ?? "",
+  );
+
+  const [
+    interests,
+    setInterests,
+  ] = useState<string[]>(
+    profile.interests ?? [],
+  );
+
+  const [
+    businessCity,
+    setBusinessCity,
+  ] = useState(
+    businessProfile?.city ??
+      profile.city ??
+      "",
+  );
+
+  const [
+    businessProvince,
+    setBusinessProvince,
+  ] = useState(
+    businessProfile?.province ??
+      "",
+  );
+
+  const [
+    businessWebsite,
+    setBusinessWebsite,
+  ] = useState(
+    businessProfile?.website ??
+      "",
+  );
 
   const [
     socialLinks,
@@ -376,17 +444,38 @@ export function SettingsProfileEditor({
       );
     }
 
-    const nextPreview =
-      URL.createObjectURL(
-        file,
-      );
-
     setAvatarFile(
       file,
     );
 
     setPreviewUrl(
-      nextPreview,
+      URL.createObjectURL(
+        file,
+      ),
+    );
+
+    setError(
+      null,
+    );
+  }
+
+  function toggleInterest(
+    interestId: string,
+  ) {
+    setInterests(
+      (current) =>
+        current.includes(
+          interestId,
+        )
+          ? current.filter(
+              (item) =>
+                item !==
+                interestId,
+            )
+          : [
+              ...current,
+              interestId,
+            ],
     );
 
     setError(
@@ -479,15 +568,21 @@ export function SettingsProfileEditor({
     const cleanBio =
       bio.trim();
 
+    const cleanCity =
+      businessCity.trim();
+
+    const cleanProvince =
+      businessProvince.trim();
+
+    const cleanWebsite =
+      businessWebsite.trim();
+
     if (
       (
-        section ===
-          "name" ||
-        section ===
-          "profile"
+        section === "name" ||
+        section === "profile"
       ) &&
-      cleanName.length <
-        2
+      cleanName.length < 2
     ) {
       setError(
         isBusiness
@@ -506,14 +601,51 @@ export function SettingsProfileEditor({
         section ===
           "profile"
       ) &&
-      cleanProfession.length ===
-        0
+      !cleanProfession
     ) {
       setError(
         "Selecciona un sector para tu negocio.",
       );
 
       return;
+    }
+
+    if (
+      isBusiness &&
+      section === "profile"
+    ) {
+      if (
+        cleanCity.length < 2
+      ) {
+        setError(
+          "Indica la ciudad del negocio.",
+        );
+
+        return;
+      }
+
+      if (
+        cleanProvince.length <
+        2
+      ) {
+        setError(
+          "Indica la provincia del negocio.",
+        );
+
+        return;
+      }
+
+      if (
+        !isValidWebsite(
+          cleanWebsite,
+        )
+      ) {
+        setError(
+          "Introduce un sitio web válido.",
+        );
+
+        return;
+      }
     }
 
     if (
@@ -537,15 +669,11 @@ export function SettingsProfileEditor({
 
     await onSave({
       fullName:
-        section ===
-          "name" ||
-        section ===
-          "profile"
+        section === "name" ||
+        section === "profile"
           ? cleanName
-          : (
-              profile.full_name ??
-              ""
-            ),
+          : profile.full_name ??
+            "",
 
       profession:
         section ===
@@ -553,21 +681,23 @@ export function SettingsProfileEditor({
         section ===
           "profile"
           ? cleanProfession
-          : (
-              profile.profession ??
-              ""
-            ),
+          : profile.profession ??
+            "",
 
       bio:
+        section === "bio" ||
+        section === "profile"
+          ? cleanBio
+          : profile.bio ?? "",
+
+      interests:
         section ===
-          "bio" ||
+          "interests" ||
         section ===
           "profile"
-          ? cleanBio
-          : (
-              profile.bio ??
-              ""
-            ),
+          ? interests
+          : profile.interests ??
+            [],
 
       socialLinks:
         section ===
@@ -578,6 +708,21 @@ export function SettingsProfileEditor({
           : links,
 
       avatarFile,
+
+      businessCity:
+        isBusiness
+          ? cleanCity
+          : "",
+
+      businessProvince:
+        isBusiness
+          ? cleanProvince
+          : "",
+
+      businessWebsite:
+        isBusiness
+          ? cleanWebsite
+          : "",
     });
   }
 
@@ -609,9 +754,22 @@ export function SettingsProfileEditor({
     section === "bio" ||
     section === "profile";
 
-  const showSocials =
-    section === "socials" ||
+  const showInterests =
+    section ===
+      "interests" ||
     section === "profile";
+
+  const showSocials =
+    section ===
+      "socials" ||
+    section === "profile";
+
+  const showBusinessPublicData =
+    isBusiness &&
+    section === "profile";
+
+  const visibleError =
+    error ?? saveError;
 
   return (
     <div
@@ -623,7 +781,6 @@ export function SettingsProfileEditor({
         items-end
         justify-center
         bg-slate-950/40
-        p-0
         backdrop-blur-sm
         sm:items-center
         sm:p-4
@@ -635,7 +792,7 @@ export function SettingsProfileEditor({
       <div
         className="
           flex
-          max-h-[92vh]
+          max-h-[94vh]
           w-full
           max-w-lg
           flex-col
@@ -646,51 +803,16 @@ export function SettingsProfileEditor({
           sm:rounded-[30px]
         "
       >
-        {/* ====================================================
-            HEADER
-            ==================================================== */}
-
-        <div
-          className="
-            flex
-            shrink-0
-            items-center
-            justify-between
-            border-b
-            border-[#EEF0F5]
-            px-5
-            py-4
-            sm:px-6
-          "
-        >
+        <div className="flex shrink-0 items-center justify-between border-b border-[#EEF0F5] px-5 py-4 sm:px-6">
           <div className="min-w-0 pr-3">
             <div className="flex items-center gap-2">
-              <div
-                className="
-                  flex
-                  h-8
-                  w-8
-                  shrink-0
-                  items-center
-                  justify-center
-                  rounded-xl
-                  bg-[#EEF2FF]
-                  text-[#5D5FEF]
-                "
-              >
-                <Pencil
-                  size={14}
-                />
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[#EEF2FF] text-[#5D5FEF]">
+                <Pencil size={14} />
               </div>
 
               <h2
                 id="settings-editor-title"
-                className="
-                  truncate
-                  text-lg
-                  font-black
-                  text-slate-900
-                "
+                className="truncate text-lg font-black text-slate-900"
               >
                 {getTitle(
                   section,
@@ -699,14 +821,7 @@ export function SettingsProfileEditor({
               </h2>
             </div>
 
-            <p
-              className="
-                mt-1
-                text-xs
-                leading-5
-                text-slate-500
-              "
-            >
+            <p className="mt-1 text-xs leading-5 text-slate-500">
               {getDescription(
                 section,
                 isBusiness,
@@ -719,57 +834,21 @@ export function SettingsProfileEditor({
             onClick={onClose}
             disabled={saving}
             aria-label="Cerrar"
-            className="
-              flex
-              h-9
-              w-9
-              shrink-0
-              items-center
-              justify-center
-              rounded-full
-              bg-slate-100
-              text-slate-500
-              transition
-              hover:bg-slate-200
-              disabled:cursor-not-allowed
-              disabled:opacity-50
-            "
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-500 transition hover:bg-slate-200 disabled:opacity-50"
           >
             <X size={17} />
           </button>
         </div>
 
-        {/* ====================================================
-            FORM
-            ==================================================== */}
-
         <form
           onSubmit={
             handleSubmit
           }
-          className="
-            min-h-0
-            overflow-y-auto
-            px-5
-            py-5
-            sm:px-6
-          "
+          className="min-h-0 overflow-y-auto px-5 py-5 sm:px-6"
         >
-          <div className="space-y-5">
-            {/* ================================================
-                AVATAR / LOGO
-                ================================================ */}
-
+          <div className="space-y-6">
             {showAvatar ? (
-              <div
-                className="
-                  rounded-2xl
-                  border
-                  border-[#E8EBF2]
-                  bg-[#FAFBFD]
-                  p-4
-                "
-              >
+              <div className="rounded-2xl border border-[#E8EBF2] bg-[#FAFBFD] p-4">
                 <div className="flex items-center gap-4">
                   <div
                     className={[
@@ -784,11 +863,7 @@ export function SettingsProfileEditor({
                         src={
                           previewUrl
                         }
-                        alt={
-                          isBusiness
-                            ? "Vista previa de la imagen del negocio"
-                            : "Vista previa de la foto de perfil"
-                        }
+                        alt="Vista previa"
                         fill
                         sizes="64px"
                         className="object-cover"
@@ -799,46 +874,21 @@ export function SettingsProfileEditor({
                         }
                       />
                     ) : (
-                      <div
-                        className="
-                          flex
-                          h-full
-                          w-full
-                          items-center
-                          justify-center
-                          text-lg
-                          font-black
-                          text-[#5D5FEF]
-                        "
-                      >
+                      <div className="flex h-full w-full items-center justify-center text-lg font-black text-[#5D5FEF]">
                         {initials}
                       </div>
                     )}
                   </div>
 
                   <div className="min-w-0 flex-1">
-                    <p
-                      className="
-                        text-sm
-                        font-black
-                        text-slate-800
-                      "
-                    >
+                    <p className="text-sm font-black text-slate-800">
                       {isBusiness
                         ? "Logo o imagen"
                         : "Foto de perfil"}
                     </p>
 
-                    <p
-                      className="
-                        mt-1
-                        text-xs
-                        leading-5
-                        text-slate-500
-                      "
-                    >
-                      JPG, PNG o WebP ·
-                      máximo 5 MB
+                    <p className="mt-1 text-xs text-slate-500">
+                      JPG, PNG o WebP · máximo 5 MB
                     </p>
 
                     <input
@@ -846,7 +896,7 @@ export function SettingsProfileEditor({
                         fileInputRef
                       }
                       type="file"
-                      accept="image/*"
+                      accept="image/jpeg,image/png,image/webp"
                       onChange={
                         handleAvatarChange
                       }
@@ -864,31 +914,9 @@ export function SettingsProfileEditor({
                       disabled={
                         saving
                       }
-                      className="
-                        mt-2
-                        inline-flex
-                        items-center
-                        gap-2
-                        rounded-xl
-                        bg-white
-                        px-3
-                        py-2
-                        text-xs
-                        font-black
-                        text-[#5D5FEF]
-                        shadow-sm
-                        ring-1
-                        ring-[#E3E6F2]
-                        transition
-                        hover:bg-[#F7F7FF]
-                        disabled:cursor-not-allowed
-                        disabled:opacity-50
-                      "
+                      className="mt-2 inline-flex items-center gap-2 rounded-xl bg-white px-3 py-2 text-xs font-black text-[#5D5FEF] shadow-sm ring-1 ring-[#E3E6F2]"
                     >
-                      <Camera
-                        size={13}
-                      />
-
+                      <Camera size={13} />
                       Cambiar imagen
                     </button>
                   </div>
@@ -896,23 +924,11 @@ export function SettingsProfileEditor({
               </div>
             ) : null}
 
-            {/* ================================================
-                NOMBRE
-                ================================================ */}
-
             {showName ? (
               <div>
                 <label
                   htmlFor="settings-editor-name"
-                  className="
-                    mb-2
-                    block
-                    text-xs
-                    font-black
-                    uppercase
-                    tracking-[0.12em]
-                    text-slate-500
-                  "
+                  className="mb-2 block text-xs font-black uppercase tracking-[0.12em] text-slate-500"
                 >
                   {isBusiness
                     ? "Nombre comercial"
@@ -921,87 +937,32 @@ export function SettingsProfileEditor({
 
                 <input
                   id="settings-editor-name"
-                  value={
-                    fullName
-                  }
-                  onChange={(
-                    event,
-                  ) =>
+                  value={fullName}
+                  onChange={(event) =>
                     setFullName(
-                      event.target
-                        .value,
+                      event.target.value,
                     )
                   }
                   maxLength={80}
-                  disabled={
-                    saving
-                  }
-                  autoComplete={
-                    isBusiness
-                      ? "organization"
-                      : "name"
-                  }
-                  placeholder={
-                    isBusiness
-                      ? "Ej. Pet Shop World"
-                      : "Tu nombre"
-                  }
-                  className="
-                    w-full
-                    rounded-2xl
-                    border
-                    border-[#E5E8F0]
-                    bg-white
-                    px-4
-                    py-3
-                    text-sm
-                    font-semibold
-                    text-slate-900
-                    outline-none
-                    transition
-                    placeholder:text-slate-300
-                    focus:border-[#5D5FEF]
-                    focus:ring-4
-                    focus:ring-[#5D5FEF]/10
-                    disabled:bg-slate-50
-                  "
+                  disabled={saving}
+                  className="w-full rounded-2xl border border-[#E5E8F0] px-4 py-3 text-sm font-semibold text-slate-900 outline-none focus:border-[#5D5FEF] focus:ring-4 focus:ring-[#5D5FEF]/10"
                 />
 
-                <p
-                  className="
-                    mt-2
-                    text-xs
-                    leading-5
-                    text-slate-400
-                  "
-                >
+                <p className="mt-2 text-xs leading-5 text-slate-400">
                   Tu nombre de usuario{" "}
                   <strong>
                     @{profile.username}
                   </strong>{" "}
-                  no cambiará al modificar
-                  este campo.
+                  no cambiará al modificar este campo.
                 </p>
               </div>
             ) : null}
-
-            {/* ================================================
-                PROFESIÓN / SECTOR
-                ================================================ */}
 
             {showProfession ? (
               <div>
                 <label
                   htmlFor="settings-editor-profession"
-                  className="
-                    mb-2
-                    block
-                    text-xs
-                    font-black
-                    uppercase
-                    tracking-[0.12em]
-                    text-slate-500
-                  "
+                  className="mb-2 block text-xs font-black uppercase tracking-[0.12em] text-slate-500"
                 >
                   {isBusiness
                     ? "Sector"
@@ -1015,37 +976,15 @@ export function SettingsProfileEditor({
                       value={
                         profession
                       }
-                      onChange={(
-                        event,
-                      ) =>
+                      onChange={(event) =>
                         setProfession(
-                          event.target
-                            .value,
+                          event.target.value,
                         )
                       }
                       disabled={
                         saving
                       }
-                      className="
-                        w-full
-                        appearance-none
-                        rounded-2xl
-                        border
-                        border-[#E5E8F0]
-                        bg-white
-                        px-4
-                        py-3
-                        pr-11
-                        text-sm
-                        font-semibold
-                        text-slate-900
-                        outline-none
-                        transition
-                        focus:border-[#5D5FEF]
-                        focus:ring-4
-                        focus:ring-[#5D5FEF]/10
-                        disabled:bg-slate-50
-                      "
+                      className="w-full appearance-none rounded-2xl border border-[#E5E8F0] bg-white px-4 py-3 pr-11 text-sm font-semibold text-slate-900 outline-none focus:border-[#5D5FEF] focus:ring-4 focus:ring-[#5D5FEF]/10"
                     >
                       <option value="">
                         Selecciona un sector
@@ -1063,9 +1002,7 @@ export function SettingsProfileEditor({
                       ) : null}
 
                       {BUSINESS_SECTORS.map(
-                        (
-                          sector,
-                        ) => (
+                        (sector) => (
                           <option
                             key={
                               sector.id
@@ -1084,14 +1021,7 @@ export function SettingsProfileEditor({
 
                     <ChevronDown
                       size={17}
-                      className="
-                        pointer-events-none
-                        absolute
-                        right-4
-                        top-1/2
-                        -translate-y-1/2
-                        text-slate-400
-                      "
+                      className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-slate-400"
                     />
                   </div>
                 ) : (
@@ -1100,99 +1030,35 @@ export function SettingsProfileEditor({
                     value={
                       profession
                     }
-                    onChange={(
-                      event,
-                    ) =>
+                    onChange={(event) =>
                       setProfession(
-                        event.target
-                          .value,
+                        event.target.value,
                       )
                     }
-                    maxLength={
-                      100
-                    }
+                    maxLength={100}
                     disabled={
                       saving
                     }
-                    autoComplete="organization-title"
                     placeholder="Ej. Desarrollador Full Stack"
-                    className="
-                      w-full
-                      rounded-2xl
-                      border
-                      border-[#E5E8F0]
-                      bg-white
-                      px-4
-                      py-3
-                      text-sm
-                      font-semibold
-                      text-slate-900
-                      outline-none
-                      transition
-                      placeholder:text-slate-300
-                      focus:border-[#5D5FEF]
-                      focus:ring-4
-                      focus:ring-[#5D5FEF]/10
-                      disabled:bg-slate-50
-                    "
+                    className="w-full rounded-2xl border border-[#E5E8F0] px-4 py-3 text-sm font-semibold text-slate-900 outline-none focus:border-[#5D5FEF] focus:ring-4 focus:ring-[#5D5FEF]/10"
                   />
                 )}
-
-                {isBusiness ? (
-                  <p
-                    className="
-                      mt-2
-                      text-xs
-                      leading-5
-                      text-slate-400
-                    "
-                  >
-                    Utilizamos el mismo
-                    catálogo de sectores
-                    que durante el registro
-                    del negocio.
-                  </p>
-                ) : null}
               </div>
             ) : null}
 
-            {/* ================================================
-                BIO / DESCRIPCIÓN
-                ================================================ */}
-
             {showBio ? (
               <div>
-                <div
-                  className="
-                    mb-2
-                    flex
-                    items-center
-                    justify-between
-                    gap-3
-                  "
-                >
+                <div className="mb-2 flex items-center justify-between">
                   <label
                     htmlFor="settings-editor-bio"
-                    className="
-                      text-xs
-                      font-black
-                      uppercase
-                      tracking-[0.12em]
-                      text-slate-500
-                    "
+                    className="text-xs font-black uppercase tracking-[0.12em] text-slate-500"
                   >
                     {isBusiness
                       ? "Descripción"
                       : "Biografía"}
                   </label>
 
-                  <span
-                    className="
-                      text-[10px]
-                      font-bold
-                      text-slate-400
-                    "
-                  >
+                  <span className="text-[10px] font-bold text-slate-400">
                     {bio.length}/300
                   </span>
                 </div>
@@ -1200,88 +1066,184 @@ export function SettingsProfileEditor({
                 <textarea
                   id="settings-editor-bio"
                   value={bio}
-                  onChange={(
-                    event,
-                  ) =>
+                  onChange={(event) =>
                     setBio(
-                      event.target
-                        .value,
+                      event.target.value,
                     )
                   }
                   maxLength={300}
                   rows={5}
-                  disabled={
-                    saving
-                  }
-                  placeholder={
-                    isBusiness
-                      ? "Describe brevemente qué hace tu negocio..."
-                      : "Cuéntale a la comunidad un poco sobre ti..."
-                  }
-                  className="
-                    w-full
-                    resize-none
-                    rounded-2xl
-                    border
-                    border-[#E5E8F0]
-                    bg-white
-                    px-4
-                    py-3
-                    text-sm
-                    font-semibold
-                    leading-6
-                    text-slate-900
-                    outline-none
-                    transition
-                    placeholder:text-slate-300
-                    focus:border-[#5D5FEF]
-                    focus:ring-4
-                    focus:ring-[#5D5FEF]/10
-                    disabled:bg-slate-50
-                  "
+                  disabled={saving}
+                  className="w-full resize-none rounded-2xl border border-[#E5E8F0] px-4 py-3 text-sm font-semibold leading-6 text-slate-900 outline-none focus:border-[#5D5FEF] focus:ring-4 focus:ring-[#5D5FEF]/10"
                 />
               </div>
             ) : null}
 
-            {/* ================================================
-                REDES
-                ================================================ */}
+            {showBusinessPublicData ? (
+              <section className="rounded-[24px] border border-[#E8EBF2] bg-[#FAFBFD] p-4">
+                <p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#5D5FEF]">
+                  UBICACIÓN PÚBLICA
+                </p>
+
+                <p className="mt-1 text-xs leading-5 text-slate-400">
+                  Solo mostramos ciudad y provincia. Tu dirección exacta no se publica.
+                </p>
+
+                <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <label
+                      htmlFor="business-city"
+                      className="mb-2 block text-xs font-black text-slate-500"
+                    >
+                      Ciudad
+                    </label>
+
+                    <input
+                      id="business-city"
+                      value={
+                        businessCity
+                      }
+                      onChange={(event) =>
+                        setBusinessCity(
+                          event.target.value,
+                        )
+                      }
+                      maxLength={120}
+                      disabled={saving}
+                      className="w-full rounded-2xl border border-[#E5E8F0] bg-white px-4 py-3 text-sm font-semibold outline-none focus:border-[#5D5FEF]"
+                    />
+                  </div>
+
+                  <div>
+                    <label
+                      htmlFor="business-province"
+                      className="mb-2 block text-xs font-black text-slate-500"
+                    >
+                      Provincia
+                    </label>
+
+                    <input
+                      id="business-province"
+                      value={
+                        businessProvince
+                      }
+                      onChange={(event) =>
+                        setBusinessProvince(
+                          event.target.value,
+                        )
+                      }
+                      maxLength={120}
+                      disabled={saving}
+                      className="w-full rounded-2xl border border-[#E5E8F0] bg-white px-4 py-3 text-sm font-semibold outline-none focus:border-[#5D5FEF]"
+                    />
+                  </div>
+                </div>
+
+                <div className="mt-4">
+                  <label
+                    htmlFor="business-website"
+                    className="mb-2 block text-xs font-black text-slate-500"
+                  >
+                    Sitio web
+                  </label>
+
+                  <input
+                    id="business-website"
+                    type="text"
+                    value={
+                      businessWebsite
+                    }
+                    onChange={(event) =>
+                      setBusinessWebsite(
+                        event.target.value,
+                      )
+                    }
+                    maxLength={500}
+                    disabled={saving}
+                    placeholder="https://tuempresa.com"
+                    className="w-full rounded-2xl border border-[#E5E8F0] bg-white px-4 py-3 text-sm font-semibold outline-none focus:border-[#5D5FEF]"
+                  />
+                </div>
+              </section>
+            ) : null}
+
+            {showInterests ? (
+              <section>
+                <div className="flex items-end justify-between gap-3">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <Sparkles
+                        size={14}
+                        className="text-[#5D5FEF]"
+                      />
+
+                      <p className="text-xs font-black uppercase tracking-[0.12em] text-slate-500">
+                        {isBusiness
+                          ? "Temas y categorías"
+                          : "Intereses"}
+                      </p>
+                    </div>
+
+                    <p className="mt-1 text-xs leading-5 text-slate-400">
+                      Esto ayudará a LookUp a entender mejor tu relevancia.
+                    </p>
+                  </div>
+
+                  <span className="shrink-0 rounded-full bg-[#EEF2FF] px-2.5 py-1 text-[10px] font-black text-[#5D5FEF]">
+                    {interests.length} seleccionados
+                  </span>
+                </div>
+
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {INTEREST_OPTIONS.map(
+                    (interest) => {
+                      const selected =
+                        interests.includes(
+                          interest.id,
+                        );
+
+                      return (
+                        <button
+                          key={
+                            interest.id
+                          }
+                          type="button"
+                          onClick={() =>
+                            toggleInterest(
+                              interest.id,
+                            )
+                          }
+                          disabled={saving}
+                          className={[
+                            "inline-flex items-center gap-1.5 rounded-full border px-3.5 py-2 text-xs font-black transition",
+                            selected
+                              ? "border-[#5D5FEF] bg-[#5D5FEF] text-white"
+                              : "border-[#E2E5EE] bg-white text-slate-600 hover:border-[#CBCDFF] hover:text-[#5D5FEF]",
+                          ].join(" ")}
+                        >
+                          {selected ? (
+                            <Check size={12} />
+                          ) : null}
+
+                          {interest.label}
+                        </button>
+                      );
+                    },
+                  )}
+                </div>
+              </section>
+            ) : null}
 
             {showSocials ? (
-              <div>
-                <div
-                  className="
-                    flex
-                    items-start
-                    justify-between
-                    gap-3
-                  "
-                >
+              <section>
+                <div className="flex items-start justify-between gap-3">
                   <div>
-                    <p
-                      className="
-                        text-xs
-                        font-black
-                        uppercase
-                        tracking-[0.12em]
-                        text-slate-500
-                      "
-                    >
+                    <p className="text-xs font-black uppercase tracking-[0.12em] text-slate-500">
                       Redes sociales
                     </p>
 
-                    <p
-                      className="
-                        mt-1
-                        text-xs
-                        leading-5
-                        text-slate-400
-                      "
-                    >
-                      Selecciona una
-                      plataforma y añade
-                      únicamente el dato
-                      que te pedimos.
+                    <p className="mt-1 text-xs leading-5 text-slate-400">
+                      Selecciona una plataforma y añade únicamente el dato solicitado.
                     </p>
                   </div>
 
@@ -1289,41 +1251,17 @@ export function SettingsProfileEditor({
                     type="button"
                     onClick={() =>
                       setPlatformPickerOpen(
-                        (
-                          current,
-                        ) =>
+                        (current) =>
                           !current,
                       )
                     }
-                    disabled={
-                      saving
-                    }
-                    className="
-                      inline-flex
-                      shrink-0
-                      items-center
-                      gap-1.5
-                      rounded-xl
-                      bg-[#EEF2FF]
-                      px-3
-                      py-2
-                      text-xs
-                      font-black
-                      text-[#5D5FEF]
-                      transition
-                      hover:bg-[#E5E7FF]
-                      disabled:cursor-not-allowed
-                      disabled:opacity-50
-                    "
+                    disabled={saving}
+                    className="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-[#EEF2FF] px-3 py-2 text-xs font-black text-[#5D5FEF]"
                   >
                     {platformPickerOpen ? (
-                      <X
-                        size={13}
-                      />
+                      <X size={13} />
                     ) : (
-                      <Plus
-                        size={13}
-                      />
+                      <Plus size={13} />
                     )}
 
                     {platformPickerOpen
@@ -1332,59 +1270,22 @@ export function SettingsProfileEditor({
                   </button>
                 </div>
 
-                {/* ============================================
-                    SELECTOR
-                    ============================================ */}
-
                 {platformPickerOpen ? (
-                  <div
-                    className="
-                      mt-4
-                      rounded-[24px]
-                      border
-                      border-[#E6E8F1]
-                      bg-[#FAFBFD]
-                      p-4
-                    "
-                  >
-                    <p
-                      className="
-                        text-xs
-                        font-black
-                        text-slate-700
-                      "
-                    >
+                  <div className="mt-4 rounded-[24px] border border-[#E6E8F1] bg-[#FAFBFD] p-4">
+                    <p className="text-xs font-black text-slate-700">
                       Elige una red
                     </p>
 
-                    <p
-                      className="
-                        mt-1
-                        text-[11px]
-                        leading-5
-                        text-slate-400
-                      "
-                    >
-                      Cada plataforma
-                      puede añadirse una
-                      sola vez.
+                    <p className="mt-1 text-[11px] text-slate-400">
+                      Cada plataforma puede añadirse una sola vez.
                     </p>
 
                     {selectablePlatforms.length >
                     0 ? (
                       <>
-                        <div
-                          className="
-                            mt-4
-                            grid
-                            grid-cols-3
-                            gap-3
-                          "
-                        >
+                        <div className="mt-4 grid grid-cols-3 gap-3">
                           {selectablePlatforms.map(
-                            (
-                              platform,
-                            ) => (
+                            (platform) => (
                               <PlatformCard
                                 key={
                                   platform.id
@@ -1412,71 +1313,32 @@ export function SettingsProfileEditor({
                           type="button"
                           onClick={() =>
                             setShowAllPlatforms(
-                              (
-                                current,
-                              ) =>
+                              (current) =>
                                 !current,
                             )
                           }
-                          className="
-                            mx-auto
-                            mt-4
-                            flex
-                            items-center
-                            gap-1.5
-                            text-xs
-                            font-black
-                            text-[#5D5FEF]
-                          "
+                          className="mx-auto mt-4 flex items-center gap-1.5 text-xs font-black text-[#5D5FEF]"
                         >
                           {showAllPlatforms ? (
                             <>
-                              <ChevronUp
-                                size={
-                                  14
-                                }
-                              />
-
+                              <ChevronUp size={14} />
                               Ver menos
                             </>
                           ) : (
                             <>
-                              <ChevronDown
-                                size={
-                                  14
-                                }
-                              />
-
+                              <ChevronDown size={14} />
                               Ver todas
                             </>
                           )}
                         </button>
                       </>
                     ) : (
-                      <p
-                        className="
-                          mt-4
-                          rounded-2xl
-                          bg-white
-                          px-4
-                          py-4
-                          text-center
-                          text-xs
-                          font-semibold
-                          text-slate-400
-                        "
-                      >
-                        Ya has añadido
-                        todas las redes
-                        disponibles.
+                      <p className="mt-4 rounded-2xl bg-white px-4 py-4 text-center text-xs font-semibold text-slate-400">
+                        Ya has añadido todas las redes disponibles.
                       </p>
                     )}
                   </div>
                 ) : null}
-
-                {/* ============================================
-                    REDES SELECCIONADAS
-                    ============================================ */}
 
                 {socialLinks.length >
                 0 ? (
@@ -1485,77 +1347,38 @@ export function SettingsProfileEditor({
                       (link) => {
                         const platform =
                           SOCIAL_PLATFORMS.find(
-                            (
-                              item,
-                            ) =>
+                            (item) =>
                               item.id ===
                               link.platform,
                           );
 
-                        if (
-                          !platform
-                        ) {
+                        if (!platform) {
                           return null;
                         }
 
                         return (
                           <div
-                            key={
-                              link.id
-                            }
-                            className="
-                              rounded-[22px]
-                              border
-                              border-[#E8EBF2]
-                              bg-[#FAFBFD]
-                              p-4
-                            "
+                            key={link.id}
+                            className="rounded-[22px] border border-[#E8EBF2] bg-[#FAFBFD] p-4"
                           >
                             <div className="flex items-center gap-3">
-                              <div
-                                className="
-                                  flex
-                                  h-10
-                                  w-10
-                                  shrink-0
-                                  items-center
-                                  justify-center
-                                  rounded-xl
-                                  bg-[#EEF2FF]
-                                  text-[#5D5FEF]
-                                "
-                              >
+                              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#EEF2FF] text-[#5D5FEF]">
                                 <SocialIcon
                                   platform={
                                     platform.id
                                   }
-                                  size={
-                                    18
-                                  }
+                                  size={18}
                                 />
                               </div>
 
                               <div className="min-w-0 flex-1">
-                                <p
-                                  className="
-                                    text-sm
-                                    font-black
-                                    text-slate-800
-                                  "
-                                >
+                                <p className="text-sm font-black text-slate-800">
                                   {
                                     platform.name
                                   }
                                 </p>
 
-                                <p
-                                  className="
-                                    mt-0.5
-                                    truncate
-                                    text-[10px]
-                                    text-slate-400
-                                  "
-                                >
+                                <p className="mt-0.5 truncate text-[10px] text-slate-400">
                                   {platform.prefix ||
                                     "Enlace personalizado"}
                                 </p>
@@ -1568,43 +1391,15 @@ export function SettingsProfileEditor({
                                     platform.id,
                                   )
                                 }
-                                disabled={
-                                  saving
-                                }
+                                disabled={saving}
                                 aria-label={`Eliminar ${platform.name}`}
-                                className="
-                                  flex
-                                  h-9
-                                  w-9
-                                  items-center
-                                  justify-center
-                                  rounded-xl
-                                  text-slate-400
-                                  transition
-                                  hover:bg-red-50
-                                  hover:text-red-500
-                                  disabled:opacity-50
-                                "
+                                className="flex h-9 w-9 items-center justify-center rounded-xl text-slate-400 transition hover:bg-red-50 hover:text-red-500"
                               >
-                                <Trash2
-                                  size={
-                                    15
-                                  }
-                                />
+                                <Trash2 size={15} />
                               </button>
                             </div>
 
-                            <label
-                              className="
-                                mt-4
-                                block
-                                text-[10px]
-                                font-black
-                                uppercase
-                                tracking-[0.12em]
-                                text-slate-400
-                              "
-                            >
+                            <label className="mt-4 block text-[10px] font-black uppercase tracking-[0.12em] text-slate-400">
                               {getInputLabel(
                                 platform,
                               )}
@@ -1620,196 +1415,63 @@ export function SettingsProfileEditor({
                               value={
                                 link.url
                               }
-                              onChange={(
-                                event,
-                              ) =>
+                              onChange={(event) =>
                                 updatePlatform(
                                   platform.id,
-                                  event
-                                    .target
-                                    .value,
+                                  event.target.value,
                                 )
                               }
                               placeholder={
                                 platform.placeholder
                               }
-                              disabled={
-                                saving
-                              }
-                              className="
-                                mt-2
-                                w-full
-                                rounded-xl
-                                border
-                                border-[#E5E8F0]
-                                bg-white
-                                px-3
-                                py-3
-                                text-sm
-                                font-semibold
-                                text-slate-800
-                                outline-none
-                                transition
-                                focus:border-[#5D5FEF]
-                                focus:ring-4
-                                focus:ring-[#5D5FEF]/10
-                                disabled:bg-slate-50
-                              "
+                              disabled={saving}
+                              className="mt-2 w-full rounded-xl border border-[#E5E8F0] bg-white px-3 py-3 text-sm font-semibold text-slate-800 outline-none focus:border-[#5D5FEF]"
                             />
-
-                            {platform.prefix &&
-                            link.url.trim() ? (
-                              <p
-                                className="
-                                  mt-2
-                                  break-all
-                                  text-[10px]
-                                  leading-5
-                                  text-slate-400
-                                "
-                              >
-                                {
-                                  platform.prefix
-                                }
-                                {link.url
-                                  .trim()
-                                  .replace(
-                                    /^@+/,
-                                    "",
-                                  )}
-                              </p>
-                            ) : null}
                           </div>
                         );
                       },
                     )}
                   </div>
                 ) : (
-                  <div
-                    className="
-                      mt-4
-                      rounded-2xl
-                      border
-                      border-dashed
-                      border-[#DDE2EC]
-                      bg-[#FAFBFD]
-                      px-4
-                      py-5
-                      text-center
-                    "
-                  >
-                    <p
-                      className="
-                        text-xs
-                        font-semibold
-                        text-slate-400
-                      "
-                    >
-                      Aún no has conectado
-                      ninguna red.
+                  <div className="mt-4 rounded-2xl border border-dashed border-[#DDE2EC] bg-[#FAFBFD] px-4 py-5 text-center">
+                    <p className="text-xs font-semibold text-slate-400">
+                      Aún no has conectado ninguna red.
                     </p>
                   </div>
                 )}
-              </div>
+              </section>
             ) : null}
 
-            {/* ================================================
-                ERROR
-                ================================================ */}
-
-            {error ? (
+            {visibleError ? (
               <div
                 role="alert"
-                className="
-                  rounded-2xl
-                  bg-red-50
-                  px-4
-                  py-3
-                  text-xs
-                  font-semibold
-                  leading-5
-                  text-red-600
-                "
+                className="rounded-2xl bg-red-50 px-4 py-3 text-xs font-semibold leading-5 text-red-600"
               >
-                {error}
+                {visibleError}
               </div>
             ) : null}
           </div>
 
-          {/* ==================================================
-              ACCIONES
-              ================================================== */}
-
-          <div
-            className="
-              mt-6
-              flex
-              gap-3
-              border-t
-              border-[#EEF0F5]
-              pt-5
-            "
-          >
+          <div className="mt-6 flex gap-3 border-t border-[#EEF0F5] pt-5">
             <button
               type="button"
-              onClick={
-                onClose
-              }
-              disabled={
-                saving
-              }
-              className="
-                flex-1
-                rounded-2xl
-                border
-                border-[#E3E6EE]
-                px-4
-                py-3
-                text-sm
-                font-black
-                text-slate-600
-                transition
-                hover:bg-slate-50
-                disabled:cursor-not-allowed
-                disabled:opacity-50
-              "
+              onClick={onClose}
+              disabled={saving}
+              className="flex-1 rounded-2xl border border-[#E3E6EE] px-4 py-3 text-sm font-black text-slate-600"
             >
               Cancelar
             </button>
 
             <button
               type="submit"
-              disabled={
-                saving
-              }
-              className="
-                flex
-                flex-1
-                items-center
-                justify-center
-                gap-2
-                rounded-2xl
-                bg-[#5D5FEF]
-                px-4
-                py-3
-                text-sm
-                font-black
-                text-white
-                shadow-sm
-                transition
-                hover:bg-[#5153E6]
-                disabled:cursor-not-allowed
-                disabled:opacity-50
-              "
+              disabled={saving}
+              className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-[#5D5FEF] px-4 py-3 text-sm font-black text-white shadow-sm transition hover:bg-[#5153E6] disabled:opacity-50"
             >
               {saving ? (
                 "Guardando..."
               ) : (
                 <>
-                  <Check
-                    size={16}
-                  />
-
+                  <Check size={16} />
                   Guardar
                 </>
               )}
