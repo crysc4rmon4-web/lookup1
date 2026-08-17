@@ -36,6 +36,15 @@ import {
 } from "@/components/ui/SocialIcon";
 
 import {
+  useAuth,
+} from "@/components/auth-provider";
+
+import {
+  getProfileMatchExplanation,
+  type ProfileMatchExplanationResult,
+} from "@/services/ai/get-profile-match-explanation";
+
+import {
   buildSocialProfileUrl,
   normalizeSocialPlatform,
   getSocialPlatformLabel,
@@ -93,6 +102,49 @@ function normalizeComparableUrl(
       "",
     )
     .toLowerCase();
+}
+
+function formatInterest(
+  value: string,
+) {
+  const normalized =
+    value.trim();
+
+  if (!normalized) {
+    return "";
+  }
+
+  return normalized
+    .split(/[\s_-]+/)
+    .filter(Boolean)
+    .map(
+      (part) =>
+        part.charAt(0).toUpperCase() +
+        part.slice(1),
+    )
+    .join(" ");
+}
+
+function getConnectionLabel(
+  score: number,
+) {
+  if (score >= 85) {
+    return "Conexión excepcional";
+  }
+
+  if (score >= 70) {
+    return "Muy buena conexión";
+  }
+
+  if (score >= 55) {
+    return "Buena conexión";
+  }
+
+  if (score >= 40) {
+    return "Hay puntos en común";
+  }
+
+  return "Conexión por explorar";
 }
 
 function ProfileSkeleton() {
@@ -219,9 +271,7 @@ function SocialLinks({
             >
               <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#F0F2FF] text-[#5D5FEF] transition-all group-hover:scale-105 group-hover:bg-[#5D5FEF] group-hover:text-white">
                 <SocialIcon
-                  platform={
-                    platform
-                  }
+                  platform={platform}
                   size={21}
                 />
               </span>
@@ -250,6 +300,104 @@ function SocialLinks({
   );
 }
 
+function MatchExplanation({
+  result,
+  isBusiness,
+}: {
+  result:
+    ProfileMatchExplanationResult;
+
+  isBusiness: boolean;
+}) {
+  if (
+    !result.available ||
+    result.matchScore ===
+      null ||
+    !result.explanation
+  ) {
+    return null;
+  }
+
+  const sharedInterests =
+    result.sharedInterests
+      .map(formatInterest)
+      .filter(Boolean);
+
+  return (
+    <section className="relative mt-8 overflow-hidden rounded-[26px] border border-[#E1E2FA] bg-gradient-to-br from-[#FAFAFF] via-white to-[#F5F2FF] p-5 sm:p-6">
+      <div className="pointer-events-none absolute -right-12 -top-14 h-40 w-40 rounded-full bg-[#5D5FEF]/10 blur-3xl" />
+
+      <div className="relative">
+        <div className="flex items-start gap-3">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[16px] bg-[#5D5FEF] text-white shadow-[0_10px_24px_rgba(93,95,239,0.22)]">
+            <Sparkles
+              size={18}
+            />
+          </div>
+
+          <div className="min-w-0 flex-1">
+            <div className="flex items-start justify-between gap-4">
+              <div className="min-w-0">
+                <p className="text-[9px] font-black uppercase tracking-[0.24em] text-[#5D5FEF]">
+                  LOOKUP AI
+                </p>
+
+                <h2 className="mt-1 text-lg font-black tracking-tight text-slate-950">
+                  {isBusiness
+                    ? "Por qué puede interesarte este negocio"
+                    : "Por qué puede interesarte esta persona"}
+                </h2>
+              </div>
+
+              <div className="shrink-0 text-right">
+                <p className="text-[22px] font-black tracking-tight text-[#5D5FEF]">
+                  {result.matchScore}
+                  <span className="text-xs">
+                    %
+                  </span>
+                </p>
+
+                <p className="max-w-[105px] text-[9px] font-bold leading-4 text-slate-400">
+                  {getConnectionLabel(
+                    result.matchScore,
+                  )}
+                </p>
+              </div>
+            </div>
+
+            <p className="mt-4 text-sm leading-6 text-slate-600">
+              {result.explanation}
+            </p>
+
+            {sharedInterests.length >
+            0 ? (
+              <div className="mt-4 flex flex-wrap gap-1.5">
+                {sharedInterests.map(
+                  (interest) => (
+                    <span
+                      key={interest}
+                      className="rounded-full border border-[#E5E6F7] bg-white px-2.5 py-1.5 text-[10px] font-bold text-slate-600 shadow-sm"
+                    >
+                      {interest}
+                    </span>
+                  ),
+                )}
+              </div>
+            ) : null}
+
+            <p className="mt-4 text-[9px] font-bold uppercase tracking-[0.12em] text-slate-300">
+              {result.source ===
+              "ai"
+                ? "Explicación generada por LookUp AI"
+                : "Explicación de respaldo de LookUp"}
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export default function ProfilePage({
   params,
   searchParams,
@@ -260,6 +408,12 @@ export default function ProfilePage({
 
   const query =
     use(searchParams);
+
+  const {
+    session,
+    user,
+  } =
+    useAuth();
 
   const rawFrom =
     query.from;
@@ -273,20 +427,6 @@ export default function ProfilePage({
 
   const fromSettings =
     from === "settings";
-
-  /*
-   * ============================================================
-   * NAVEGACIÓN CONTEXTUAL
-   * ============================================================
-   *
-   * Perfil propio:
-   * Ajustes → Ver mi perfil
-   * → vuelve a Ajustes
-   *
-   * Perfil descubierto:
-   * Radar → Perfil
-   * → vuelve al Radar
-   */
 
   const backHref =
     fromSettings
@@ -334,18 +474,27 @@ export default function ProfilePage({
   ] =
     useState(false);
 
+  const [
+    matchResult,
+    setMatchResult,
+  ] =
+    useState<ProfileMatchExplanationResult | null>(
+      null,
+    );
+
+  const [
+    matchLoading,
+    setMatchLoading,
+  ] =
+    useState(false);
+
   useEffect(() => {
     let cancelled =
       false;
 
     async function loadProfile() {
-      setLoading(
-        true,
-      );
-
-      setError(
-        null,
-      );
+      setLoading(true);
+      setError(null);
 
       try {
         const [
@@ -367,13 +516,8 @@ export default function ProfilePage({
         }
 
         if (!publicProfile) {
-          setProfile(
-            null,
-          );
-
-          setLinks(
-            [],
-          );
+          setProfile(null);
+          setLinks([]);
 
           setError(
             "Este perfil no existe o no está disponible públicamente.",
@@ -402,13 +546,8 @@ export default function ProfilePage({
         );
 
         if (!cancelled) {
-          setProfile(
-            null,
-          );
-
-          setLinks(
-            [],
-          );
+          setProfile(null);
+          setLinks([]);
 
           setError(
             "No hemos podido cargar este perfil.",
@@ -416,9 +555,7 @@ export default function ProfilePage({
         }
       } finally {
         if (!cancelled) {
-          setLoading(
-            false,
-          );
+          setLoading(false);
         }
       }
     }
@@ -431,6 +568,74 @@ export default function ProfilePage({
     };
   }, [
     id,
+  ]);
+
+  useEffect(() => {
+    let cancelled =
+      false;
+
+    const accessToken =
+      session?.access_token
+        ?.trim();
+
+    if (
+      !profile ||
+      fromSettings ||
+      user?.id === id ||
+      !accessToken
+    ) {
+      setMatchResult(null);
+      setMatchLoading(false);
+
+      return;
+    }
+
+    const validAccessToken =
+      accessToken;
+
+    async function loadMatchExplanation() {
+      setMatchLoading(true);
+
+      try {
+        const result =
+          await getProfileMatchExplanation(
+            validAccessToken,
+            id,
+          );
+
+        if (!cancelled) {
+          setMatchResult(
+            result,
+          );
+        }
+      } catch (matchError) {
+        console.error(
+          "❌ Error cargando explicación LookUp Match:",
+          matchError,
+        );
+
+        if (!cancelled) {
+          setMatchResult(null);
+        }
+      } finally {
+        if (!cancelled) {
+          setMatchLoading(false);
+        }
+      }
+    }
+
+    void loadMatchExplanation();
+
+    return () => {
+      cancelled =
+        true;
+    };
+  }, [
+    fromSettings,
+    id,
+    profile,
+    session?.access_token,
+    user?.id,
   ]);
 
   useEffect(() => {
@@ -453,9 +658,7 @@ export default function ProfilePage({
         event.key ===
         "Escape"
       ) {
-        setPhotoOpen(
-          false,
-        );
+        setPhotoOpen(false);
       }
     };
 
@@ -852,6 +1055,42 @@ export default function ProfilePage({
                   )}
                 </div>
               </div>
+
+              {!fromSettings &&
+              user?.id !== id &&
+              matchLoading ? (
+                <section className="mt-8 rounded-[26px] border border-[#E5E6F7] bg-[#FAFAFF] p-5 sm:p-6">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-[16px] bg-[#EEEEFF] text-[#5D5FEF]">
+                      <Sparkles
+                        size={18}
+                        className="animate-pulse"
+                      />
+                    </div>
+
+                    <div>
+                      <p className="text-[9px] font-black uppercase tracking-[0.24em] text-[#5D5FEF]">
+                        LOOKUP AI
+                      </p>
+
+                      <p className="mt-1 text-sm font-black text-slate-800">
+                        Entendiendo esta conexión...
+                      </p>
+                    </div>
+                  </div>
+                </section>
+              ) : null}
+
+              {matchResult ? (
+                <MatchExplanation
+                  result={
+                    matchResult
+                  }
+                  isBusiness={
+                    isBusiness
+                  }
+                />
+              ) : null}
 
               {isBusiness &&
               businessWebsite &&

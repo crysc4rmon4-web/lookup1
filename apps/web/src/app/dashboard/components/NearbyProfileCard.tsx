@@ -12,34 +12,41 @@ import {
   UserRound,
 } from "lucide-react";
 
-import type { NearbyProfile } from "@lookup/types";
+import type {
+  NearbyProfile,
+} from "@lookup/types";
 
 type Props = {
   profile: NearbyProfile;
 };
 
-function getMatchLabel(score: number) {
+function getConnectionLabel(
+  score: number,
+) {
   if (score >= 85) {
-    return "Afinidad muy alta";
+    return "Conexión excepcional";
   }
 
   if (score >= 70) {
-    return "Alta afinidad";
+    return "Muy buena conexión";
   }
 
   if (score >= 55) {
-    return "Buena afinidad";
+    return "Buena conexión";
   }
 
   if (score >= 40) {
-    return "Afinidad moderada";
+    return "Hay puntos en común";
   }
 
-  return "Afinidad inicial";
+  return "Conexión por explorar";
 }
 
-function formatInterest(value: string) {
-  const normalized = value.trim();
+function formatInterest(
+  value: string,
+) {
+  const normalized =
+    value.trim();
 
   if (!normalized) {
     return "";
@@ -60,7 +67,8 @@ export function NearbyProfileCard({
   profile,
 }: Props) {
   const isBusiness =
-    profile.account_type === "business";
+    profile.account_type ===
+    "business";
 
   const displayName =
     profile.full_name ??
@@ -72,7 +80,8 @@ export function NearbyProfileCard({
     profile.match_score;
 
   const matchScore =
-    typeof rawMatchScore === "number"
+    typeof rawMatchScore ===
+    "number"
       ? Math.max(
           0,
           Math.min(
@@ -83,7 +92,9 @@ export function NearbyProfileCard({
       : null;
 
   const sharedInterests =
-    Array.isArray(profile.shared_interests)
+    Array.isArray(
+      profile.shared_interests,
+    )
       ? profile.shared_interests
           .map(formatInterest)
           .filter(Boolean)
@@ -121,7 +132,9 @@ export function NearbyProfileCard({
         >
           {profile.avatar_url ? (
             <Image
-              src={profile.avatar_url}
+              src={
+                profile.avatar_url
+              }
               alt={displayName}
               fill
               sizes="68px"
@@ -152,18 +165,27 @@ export function NearbyProfileCard({
             </div>
 
             <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-[#F7F8FB] px-2.5 py-1.5 text-[10px] font-bold text-slate-500">
-              <MapPin size={11} />
+              <MapPin
+                size={11}
+              />
 
-              {Math.round(profile.distance)} m
+              {Math.round(
+                profile.distance,
+              )}{" "}
+              m
             </span>
           </div>
 
           <div className="mt-2.5">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-[#F1F2FF] px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.1em] text-[#5D5FEF]">
               {isBusiness ? (
-                <Building2 size={10} />
+                <Building2
+                  size={10}
+                />
               ) : (
-                <UserRound size={10} />
+                <UserRound
+                  size={10}
+                />
               )}
 
               {isBusiness
@@ -197,35 +219,51 @@ export function NearbyProfileCard({
               </p>
 
               <p className="mt-0.5 text-[13px] font-black text-slate-900">
-                {getMatchLabel(matchScore)}
+                {getConnectionLabel(
+                  matchScore,
+                )}
               </p>
             </div>
 
-            <div className="shrink-0">
-              <span className="text-[22px] font-black tracking-tight text-[#5D5FEF]">
-                {matchScore}
-              </span>
+            <div className="shrink-0 text-right">
+              <div>
+                <span className="text-[22px] font-black tracking-tight text-[#5D5FEF]">
+                  {matchScore}
+                </span>
 
-              <span className="ml-0.5 text-xs font-black text-[#5D5FEF]">
-                %
+                <span className="ml-0.5 text-xs font-black text-[#5D5FEF]">
+                  %
+                </span>
+              </div>
+
+              <span className="block text-[7px] font-black uppercase tracking-[0.12em] text-slate-300">
+                conexión
               </span>
             </div>
           </div>
 
-          {sharedInterests.length > 0 ? (
+          {sharedInterests.length >
+          0 ? (
             <div className="mt-3 flex flex-wrap items-center gap-1.5">
               {sharedInterests
                 .slice(0, 3)
-                .map((interest) => (
-                  <span
-                    key={interest}
-                    className="rounded-full border border-[#E8E9F5] bg-white px-2.5 py-1 text-[9px] font-bold text-slate-600"
-                  >
-                    {interest}
-                  </span>
-                ))}
+                .map(
+                  (interest) => (
+                    <span
+                      key={
+                        interest
+                      }
+                      className="rounded-full border border-[#E8E9F5] bg-white px-2.5 py-1 text-[9px] font-bold text-slate-600"
+                    >
+                      {
+                        interest
+                      }
+                    </span>
+                  ),
+                )}
 
-              {sharedInterests.length > 3 ? (
+              {sharedInterests.length >
+              3 ? (
                 <span className="rounded-full bg-[#EEEEFF] px-2.5 py-1 text-[9px] font-black text-[#5D5FEF]">
                   +
                   {sharedInterests.length -
@@ -235,15 +273,15 @@ export function NearbyProfileCard({
             </div>
           ) : (
             <p className="mt-2.5 text-[10px] font-medium leading-4 text-slate-400">
-              Afinidad detectada a partir del
-              contexto semántico de ambos perfiles.
+              LookUp ha encontrado puntos
+              relacionados entre ambos perfiles.
             </p>
           )}
         </div>
       ) : (
         <div className="mt-4 rounded-[18px] border border-dashed border-[#E6E8F0] bg-[#FAFBFC] px-4 py-3">
           <p className="text-[10px] font-semibold leading-5 text-slate-400">
-            LookUp está preparando la afinidad
+            LookUp está preparando la conexión
             inteligente de este perfil.
           </p>
         </div>
@@ -274,7 +312,9 @@ export function NearbyProfileCard({
             ? "Ver por qué"
             : "Ver perfil"}
 
-          <ArrowUpRight size={11} />
+          <ArrowUpRight
+            size={11}
+          />
         </span>
       </div>
     </Link>
