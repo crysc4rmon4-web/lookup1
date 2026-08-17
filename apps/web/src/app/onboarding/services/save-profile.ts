@@ -4,7 +4,13 @@ import {
   saveProfileLink,
 } from "@lookup/services";
 
-import type { OnboardingData } from "../types";
+import {
+  syncCurrentProfileEmbedding,
+} from "@/services/ai/sync-profile-embedding";
+
+import type {
+  OnboardingData,
+} from "../types";
 
 type SaveProfileParams = {
   userId: string;
@@ -24,30 +30,48 @@ export async function saveProfile({
   data,
   completeOnboarding = false,
 }: SaveProfileParams) {
-  const profile = await saveMyProfile({
-    id: userId,
-    email,
+  const profile =
+    await saveMyProfile({
+      id:
+        userId,
 
-    full_name: data.fullName.trim(),
+      email,
 
-    username: data.username.trim(),
+      full_name:
+        data.fullName.trim(),
 
-    avatar_url: data.avatarUrl || null,
+      username:
+        data.username.trim(),
 
-    bio: data.bio.trim() || null,
+      avatar_url:
+        data.avatarUrl ||
+        null,
 
-    profession: data.profession.trim() || null,
+      bio:
+        data.bio.trim() ||
+        null,
 
-    interests: data.interests
-      .map((interest) => interest.trim())
-      .filter(Boolean),
+      profession:
+        data.profession.trim() ||
+        null,
 
-    account_type: "person",
+      interests:
+        data.interests
+          .map(
+            (interest) =>
+              interest.trim(),
+          )
+          .filter(Boolean),
 
-    visibility: true,
+      account_type:
+        "person",
 
-    onboarding_completed: completeOnboarding,
-  });
+      visibility:
+        true,
+
+      onboarding_completed:
+        completeOnboarding,
+    });
 
   if (profile.error) {
     throw profile.error;
@@ -58,18 +82,63 @@ export async function saveProfile({
    * la única fuente de verdad para
    * las redes sociales.
    */
-  await deleteProfileLinks(userId);
+  await deleteProfileLinks(
+    userId,
+  );
 
-  for (const link of data.socialLinks) {
-    const platform = link.platform.trim();
+  for (
+    const link of
+    data.socialLinks
+  ) {
+    const platform =
+      link.platform.trim();
 
-    const url = link.url.trim();
+    const url =
+      link.url.trim();
 
-    if (!platform || !url) {
+    if (
+      !platform ||
+      !url
+    ) {
       continue;
     }
 
-    await saveProfileLink(userId, platform, url);
+    await saveProfileLink(
+      userId,
+      platform,
+      url,
+    );
+  }
+
+  /*
+   * ============================================================
+   * PERFIL SEMÁNTICO
+   * ============================================================
+   *
+   * Solo lo generamos cuando realmente termina onboarding.
+   *
+   * El perfil y sus redes ya están persistidos antes de entrar
+   * aquí. La IA nunca puede impedir que una persona complete
+   * correctamente su registro.
+   */
+
+  if (
+    completeOnboarding
+  ) {
+    try {
+      const embeddingResult =
+        await syncCurrentProfileEmbedding();
+
+      console.info(
+        "🧠 Onboarding Persona · perfil semántico:",
+        embeddingResult.status,
+      );
+    } catch (embeddingError) {
+      console.error(
+        "❌ Onboarding Persona completado, pero no pudo sincronizarse el embedding",
+        embeddingError,
+      );
+    }
   }
 
   return profile.data;
