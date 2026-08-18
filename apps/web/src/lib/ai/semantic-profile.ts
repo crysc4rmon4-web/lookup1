@@ -1,85 +1,39 @@
 import "server-only";
 
 import {
-  createHash,
-} from "node:crypto";
+  LOOKUP_EMBEDDING_DIMENSIONS,
+  LOOKUP_EMBEDDING_MODEL,
+} from "./embedding-config";
+
+import {
+  createSemanticHash,
+  normalizeSemanticList,
+  normalizeSemanticValue,
+  type SemanticDocument,
+} from "./semantic-document";
 
 export const PROFILE_EMBEDDING_MODEL =
-  "text-embedding-3-small";
+  LOOKUP_EMBEDDING_MODEL;
 
 export const PROFILE_EMBEDDING_DIMENSIONS =
-  1536;
+  LOOKUP_EMBEDDING_DIMENSIONS;
 
 export type SemanticProfileInput = {
-  profession?: string | null;
-  bio?: string | null;
-  interests?: readonly string[] | null;
-};
+  profession?:
+    | string
+    | null;
 
-export type SemanticProfile = {
-  semanticText: string;
-  semanticHash: string;
-};
+  bio?:
+    | string
+    | null;
 
-function normalizeSemanticValue(
-  value: string | null | undefined,
-) {
-  if (!value) {
-    return "";
-  }
-
-  return value
-    .normalize("NFKC")
-    .trim()
-    .replace(/\s+/g, " ")
-    .toLowerCase();
-}
-
-function normalizeInterests(
-  interests:
+  interests?:
     | readonly string[]
-    | null
-    | undefined,
-) {
-  if (!interests?.length) {
-    return [];
-  }
+    | null;
+};
 
-  const uniqueInterests =
-    new Set<string>();
-
-  for (const interest of interests) {
-    const normalized =
-      normalizeSemanticValue(
-        interest,
-      );
-
-    if (normalized) {
-      uniqueInterests.add(
-        normalized,
-      );
-    }
-  }
-
-  return Array.from(
-    uniqueInterests,
-  ).sort();
-}
-
-function createSemanticHash(
-  semanticText: string,
-) {
-  return createHash(
-    "sha256",
-  )
-    .update(
-      semanticText,
-      "utf8",
-    )
-    .digest(
-      "hex",
-    );
-}
+export type SemanticProfile =
+  SemanticDocument;
 
 export function buildSemanticProfile(
   input: SemanticProfileInput,
@@ -95,7 +49,7 @@ export function buildSemanticProfile(
     );
 
   const interests =
-    normalizeInterests(
+    normalizeSemanticList(
       input.interests,
     );
 
@@ -127,7 +81,8 @@ export function buildSemanticProfile(
   }
 
   if (
-    interests.length > 0
+    interests.length >
+    0
   ) {
     parts.push(
       `intereses: ${interests.join(

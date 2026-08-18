@@ -1,8 +1,8 @@
 import "server-only";
 
 import {
-  getOpenAIClient,
-} from "../openai";
+  generateLookupEmbedding,
+} from "./embedding";
 
 import {
   PROFILE_EMBEDDING_DIMENSIONS,
@@ -18,54 +18,29 @@ export type GeneratedProfileEmbedding = {
 export async function generateProfileEmbedding(
   semanticText: string,
 ): Promise<GeneratedProfileEmbedding> {
-  const input =
-    semanticText.trim();
-
-  if (!input) {
-    throw new Error(
-      "No se puede generar un embedding a partir de un perfil semántico vacío.",
+  const generated =
+    await generateLookupEmbedding(
+      semanticText,
+      "un perfil semántico",
     );
-  }
-
-  const openai =
-    getOpenAIClient();
-
-  const response =
-    await openai.embeddings.create({
-      model:
-        PROFILE_EMBEDDING_MODEL,
-
-      input,
-
-      encoding_format:
-        "float",
-    });
-
-  const embedding =
-    response.data[0]?.embedding;
-
-  if (!embedding) {
-    throw new Error(
-      "OpenAI no devolvió un embedding para el perfil.",
-    );
-  }
 
   if (
-    embedding.length !==
+    generated.dimensions !==
     PROFILE_EMBEDDING_DIMENSIONS
   ) {
     throw new Error(
-      `Dimensión de embedding inesperada. Se esperaban ${PROFILE_EMBEDDING_DIMENSIONS} dimensiones y se recibieron ${embedding.length}.`,
+      `Dimensión de embedding inesperada para el perfil. Se esperaban ${PROFILE_EMBEDDING_DIMENSIONS} dimensiones y se recibieron ${generated.dimensions}.`,
     );
   }
 
   return {
-    embedding,
+    embedding:
+      generated.embedding,
 
     model:
       PROFILE_EMBEDDING_MODEL,
 
     dimensions:
-      embedding.length,
+      generated.dimensions,
   };
 }
