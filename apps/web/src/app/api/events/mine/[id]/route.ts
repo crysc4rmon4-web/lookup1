@@ -12,6 +12,12 @@ export const runtime =
 export const dynamic =
   "force-dynamic";
 
+type RouteContext = {
+  params: Promise<{
+    id: string;
+  }>;
+};
+
 type EventLifecycleStatus =
   | "draft"
   | "upcoming"
@@ -119,6 +125,14 @@ function noStoreHeaders() {
   };
 }
 
+function isUuid(
+  value: string,
+) {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+    value,
+  );
+}
+
 function deriveLifecycleStatus(
   event: EventRow,
 ): EventLifecycleStatus {
@@ -196,6 +210,7 @@ function deriveLifecycleStatus(
 
 export async function GET(
   request: Request,
+  context: RouteContext,
 ) {
   try {
     const accessToken =
@@ -211,6 +226,32 @@ export async function GET(
         },
         {
           status: 401,
+          headers:
+            noStoreHeaders(),
+        },
+      );
+    }
+
+    const {
+      id: rawEventId,
+    } =
+      await context.params;
+
+    const eventId =
+      rawEventId.trim();
+
+    if (
+      !isUuid(
+        eventId,
+      )
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "El evento solicitado no es válido.",
+        },
+        {
+          status: 400,
           headers:
             noStoreHeaders(),
         },
@@ -282,122 +323,122 @@ export async function GET(
           `,
         )
         .eq(
+          "id",
+          eventId,
+        )
+        .eq(
           "creator_profile_id",
           authData.user.id,
         )
-        .order(
-          "created_at",
-          {
-            ascending:
-              false,
-          },
-        )
-        .limit(
-          100,
-        );
+        .maybeSingle();
 
     if (error) {
       throw new Error(
-        `No se pudieron cargar tus eventos: ${error.message}`,
+        `No se pudo cargar el evento: ${error.message}`,
       );
     }
 
-    const events =
-      (
-        data ?? []
-      ).map(
-        (rawEvent) => {
-          const event =
-            rawEvent as EventRow;
-
-          return {
-            id:
-              event.id,
-
-            creatorProfileId:
-              event.creator_profile_id,
-
-            title:
-              event.title,
-
-            description:
-              event.description,
-
-            category:
-              event.category,
-
-            tags:
-              event.tags ??
-              [],
-
-            audience:
-              event.audience ??
-              [],
-
-            venueName:
-              event.venue_name,
-
-            address:
-              event.address,
-
-            city:
-              event.city,
-
-            province:
-              event.province,
-
-            postalCode:
-              event.postal_code,
-
-            countryCode:
-              event.country_code,
-
-            startAt:
-              event.start_at,
-
-            endAt:
-              event.end_at,
-
-            rawStatus:
-              event.status,
-
-            lifecycleStatus:
-              deriveLifecycleStatus(
-                event,
-              ),
-
-            isFree:
-              event.is_free ??
-              true,
-
-            priceFrom:
-              event.price_from,
-
-            currency:
-              event.currency ??
-              "EUR",
-
-            capacity:
-              event.capacity,
-
-            externalUrl:
-              event.external_url,
-
-            externalActionLabel:
-              event.external_action_label,
-
-            createdAt:
-              event.created_at,
-
-            updatedAt:
-              event.updated_at,
-          };
+    if (!data) {
+      return NextResponse.json(
+        {
+          error:
+            "El evento no existe o no te pertenece.",
+        },
+        {
+          status: 404,
+          headers:
+            noStoreHeaders(),
         },
       );
+    }
+
+    const event =
+      data as EventRow;
 
     return NextResponse.json(
       {
-        events,
+        event: {
+          id:
+            event.id,
+
+          creatorProfileId:
+            event.creator_profile_id,
+
+          title:
+            event.title,
+
+          description:
+            event.description,
+
+          category:
+            event.category,
+
+          tags:
+            event.tags ??
+            [],
+
+          audience:
+            event.audience ??
+            [],
+
+          venueName:
+            event.venue_name,
+
+          address:
+            event.address,
+
+          city:
+            event.city,
+
+          province:
+            event.province,
+
+          postalCode:
+            event.postal_code,
+
+          countryCode:
+            event.country_code,
+
+          startAt:
+            event.start_at,
+
+          endAt:
+            event.end_at,
+
+          rawStatus:
+            event.status,
+
+          lifecycleStatus:
+            deriveLifecycleStatus(
+              event,
+            ),
+
+          isFree:
+            event.is_free ??
+            true,
+
+          priceFrom:
+            event.price_from,
+
+          currency:
+            event.currency ??
+            "EUR",
+
+          capacity:
+            event.capacity,
+
+          externalUrl:
+            event.external_url,
+
+          externalActionLabel:
+            event.external_action_label,
+
+          createdAt:
+            event.created_at,
+
+          updatedAt:
+            event.updated_at,
+        },
       },
       {
         status: 200,
@@ -407,14 +448,14 @@ export async function GET(
     );
   } catch (error) {
     console.error(
-      "❌ Error cargando eventos propios:",
+      "❌ Error cargando evento propio:",
       error,
     );
 
     return NextResponse.json(
       {
         error:
-          "No se pudieron cargar tus eventos.",
+          "No se pudo cargar el evento.",
       },
       {
         status: 500,

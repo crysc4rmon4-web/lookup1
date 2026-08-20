@@ -7,6 +7,8 @@ import {
   useState,
 } from "react";
 
+import Link from "next/link";
+
 import {
   Bookmark,
   CalendarDays,
@@ -37,34 +39,19 @@ import {
 
 export type EventCard = {
   id: string;
-
   title: string;
-
   description: string;
-
   place: string;
-
   date: string;
-
   attendees: number;
 };
 
 type EventsViewProps = {
-  events:
-  EventCard[];
-
-  city?:
-  string | null;
-
-  createdDraft?:
-  CreatedEventDraft | null;
-
-  onCreateEvent:
-  () => void;
-
-  onJoinEvent: (
-    id: string,
-  ) => void;
+  events: EventCard[];
+  city?: string | null;
+  createdDraft?: CreatedEventDraft | null;
+  onCreateEvent: () => void;
+  onJoinEvent: (id: string) => void;
 };
 
 type EventsTab =
@@ -75,8 +62,12 @@ type EventsTab =
 type MyEventsFilter =
   | "all"
   | EventLifecycleStatus;
+
 function getInitialEventsTab(): EventsTab {
-  if (typeof window === "undefined") {
+  if (
+    typeof window ===
+    "undefined"
+  ) {
     return "explore";
   }
 
@@ -99,6 +90,7 @@ function getInitialEventsTab(): EventsTab {
 
   return "explore";
 }
+
 const STATUS_ORDER:
   EventLifecycleStatus[] =
   [
@@ -114,20 +106,11 @@ const STATUS_LABELS:
     EventLifecycleStatus,
     string
   > = {
-  draft:
-    "Borrador",
-
-  upcoming:
-    "Próximo",
-
-  live:
-    "En curso",
-
-  ended:
-    "Finalizado",
-
-  cancelled:
-    "Cancelado",
+  draft: "Borrador",
+  upcoming: "Próximo",
+  live: "En curso",
+  ended: "Finalizado",
+  cancelled: "Cancelado",
 };
 
 function formatEventDate(
@@ -149,21 +132,11 @@ function formatEventDate(
   return new Intl.DateTimeFormat(
     "es-ES",
     {
-      weekday:
-        "short",
-
-      day:
-        "numeric",
-
-      month:
-        "short",
-
-      hour:
-        "2-digit",
-
-      minute:
-        "2-digit",
-
+      weekday: "short",
+      day: "numeric",
+      month: "short",
+      hour: "2-digit",
+      minute: "2-digit",
       timeZone:
         "Europe/Madrid",
     },
@@ -177,13 +150,13 @@ function getStatusClasses(
     EventLifecycleStatus,
 ) {
   switch (
-  status
+    status
   ) {
     case "draft":
       return "bg-amber-50 text-amber-700";
 
     case "upcoming":
-      return "bg-blue-50 text-blue-700";
+      return "bg-indigo-50 text-[#5557D8]";
 
     case "live":
       return "bg-emerald-50 text-emerald-700";
@@ -201,7 +174,7 @@ function getStatusIcon(
     EventLifecycleStatus,
 ) {
   switch (
-  status
+    status
   ) {
     case "draft":
       return (
@@ -259,33 +232,7 @@ export function EventsView({
     useState<EventsTab>(
       getInitialEventsTab,
     );
-  useEffect(() => {
-    const url =
-      new URL(
-        window.location.href,
-      );
 
-    if (
-      activeTab === "explore"
-    ) {
-      url.searchParams.delete(
-        "eventsTab",
-      );
-    } else {
-      url.searchParams.set(
-        "eventsTab",
-        activeTab,
-      );
-    }
-
-    window.history.replaceState(
-      window.history.state,
-      "",
-      `${url.pathname}${url.search}${url.hash}`,
-    );
-  }, [
-    activeTab,
-  ]);
   const [
     myEvents,
     setMyEvents,
@@ -380,6 +327,35 @@ export function EventsView({
     );
 
   useEffect(() => {
+    const url =
+      new URL(
+        window.location.href,
+      );
+
+    if (
+      activeTab ===
+      "explore"
+    ) {
+      url.searchParams.delete(
+        "eventsTab",
+      );
+    } else {
+      url.searchParams.set(
+        "eventsTab",
+        activeTab,
+      );
+    }
+
+    window.history.replaceState(
+      window.history.state,
+      "",
+      `${url.pathname}${url.search}${url.hash}`,
+    );
+  }, [
+    activeTab,
+  ]);
+
+  useEffect(() => {
     if (
       activeTab !==
       "mine"
@@ -390,6 +366,7 @@ export function EventsView({
     void loadMyEvents();
   }, [
     activeTab,
+    createdDraft?.id,
     loadMyEvents,
   ]);
 
@@ -403,11 +380,8 @@ export function EventsView({
     setActiveTab(
       "mine",
     );
-
-    void loadMyEvents();
   }, [
     createdDraft,
-    loadMyEvents,
   ]);
 
   const statusCounts =
@@ -418,20 +392,11 @@ export function EventsView({
             EventLifecycleStatus,
             number
           > = {
-          draft:
-            0,
-
-          upcoming:
-            0,
-
-          live:
-            0,
-
-          ended:
-            0,
-
-          cancelled:
-            0,
+          draft: 0,
+          upcoming: 0,
+          live: 0,
+          ended: 0,
+          cancelled: 0,
         };
 
         for (
@@ -474,10 +439,10 @@ export function EventsView({
 
   return (
     <section className="space-y-5 pb-24">
-      <div className="overflow-hidden rounded-[2rem] bg-slate-950 p-6 text-white shadow-lg sm:p-7">
+      <div className="overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#5D5FEF] via-[#6668F4] to-[#7B6CF6] p-6 text-white shadow-lg shadow-[#5D5FEF]/20 sm:p-7">
         <div className="flex items-start justify-between gap-5">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.15em] text-violet-200">
+            <div className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.15em] text-white">
               <Sparkles
                 size={13}
               />
@@ -487,19 +452,19 @@ export function EventsView({
 
             <h1 className="mt-4 text-3xl font-black tracking-tight sm:text-[2rem]">
               Eventos en{" "}
-              <span className="text-violet-300">
+              <span className="text-violet-100">
                 {
                   normalizedCity
                 }
               </span>
             </h1>
 
-            <p className="mt-3 max-w-lg text-sm leading-6 text-slate-300">
+            <p className="mt-3 max-w-lg text-sm leading-6 text-indigo-50">
               Descubre lo que está pasando, guarda lo que te interese y gestiona tus propias experiencias desde un solo lugar.
             </p>
           </div>
 
-          <div className="hidden h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white/10 text-violet-300 sm:flex">
+          <div className="hidden h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white/15 text-white sm:flex">
             <CalendarDays
               size={25}
             />
@@ -511,7 +476,7 @@ export function EventsView({
           onClick={
             onCreateEvent
           }
-          className="mt-6 flex w-full items-center justify-center gap-2 rounded-2xl bg-white px-5 py-3.5 text-sm font-black text-slate-950 transition hover:bg-violet-50 sm:w-auto"
+          className="mt-6 flex w-full items-center justify-center gap-2 rounded-2xl bg-white px-5 py-3.5 text-sm font-black text-[#5557D8] shadow-sm transition hover:bg-violet-50 sm:w-auto"
         >
           <Plus
             size={18}
@@ -529,11 +494,12 @@ export function EventsView({
               "explore",
             )
           }
-          className={`rounded-xl px-2 py-3 text-xs font-black transition sm:text-sm ${activeTab ===
+          className={`rounded-xl px-2 py-3 text-xs font-black transition sm:text-sm ${
+            activeTab ===
             "explore"
-            ? "bg-[#5D5FEF] text-white shadow-sm"
-            : "text-slate-500 hover:bg-slate-50 hover:text-slate-800"
-            }`}
+              ? "bg-[#5D5FEF] text-white shadow-md shadow-[#5D5FEF]/15"
+              : "text-slate-500 hover:bg-[#F3F2FF] hover:text-[#5D5FEF]"
+          }`}
         >
           Explorar
         </button>
@@ -545,11 +511,12 @@ export function EventsView({
               "saved",
             )
           }
-          className={`rounded-xl px-2 py-3 text-xs font-black transition sm:text-sm ${activeTab ===
+          className={`rounded-xl px-2 py-3 text-xs font-black transition sm:text-sm ${
+            activeTab ===
             "saved"
-            ? "bg-[#5D5FEF] text-white shadow-sm"
-            : "text-slate-500 hover:bg-slate-50 hover:text-slate-800"
-            }`}
+              ? "bg-[#5D5FEF] text-white shadow-md shadow-[#5D5FEF]/15"
+              : "text-slate-500 hover:bg-[#F3F2FF] hover:text-[#5D5FEF]"
+          }`}
         >
           Guardados
         </button>
@@ -561,21 +528,22 @@ export function EventsView({
               "mine",
             )
           }
-          className={`rounded-xl px-2 py-3 text-xs font-black transition sm:text-sm ${activeTab ===
+          className={`rounded-xl px-2 py-3 text-xs font-black transition sm:text-sm ${
+            activeTab ===
             "mine"
-            ? "bg-[#5D5FEF] text-white shadow-sm"
-            : "text-slate-500 hover:bg-slate-50 hover:text-slate-800"
-            }`}
+              ? "bg-[#5D5FEF] text-white shadow-md shadow-[#5D5FEF]/15"
+              : "text-slate-500 hover:bg-[#F3F2FF] hover:text-[#5D5FEF]"
+          }`}
         >
           Mis eventos
         </button>
       </div>
 
       {activeTab ===
-        "explore" ? (
+      "explore" ? (
         <>
           {events.length ===
-            0 ? (
+          0 ? (
             <div className="rounded-[2rem] border border-slate-200/80 bg-white p-8 text-center shadow-sm sm:p-10">
               <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-[1.4rem] bg-[#F0F0FF] text-[#5D5FEF]">
                 <CalendarDays
@@ -670,7 +638,7 @@ export function EventsView({
                           event.id,
                         )
                       }
-                      className="mt-6 w-full rounded-2xl bg-[#5D5FEF] py-3.5 text-sm font-black text-white transition hover:bg-[#5254DF]"
+                      className="mt-6 w-full rounded-2xl bg-[#5D5FEF] py-3.5 text-sm font-black text-white shadow-md shadow-[#5D5FEF]/15 transition hover:bg-[#5254DF]"
                     >
                       Ver evento
                     </button>
@@ -683,7 +651,7 @@ export function EventsView({
       ) : null}
 
       {activeTab ===
-        "saved" ? (
+      "saved" ? (
         <div className="rounded-[2rem] border border-slate-200/80 bg-white p-8 text-center shadow-sm sm:p-10">
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-[1.4rem] bg-[#F0F0FF] text-[#5D5FEF]">
             <Bookmark
@@ -706,7 +674,7 @@ export function EventsView({
                 "explore",
               )
             }
-            className="mt-6 rounded-2xl bg-slate-950 px-5 py-3.5 text-sm font-black text-white transition hover:bg-slate-800"
+            className="mt-6 rounded-2xl bg-[#5D5FEF] px-5 py-3.5 text-sm font-black text-white shadow-md shadow-[#5D5FEF]/20 transition hover:bg-[#5254DF]"
           >
             Explorar eventos
           </button>
@@ -714,7 +682,7 @@ export function EventsView({
       ) : null}
 
       {activeTab ===
-        "mine" ? (
+      "mine" ? (
         <div className="space-y-4">
           {createdDraft ? (
             <div className="flex items-start gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-4">
@@ -753,7 +721,7 @@ export function EventsView({
                   evento
                   {
                     myEvents.length ===
-                      1
+                    1
                       ? ""
                       : "s"
                   }
@@ -769,7 +737,7 @@ export function EventsView({
                   myEventsLoading
                 }
                 aria-label="Actualizar mis eventos"
-                className="flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 text-slate-500 transition hover:bg-slate-50 disabled:opacity-50"
+                className="flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 text-[#5D5FEF] transition hover:border-[#5D5FEF]/30 hover:bg-[#F3F2FF] disabled:opacity-50"
               >
                 <RefreshCw
                   size={17}
@@ -783,7 +751,7 @@ export function EventsView({
             </div>
 
             {myEvents.length >
-              0 ? (
+            0 ? (
               <div className="mt-5 flex gap-2 overflow-x-auto pb-1">
                 <button
                   type="button"
@@ -792,11 +760,12 @@ export function EventsView({
                       "all",
                     )
                   }
-                  className={`shrink-0 rounded-full px-3 py-2 text-xs font-black transition ${myEventsFilter ===
+                  className={`shrink-0 rounded-full px-3 py-2 text-xs font-black transition ${
+                    myEventsFilter ===
                     "all"
-                    ? "bg-slate-950 text-white"
-                    : "bg-slate-100 text-slate-600"
-                    }`}
+                      ? "bg-[#5D5FEF] text-white"
+                      : "bg-slate-100 text-slate-600 hover:bg-[#F0F0FF] hover:text-[#5D5FEF]"
+                  }`}
                 >
                   Todos ·{" "}
                   {
@@ -818,21 +787,22 @@ export function EventsView({
                           status,
                         )
                       }
-                      className={`shrink-0 rounded-full px-3 py-2 text-xs font-black transition ${myEventsFilter ===
+                      className={`shrink-0 rounded-full px-3 py-2 text-xs font-black transition ${
+                        myEventsFilter ===
                         status
-                        ? "bg-slate-950 text-white"
-                        : "bg-slate-100 text-slate-600"
-                        }`}
+                          ? "bg-[#5D5FEF] text-white"
+                          : "bg-slate-100 text-slate-600 hover:bg-[#F0F0FF] hover:text-[#5D5FEF]"
+                      }`}
                     >
                       {
                         STATUS_LABELS[
-                        status
+                          status
                         ]
                       }{" "}
                       ·{" "}
                       {
                         statusCounts[
-                        status
+                          status
                         ]
                       }
                     </button>
@@ -843,7 +813,7 @@ export function EventsView({
           </div>
 
           {myEventsLoading &&
-            myEvents.length ===
+          myEvents.length ===
             0 ? (
             <div className="rounded-[2rem] border border-slate-200/80 bg-white p-8 text-center shadow-sm">
               <RefreshCw
@@ -882,8 +852,8 @@ export function EventsView({
           ) : null}
 
           {!myEventsLoading &&
-            !myEventsError &&
-            myEvents.length ===
+          !myEventsError &&
+          myEvents.length ===
             0 ? (
             <div className="rounded-[2rem] border border-slate-200/80 bg-white p-8 text-center shadow-sm sm:p-10">
               <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-[1.4rem] bg-[#F0F0FF] text-[#5D5FEF]">
@@ -917,10 +887,10 @@ export function EventsView({
           ) : null}
 
           {!myEventsLoading &&
-            !myEventsError &&
-            myEvents.length >
+          !myEventsError &&
+          myEvents.length >
             0 &&
-            filteredMyEvents.length ===
+          filteredMyEvents.length ===
             0 ? (
             <div className="rounded-[2rem] border border-slate-200/80 bg-white p-7 text-center shadow-sm">
               <p className="text-sm font-black text-slate-800">
@@ -952,8 +922,8 @@ export function EventsView({
 
                           {
                             STATUS_LABELS[
-                            event
-                              .lifecycleStatus
+                              event
+                                .lifecycleStatus
                             ]
                           }
                         </span>
@@ -1021,7 +991,7 @@ export function EventsView({
                           {event.isFree
                             ? "Gratis"
                             : event.priceFrom !==
-                              null
+                                null
                               ? `Desde ${event.priceFrom} ${event.currency}`
                               : "De pago"}
                         </p>
@@ -1030,7 +1000,7 @@ export function EventsView({
                   </div>
 
                   {event.lifecycleStatus ===
-                    "draft" ? (
+                  "draft" ? (
                     <div className="mt-5 flex items-start gap-3 rounded-2xl bg-[#F0F0FF] px-4 py-3.5">
                       <Sparkles
                         size={17}
@@ -1043,11 +1013,18 @@ export function EventsView({
                         </p>
 
                         <p className="mt-1 text-xs font-medium leading-5 text-slate-600">
-                          En el siguiente bloque conectaremos análisis, edición y publicación desde esta misma tarjeta.
+                          Analiza la preparación del evento antes de publicarlo.
                         </p>
                       </div>
                     </div>
                   ) : null}
+
+                  <Link
+                    href={`/dashboard/events/${event.id}`}
+                    className="mt-5 flex w-full items-center justify-center rounded-2xl bg-[#5D5FEF] px-4 py-3.5 text-sm font-black text-white shadow-md shadow-[#5D5FEF]/15 transition hover:bg-[#5254DF]"
+                  >
+                    Gestionar evento
+                  </Link>
                 </div>
               </article>
             ),
