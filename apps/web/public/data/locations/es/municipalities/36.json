@@ -1,0 +1,497 @@
+{
+  "province": {
+    "code": "36",
+    "name": "Pontevedra",
+    "searchKey": "pontevedra"
+  },
+  "municipalities": [
+    {
+      "code": "020",
+      "ineCode": "36020",
+      "ineCodeWithCheck": "360209",
+      "checkDigit": "9",
+      "name": "Agolada",
+      "searchKey": "agolada"
+    },
+    {
+      "code": "001",
+      "ineCode": "36001",
+      "ineCodeWithCheck": "360010",
+      "checkDigit": "0",
+      "name": "Arbo",
+      "searchKey": "arbo"
+    },
+    {
+      "code": "003",
+      "ineCode": "36003",
+      "ineCodeWithCheck": "360031",
+      "checkDigit": "1",
+      "name": "Baiona",
+      "searchKey": "baiona"
+    },
+    {
+      "code": "002",
+      "ineCode": "36002",
+      "ineCodeWithCheck": "360025",
+      "checkDigit": "5",
+      "name": "Barro",
+      "searchKey": "barro"
+    },
+    {
+      "code": "004",
+      "ineCode": "36004",
+      "ineCodeWithCheck": "360046",
+      "checkDigit": "6",
+      "name": "Bueu",
+      "searchKey": "bueu"
+    },
+    {
+      "code": "005",
+      "ineCode": "36005",
+      "ineCodeWithCheck": "360059",
+      "checkDigit": "9",
+      "name": "Caldas de Reis",
+      "searchKey": "caldas de reis"
+    },
+    {
+      "code": "006",
+      "ineCode": "36006",
+      "ineCodeWithCheck": "360062",
+      "checkDigit": "2",
+      "name": "Cambados",
+      "searchKey": "cambados"
+    },
+    {
+      "code": "007",
+      "ineCode": "36007",
+      "ineCodeWithCheck": "360078",
+      "checkDigit": "8",
+      "name": "Campo Lameiro",
+      "searchKey": "campo lameiro"
+    },
+    {
+      "code": "008",
+      "ineCode": "36008",
+      "ineCodeWithCheck": "360084",
+      "checkDigit": "4",
+      "name": "Cangas",
+      "searchKey": "cangas"
+    },
+    {
+      "code": "009",
+      "ineCode": "36009",
+      "ineCodeWithCheck": "360097",
+      "checkDigit": "7",
+      "name": "Cañiza, A",
+      "searchKey": "caniza a"
+    },
+    {
+      "code": "010",
+      "ineCode": "36010",
+      "ineCodeWithCheck": "360101",
+      "checkDigit": "1",
+      "name": "Catoira",
+      "searchKey": "catoira"
+    },
+    {
+      "code": "902",
+      "ineCode": "36902",
+      "ineCodeWithCheck": "369026",
+      "checkDigit": "6",
+      "name": "Cerdedo-Cotobade",
+      "searchKey": "cerdedo cotobade"
+    },
+    {
+      "code": "013",
+      "ineCode": "36013",
+      "ineCodeWithCheck": "360139",
+      "checkDigit": "9",
+      "name": "Covelo",
+      "searchKey": "covelo"
+    },
+    {
+      "code": "014",
+      "ineCode": "36014",
+      "ineCodeWithCheck": "360144",
+      "checkDigit": "4",
+      "name": "Crecente",
+      "searchKey": "crecente"
+    },
+    {
+      "code": "015",
+      "ineCode": "36015",
+      "ineCodeWithCheck": "360157",
+      "checkDigit": "7",
+      "name": "Cuntis",
+      "searchKey": "cuntis"
+    },
+    {
+      "code": "016",
+      "ineCode": "36016",
+      "ineCodeWithCheck": "360160",
+      "checkDigit": "0",
+      "name": "Dozón",
+      "searchKey": "dozon"
+    },
+    {
+      "code": "017",
+      "ineCode": "36017",
+      "ineCodeWithCheck": "360176",
+      "checkDigit": "6",
+      "name": "Estrada, A",
+      "searchKey": "estrada a"
+    },
+    {
+      "code": "018",
+      "ineCode": "36018",
+      "ineCodeWithCheck": "360182",
+      "checkDigit": "2",
+      "name": "Forcarei",
+      "searchKey": "forcarei"
+    },
+    {
+      "code": "019",
+      "ineCode": "36019",
+      "ineCodeWithCheck": "360195",
+      "checkDigit": "5",
+      "name": "Fornelos de Montes",
+      "searchKey": "fornelos de montes"
+    },
+    {
+      "code": "021",
+      "ineCode": "36021",
+      "ineCodeWithCheck": "360216",
+      "checkDigit": "6",
+      "name": "Gondomar",
+      "searchKey": "gondomar"
+    },
+    {
+      "code": "022",
+      "ineCode": "36022",
+      "ineCodeWithCheck": "360221",
+      "checkDigit": "1",
+      "name": "Grove, O",
+      "searchKey": "grove o"
+    },
+    {
+      "code": "023",
+      "ineCode": "36023",
+      "ineCodeWithCheck": "360237",
+      "checkDigit": "7",
+      "name": "Guarda, A",
+      "searchKey": "guarda a"
+    },
+    {
+      "code": "901",
+      "ineCode": "36901",
+      "ineCodeWithCheck": "369011",
+      "checkDigit": "1",
+      "name": "Illa de Arousa, A",
+      "searchKey": "illa de arousa a"
+    },
+    {
+      "code": "024",
+      "ineCode": "36024",
+      "ineCodeWithCheck": "360242",
+      "checkDigit": "2",
+      "name": "Lalín",
+      "searchKey": "lalin"
+    },
+    {
+      "code": "025",
+      "ineCode": "36025",
+      "ineCodeWithCheck": "360255",
+      "checkDigit": "5",
+      "name": "Lama, A",
+      "searchKey": "lama a"
+    },
+    {
+      "code": "026",
+      "ineCode": "36026",
+      "ineCodeWithCheck": "360268",
+      "checkDigit": "8",
+      "name": "Marín",
+      "searchKey": "marin"
+    },
+    {
+      "code": "027",
+      "ineCode": "36027",
+      "ineCodeWithCheck": "360274",
+      "checkDigit": "4",
+      "name": "Meaño",
+      "searchKey": "meano"
+    },
+    {
+      "code": "028",
+      "ineCode": "36028",
+      "ineCodeWithCheck": "360280",
+      "checkDigit": "0",
+      "name": "Meis",
+      "searchKey": "meis"
+    },
+    {
+      "code": "029",
+      "ineCode": "36029",
+      "ineCodeWithCheck": "360293",
+      "checkDigit": "3",
+      "name": "Moaña",
+      "searchKey": "moana"
+    },
+    {
+      "code": "030",
+      "ineCode": "36030",
+      "ineCodeWithCheck": "360307",
+      "checkDigit": "7",
+      "name": "Mondariz",
+      "searchKey": "mondariz"
+    },
+    {
+      "code": "031",
+      "ineCode": "36031",
+      "ineCodeWithCheck": "360314",
+      "checkDigit": "4",
+      "name": "Mondariz-Balneario",
+      "searchKey": "mondariz balneario"
+    },
+    {
+      "code": "032",
+      "ineCode": "36032",
+      "ineCodeWithCheck": "360329",
+      "checkDigit": "9",
+      "name": "Moraña",
+      "searchKey": "morana"
+    },
+    {
+      "code": "033",
+      "ineCode": "36033",
+      "ineCodeWithCheck": "360335",
+      "checkDigit": "5",
+      "name": "Mos",
+      "searchKey": "mos"
+    },
+    {
+      "code": "034",
+      "ineCode": "36034",
+      "ineCodeWithCheck": "360340",
+      "checkDigit": "0",
+      "name": "Neves, As",
+      "searchKey": "neves as"
+    },
+    {
+      "code": "035",
+      "ineCode": "36035",
+      "ineCodeWithCheck": "360353",
+      "checkDigit": "3",
+      "name": "Nigrán",
+      "searchKey": "nigran"
+    },
+    {
+      "code": "036",
+      "ineCode": "36036",
+      "ineCodeWithCheck": "360366",
+      "checkDigit": "6",
+      "name": "Oia",
+      "searchKey": "oia"
+    },
+    {
+      "code": "037",
+      "ineCode": "36037",
+      "ineCodeWithCheck": "360372",
+      "checkDigit": "2",
+      "name": "Pazos de Borbén",
+      "searchKey": "pazos de borben"
+    },
+    {
+      "code": "041",
+      "ineCode": "36041",
+      "ineCodeWithCheck": "360412",
+      "checkDigit": "2",
+      "name": "Poio",
+      "searchKey": "poio"
+    },
+    {
+      "code": "043",
+      "ineCode": "36043",
+      "ineCodeWithCheck": "360433",
+      "checkDigit": "3",
+      "name": "Ponte Caldelas",
+      "searchKey": "ponte caldelas"
+    },
+    {
+      "code": "042",
+      "ineCode": "36042",
+      "ineCodeWithCheck": "360427",
+      "checkDigit": "7",
+      "name": "Ponteareas",
+      "searchKey": "ponteareas"
+    },
+    {
+      "code": "044",
+      "ineCode": "36044",
+      "ineCodeWithCheck": "360448",
+      "checkDigit": "8",
+      "name": "Pontecesures",
+      "searchKey": "pontecesures"
+    },
+    {
+      "code": "038",
+      "ineCode": "36038",
+      "ineCodeWithCheck": "360388",
+      "checkDigit": "8",
+      "name": "Pontevedra",
+      "searchKey": "pontevedra"
+    },
+    {
+      "code": "039",
+      "ineCode": "36039",
+      "ineCodeWithCheck": "360391",
+      "checkDigit": "1",
+      "name": "Porriño, O",
+      "searchKey": "porrino o"
+    },
+    {
+      "code": "040",
+      "ineCode": "36040",
+      "ineCodeWithCheck": "360405",
+      "checkDigit": "5",
+      "name": "Portas",
+      "searchKey": "portas"
+    },
+    {
+      "code": "045",
+      "ineCode": "36045",
+      "ineCodeWithCheck": "360451",
+      "checkDigit": "1",
+      "name": "Redondela",
+      "searchKey": "redondela"
+    },
+    {
+      "code": "046",
+      "ineCode": "36046",
+      "ineCodeWithCheck": "360464",
+      "checkDigit": "4",
+      "name": "Ribadumia",
+      "searchKey": "ribadumia"
+    },
+    {
+      "code": "047",
+      "ineCode": "36047",
+      "ineCodeWithCheck": "360470",
+      "checkDigit": "0",
+      "name": "Rodeiro",
+      "searchKey": "rodeiro"
+    },
+    {
+      "code": "048",
+      "ineCode": "36048",
+      "ineCodeWithCheck": "360486",
+      "checkDigit": "6",
+      "name": "Rosal, O",
+      "searchKey": "rosal o"
+    },
+    {
+      "code": "049",
+      "ineCode": "36049",
+      "ineCodeWithCheck": "360499",
+      "checkDigit": "9",
+      "name": "Salceda de Caselas",
+      "searchKey": "salceda de caselas"
+    },
+    {
+      "code": "050",
+      "ineCode": "36050",
+      "ineCodeWithCheck": "360502",
+      "checkDigit": "2",
+      "name": "Salvaterra de Miño",
+      "searchKey": "salvaterra de mino"
+    },
+    {
+      "code": "051",
+      "ineCode": "36051",
+      "ineCodeWithCheck": "360519",
+      "checkDigit": "9",
+      "name": "Sanxenxo",
+      "searchKey": "sanxenxo"
+    },
+    {
+      "code": "052",
+      "ineCode": "36052",
+      "ineCodeWithCheck": "360524",
+      "checkDigit": "4",
+      "name": "Silleda",
+      "searchKey": "silleda"
+    },
+    {
+      "code": "053",
+      "ineCode": "36053",
+      "ineCodeWithCheck": "360530",
+      "checkDigit": "0",
+      "name": "Soutomaior",
+      "searchKey": "soutomaior"
+    },
+    {
+      "code": "054",
+      "ineCode": "36054",
+      "ineCodeWithCheck": "360545",
+      "checkDigit": "5",
+      "name": "Tomiño",
+      "searchKey": "tomino"
+    },
+    {
+      "code": "055",
+      "ineCode": "36055",
+      "ineCodeWithCheck": "360558",
+      "checkDigit": "8",
+      "name": "Tui",
+      "searchKey": "tui"
+    },
+    {
+      "code": "056",
+      "ineCode": "36056",
+      "ineCodeWithCheck": "360561",
+      "checkDigit": "1",
+      "name": "Valga",
+      "searchKey": "valga"
+    },
+    {
+      "code": "057",
+      "ineCode": "36057",
+      "ineCodeWithCheck": "360577",
+      "checkDigit": "7",
+      "name": "Vigo",
+      "searchKey": "vigo"
+    },
+    {
+      "code": "059",
+      "ineCode": "36059",
+      "ineCodeWithCheck": "360596",
+      "checkDigit": "6",
+      "name": "Vila de Cruces",
+      "searchKey": "vila de cruces"
+    },
+    {
+      "code": "058",
+      "ineCode": "36058",
+      "ineCodeWithCheck": "360583",
+      "checkDigit": "3",
+      "name": "Vilaboa",
+      "searchKey": "vilaboa"
+    },
+    {
+      "code": "060",
+      "ineCode": "36060",
+      "ineCodeWithCheck": "360600",
+      "checkDigit": "0",
+      "name": "Vilagarcía de Arousa",
+      "searchKey": "vilagarcia de arousa"
+    },
+    {
+      "code": "061",
+      "ineCode": "36061",
+      "ineCodeWithCheck": "360617",
+      "checkDigit": "7",
+      "name": "Vilanova de Arousa",
+      "searchKey": "vilanova de arousa"
+    }
+  ]
+}

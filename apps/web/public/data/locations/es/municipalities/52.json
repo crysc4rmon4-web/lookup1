@@ -1,0 +1,17 @@
+{
+  "province": {
+    "code": "52",
+    "name": "Ciudad Autónoma de Melilla",
+    "searchKey": "ciudad autonoma de melilla"
+  },
+  "municipalities": [
+    {
+      "code": "001",
+      "ineCode": "52001",
+      "ineCodeWithCheck": "520018",
+      "checkDigit": "8",
+      "name": "Melilla",
+      "searchKey": "melilla"
+    }
+  ]
+}

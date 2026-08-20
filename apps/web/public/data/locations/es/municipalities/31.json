@@ -1,0 +1,2185 @@
+{
+  "province": {
+    "code": "31",
+    "name": "Navarra",
+    "searchKey": "navarra"
+  },
+  "municipalities": [
+    {
+      "code": "001",
+      "ineCode": "31001",
+      "ineCodeWithCheck": "310018",
+      "checkDigit": "8",
+      "name": "Abáigar",
+      "searchKey": "abaigar"
+    },
+    {
+      "code": "002",
+      "ineCode": "31002",
+      "ineCodeWithCheck": "310023",
+      "checkDigit": "3",
+      "name": "Abárzuza/Abartzuza",
+      "searchKey": "abarzuza abartzuza"
+    },
+    {
+      "code": "003",
+      "ineCode": "31003",
+      "ineCodeWithCheck": "310039",
+      "checkDigit": "9",
+      "name": "Abaurregaina/Abaurrea Alta",
+      "searchKey": "abaurregaina abaurrea alta"
+    },
+    {
+      "code": "004",
+      "ineCode": "31004",
+      "ineCodeWithCheck": "310044",
+      "checkDigit": "4",
+      "name": "Abaurrepea/Abaurrea Baja",
+      "searchKey": "abaurrepea abaurrea baja"
+    },
+    {
+      "code": "005",
+      "ineCode": "31005",
+      "ineCodeWithCheck": "310057",
+      "checkDigit": "7",
+      "name": "Aberin",
+      "searchKey": "aberin"
+    },
+    {
+      "code": "006",
+      "ineCode": "31006",
+      "ineCodeWithCheck": "310060",
+      "checkDigit": "0",
+      "name": "Ablitas",
+      "searchKey": "ablitas"
+    },
+    {
+      "code": "007",
+      "ineCode": "31007",
+      "ineCodeWithCheck": "310076",
+      "checkDigit": "6",
+      "name": "Adiós",
+      "searchKey": "adios"
+    },
+    {
+      "code": "008",
+      "ineCode": "31008",
+      "ineCodeWithCheck": "310082",
+      "checkDigit": "2",
+      "name": "Aguilar de Codés",
+      "searchKey": "aguilar de codes"
+    },
+    {
+      "code": "009",
+      "ineCode": "31009",
+      "ineCodeWithCheck": "310095",
+      "checkDigit": "5",
+      "name": "Aibar/Oibar",
+      "searchKey": "aibar oibar"
+    },
+    {
+      "code": "011",
+      "ineCode": "31011",
+      "ineCodeWithCheck": "310116",
+      "checkDigit": "6",
+      "name": "Allín/Allin",
+      "searchKey": "allin allin"
+    },
+    {
+      "code": "012",
+      "ineCode": "31012",
+      "ineCodeWithCheck": "310121",
+      "checkDigit": "1",
+      "name": "Allo",
+      "searchKey": "allo"
+    },
+    {
+      "code": "010",
+      "ineCode": "31010",
+      "ineCodeWithCheck": "310109",
+      "checkDigit": "9",
+      "name": "Altsasu/Alsasua",
+      "searchKey": "altsasu alsasua"
+    },
+    {
+      "code": "013",
+      "ineCode": "31013",
+      "ineCodeWithCheck": "310137",
+      "checkDigit": "7",
+      "name": "Améscoa Baja",
+      "searchKey": "amescoa baja"
+    },
+    {
+      "code": "014",
+      "ineCode": "31014",
+      "ineCodeWithCheck": "310142",
+      "checkDigit": "2",
+      "name": "Ancín/Antzin",
+      "searchKey": "ancin antzin"
+    },
+    {
+      "code": "015",
+      "ineCode": "31015",
+      "ineCodeWithCheck": "310155",
+      "checkDigit": "5",
+      "name": "Andosilla",
+      "searchKey": "andosilla"
+    },
+    {
+      "code": "018",
+      "ineCode": "31018",
+      "ineCodeWithCheck": "310180",
+      "checkDigit": "0",
+      "name": "Añorbe",
+      "searchKey": "anorbe"
+    },
+    {
+      "code": "016",
+      "ineCode": "31016",
+      "ineCodeWithCheck": "310168",
+      "checkDigit": "8",
+      "name": "Ansoáin/Antsoain",
+      "searchKey": "ansoain antsoain"
+    },
+    {
+      "code": "017",
+      "ineCode": "31017",
+      "ineCodeWithCheck": "310174",
+      "checkDigit": "4",
+      "name": "Anue",
+      "searchKey": "anue"
+    },
+    {
+      "code": "019",
+      "ineCode": "31019",
+      "ineCodeWithCheck": "310193",
+      "checkDigit": "3",
+      "name": "Aoiz/Agoitz",
+      "searchKey": "aoiz agoitz"
+    },
+    {
+      "code": "020",
+      "ineCode": "31020",
+      "ineCodeWithCheck": "310207",
+      "checkDigit": "7",
+      "name": "Araitz",
+      "searchKey": "araitz"
+    },
+    {
+      "code": "025",
+      "ineCode": "31025",
+      "ineCodeWithCheck": "310253",
+      "checkDigit": "3",
+      "name": "Arakil",
+      "searchKey": "arakil"
+    },
+    {
+      "code": "021",
+      "ineCode": "31021",
+      "ineCodeWithCheck": "310214",
+      "checkDigit": "4",
+      "name": "Aranarache/Aranaratxe",
+      "searchKey": "aranarache aranaratxe"
+    },
+    {
+      "code": "023",
+      "ineCode": "31023",
+      "ineCodeWithCheck": "310235",
+      "checkDigit": "5",
+      "name": "Aranguren",
+      "searchKey": "aranguren"
+    },
+    {
+      "code": "024",
+      "ineCode": "31024",
+      "ineCodeWithCheck": "310240",
+      "checkDigit": "0",
+      "name": "Arano",
+      "searchKey": "arano"
+    },
+    {
+      "code": "022",
+      "ineCode": "31022",
+      "ineCodeWithCheck": "310229",
+      "checkDigit": "9",
+      "name": "Arantza",
+      "searchKey": "arantza"
+    },
+    {
+      "code": "026",
+      "ineCode": "31026",
+      "ineCodeWithCheck": "310266",
+      "checkDigit": "6",
+      "name": "Aras",
+      "searchKey": "aras"
+    },
+    {
+      "code": "027",
+      "ineCode": "31027",
+      "ineCodeWithCheck": "310272",
+      "checkDigit": "2",
+      "name": "Arbizu",
+      "searchKey": "arbizu"
+    },
+    {
+      "code": "028",
+      "ineCode": "31028",
+      "ineCodeWithCheck": "310288",
+      "checkDigit": "8",
+      "name": "Arce/Artzi",
+      "searchKey": "arce artzi"
+    },
+    {
+      "code": "029",
+      "ineCode": "31029",
+      "ineCodeWithCheck": "310291",
+      "checkDigit": "1",
+      "name": "Arcos, Los",
+      "searchKey": "arcos los"
+    },
+    {
+      "code": "030",
+      "ineCode": "31030",
+      "ineCodeWithCheck": "310305",
+      "checkDigit": "5",
+      "name": "Arellano",
+      "searchKey": "arellano"
+    },
+    {
+      "code": "031",
+      "ineCode": "31031",
+      "ineCodeWithCheck": "310312",
+      "checkDigit": "2",
+      "name": "Areso",
+      "searchKey": "areso"
+    },
+    {
+      "code": "032",
+      "ineCode": "31032",
+      "ineCodeWithCheck": "310327",
+      "checkDigit": "7",
+      "name": "Arguedas",
+      "searchKey": "arguedas"
+    },
+    {
+      "code": "033",
+      "ineCode": "31033",
+      "ineCodeWithCheck": "310333",
+      "checkDigit": "3",
+      "name": "Aria",
+      "searchKey": "aria"
+    },
+    {
+      "code": "034",
+      "ineCode": "31034",
+      "ineCodeWithCheck": "310348",
+      "checkDigit": "8",
+      "name": "Aribe",
+      "searchKey": "aribe"
+    },
+    {
+      "code": "035",
+      "ineCode": "31035",
+      "ineCodeWithCheck": "310351",
+      "checkDigit": "1",
+      "name": "Armañanzas",
+      "searchKey": "armananzas"
+    },
+    {
+      "code": "036",
+      "ineCode": "31036",
+      "ineCodeWithCheck": "310364",
+      "checkDigit": "4",
+      "name": "Arróniz",
+      "searchKey": "arroniz"
+    },
+    {
+      "code": "037",
+      "ineCode": "31037",
+      "ineCodeWithCheck": "310370",
+      "checkDigit": "0",
+      "name": "Arruazu",
+      "searchKey": "arruazu"
+    },
+    {
+      "code": "038",
+      "ineCode": "31038",
+      "ineCodeWithCheck": "310386",
+      "checkDigit": "6",
+      "name": "Artajona",
+      "searchKey": "artajona"
+    },
+    {
+      "code": "039",
+      "ineCode": "31039",
+      "ineCodeWithCheck": "310399",
+      "checkDigit": "9",
+      "name": "Artazu",
+      "searchKey": "artazu"
+    },
+    {
+      "code": "040",
+      "ineCode": "31040",
+      "ineCodeWithCheck": "310403",
+      "checkDigit": "3",
+      "name": "Atetz",
+      "searchKey": "atetz"
+    },
+    {
+      "code": "058",
+      "ineCode": "31058",
+      "ineCodeWithCheck": "310581",
+      "checkDigit": "1",
+      "name": "Auritz/Burguete",
+      "searchKey": "auritz burguete"
+    },
+    {
+      "code": "041",
+      "ineCode": "31041",
+      "ineCodeWithCheck": "310410",
+      "checkDigit": "0",
+      "name": "Ayegui/Aiegi",
+      "searchKey": "ayegui aiegi"
+    },
+    {
+      "code": "042",
+      "ineCode": "31042",
+      "ineCodeWithCheck": "310425",
+      "checkDigit": "5",
+      "name": "Azagra",
+      "searchKey": "azagra"
+    },
+    {
+      "code": "043",
+      "ineCode": "31043",
+      "ineCodeWithCheck": "310431",
+      "checkDigit": "1",
+      "name": "Azuelo",
+      "searchKey": "azuelo"
+    },
+    {
+      "code": "044",
+      "ineCode": "31044",
+      "ineCodeWithCheck": "310446",
+      "checkDigit": "6",
+      "name": "Bakaiku",
+      "searchKey": "bakaiku"
+    },
+    {
+      "code": "901",
+      "ineCode": "31901",
+      "ineCodeWithCheck": "319019",
+      "checkDigit": "9",
+      "name": "Barañáin/Barañain",
+      "searchKey": "baranain baranain"
+    },
+    {
+      "code": "045",
+      "ineCode": "31045",
+      "ineCodeWithCheck": "310459",
+      "checkDigit": "9",
+      "name": "Barásoain",
+      "searchKey": "barasoain"
+    },
+    {
+      "code": "046",
+      "ineCode": "31046",
+      "ineCodeWithCheck": "310462",
+      "checkDigit": "2",
+      "name": "Barbarin",
+      "searchKey": "barbarin"
+    },
+    {
+      "code": "047",
+      "ineCode": "31047",
+      "ineCodeWithCheck": "310478",
+      "checkDigit": "8",
+      "name": "Bargota",
+      "searchKey": "bargota"
+    },
+    {
+      "code": "048",
+      "ineCode": "31048",
+      "ineCodeWithCheck": "310484",
+      "checkDigit": "4",
+      "name": "Barillas",
+      "searchKey": "barillas"
+    },
+    {
+      "code": "049",
+      "ineCode": "31049",
+      "ineCodeWithCheck": "310497",
+      "checkDigit": "7",
+      "name": "Basaburua",
+      "searchKey": "basaburua"
+    },
+    {
+      "code": "050",
+      "ineCode": "31050",
+      "ineCodeWithCheck": "310500",
+      "checkDigit": "0",
+      "name": "Baztan",
+      "searchKey": "baztan"
+    },
+    {
+      "code": "137",
+      "ineCode": "31137",
+      "ineCodeWithCheck": "311379",
+      "checkDigit": "9",
+      "name": "Beintza-Labaien",
+      "searchKey": "beintza labaien"
+    },
+    {
+      "code": "051",
+      "ineCode": "31051",
+      "ineCodeWithCheck": "310517",
+      "checkDigit": "7",
+      "name": "Beire",
+      "searchKey": "beire"
+    },
+    {
+      "code": "052",
+      "ineCode": "31052",
+      "ineCodeWithCheck": "310522",
+      "checkDigit": "2",
+      "name": "Belascoáin",
+      "searchKey": "belascoain"
+    },
+    {
+      "code": "250",
+      "ineCode": "31250",
+      "ineCodeWithCheck": "312508",
+      "checkDigit": "8",
+      "name": "Bera",
+      "searchKey": "bera"
+    },
+    {
+      "code": "053",
+      "ineCode": "31053",
+      "ineCodeWithCheck": "310538",
+      "checkDigit": "8",
+      "name": "Berbinzana",
+      "searchKey": "berbinzana"
+    },
+    {
+      "code": "905",
+      "ineCode": "31905",
+      "ineCodeWithCheck": "319058",
+      "checkDigit": "8",
+      "name": "Beriáin",
+      "searchKey": "beriain"
+    },
+    {
+      "code": "902",
+      "ineCode": "31902",
+      "ineCodeWithCheck": "319024",
+      "checkDigit": "4",
+      "name": "Berrioplano/Berriobeiti",
+      "searchKey": "berrioplano berriobeiti"
+    },
+    {
+      "code": "903",
+      "ineCode": "31903",
+      "ineCodeWithCheck": "319030",
+      "checkDigit": "0",
+      "name": "Berriozar",
+      "searchKey": "berriozar"
+    },
+    {
+      "code": "054",
+      "ineCode": "31054",
+      "ineCodeWithCheck": "310543",
+      "checkDigit": "3",
+      "name": "Bertizarana",
+      "searchKey": "bertizarana"
+    },
+    {
+      "code": "055",
+      "ineCode": "31055",
+      "ineCodeWithCheck": "310556",
+      "checkDigit": "6",
+      "name": "Betelu",
+      "searchKey": "betelu"
+    },
+    {
+      "code": "253",
+      "ineCode": "31253",
+      "ineCodeWithCheck": "312536",
+      "checkDigit": "6",
+      "name": "Bidaurreta",
+      "searchKey": "bidaurreta"
+    },
+    {
+      "code": "056",
+      "ineCode": "31056",
+      "ineCodeWithCheck": "310569",
+      "checkDigit": "9",
+      "name": "Biurrun-Olcoz",
+      "searchKey": "biurrun olcoz"
+    },
+    {
+      "code": "057",
+      "ineCode": "31057",
+      "ineCodeWithCheck": "310575",
+      "checkDigit": "5",
+      "name": "Buñuel",
+      "searchKey": "bunuel"
+    },
+    {
+      "code": "059",
+      "ineCode": "31059",
+      "ineCodeWithCheck": "310594",
+      "checkDigit": "4",
+      "name": "Burgui/Burgi",
+      "searchKey": "burgui burgi"
+    },
+    {
+      "code": "060",
+      "ineCode": "31060",
+      "ineCodeWithCheck": "310608",
+      "checkDigit": "8",
+      "name": "Burlada/Burlata",
+      "searchKey": "burlada burlata"
+    },
+    {
+      "code": "061",
+      "ineCode": "31061",
+      "ineCodeWithCheck": "310615",
+      "checkDigit": "5",
+      "name": "Busto, El",
+      "searchKey": "busto el"
+    },
+    {
+      "code": "062",
+      "ineCode": "31062",
+      "ineCodeWithCheck": "310620",
+      "checkDigit": "0",
+      "name": "Cabanillas",
+      "searchKey": "cabanillas"
+    },
+    {
+      "code": "063",
+      "ineCode": "31063",
+      "ineCodeWithCheck": "310636",
+      "checkDigit": "6",
+      "name": "Cabredo",
+      "searchKey": "cabredo"
+    },
+    {
+      "code": "064",
+      "ineCode": "31064",
+      "ineCodeWithCheck": "310641",
+      "checkDigit": "1",
+      "name": "Cadreita",
+      "searchKey": "cadreita"
+    },
+    {
+      "code": "065",
+      "ineCode": "31065",
+      "ineCodeWithCheck": "310654",
+      "checkDigit": "4",
+      "name": "Caparroso",
+      "searchKey": "caparroso"
+    },
+    {
+      "code": "066",
+      "ineCode": "31066",
+      "ineCodeWithCheck": "310667",
+      "checkDigit": "7",
+      "name": "Cárcar",
+      "searchKey": "carcar"
+    },
+    {
+      "code": "067",
+      "ineCode": "31067",
+      "ineCodeWithCheck": "310673",
+      "checkDigit": "3",
+      "name": "Carcastillo",
+      "searchKey": "carcastillo"
+    },
+    {
+      "code": "068",
+      "ineCode": "31068",
+      "ineCodeWithCheck": "310689",
+      "checkDigit": "9",
+      "name": "Cascante",
+      "searchKey": "cascante"
+    },
+    {
+      "code": "069",
+      "ineCode": "31069",
+      "ineCodeWithCheck": "310692",
+      "checkDigit": "2",
+      "name": "Cáseda",
+      "searchKey": "caseda"
+    },
+    {
+      "code": "070",
+      "ineCode": "31070",
+      "ineCodeWithCheck": "310706",
+      "checkDigit": "6",
+      "name": "Castejón",
+      "searchKey": "castejon"
+    },
+    {
+      "code": "071",
+      "ineCode": "31071",
+      "ineCodeWithCheck": "310713",
+      "checkDigit": "3",
+      "name": "Castillonuevo/Gazteluberri",
+      "searchKey": "castillonuevo gazteluberri"
+    },
+    {
+      "code": "193",
+      "ineCode": "31193",
+      "ineCodeWithCheck": "311939",
+      "checkDigit": "9",
+      "name": "Cendea de Olza/Oltza Zendea",
+      "searchKey": "cendea de olza oltza zendea"
+    },
+    {
+      "code": "072",
+      "ineCode": "31072",
+      "ineCodeWithCheck": "310728",
+      "checkDigit": "8",
+      "name": "Cintruénigo",
+      "searchKey": "cintruenigo"
+    },
+    {
+      "code": "074",
+      "ineCode": "31074",
+      "ineCodeWithCheck": "310749",
+      "checkDigit": "9",
+      "name": "Cirauqui/Zirauki",
+      "searchKey": "cirauqui zirauki"
+    },
+    {
+      "code": "075",
+      "ineCode": "31075",
+      "ineCodeWithCheck": "310752",
+      "checkDigit": "2",
+      "name": "Ciriza/Ziritza",
+      "searchKey": "ciriza ziritza"
+    },
+    {
+      "code": "076",
+      "ineCode": "31076",
+      "ineCodeWithCheck": "310765",
+      "checkDigit": "5",
+      "name": "Cizur",
+      "searchKey": "cizur"
+    },
+    {
+      "code": "077",
+      "ineCode": "31077",
+      "ineCodeWithCheck": "310771",
+      "checkDigit": "1",
+      "name": "Corella",
+      "searchKey": "corella"
+    },
+    {
+      "code": "078",
+      "ineCode": "31078",
+      "ineCodeWithCheck": "310787",
+      "checkDigit": "7",
+      "name": "Cortes",
+      "searchKey": "cortes"
+    },
+    {
+      "code": "079",
+      "ineCode": "31079",
+      "ineCodeWithCheck": "310790",
+      "checkDigit": "0",
+      "name": "Desojo",
+      "searchKey": "desojo"
+    },
+    {
+      "code": "080",
+      "ineCode": "31080",
+      "ineCodeWithCheck": "310804",
+      "checkDigit": "4",
+      "name": "Dicastillo",
+      "searchKey": "dicastillo"
+    },
+    {
+      "code": "081",
+      "ineCode": "31081",
+      "ineCodeWithCheck": "310811",
+      "checkDigit": "1",
+      "name": "Donamaria",
+      "searchKey": "donamaria"
+    },
+    {
+      "code": "221",
+      "ineCode": "31221",
+      "ineCodeWithCheck": "312212",
+      "checkDigit": "2",
+      "name": "Doneztebe/Santesteban",
+      "searchKey": "doneztebe santesteban"
+    },
+    {
+      "code": "083",
+      "ineCode": "31083",
+      "ineCodeWithCheck": "310832",
+      "checkDigit": "2",
+      "name": "Echarri/Etxarri",
+      "searchKey": "echarri etxarri"
+    },
+    {
+      "code": "087",
+      "ineCode": "31087",
+      "ineCodeWithCheck": "310879",
+      "checkDigit": "9",
+      "name": "Elgorriaga",
+      "searchKey": "elgorriaga"
+    },
+    {
+      "code": "089",
+      "ineCode": "31089",
+      "ineCodeWithCheck": "310898",
+      "checkDigit": "8",
+      "name": "Enériz/Eneritz",
+      "searchKey": "eneriz eneritz"
+    },
+    {
+      "code": "090",
+      "ineCode": "31090",
+      "ineCodeWithCheck": "310902",
+      "checkDigit": "2",
+      "name": "Eratsun",
+      "searchKey": "eratsun"
+    },
+    {
+      "code": "091",
+      "ineCode": "31091",
+      "ineCodeWithCheck": "310919",
+      "checkDigit": "9",
+      "name": "Ergoiena",
+      "searchKey": "ergoiena"
+    },
+    {
+      "code": "092",
+      "ineCode": "31092",
+      "ineCodeWithCheck": "310924",
+      "checkDigit": "4",
+      "name": "Erro",
+      "searchKey": "erro"
+    },
+    {
+      "code": "094",
+      "ineCode": "31094",
+      "ineCodeWithCheck": "310945",
+      "checkDigit": "5",
+      "name": "Eslava",
+      "searchKey": "eslava"
+    },
+    {
+      "code": "095",
+      "ineCode": "31095",
+      "ineCodeWithCheck": "310958",
+      "checkDigit": "8",
+      "name": "Esparza de Salazar/Espartza Zaraitzu",
+      "searchKey": "esparza de salazar espartza zaraitzu"
+    },
+    {
+      "code": "096",
+      "ineCode": "31096",
+      "ineCodeWithCheck": "310961",
+      "checkDigit": "1",
+      "name": "Espronceda",
+      "searchKey": "espronceda"
+    },
+    {
+      "code": "097",
+      "ineCode": "31097",
+      "ineCodeWithCheck": "310977",
+      "checkDigit": "7",
+      "name": "Estella-Lizarra",
+      "searchKey": "estella lizarra"
+    },
+    {
+      "code": "098",
+      "ineCode": "31098",
+      "ineCodeWithCheck": "310983",
+      "checkDigit": "3",
+      "name": "Esteribar",
+      "searchKey": "esteribar"
+    },
+    {
+      "code": "099",
+      "ineCode": "31099",
+      "ineCodeWithCheck": "310996",
+      "checkDigit": "6",
+      "name": "Etayo",
+      "searchKey": "etayo"
+    },
+    {
+      "code": "082",
+      "ineCode": "31082",
+      "ineCodeWithCheck": "310826",
+      "checkDigit": "6",
+      "name": "Etxalar",
+      "searchKey": "etxalar"
+    },
+    {
+      "code": "084",
+      "ineCode": "31084",
+      "ineCodeWithCheck": "310847",
+      "checkDigit": "7",
+      "name": "Etxarri Aranatz",
+      "searchKey": "etxarri aranatz"
+    },
+    {
+      "code": "085",
+      "ineCode": "31085",
+      "ineCodeWithCheck": "310850",
+      "checkDigit": "0",
+      "name": "Etxauri",
+      "searchKey": "etxauri"
+    },
+    {
+      "code": "100",
+      "ineCode": "31100",
+      "ineCodeWithCheck": "311000",
+      "checkDigit": "0",
+      "name": "Eulate",
+      "searchKey": "eulate"
+    },
+    {
+      "code": "101",
+      "ineCode": "31101",
+      "ineCodeWithCheck": "311017",
+      "checkDigit": "7",
+      "name": "Ezcabarte",
+      "searchKey": "ezcabarte"
+    },
+    {
+      "code": "093",
+      "ineCode": "31093",
+      "ineCodeWithCheck": "310930",
+      "checkDigit": "0",
+      "name": "Ezcároz/Ezkaroze",
+      "searchKey": "ezcaroz ezkaroze"
+    },
+    {
+      "code": "102",
+      "ineCode": "31102",
+      "ineCodeWithCheck": "311022",
+      "checkDigit": "2",
+      "name": "Ezkurra",
+      "searchKey": "ezkurra"
+    },
+    {
+      "code": "103",
+      "ineCode": "31103",
+      "ineCodeWithCheck": "311038",
+      "checkDigit": "8",
+      "name": "Ezprogui",
+      "searchKey": "ezprogui"
+    },
+    {
+      "code": "104",
+      "ineCode": "31104",
+      "ineCodeWithCheck": "311043",
+      "checkDigit": "3",
+      "name": "Falces",
+      "searchKey": "falces"
+    },
+    {
+      "code": "105",
+      "ineCode": "31105",
+      "ineCodeWithCheck": "311056",
+      "checkDigit": "6",
+      "name": "Fitero",
+      "searchKey": "fitero"
+    },
+    {
+      "code": "106",
+      "ineCode": "31106",
+      "ineCodeWithCheck": "311069",
+      "checkDigit": "9",
+      "name": "Fontellas",
+      "searchKey": "fontellas"
+    },
+    {
+      "code": "107",
+      "ineCode": "31107",
+      "ineCodeWithCheck": "311075",
+      "checkDigit": "5",
+      "name": "Funes",
+      "searchKey": "funes"
+    },
+    {
+      "code": "108",
+      "ineCode": "31108",
+      "ineCodeWithCheck": "311081",
+      "checkDigit": "1",
+      "name": "Fustiñana",
+      "searchKey": "fustinana"
+    },
+    {
+      "code": "109",
+      "ineCode": "31109",
+      "ineCodeWithCheck": "311094",
+      "checkDigit": "4",
+      "name": "Galar",
+      "searchKey": "galar"
+    },
+    {
+      "code": "110",
+      "ineCode": "31110",
+      "ineCodeWithCheck": "311108",
+      "checkDigit": "8",
+      "name": "Gallipienzo/Galipentzu",
+      "searchKey": "gallipienzo galipentzu"
+    },
+    {
+      "code": "111",
+      "ineCode": "31111",
+      "ineCodeWithCheck": "311115",
+      "checkDigit": "5",
+      "name": "Gallués/Galoze",
+      "searchKey": "gallues galoze"
+    },
+    {
+      "code": "112",
+      "ineCode": "31112",
+      "ineCodeWithCheck": "311120",
+      "checkDigit": "0",
+      "name": "Garaioa",
+      "searchKey": "garaioa"
+    },
+    {
+      "code": "113",
+      "ineCode": "31113",
+      "ineCodeWithCheck": "311136",
+      "checkDigit": "6",
+      "name": "Garde",
+      "searchKey": "garde"
+    },
+    {
+      "code": "114",
+      "ineCode": "31114",
+      "ineCodeWithCheck": "311141",
+      "checkDigit": "1",
+      "name": "Garínoain",
+      "searchKey": "garinoain"
+    },
+    {
+      "code": "115",
+      "ineCode": "31115",
+      "ineCodeWithCheck": "311154",
+      "checkDigit": "4",
+      "name": "Garralda",
+      "searchKey": "garralda"
+    },
+    {
+      "code": "116",
+      "ineCode": "31116",
+      "ineCodeWithCheck": "311167",
+      "checkDigit": "7",
+      "name": "Genevilla",
+      "searchKey": "genevilla"
+    },
+    {
+      "code": "117",
+      "ineCode": "31117",
+      "ineCodeWithCheck": "311173",
+      "checkDigit": "3",
+      "name": "Goizueta",
+      "searchKey": "goizueta"
+    },
+    {
+      "code": "119",
+      "ineCode": "31119",
+      "ineCodeWithCheck": "311192",
+      "checkDigit": "2",
+      "name": "Güesa/Gorza",
+      "searchKey": "guesa gorza"
+    },
+    {
+      "code": "120",
+      "ineCode": "31120",
+      "ineCodeWithCheck": "311206",
+      "checkDigit": "6",
+      "name": "Guesálaz/Gesalatz",
+      "searchKey": "guesalaz gesalatz"
+    },
+    {
+      "code": "121",
+      "ineCode": "31121",
+      "ineCodeWithCheck": "311213",
+      "checkDigit": "3",
+      "name": "Guirguillano",
+      "searchKey": "guirguillano"
+    },
+    {
+      "code": "256",
+      "ineCode": "31256",
+      "ineCodeWithCheck": "312567",
+      "checkDigit": "7",
+      "name": "Hiriberri/Villanueva de Aezkoa",
+      "searchKey": "hiriberri villanueva de aezkoa"
+    },
+    {
+      "code": "122",
+      "ineCode": "31122",
+      "ineCodeWithCheck": "311228",
+      "checkDigit": "8",
+      "name": "Huarte/Uharte",
+      "searchKey": "huarte uharte"
+    },
+    {
+      "code": "124",
+      "ineCode": "31124",
+      "ineCodeWithCheck": "311249",
+      "checkDigit": "9",
+      "name": "Ibargoiti",
+      "searchKey": "ibargoiti"
+    },
+    {
+      "code": "259",
+      "ineCode": "31259",
+      "ineCodeWithCheck": "312592",
+      "checkDigit": "2",
+      "name": "Igantzi",
+      "searchKey": "igantzi"
+    },
+    {
+      "code": "125",
+      "ineCode": "31125",
+      "ineCodeWithCheck": "311252",
+      "checkDigit": "2",
+      "name": "Igúzquiza",
+      "searchKey": "iguzquiza"
+    },
+    {
+      "code": "126",
+      "ineCode": "31126",
+      "ineCodeWithCheck": "311265",
+      "checkDigit": "5",
+      "name": "Imotz",
+      "searchKey": "imotz"
+    },
+    {
+      "code": "127",
+      "ineCode": "31127",
+      "ineCodeWithCheck": "311271",
+      "checkDigit": "1",
+      "name": "Irañeta",
+      "searchKey": "iraneta"
+    },
+    {
+      "code": "904",
+      "ineCode": "31904",
+      "ineCodeWithCheck": "319045",
+      "checkDigit": "5",
+      "name": "Irurtzun",
+      "searchKey": "irurtzun"
+    },
+    {
+      "code": "128",
+      "ineCode": "31128",
+      "ineCodeWithCheck": "311287",
+      "checkDigit": "7",
+      "name": "Isaba/Izaba",
+      "searchKey": "isaba izaba"
+    },
+    {
+      "code": "129",
+      "ineCode": "31129",
+      "ineCodeWithCheck": "311290",
+      "checkDigit": "0",
+      "name": "Ituren",
+      "searchKey": "ituren"
+    },
+    {
+      "code": "130",
+      "ineCode": "31130",
+      "ineCodeWithCheck": "311304",
+      "checkDigit": "4",
+      "name": "Iturmendi",
+      "searchKey": "iturmendi"
+    },
+    {
+      "code": "131",
+      "ineCode": "31131",
+      "ineCodeWithCheck": "311311",
+      "checkDigit": "1",
+      "name": "Iza/Itza",
+      "searchKey": "iza itza"
+    },
+    {
+      "code": "132",
+      "ineCode": "31132",
+      "ineCodeWithCheck": "311326",
+      "checkDigit": "6",
+      "name": "Izagaondoa",
+      "searchKey": "izagaondoa"
+    },
+    {
+      "code": "133",
+      "ineCode": "31133",
+      "ineCodeWithCheck": "311332",
+      "checkDigit": "2",
+      "name": "Izalzu/Itzaltzu",
+      "searchKey": "izalzu itzaltzu"
+    },
+    {
+      "code": "134",
+      "ineCode": "31134",
+      "ineCodeWithCheck": "311347",
+      "checkDigit": "7",
+      "name": "Jaurrieta",
+      "searchKey": "jaurrieta"
+    },
+    {
+      "code": "135",
+      "ineCode": "31135",
+      "ineCodeWithCheck": "311350",
+      "checkDigit": "0",
+      "name": "Javier",
+      "searchKey": "javier"
+    },
+    {
+      "code": "136",
+      "ineCode": "31136",
+      "ineCodeWithCheck": "311363",
+      "checkDigit": "3",
+      "name": "Juslapeña/Txulapain",
+      "searchKey": "juslapena txulapain"
+    },
+    {
+      "code": "138",
+      "ineCode": "31138",
+      "ineCodeWithCheck": "311385",
+      "checkDigit": "5",
+      "name": "Lakuntza",
+      "searchKey": "lakuntza"
+    },
+    {
+      "code": "139",
+      "ineCode": "31139",
+      "ineCodeWithCheck": "311398",
+      "checkDigit": "8",
+      "name": "Lana",
+      "searchKey": "lana"
+    },
+    {
+      "code": "140",
+      "ineCode": "31140",
+      "ineCodeWithCheck": "311402",
+      "checkDigit": "2",
+      "name": "Lantz",
+      "searchKey": "lantz"
+    },
+    {
+      "code": "141",
+      "ineCode": "31141",
+      "ineCodeWithCheck": "311419",
+      "checkDigit": "9",
+      "name": "Lapoblación",
+      "searchKey": "lapoblacion"
+    },
+    {
+      "code": "142",
+      "ineCode": "31142",
+      "ineCodeWithCheck": "311424",
+      "checkDigit": "4",
+      "name": "Larraga",
+      "searchKey": "larraga"
+    },
+    {
+      "code": "143",
+      "ineCode": "31143",
+      "ineCodeWithCheck": "311430",
+      "checkDigit": "0",
+      "name": "Larraona",
+      "searchKey": "larraona"
+    },
+    {
+      "code": "144",
+      "ineCode": "31144",
+      "ineCodeWithCheck": "311445",
+      "checkDigit": "5",
+      "name": "Larraun",
+      "searchKey": "larraun"
+    },
+    {
+      "code": "145",
+      "ineCode": "31145",
+      "ineCodeWithCheck": "311458",
+      "checkDigit": "8",
+      "name": "Lazagurría",
+      "searchKey": "lazagurria"
+    },
+    {
+      "code": "146",
+      "ineCode": "31146",
+      "ineCodeWithCheck": "311461",
+      "checkDigit": "1",
+      "name": "Leache/Leatxe",
+      "searchKey": "leache leatxe"
+    },
+    {
+      "code": "147",
+      "ineCode": "31147",
+      "ineCodeWithCheck": "311477",
+      "checkDigit": "7",
+      "name": "Legarda",
+      "searchKey": "legarda"
+    },
+    {
+      "code": "148",
+      "ineCode": "31148",
+      "ineCodeWithCheck": "311483",
+      "checkDigit": "3",
+      "name": "Legaria",
+      "searchKey": "legaria"
+    },
+    {
+      "code": "149",
+      "ineCode": "31149",
+      "ineCodeWithCheck": "311496",
+      "checkDigit": "6",
+      "name": "Leitza",
+      "searchKey": "leitza"
+    },
+    {
+      "code": "908",
+      "ineCode": "31908",
+      "ineCodeWithCheck": "319083",
+      "checkDigit": "3",
+      "name": "Lekunberri",
+      "searchKey": "lekunberri"
+    },
+    {
+      "code": "150",
+      "ineCode": "31150",
+      "ineCodeWithCheck": "311509",
+      "checkDigit": "9",
+      "name": "Leoz/Leotz",
+      "searchKey": "leoz leotz"
+    },
+    {
+      "code": "151",
+      "ineCode": "31151",
+      "ineCodeWithCheck": "311516",
+      "checkDigit": "6",
+      "name": "Lerga",
+      "searchKey": "lerga"
+    },
+    {
+      "code": "152",
+      "ineCode": "31152",
+      "ineCodeWithCheck": "311521",
+      "checkDigit": "1",
+      "name": "Lerín",
+      "searchKey": "lerin"
+    },
+    {
+      "code": "153",
+      "ineCode": "31153",
+      "ineCodeWithCheck": "311537",
+      "checkDigit": "7",
+      "name": "Lesaka",
+      "searchKey": "lesaka"
+    },
+    {
+      "code": "154",
+      "ineCode": "31154",
+      "ineCodeWithCheck": "311542",
+      "checkDigit": "2",
+      "name": "Lezaun",
+      "searchKey": "lezaun"
+    },
+    {
+      "code": "155",
+      "ineCode": "31155",
+      "ineCodeWithCheck": "311555",
+      "checkDigit": "5",
+      "name": "Liédena",
+      "searchKey": "liedena"
+    },
+    {
+      "code": "156",
+      "ineCode": "31156",
+      "ineCodeWithCheck": "311568",
+      "checkDigit": "8",
+      "name": "Lizoain-Arriasgoiti/Lizoainibar-Arriasgoiti",
+      "searchKey": "lizoain arriasgoiti lizoainibar arriasgoiti"
+    },
+    {
+      "code": "157",
+      "ineCode": "31157",
+      "ineCodeWithCheck": "311574",
+      "checkDigit": "4",
+      "name": "Lodosa",
+      "searchKey": "lodosa"
+    },
+    {
+      "code": "158",
+      "ineCode": "31158",
+      "ineCodeWithCheck": "311580",
+      "checkDigit": "0",
+      "name": "Lónguida/Longida",
+      "searchKey": "longuida longida"
+    },
+    {
+      "code": "159",
+      "ineCode": "31159",
+      "ineCodeWithCheck": "311593",
+      "checkDigit": "3",
+      "name": "Lumbier",
+      "searchKey": "lumbier"
+    },
+    {
+      "code": "160",
+      "ineCode": "31160",
+      "ineCodeWithCheck": "311607",
+      "checkDigit": "7",
+      "name": "Luquin",
+      "searchKey": "luquin"
+    },
+    {
+      "code": "248",
+      "ineCode": "31248",
+      "ineCodeWithCheck": "312482",
+      "checkDigit": "2",
+      "name": "Luzaide/Valcarlos",
+      "searchKey": "luzaide valcarlos"
+    },
+    {
+      "code": "161",
+      "ineCode": "31161",
+      "ineCodeWithCheck": "311614",
+      "checkDigit": "4",
+      "name": "Mañeru",
+      "searchKey": "maneru"
+    },
+    {
+      "code": "162",
+      "ineCode": "31162",
+      "ineCodeWithCheck": "311629",
+      "checkDigit": "9",
+      "name": "Marañón",
+      "searchKey": "maranon"
+    },
+    {
+      "code": "163",
+      "ineCode": "31163",
+      "ineCodeWithCheck": "311635",
+      "checkDigit": "5",
+      "name": "Marcilla",
+      "searchKey": "marcilla"
+    },
+    {
+      "code": "164",
+      "ineCode": "31164",
+      "ineCodeWithCheck": "311640",
+      "checkDigit": "0",
+      "name": "Mélida",
+      "searchKey": "melida"
+    },
+    {
+      "code": "165",
+      "ineCode": "31165",
+      "ineCodeWithCheck": "311653",
+      "checkDigit": "3",
+      "name": "Mendavia",
+      "searchKey": "mendavia"
+    },
+    {
+      "code": "166",
+      "ineCode": "31166",
+      "ineCodeWithCheck": "311666",
+      "checkDigit": "6",
+      "name": "Mendaza",
+      "searchKey": "mendaza"
+    },
+    {
+      "code": "167",
+      "ineCode": "31167",
+      "ineCodeWithCheck": "311672",
+      "checkDigit": "2",
+      "name": "Mendigorria",
+      "searchKey": "mendigorria"
+    },
+    {
+      "code": "168",
+      "ineCode": "31168",
+      "ineCodeWithCheck": "311688",
+      "checkDigit": "8",
+      "name": "Metauten",
+      "searchKey": "metauten"
+    },
+    {
+      "code": "169",
+      "ineCode": "31169",
+      "ineCodeWithCheck": "311691",
+      "checkDigit": "1",
+      "name": "Milagro",
+      "searchKey": "milagro"
+    },
+    {
+      "code": "170",
+      "ineCode": "31170",
+      "ineCodeWithCheck": "311705",
+      "checkDigit": "5",
+      "name": "Mirafuentes",
+      "searchKey": "mirafuentes"
+    },
+    {
+      "code": "171",
+      "ineCode": "31171",
+      "ineCodeWithCheck": "311712",
+      "checkDigit": "2",
+      "name": "Miranda de Arga",
+      "searchKey": "miranda de arga"
+    },
+    {
+      "code": "172",
+      "ineCode": "31172",
+      "ineCodeWithCheck": "311727",
+      "checkDigit": "7",
+      "name": "Monreal/Elo",
+      "searchKey": "monreal elo"
+    },
+    {
+      "code": "173",
+      "ineCode": "31173",
+      "ineCodeWithCheck": "311733",
+      "checkDigit": "3",
+      "name": "Monteagudo",
+      "searchKey": "monteagudo"
+    },
+    {
+      "code": "174",
+      "ineCode": "31174",
+      "ineCodeWithCheck": "311748",
+      "checkDigit": "8",
+      "name": "Morentin",
+      "searchKey": "morentin"
+    },
+    {
+      "code": "175",
+      "ineCode": "31175",
+      "ineCodeWithCheck": "311751",
+      "checkDigit": "1",
+      "name": "Mues",
+      "searchKey": "mues"
+    },
+    {
+      "code": "176",
+      "ineCode": "31176",
+      "ineCodeWithCheck": "311764",
+      "checkDigit": "4",
+      "name": "Murchante",
+      "searchKey": "murchante"
+    },
+    {
+      "code": "177",
+      "ineCode": "31177",
+      "ineCodeWithCheck": "311770",
+      "checkDigit": "0",
+      "name": "Murieta",
+      "searchKey": "murieta"
+    },
+    {
+      "code": "178",
+      "ineCode": "31178",
+      "ineCodeWithCheck": "311786",
+      "checkDigit": "6",
+      "name": "Murillo el Cuende",
+      "searchKey": "murillo el cuende"
+    },
+    {
+      "code": "179",
+      "ineCode": "31179",
+      "ineCodeWithCheck": "311799",
+      "checkDigit": "9",
+      "name": "Murillo el Fruto",
+      "searchKey": "murillo el fruto"
+    },
+    {
+      "code": "180",
+      "ineCode": "31180",
+      "ineCodeWithCheck": "311803",
+      "checkDigit": "3",
+      "name": "Muruzábal",
+      "searchKey": "muruzabal"
+    },
+    {
+      "code": "181",
+      "ineCode": "31181",
+      "ineCodeWithCheck": "311810",
+      "checkDigit": "0",
+      "name": "Navascués/Nabaskoze",
+      "searchKey": "navascues nabaskoze"
+    },
+    {
+      "code": "182",
+      "ineCode": "31182",
+      "ineCodeWithCheck": "311825",
+      "checkDigit": "5",
+      "name": "Nazar",
+      "searchKey": "nazar"
+    },
+    {
+      "code": "183",
+      "ineCode": "31183",
+      "ineCodeWithCheck": "311831",
+      "checkDigit": "1",
+      "name": "Obanos",
+      "searchKey": "obanos"
+    },
+    {
+      "code": "185",
+      "ineCode": "31185",
+      "ineCodeWithCheck": "311859",
+      "checkDigit": "9",
+      "name": "Ochagavía/Otsagabia",
+      "searchKey": "ochagavia otsagabia"
+    },
+    {
+      "code": "184",
+      "ineCode": "31184",
+      "ineCodeWithCheck": "311846",
+      "checkDigit": "6",
+      "name": "Oco",
+      "searchKey": "oco"
+    },
+    {
+      "code": "186",
+      "ineCode": "31186",
+      "ineCodeWithCheck": "311862",
+      "checkDigit": "2",
+      "name": "Odieta",
+      "searchKey": "odieta"
+    },
+    {
+      "code": "187",
+      "ineCode": "31187",
+      "ineCodeWithCheck": "311878",
+      "checkDigit": "8",
+      "name": "Oiz",
+      "searchKey": "oiz"
+    },
+    {
+      "code": "188",
+      "ineCode": "31188",
+      "ineCodeWithCheck": "311884",
+      "checkDigit": "4",
+      "name": "Olaibar",
+      "searchKey": "olaibar"
+    },
+    {
+      "code": "189",
+      "ineCode": "31189",
+      "ineCodeWithCheck": "311897",
+      "checkDigit": "7",
+      "name": "Olazti/Olazagutía",
+      "searchKey": "olazti olazagutia"
+    },
+    {
+      "code": "190",
+      "ineCode": "31190",
+      "ineCodeWithCheck": "311901",
+      "checkDigit": "1",
+      "name": "Olejua",
+      "searchKey": "olejua"
+    },
+    {
+      "code": "191",
+      "ineCode": "31191",
+      "ineCodeWithCheck": "311918",
+      "checkDigit": "8",
+      "name": "Olite/Erriberri",
+      "searchKey": "olite erriberri"
+    },
+    {
+      "code": "192",
+      "ineCode": "31192",
+      "ineCodeWithCheck": "311923",
+      "checkDigit": "3",
+      "name": "Olóriz/Oloritz",
+      "searchKey": "oloriz oloritz"
+    },
+    {
+      "code": "195",
+      "ineCode": "31195",
+      "ineCodeWithCheck": "311957",
+      "checkDigit": "7",
+      "name": "Orbaizeta",
+      "searchKey": "orbaizeta"
+    },
+    {
+      "code": "196",
+      "ineCode": "31196",
+      "ineCodeWithCheck": "311960",
+      "checkDigit": "0",
+      "name": "Orbara",
+      "searchKey": "orbara"
+    },
+    {
+      "code": "197",
+      "ineCode": "31197",
+      "ineCodeWithCheck": "311976",
+      "checkDigit": "6",
+      "name": "Orísoain",
+      "searchKey": "orisoain"
+    },
+    {
+      "code": "906",
+      "ineCode": "31906",
+      "ineCodeWithCheck": "319061",
+      "checkDigit": "1",
+      "name": "Orkoien",
+      "searchKey": "orkoien"
+    },
+    {
+      "code": "198",
+      "ineCode": "31198",
+      "ineCodeWithCheck": "311982",
+      "checkDigit": "2",
+      "name": "Oronz/Orontze",
+      "searchKey": "oronz orontze"
+    },
+    {
+      "code": "199",
+      "ineCode": "31199",
+      "ineCodeWithCheck": "311995",
+      "checkDigit": "5",
+      "name": "Oroz-Betelu/Orotz-Betelu",
+      "searchKey": "oroz betelu orotz betelu"
+    },
+    {
+      "code": "211",
+      "ineCode": "31211",
+      "ineCodeWithCheck": "312114",
+      "checkDigit": "4",
+      "name": "Orreaga/Roncesvalles",
+      "searchKey": "orreaga roncesvalles"
+    },
+    {
+      "code": "200",
+      "ineCode": "31200",
+      "ineCodeWithCheck": "312009",
+      "checkDigit": "9",
+      "name": "Oteiza",
+      "searchKey": "oteiza"
+    },
+    {
+      "code": "201",
+      "ineCode": "31201",
+      "ineCodeWithCheck": "312016",
+      "checkDigit": "6",
+      "name": "Pamplona/Iruña",
+      "searchKey": "pamplona iruna"
+    },
+    {
+      "code": "202",
+      "ineCode": "31202",
+      "ineCodeWithCheck": "312021",
+      "checkDigit": "1",
+      "name": "Peralta/Azkoien",
+      "searchKey": "peralta azkoien"
+    },
+    {
+      "code": "203",
+      "ineCode": "31203",
+      "ineCodeWithCheck": "312037",
+      "checkDigit": "7",
+      "name": "Petilla de Aragón",
+      "searchKey": "petilla de aragon"
+    },
+    {
+      "code": "204",
+      "ineCode": "31204",
+      "ineCodeWithCheck": "312042",
+      "checkDigit": "2",
+      "name": "Piedramillera",
+      "searchKey": "piedramillera"
+    },
+    {
+      "code": "205",
+      "ineCode": "31205",
+      "ineCodeWithCheck": "312055",
+      "checkDigit": "5",
+      "name": "Pitillas",
+      "searchKey": "pitillas"
+    },
+    {
+      "code": "206",
+      "ineCode": "31206",
+      "ineCodeWithCheck": "312068",
+      "checkDigit": "8",
+      "name": "Puente la Reina/Gares",
+      "searchKey": "puente la reina gares"
+    },
+    {
+      "code": "207",
+      "ineCode": "31207",
+      "ineCodeWithCheck": "312074",
+      "checkDigit": "4",
+      "name": "Pueyo/Puiu",
+      "searchKey": "pueyo puiu"
+    },
+    {
+      "code": "208",
+      "ineCode": "31208",
+      "ineCodeWithCheck": "312080",
+      "checkDigit": "0",
+      "name": "Ribaforada",
+      "searchKey": "ribaforada"
+    },
+    {
+      "code": "209",
+      "ineCode": "31209",
+      "ineCodeWithCheck": "312093",
+      "checkDigit": "3",
+      "name": "Romanzado/Erromantzatua",
+      "searchKey": "romanzado erromantzatua"
+    },
+    {
+      "code": "210",
+      "ineCode": "31210",
+      "ineCodeWithCheck": "312107",
+      "checkDigit": "7",
+      "name": "Roncal/Erronkari",
+      "searchKey": "roncal erronkari"
+    },
+    {
+      "code": "212",
+      "ineCode": "31212",
+      "ineCodeWithCheck": "312129",
+      "checkDigit": "9",
+      "name": "Sada",
+      "searchKey": "sada"
+    },
+    {
+      "code": "213",
+      "ineCode": "31213",
+      "ineCodeWithCheck": "312135",
+      "checkDigit": "5",
+      "name": "Saldías",
+      "searchKey": "saldias"
+    },
+    {
+      "code": "214",
+      "ineCode": "31214",
+      "ineCodeWithCheck": "312140",
+      "checkDigit": "0",
+      "name": "Salinas de Oro/Jaitz",
+      "searchKey": "salinas de oro jaitz"
+    },
+    {
+      "code": "215",
+      "ineCode": "31215",
+      "ineCodeWithCheck": "312153",
+      "checkDigit": "3",
+      "name": "San Adrián",
+      "searchKey": "san adrian"
+    },
+    {
+      "code": "217",
+      "ineCode": "31217",
+      "ineCodeWithCheck": "312172",
+      "checkDigit": "2",
+      "name": "San Martín de Unx",
+      "searchKey": "san martin de unx"
+    },
+    {
+      "code": "216",
+      "ineCode": "31216",
+      "ineCodeWithCheck": "312166",
+      "checkDigit": "6",
+      "name": "Sangüesa/Zangoza",
+      "searchKey": "sanguesa zangoza"
+    },
+    {
+      "code": "219",
+      "ineCode": "31219",
+      "ineCodeWithCheck": "312191",
+      "checkDigit": "1",
+      "name": "Sansol",
+      "searchKey": "sansol"
+    },
+    {
+      "code": "220",
+      "ineCode": "31220",
+      "ineCodeWithCheck": "312205",
+      "checkDigit": "5",
+      "name": "Santacara",
+      "searchKey": "santacara"
+    },
+    {
+      "code": "222",
+      "ineCode": "31222",
+      "ineCodeWithCheck": "312227",
+      "checkDigit": "7",
+      "name": "Sarriés/Sartze",
+      "searchKey": "sarries sartze"
+    },
+    {
+      "code": "223",
+      "ineCode": "31223",
+      "ineCodeWithCheck": "312233",
+      "checkDigit": "3",
+      "name": "Sartaguda",
+      "searchKey": "sartaguda"
+    },
+    {
+      "code": "224",
+      "ineCode": "31224",
+      "ineCodeWithCheck": "312248",
+      "checkDigit": "8",
+      "name": "Sesma",
+      "searchKey": "sesma"
+    },
+    {
+      "code": "225",
+      "ineCode": "31225",
+      "ineCodeWithCheck": "312251",
+      "checkDigit": "1",
+      "name": "Sorlada",
+      "searchKey": "sorlada"
+    },
+    {
+      "code": "226",
+      "ineCode": "31226",
+      "ineCodeWithCheck": "312264",
+      "checkDigit": "4",
+      "name": "Sunbilla",
+      "searchKey": "sunbilla"
+    },
+    {
+      "code": "227",
+      "ineCode": "31227",
+      "ineCodeWithCheck": "312270",
+      "checkDigit": "0",
+      "name": "Tafalla",
+      "searchKey": "tafalla"
+    },
+    {
+      "code": "228",
+      "ineCode": "31228",
+      "ineCodeWithCheck": "312286",
+      "checkDigit": "6",
+      "name": "Tiebas-Muruarte de Reta",
+      "searchKey": "tiebas muruarte de reta"
+    },
+    {
+      "code": "229",
+      "ineCode": "31229",
+      "ineCodeWithCheck": "312299",
+      "checkDigit": "9",
+      "name": "Tirapu",
+      "searchKey": "tirapu"
+    },
+    {
+      "code": "230",
+      "ineCode": "31230",
+      "ineCodeWithCheck": "312303",
+      "checkDigit": "3",
+      "name": "Torralba del Río",
+      "searchKey": "torralba del rio"
+    },
+    {
+      "code": "231",
+      "ineCode": "31231",
+      "ineCodeWithCheck": "312310",
+      "checkDigit": "0",
+      "name": "Torres del Río",
+      "searchKey": "torres del rio"
+    },
+    {
+      "code": "232",
+      "ineCode": "31232",
+      "ineCodeWithCheck": "312325",
+      "checkDigit": "5",
+      "name": "Tudela",
+      "searchKey": "tudela"
+    },
+    {
+      "code": "233",
+      "ineCode": "31233",
+      "ineCodeWithCheck": "312331",
+      "checkDigit": "1",
+      "name": "Tulebras",
+      "searchKey": "tulebras"
+    },
+    {
+      "code": "234",
+      "ineCode": "31234",
+      "ineCodeWithCheck": "312346",
+      "checkDigit": "6",
+      "name": "Ucar",
+      "searchKey": "ucar"
+    },
+    {
+      "code": "123",
+      "ineCode": "31123",
+      "ineCodeWithCheck": "311234",
+      "checkDigit": "4",
+      "name": "Uharte Arakil",
+      "searchKey": "uharte arakil"
+    },
+    {
+      "code": "235",
+      "ineCode": "31235",
+      "ineCodeWithCheck": "312359",
+      "checkDigit": "9",
+      "name": "Ujué/Uxue",
+      "searchKey": "ujue uxue"
+    },
+    {
+      "code": "236",
+      "ineCode": "31236",
+      "ineCodeWithCheck": "312362",
+      "checkDigit": "2",
+      "name": "Ultzama",
+      "searchKey": "ultzama"
+    },
+    {
+      "code": "237",
+      "ineCode": "31237",
+      "ineCodeWithCheck": "312378",
+      "checkDigit": "8",
+      "name": "Unciti",
+      "searchKey": "unciti"
+    },
+    {
+      "code": "238",
+      "ineCode": "31238",
+      "ineCodeWithCheck": "312384",
+      "checkDigit": "4",
+      "name": "Unzué/Untzue",
+      "searchKey": "unzue untzue"
+    },
+    {
+      "code": "239",
+      "ineCode": "31239",
+      "ineCodeWithCheck": "312397",
+      "checkDigit": "7",
+      "name": "Urdazubi/Urdax",
+      "searchKey": "urdazubi urdax"
+    },
+    {
+      "code": "240",
+      "ineCode": "31240",
+      "ineCodeWithCheck": "312401",
+      "checkDigit": "1",
+      "name": "Urdiain",
+      "searchKey": "urdiain"
+    },
+    {
+      "code": "241",
+      "ineCode": "31241",
+      "ineCodeWithCheck": "312418",
+      "checkDigit": "8",
+      "name": "Urraul Alto",
+      "searchKey": "urraul alto"
+    },
+    {
+      "code": "242",
+      "ineCode": "31242",
+      "ineCodeWithCheck": "312423",
+      "checkDigit": "3",
+      "name": "Urraul Bajo",
+      "searchKey": "urraul bajo"
+    },
+    {
+      "code": "244",
+      "ineCode": "31244",
+      "ineCodeWithCheck": "312444",
+      "checkDigit": "4",
+      "name": "Urroz",
+      "searchKey": "urroz"
+    },
+    {
+      "code": "243",
+      "ineCode": "31243",
+      "ineCodeWithCheck": "312439",
+      "checkDigit": "9",
+      "name": "Urroz-Villa",
+      "searchKey": "urroz villa"
+    },
+    {
+      "code": "245",
+      "ineCode": "31245",
+      "ineCodeWithCheck": "312457",
+      "checkDigit": "7",
+      "name": "Urzainqui/Urzainki",
+      "searchKey": "urzainqui urzainki"
+    },
+    {
+      "code": "246",
+      "ineCode": "31246",
+      "ineCodeWithCheck": "312460",
+      "checkDigit": "0",
+      "name": "Uterga",
+      "searchKey": "uterga"
+    },
+    {
+      "code": "247",
+      "ineCode": "31247",
+      "ineCodeWithCheck": "312476",
+      "checkDigit": "6",
+      "name": "Uztárroz/Uztarroze",
+      "searchKey": "uztarroz uztarroze"
+    },
+    {
+      "code": "118",
+      "ineCode": "31118",
+      "ineCodeWithCheck": "311189",
+      "checkDigit": "9",
+      "name": "Val de Goñi/Goñerri",
+      "searchKey": "val de goni gonerri"
+    },
+    {
+      "code": "086",
+      "ineCode": "31086",
+      "ineCodeWithCheck": "310863",
+      "checkDigit": "3",
+      "name": "Valle de Egüés/Eguesibar",
+      "searchKey": "valle de egues eguesibar"
+    },
+    {
+      "code": "088",
+      "ineCode": "31088",
+      "ineCodeWithCheck": "310885",
+      "checkDigit": "5",
+      "name": "Valle de Elorz/Elortzibar",
+      "searchKey": "valle de elorz elortzibar"
+    },
+    {
+      "code": "194",
+      "ineCode": "31194",
+      "ineCodeWithCheck": "311944",
+      "checkDigit": "4",
+      "name": "Valle de Ollo/Ollaran",
+      "searchKey": "valle de ollo ollaran"
+    },
+    {
+      "code": "260",
+      "ineCode": "31260",
+      "ineCodeWithCheck": "312606",
+      "checkDigit": "6",
+      "name": "Valle de Yerri/Deierri",
+      "searchKey": "valle de yerri deierri"
+    },
+    {
+      "code": "249",
+      "ineCode": "31249",
+      "ineCodeWithCheck": "312495",
+      "checkDigit": "5",
+      "name": "Valtierra",
+      "searchKey": "valtierra"
+    },
+    {
+      "code": "251",
+      "ineCode": "31251",
+      "ineCodeWithCheck": "312515",
+      "checkDigit": "5",
+      "name": "Viana",
+      "searchKey": "viana"
+    },
+    {
+      "code": "252",
+      "ineCode": "31252",
+      "ineCodeWithCheck": "312520",
+      "checkDigit": "0",
+      "name": "Vidángoz/Bidankoze",
+      "searchKey": "vidangoz bidankoze"
+    },
+    {
+      "code": "254",
+      "ineCode": "31254",
+      "ineCodeWithCheck": "312541",
+      "checkDigit": "1",
+      "name": "Villafranca",
+      "searchKey": "villafranca"
+    },
+    {
+      "code": "255",
+      "ineCode": "31255",
+      "ineCodeWithCheck": "312554",
+      "checkDigit": "4",
+      "name": "Villamayor de Monjardín",
+      "searchKey": "villamayor de monjardin"
+    },
+    {
+      "code": "257",
+      "ineCode": "31257",
+      "ineCodeWithCheck": "312573",
+      "checkDigit": "3",
+      "name": "Villatuerta",
+      "searchKey": "villatuerta"
+    },
+    {
+      "code": "258",
+      "ineCode": "31258",
+      "ineCodeWithCheck": "312589",
+      "checkDigit": "9",
+      "name": "Villava/Atarrabia",
+      "searchKey": "villava atarrabia"
+    },
+    {
+      "code": "261",
+      "ineCode": "31261",
+      "ineCodeWithCheck": "312613",
+      "checkDigit": "3",
+      "name": "Yesa",
+      "searchKey": "yesa"
+    },
+    {
+      "code": "262",
+      "ineCode": "31262",
+      "ineCodeWithCheck": "312628",
+      "checkDigit": "8",
+      "name": "Zabalza/Zabaltza",
+      "searchKey": "zabalza zabaltza"
+    },
+    {
+      "code": "073",
+      "ineCode": "31073",
+      "ineCodeWithCheck": "310734",
+      "checkDigit": "4",
+      "name": "Ziordia",
+      "searchKey": "ziordia"
+    },
+    {
+      "code": "907",
+      "ineCode": "31907",
+      "ineCodeWithCheck": "319077",
+      "checkDigit": "7",
+      "name": "Zizur Mayor/Zizur Nagusia",
+      "searchKey": "zizur mayor zizur nagusia"
+    },
+    {
+      "code": "263",
+      "ineCode": "31263",
+      "ineCodeWithCheck": "312634",
+      "checkDigit": "4",
+      "name": "Zubieta",
+      "searchKey": "zubieta"
+    },
+    {
+      "code": "264",
+      "ineCode": "31264",
+      "ineCodeWithCheck": "312649",
+      "checkDigit": "9",
+      "name": "Zugarramurdi",
+      "searchKey": "zugarramurdi"
+    },
+    {
+      "code": "265",
+      "ineCode": "31265",
+      "ineCodeWithCheck": "312652",
+      "checkDigit": "2",
+      "name": "Zúñiga",
+      "searchKey": "zuniga"
+    }
+  ]
+}

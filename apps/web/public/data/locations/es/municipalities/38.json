@@ -1,0 +1,441 @@
+{
+  "province": {
+    "code": "38",
+    "name": "Santa Cruz de Tenerife",
+    "searchKey": "santa cruz de tenerife"
+  },
+  "municipalities": [
+    {
+      "code": "001",
+      "ineCode": "38001",
+      "ineCodeWithCheck": "380012",
+      "checkDigit": "2",
+      "name": "Adeje",
+      "searchKey": "adeje"
+    },
+    {
+      "code": "002",
+      "ineCode": "38002",
+      "ineCodeWithCheck": "380027",
+      "checkDigit": "7",
+      "name": "Agulo",
+      "searchKey": "agulo"
+    },
+    {
+      "code": "003",
+      "ineCode": "38003",
+      "ineCodeWithCheck": "380033",
+      "checkDigit": "3",
+      "name": "Alajeró",
+      "searchKey": "alajero"
+    },
+    {
+      "code": "004",
+      "ineCode": "38004",
+      "ineCodeWithCheck": "380048",
+      "checkDigit": "8",
+      "name": "Arafo",
+      "searchKey": "arafo"
+    },
+    {
+      "code": "005",
+      "ineCode": "38005",
+      "ineCodeWithCheck": "380051",
+      "checkDigit": "1",
+      "name": "Arico",
+      "searchKey": "arico"
+    },
+    {
+      "code": "006",
+      "ineCode": "38006",
+      "ineCodeWithCheck": "380064",
+      "checkDigit": "4",
+      "name": "Arona",
+      "searchKey": "arona"
+    },
+    {
+      "code": "007",
+      "ineCode": "38007",
+      "ineCodeWithCheck": "380070",
+      "checkDigit": "0",
+      "name": "Barlovento",
+      "searchKey": "barlovento"
+    },
+    {
+      "code": "008",
+      "ineCode": "38008",
+      "ineCodeWithCheck": "380086",
+      "checkDigit": "6",
+      "name": "Breña Alta",
+      "searchKey": "brena alta"
+    },
+    {
+      "code": "009",
+      "ineCode": "38009",
+      "ineCodeWithCheck": "380099",
+      "checkDigit": "9",
+      "name": "Breña Baja",
+      "searchKey": "brena baja"
+    },
+    {
+      "code": "010",
+      "ineCode": "38010",
+      "ineCodeWithCheck": "380103",
+      "checkDigit": "3",
+      "name": "Buenavista del Norte",
+      "searchKey": "buenavista del norte"
+    },
+    {
+      "code": "011",
+      "ineCode": "38011",
+      "ineCodeWithCheck": "380110",
+      "checkDigit": "0",
+      "name": "Candelaria",
+      "searchKey": "candelaria"
+    },
+    {
+      "code": "012",
+      "ineCode": "38012",
+      "ineCodeWithCheck": "380125",
+      "checkDigit": "5",
+      "name": "Fasnia",
+      "searchKey": "fasnia"
+    },
+    {
+      "code": "013",
+      "ineCode": "38013",
+      "ineCodeWithCheck": "380131",
+      "checkDigit": "1",
+      "name": "Frontera",
+      "searchKey": "frontera"
+    },
+    {
+      "code": "014",
+      "ineCode": "38014",
+      "ineCodeWithCheck": "380146",
+      "checkDigit": "6",
+      "name": "Fuencaliente de la Palma",
+      "searchKey": "fuencaliente de la palma"
+    },
+    {
+      "code": "015",
+      "ineCode": "38015",
+      "ineCodeWithCheck": "380159",
+      "checkDigit": "9",
+      "name": "Garachico",
+      "searchKey": "garachico"
+    },
+    {
+      "code": "016",
+      "ineCode": "38016",
+      "ineCodeWithCheck": "380162",
+      "checkDigit": "2",
+      "name": "Garafía",
+      "searchKey": "garafia"
+    },
+    {
+      "code": "017",
+      "ineCode": "38017",
+      "ineCodeWithCheck": "380178",
+      "checkDigit": "8",
+      "name": "Granadilla de Abona",
+      "searchKey": "granadilla de abona"
+    },
+    {
+      "code": "018",
+      "ineCode": "38018",
+      "ineCodeWithCheck": "380184",
+      "checkDigit": "4",
+      "name": "Guancha, La",
+      "searchKey": "guancha la"
+    },
+    {
+      "code": "019",
+      "ineCode": "38019",
+      "ineCodeWithCheck": "380197",
+      "checkDigit": "7",
+      "name": "Guía de Isora",
+      "searchKey": "guia de isora"
+    },
+    {
+      "code": "020",
+      "ineCode": "38020",
+      "ineCodeWithCheck": "380201",
+      "checkDigit": "1",
+      "name": "Güímar",
+      "searchKey": "guimar"
+    },
+    {
+      "code": "021",
+      "ineCode": "38021",
+      "ineCodeWithCheck": "380218",
+      "checkDigit": "8",
+      "name": "Hermigua",
+      "searchKey": "hermigua"
+    },
+    {
+      "code": "022",
+      "ineCode": "38022",
+      "ineCodeWithCheck": "380223",
+      "checkDigit": "3",
+      "name": "Icod de los Vinos",
+      "searchKey": "icod de los vinos"
+    },
+    {
+      "code": "024",
+      "ineCode": "38024",
+      "ineCodeWithCheck": "380244",
+      "checkDigit": "4",
+      "name": "Llanos de Aridane, Los",
+      "searchKey": "llanos de aridane los"
+    },
+    {
+      "code": "025",
+      "ineCode": "38025",
+      "ineCodeWithCheck": "380257",
+      "checkDigit": "7",
+      "name": "Matanza de Acentejo, La",
+      "searchKey": "matanza de acentejo la"
+    },
+    {
+      "code": "026",
+      "ineCode": "38026",
+      "ineCodeWithCheck": "380260",
+      "checkDigit": "0",
+      "name": "Orotava, La",
+      "searchKey": "orotava la"
+    },
+    {
+      "code": "027",
+      "ineCode": "38027",
+      "ineCodeWithCheck": "380276",
+      "checkDigit": "6",
+      "name": "Paso, El",
+      "searchKey": "paso el"
+    },
+    {
+      "code": "901",
+      "ineCode": "38901",
+      "ineCodeWithCheck": "389013",
+      "checkDigit": "3",
+      "name": "Pinar de El Hierro, El",
+      "searchKey": "pinar de el hierro el"
+    },
+    {
+      "code": "028",
+      "ineCode": "38028",
+      "ineCodeWithCheck": "380282",
+      "checkDigit": "2",
+      "name": "Puerto de la Cruz",
+      "searchKey": "puerto de la cruz"
+    },
+    {
+      "code": "029",
+      "ineCode": "38029",
+      "ineCodeWithCheck": "380295",
+      "checkDigit": "5",
+      "name": "Puntagorda",
+      "searchKey": "puntagorda"
+    },
+    {
+      "code": "030",
+      "ineCode": "38030",
+      "ineCodeWithCheck": "380309",
+      "checkDigit": "9",
+      "name": "Puntallana",
+      "searchKey": "puntallana"
+    },
+    {
+      "code": "031",
+      "ineCode": "38031",
+      "ineCodeWithCheck": "380316",
+      "checkDigit": "6",
+      "name": "Realejos, Los",
+      "searchKey": "realejos los"
+    },
+    {
+      "code": "032",
+      "ineCode": "38032",
+      "ineCodeWithCheck": "380321",
+      "checkDigit": "1",
+      "name": "Rosario, El",
+      "searchKey": "rosario el"
+    },
+    {
+      "code": "033",
+      "ineCode": "38033",
+      "ineCodeWithCheck": "380337",
+      "checkDigit": "7",
+      "name": "San Andrés y Sauces",
+      "searchKey": "san andres y sauces"
+    },
+    {
+      "code": "023",
+      "ineCode": "38023",
+      "ineCodeWithCheck": "380239",
+      "checkDigit": "9",
+      "name": "San Cristóbal de La Laguna",
+      "searchKey": "san cristobal de la laguna"
+    },
+    {
+      "code": "034",
+      "ineCode": "38034",
+      "ineCodeWithCheck": "380342",
+      "checkDigit": "2",
+      "name": "San Juan de la Rambla",
+      "searchKey": "san juan de la rambla"
+    },
+    {
+      "code": "035",
+      "ineCode": "38035",
+      "ineCodeWithCheck": "380355",
+      "checkDigit": "5",
+      "name": "San Miguel de Abona",
+      "searchKey": "san miguel de abona"
+    },
+    {
+      "code": "036",
+      "ineCode": "38036",
+      "ineCodeWithCheck": "380368",
+      "checkDigit": "8",
+      "name": "San Sebastián de la Gomera",
+      "searchKey": "san sebastian de la gomera"
+    },
+    {
+      "code": "037",
+      "ineCode": "38037",
+      "ineCodeWithCheck": "380374",
+      "checkDigit": "4",
+      "name": "Santa Cruz de la Palma",
+      "searchKey": "santa cruz de la palma"
+    },
+    {
+      "code": "038",
+      "ineCode": "38038",
+      "ineCodeWithCheck": "380380",
+      "checkDigit": "0",
+      "name": "Santa Cruz de Tenerife",
+      "searchKey": "santa cruz de tenerife"
+    },
+    {
+      "code": "039",
+      "ineCode": "38039",
+      "ineCodeWithCheck": "380393",
+      "checkDigit": "3",
+      "name": "Santa Úrsula",
+      "searchKey": "santa ursula"
+    },
+    {
+      "code": "040",
+      "ineCode": "38040",
+      "ineCodeWithCheck": "380407",
+      "checkDigit": "7",
+      "name": "Santiago del Teide",
+      "searchKey": "santiago del teide"
+    },
+    {
+      "code": "041",
+      "ineCode": "38041",
+      "ineCodeWithCheck": "380414",
+      "checkDigit": "4",
+      "name": "Sauzal, El",
+      "searchKey": "sauzal el"
+    },
+    {
+      "code": "042",
+      "ineCode": "38042",
+      "ineCodeWithCheck": "380429",
+      "checkDigit": "9",
+      "name": "Silos, Los",
+      "searchKey": "silos los"
+    },
+    {
+      "code": "043",
+      "ineCode": "38043",
+      "ineCodeWithCheck": "380435",
+      "checkDigit": "5",
+      "name": "Tacoronte",
+      "searchKey": "tacoronte"
+    },
+    {
+      "code": "044",
+      "ineCode": "38044",
+      "ineCodeWithCheck": "380440",
+      "checkDigit": "0",
+      "name": "Tanque, El",
+      "searchKey": "tanque el"
+    },
+    {
+      "code": "045",
+      "ineCode": "38045",
+      "ineCodeWithCheck": "380453",
+      "checkDigit": "3",
+      "name": "Tazacorte",
+      "searchKey": "tazacorte"
+    },
+    {
+      "code": "046",
+      "ineCode": "38046",
+      "ineCodeWithCheck": "380466",
+      "checkDigit": "6",
+      "name": "Tegueste",
+      "searchKey": "tegueste"
+    },
+    {
+      "code": "047",
+      "ineCode": "38047",
+      "ineCodeWithCheck": "380472",
+      "checkDigit": "2",
+      "name": "Tijarafe",
+      "searchKey": "tijarafe"
+    },
+    {
+      "code": "049",
+      "ineCode": "38049",
+      "ineCodeWithCheck": "380491",
+      "checkDigit": "1",
+      "name": "Valle Gran Rey",
+      "searchKey": "valle gran rey"
+    },
+    {
+      "code": "050",
+      "ineCode": "38050",
+      "ineCodeWithCheck": "380504",
+      "checkDigit": "4",
+      "name": "Vallehermoso",
+      "searchKey": "vallehermoso"
+    },
+    {
+      "code": "048",
+      "ineCode": "38048",
+      "ineCodeWithCheck": "380488",
+      "checkDigit": "8",
+      "name": "Valverde",
+      "searchKey": "valverde"
+    },
+    {
+      "code": "051",
+      "ineCode": "38051",
+      "ineCodeWithCheck": "380511",
+      "checkDigit": "1",
+      "name": "Victoria de Acentejo, La",
+      "searchKey": "victoria de acentejo la"
+    },
+    {
+      "code": "052",
+      "ineCode": "38052",
+      "ineCodeWithCheck": "380526",
+      "checkDigit": "6",
+      "name": "Vilaflor de Chasna",
+      "searchKey": "vilaflor de chasna"
+    },
+    {
+      "code": "053",
+      "ineCode": "38053",
+      "ineCodeWithCheck": "380532",
+      "checkDigit": "2",
+      "name": "Villa de Mazo",
+      "searchKey": "villa de mazo"
+    }
+  ]
+}

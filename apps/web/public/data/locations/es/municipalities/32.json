@@ -1,0 +1,745 @@
+{
+  "province": {
+    "code": "32",
+    "name": "Ourense",
+    "searchKey": "ourense"
+  },
+  "municipalities": [
+    {
+      "code": "001",
+      "ineCode": "32001",
+      "ineCodeWithCheck": "320013",
+      "checkDigit": "3",
+      "name": "Allariz",
+      "searchKey": "allariz"
+    },
+    {
+      "code": "002",
+      "ineCode": "32002",
+      "ineCodeWithCheck": "320028",
+      "checkDigit": "8",
+      "name": "Amoeiro",
+      "searchKey": "amoeiro"
+    },
+    {
+      "code": "003",
+      "ineCode": "32003",
+      "ineCodeWithCheck": "320034",
+      "checkDigit": "4",
+      "name": "Arnoia, A",
+      "searchKey": "arnoia a"
+    },
+    {
+      "code": "004",
+      "ineCode": "32004",
+      "ineCodeWithCheck": "320049",
+      "checkDigit": "9",
+      "name": "Avión",
+      "searchKey": "avion"
+    },
+    {
+      "code": "005",
+      "ineCode": "32005",
+      "ineCodeWithCheck": "320052",
+      "checkDigit": "2",
+      "name": "Baltar",
+      "searchKey": "baltar"
+    },
+    {
+      "code": "006",
+      "ineCode": "32006",
+      "ineCodeWithCheck": "320065",
+      "checkDigit": "5",
+      "name": "Bande",
+      "searchKey": "bande"
+    },
+    {
+      "code": "007",
+      "ineCode": "32007",
+      "ineCodeWithCheck": "320071",
+      "checkDigit": "1",
+      "name": "Baños de Molgas",
+      "searchKey": "banos de molgas"
+    },
+    {
+      "code": "008",
+      "ineCode": "32008",
+      "ineCodeWithCheck": "320087",
+      "checkDigit": "7",
+      "name": "Barbadás",
+      "searchKey": "barbadas"
+    },
+    {
+      "code": "009",
+      "ineCode": "32009",
+      "ineCodeWithCheck": "320090",
+      "checkDigit": "0",
+      "name": "Barco de Valdeorras, O",
+      "searchKey": "barco de valdeorras o"
+    },
+    {
+      "code": "010",
+      "ineCode": "32010",
+      "ineCodeWithCheck": "320104",
+      "checkDigit": "4",
+      "name": "Beade",
+      "searchKey": "beade"
+    },
+    {
+      "code": "011",
+      "ineCode": "32011",
+      "ineCodeWithCheck": "320111",
+      "checkDigit": "1",
+      "name": "Beariz",
+      "searchKey": "beariz"
+    },
+    {
+      "code": "012",
+      "ineCode": "32012",
+      "ineCodeWithCheck": "320126",
+      "checkDigit": "6",
+      "name": "Blancos, Os",
+      "searchKey": "blancos os"
+    },
+    {
+      "code": "013",
+      "ineCode": "32013",
+      "ineCodeWithCheck": "320132",
+      "checkDigit": "2",
+      "name": "Boborás",
+      "searchKey": "boboras"
+    },
+    {
+      "code": "014",
+      "ineCode": "32014",
+      "ineCodeWithCheck": "320147",
+      "checkDigit": "7",
+      "name": "Bola, A",
+      "searchKey": "bola a"
+    },
+    {
+      "code": "015",
+      "ineCode": "32015",
+      "ineCodeWithCheck": "320150",
+      "checkDigit": "0",
+      "name": "Bolo, O",
+      "searchKey": "bolo o"
+    },
+    {
+      "code": "016",
+      "ineCode": "32016",
+      "ineCodeWithCheck": "320163",
+      "checkDigit": "3",
+      "name": "Calvos de Randín",
+      "searchKey": "calvos de randin"
+    },
+    {
+      "code": "018",
+      "ineCode": "32018",
+      "ineCodeWithCheck": "320185",
+      "checkDigit": "5",
+      "name": "Carballeda de Avia",
+      "searchKey": "carballeda de avia"
+    },
+    {
+      "code": "017",
+      "ineCode": "32017",
+      "ineCodeWithCheck": "320179",
+      "checkDigit": "9",
+      "name": "Carballeda de Valdeorras",
+      "searchKey": "carballeda de valdeorras"
+    },
+    {
+      "code": "019",
+      "ineCode": "32019",
+      "ineCodeWithCheck": "320198",
+      "checkDigit": "8",
+      "name": "Carballiño, O",
+      "searchKey": "carballino o"
+    },
+    {
+      "code": "020",
+      "ineCode": "32020",
+      "ineCodeWithCheck": "320202",
+      "checkDigit": "2",
+      "name": "Cartelle",
+      "searchKey": "cartelle"
+    },
+    {
+      "code": "022",
+      "ineCode": "32022",
+      "ineCodeWithCheck": "320224",
+      "checkDigit": "4",
+      "name": "Castrelo de Miño",
+      "searchKey": "castrelo de mino"
+    },
+    {
+      "code": "021",
+      "ineCode": "32021",
+      "ineCodeWithCheck": "320219",
+      "checkDigit": "9",
+      "name": "Castrelo do Val",
+      "searchKey": "castrelo do val"
+    },
+    {
+      "code": "023",
+      "ineCode": "32023",
+      "ineCodeWithCheck": "320230",
+      "checkDigit": "0",
+      "name": "Castro Caldelas",
+      "searchKey": "castro caldelas"
+    },
+    {
+      "code": "024",
+      "ineCode": "32024",
+      "ineCodeWithCheck": "320245",
+      "checkDigit": "5",
+      "name": "Celanova",
+      "searchKey": "celanova"
+    },
+    {
+      "code": "025",
+      "ineCode": "32025",
+      "ineCodeWithCheck": "320258",
+      "checkDigit": "8",
+      "name": "Cenlle",
+      "searchKey": "cenlle"
+    },
+    {
+      "code": "029",
+      "ineCode": "32029",
+      "ineCodeWithCheck": "320296",
+      "checkDigit": "6",
+      "name": "Chandrexa de Queixa",
+      "searchKey": "chandrexa de queixa"
+    },
+    {
+      "code": "026",
+      "ineCode": "32026",
+      "ineCodeWithCheck": "320261",
+      "checkDigit": "1",
+      "name": "Coles",
+      "searchKey": "coles"
+    },
+    {
+      "code": "027",
+      "ineCode": "32027",
+      "ineCodeWithCheck": "320277",
+      "checkDigit": "7",
+      "name": "Cortegada",
+      "searchKey": "cortegada"
+    },
+    {
+      "code": "028",
+      "ineCode": "32028",
+      "ineCodeWithCheck": "320283",
+      "checkDigit": "3",
+      "name": "Cualedro",
+      "searchKey": "cualedro"
+    },
+    {
+      "code": "030",
+      "ineCode": "32030",
+      "ineCodeWithCheck": "320300",
+      "checkDigit": "0",
+      "name": "Entrimo",
+      "searchKey": "entrimo"
+    },
+    {
+      "code": "031",
+      "ineCode": "32031",
+      "ineCodeWithCheck": "320317",
+      "checkDigit": "7",
+      "name": "Esgos",
+      "searchKey": "esgos"
+    },
+    {
+      "code": "033",
+      "ineCode": "32033",
+      "ineCodeWithCheck": "320338",
+      "checkDigit": "8",
+      "name": "Gomesende",
+      "searchKey": "gomesende"
+    },
+    {
+      "code": "034",
+      "ineCode": "32034",
+      "ineCodeWithCheck": "320343",
+      "checkDigit": "3",
+      "name": "Gudiña, A",
+      "searchKey": "gudina a"
+    },
+    {
+      "code": "035",
+      "ineCode": "32035",
+      "ineCodeWithCheck": "320356",
+      "checkDigit": "6",
+      "name": "Irixo, O",
+      "searchKey": "irixo o"
+    },
+    {
+      "code": "038",
+      "ineCode": "32038",
+      "ineCodeWithCheck": "320381",
+      "checkDigit": "1",
+      "name": "Larouco",
+      "searchKey": "larouco"
+    },
+    {
+      "code": "039",
+      "ineCode": "32039",
+      "ineCodeWithCheck": "320394",
+      "checkDigit": "4",
+      "name": "Laza",
+      "searchKey": "laza"
+    },
+    {
+      "code": "040",
+      "ineCode": "32040",
+      "ineCodeWithCheck": "320408",
+      "checkDigit": "8",
+      "name": "Leiro",
+      "searchKey": "leiro"
+    },
+    {
+      "code": "041",
+      "ineCode": "32041",
+      "ineCodeWithCheck": "320415",
+      "checkDigit": "5",
+      "name": "Lobeira",
+      "searchKey": "lobeira"
+    },
+    {
+      "code": "042",
+      "ineCode": "32042",
+      "ineCodeWithCheck": "320420",
+      "checkDigit": "0",
+      "name": "Lobios",
+      "searchKey": "lobios"
+    },
+    {
+      "code": "043",
+      "ineCode": "32043",
+      "ineCodeWithCheck": "320436",
+      "checkDigit": "6",
+      "name": "Maceda",
+      "searchKey": "maceda"
+    },
+    {
+      "code": "044",
+      "ineCode": "32044",
+      "ineCodeWithCheck": "320441",
+      "checkDigit": "1",
+      "name": "Manzaneda",
+      "searchKey": "manzaneda"
+    },
+    {
+      "code": "045",
+      "ineCode": "32045",
+      "ineCodeWithCheck": "320454",
+      "checkDigit": "4",
+      "name": "Maside",
+      "searchKey": "maside"
+    },
+    {
+      "code": "046",
+      "ineCode": "32046",
+      "ineCodeWithCheck": "320467",
+      "checkDigit": "7",
+      "name": "Melón",
+      "searchKey": "melon"
+    },
+    {
+      "code": "047",
+      "ineCode": "32047",
+      "ineCodeWithCheck": "320473",
+      "checkDigit": "3",
+      "name": "Merca, A",
+      "searchKey": "merca a"
+    },
+    {
+      "code": "048",
+      "ineCode": "32048",
+      "ineCodeWithCheck": "320489",
+      "checkDigit": "9",
+      "name": "Mezquita, A",
+      "searchKey": "mezquita a"
+    },
+    {
+      "code": "049",
+      "ineCode": "32049",
+      "ineCodeWithCheck": "320492",
+      "checkDigit": "2",
+      "name": "Montederramo",
+      "searchKey": "montederramo"
+    },
+    {
+      "code": "050",
+      "ineCode": "32050",
+      "ineCodeWithCheck": "320505",
+      "checkDigit": "5",
+      "name": "Monterrei",
+      "searchKey": "monterrei"
+    },
+    {
+      "code": "051",
+      "ineCode": "32051",
+      "ineCodeWithCheck": "320512",
+      "checkDigit": "2",
+      "name": "Muíños",
+      "searchKey": "muinos"
+    },
+    {
+      "code": "052",
+      "ineCode": "32052",
+      "ineCodeWithCheck": "320527",
+      "checkDigit": "7",
+      "name": "Nogueira de Ramuín",
+      "searchKey": "nogueira de ramuin"
+    },
+    {
+      "code": "053",
+      "ineCode": "32053",
+      "ineCodeWithCheck": "320533",
+      "checkDigit": "3",
+      "name": "Oímbra",
+      "searchKey": "oimbra"
+    },
+    {
+      "code": "054",
+      "ineCode": "32054",
+      "ineCodeWithCheck": "320548",
+      "checkDigit": "8",
+      "name": "Ourense",
+      "searchKey": "ourense"
+    },
+    {
+      "code": "055",
+      "ineCode": "32055",
+      "ineCodeWithCheck": "320551",
+      "checkDigit": "1",
+      "name": "Paderne de Allariz",
+      "searchKey": "paderne de allariz"
+    },
+    {
+      "code": "056",
+      "ineCode": "32056",
+      "ineCodeWithCheck": "320564",
+      "checkDigit": "4",
+      "name": "Padrenda",
+      "searchKey": "padrenda"
+    },
+    {
+      "code": "057",
+      "ineCode": "32057",
+      "ineCodeWithCheck": "320570",
+      "checkDigit": "0",
+      "name": "Parada de Sil",
+      "searchKey": "parada de sil"
+    },
+    {
+      "code": "058",
+      "ineCode": "32058",
+      "ineCodeWithCheck": "320586",
+      "checkDigit": "6",
+      "name": "Pereiro de Aguiar, O",
+      "searchKey": "pereiro de aguiar o"
+    },
+    {
+      "code": "059",
+      "ineCode": "32059",
+      "ineCodeWithCheck": "320599",
+      "checkDigit": "9",
+      "name": "Peroxa, A",
+      "searchKey": "peroxa a"
+    },
+    {
+      "code": "060",
+      "ineCode": "32060",
+      "ineCodeWithCheck": "320603",
+      "checkDigit": "3",
+      "name": "Petín",
+      "searchKey": "petin"
+    },
+    {
+      "code": "061",
+      "ineCode": "32061",
+      "ineCodeWithCheck": "320610",
+      "checkDigit": "0",
+      "name": "Piñor",
+      "searchKey": "pinor"
+    },
+    {
+      "code": "063",
+      "ineCode": "32063",
+      "ineCodeWithCheck": "320631",
+      "checkDigit": "1",
+      "name": "Pobra de Trives, A",
+      "searchKey": "pobra de trives a"
+    },
+    {
+      "code": "064",
+      "ineCode": "32064",
+      "ineCodeWithCheck": "320646",
+      "checkDigit": "6",
+      "name": "Pontedeva",
+      "searchKey": "pontedeva"
+    },
+    {
+      "code": "062",
+      "ineCode": "32062",
+      "ineCodeWithCheck": "320625",
+      "checkDigit": "5",
+      "name": "Porqueira",
+      "searchKey": "porqueira"
+    },
+    {
+      "code": "065",
+      "ineCode": "32065",
+      "ineCodeWithCheck": "320659",
+      "checkDigit": "9",
+      "name": "Punxín",
+      "searchKey": "punxin"
+    },
+    {
+      "code": "066",
+      "ineCode": "32066",
+      "ineCodeWithCheck": "320662",
+      "checkDigit": "2",
+      "name": "Quintela de Leirado",
+      "searchKey": "quintela de leirado"
+    },
+    {
+      "code": "067",
+      "ineCode": "32067",
+      "ineCodeWithCheck": "320678",
+      "checkDigit": "8",
+      "name": "Rairiz de Veiga",
+      "searchKey": "rairiz de veiga"
+    },
+    {
+      "code": "068",
+      "ineCode": "32068",
+      "ineCodeWithCheck": "320684",
+      "checkDigit": "4",
+      "name": "Ramirás",
+      "searchKey": "ramiras"
+    },
+    {
+      "code": "069",
+      "ineCode": "32069",
+      "ineCodeWithCheck": "320697",
+      "checkDigit": "7",
+      "name": "Ribadavia",
+      "searchKey": "ribadavia"
+    },
+    {
+      "code": "071",
+      "ineCode": "32071",
+      "ineCodeWithCheck": "320718",
+      "checkDigit": "8",
+      "name": "Riós",
+      "searchKey": "rios"
+    },
+    {
+      "code": "072",
+      "ineCode": "32072",
+      "ineCodeWithCheck": "320723",
+      "checkDigit": "3",
+      "name": "Rúa, A",
+      "searchKey": "rua a"
+    },
+    {
+      "code": "073",
+      "ineCode": "32073",
+      "ineCodeWithCheck": "320739",
+      "checkDigit": "9",
+      "name": "Rubiá",
+      "searchKey": "rubia"
+    },
+    {
+      "code": "074",
+      "ineCode": "32074",
+      "ineCodeWithCheck": "320744",
+      "checkDigit": "4",
+      "name": "San Amaro",
+      "searchKey": "san amaro"
+    },
+    {
+      "code": "075",
+      "ineCode": "32075",
+      "ineCodeWithCheck": "320757",
+      "checkDigit": "7",
+      "name": "San Cibrao das Viñas",
+      "searchKey": "san cibrao das vinas"
+    },
+    {
+      "code": "076",
+      "ineCode": "32076",
+      "ineCodeWithCheck": "320760",
+      "checkDigit": "0",
+      "name": "San Cristovo de Cea",
+      "searchKey": "san cristovo de cea"
+    },
+    {
+      "code": "070",
+      "ineCode": "32070",
+      "ineCodeWithCheck": "320701",
+      "checkDigit": "1",
+      "name": "San Xoán de Río",
+      "searchKey": "san xoan de rio"
+    },
+    {
+      "code": "077",
+      "ineCode": "32077",
+      "ineCodeWithCheck": "320776",
+      "checkDigit": "6",
+      "name": "Sandiás",
+      "searchKey": "sandias"
+    },
+    {
+      "code": "078",
+      "ineCode": "32078",
+      "ineCodeWithCheck": "320782",
+      "checkDigit": "2",
+      "name": "Sarreaus",
+      "searchKey": "sarreaus"
+    },
+    {
+      "code": "079",
+      "ineCode": "32079",
+      "ineCodeWithCheck": "320795",
+      "checkDigit": "5",
+      "name": "Taboadela",
+      "searchKey": "taboadela"
+    },
+    {
+      "code": "080",
+      "ineCode": "32080",
+      "ineCodeWithCheck": "320809",
+      "checkDigit": "9",
+      "name": "Teixeira, A",
+      "searchKey": "teixeira a"
+    },
+    {
+      "code": "081",
+      "ineCode": "32081",
+      "ineCodeWithCheck": "320816",
+      "checkDigit": "6",
+      "name": "Toén",
+      "searchKey": "toen"
+    },
+    {
+      "code": "082",
+      "ineCode": "32082",
+      "ineCodeWithCheck": "320821",
+      "checkDigit": "1",
+      "name": "Trasmiras",
+      "searchKey": "trasmiras"
+    },
+    {
+      "code": "083",
+      "ineCode": "32083",
+      "ineCodeWithCheck": "320837",
+      "checkDigit": "7",
+      "name": "Veiga, A",
+      "searchKey": "veiga a"
+    },
+    {
+      "code": "084",
+      "ineCode": "32084",
+      "ineCodeWithCheck": "320842",
+      "checkDigit": "2",
+      "name": "Verea",
+      "searchKey": "verea"
+    },
+    {
+      "code": "085",
+      "ineCode": "32085",
+      "ineCodeWithCheck": "320855",
+      "checkDigit": "5",
+      "name": "Verín",
+      "searchKey": "verin"
+    },
+    {
+      "code": "086",
+      "ineCode": "32086",
+      "ineCodeWithCheck": "320868",
+      "checkDigit": "8",
+      "name": "Viana do Bolo",
+      "searchKey": "viana do bolo"
+    },
+    {
+      "code": "087",
+      "ineCode": "32087",
+      "ineCodeWithCheck": "320874",
+      "checkDigit": "4",
+      "name": "Vilamarín",
+      "searchKey": "vilamarin"
+    },
+    {
+      "code": "088",
+      "ineCode": "32088",
+      "ineCodeWithCheck": "320880",
+      "checkDigit": "0",
+      "name": "Vilamartín de Valdeorras",
+      "searchKey": "vilamartin de valdeorras"
+    },
+    {
+      "code": "089",
+      "ineCode": "32089",
+      "ineCodeWithCheck": "320893",
+      "checkDigit": "3",
+      "name": "Vilar de Barrio",
+      "searchKey": "vilar de barrio"
+    },
+    {
+      "code": "090",
+      "ineCode": "32090",
+      "ineCodeWithCheck": "320907",
+      "checkDigit": "7",
+      "name": "Vilar de Santos",
+      "searchKey": "vilar de santos"
+    },
+    {
+      "code": "091",
+      "ineCode": "32091",
+      "ineCodeWithCheck": "320914",
+      "checkDigit": "4",
+      "name": "Vilardevós",
+      "searchKey": "vilardevos"
+    },
+    {
+      "code": "092",
+      "ineCode": "32092",
+      "ineCodeWithCheck": "320929",
+      "checkDigit": "9",
+      "name": "Vilariño de Conso",
+      "searchKey": "vilarino de conso"
+    },
+    {
+      "code": "032",
+      "ineCode": "32032",
+      "ineCodeWithCheck": "320322",
+      "checkDigit": "2",
+      "name": "Xinzo de Limia",
+      "searchKey": "xinzo de limia"
+    },
+    {
+      "code": "036",
+      "ineCode": "32036",
+      "ineCodeWithCheck": "320369",
+      "checkDigit": "9",
+      "name": "Xunqueira de Ambía",
+      "searchKey": "xunqueira de ambia"
+    },
+    {
+      "code": "037",
+      "ineCode": "32037",
+      "ineCodeWithCheck": "320375",
+      "checkDigit": "5",
+      "name": "Xunqueira de Espadanedo",
+      "searchKey": "xunqueira de espadanedo"
+    }
+  ]
+}

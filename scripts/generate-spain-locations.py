@@ -151,18 +151,25 @@ def extract_rows(
     xlsx_path: Path,
 ) -> list[list[str]]:
     with ZipFile(xlsx_path) as archive:
-        shared_strings = (
-            get_shared_strings(
-                archive,
-            )
+        shared_strings = get_shared_strings(
+            archive,
         )
 
-        worksheet_paths = sorted(
+        worksheet_paths = [
             path
             for path in archive.namelist()
             if re.fullmatch(
                 r"xl/worksheets/sheet\d+\.xml",
                 path,
+            )
+        ]
+
+        worksheet_paths.sort(
+            key=lambda path: int(
+                re.search(
+                    r"sheet(\d+)\.xml",
+                    path,
+                ).group(1)
             )
         )
 
@@ -171,55 +178,57 @@ def extract_rows(
                 "El Excel no contiene hojas legibles."
             )
 
-        root = ET.fromstring(
-            archive.read(
-                worksheet_paths[0],
-            )
-        )
-
         rows: list[list[str]] = []
 
-        for row in root.findall(
-            ".//main:row",
-            NS,
-        ):
-            cells: dict[int, str] = {}
+        for worksheet_path in worksheet_paths:
+            root = ET.fromstring(
+                archive.read(
+                    worksheet_path,
+                )
+            )
 
-            for cell in row.findall(
-                "main:c",
+            for row in root.findall(
+                ".//main:sheetData/main:row",
                 NS,
             ):
-                reference = (
-                    cell.attrib.get("r")
-                    or "A1"
-                )
+                cells: dict[int, str] = {}
 
-                index = get_column_index(
-                    reference,
-                )
+                for cell in row.findall(
+                    "main:c",
+                    NS,
+                ):
+                    reference = (
+                        cell.attrib.get("r")
+                        or "A1"
+                    )
 
-                cells[index] = (
-                    get_cell_value(
+                    index = get_column_index(
+                        reference,
+                    )
+
+                    cells[index] = get_cell_value(
                         cell,
                         shared_strings,
                     )
+
+                if not cells:
+                    continue
+
+                last_index = max(
+                    cells.keys()
                 )
 
-            if not cells:
-                continue
+                values = [
+                    cells.get(
+                        index,
+                        "",
+                    )
+                    for index in range(
+                        last_index + 1
+                    )
+                ]
 
-            last_index = max(
-                cells.keys()
-            )
-
-            values = [
-                cells.get(index, "")
-                for index in range(
-                    last_index + 1
-                )
-            ]
-
-            rows.append(values)
+                rows.append(values)
 
         return rows
 

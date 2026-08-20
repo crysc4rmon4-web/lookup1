@@ -1,0 +1,314 @@
+[
+  {
+    "code": "01",
+    "name": "Araba/Álava",
+    "searchKey": "araba alava",
+    "municipalityCount": 51
+  },
+  {
+    "code": "02",
+    "name": "Albacete",
+    "searchKey": "albacete",
+    "municipalityCount": 87
+  },
+  {
+    "code": "03",
+    "name": "Alicante/Alacant",
+    "searchKey": "alicante alacant",
+    "municipalityCount": 141
+  },
+  {
+    "code": "04",
+    "name": "Almería",
+    "searchKey": "almeria",
+    "municipalityCount": 103
+  },
+  {
+    "code": "05",
+    "name": "Ávila",
+    "searchKey": "avila",
+    "municipalityCount": 248
+  },
+  {
+    "code": "06",
+    "name": "Badajoz",
+    "searchKey": "badajoz",
+    "municipalityCount": 165
+  },
+  {
+    "code": "07",
+    "name": "Illes Balears",
+    "searchKey": "illes balears",
+    "municipalityCount": 67
+  },
+  {
+    "code": "08",
+    "name": "Barcelona",
+    "searchKey": "barcelona",
+    "municipalityCount": 311
+  },
+  {
+    "code": "09",
+    "name": "Burgos",
+    "searchKey": "burgos",
+    "municipalityCount": 371
+  },
+  {
+    "code": "10",
+    "name": "Cáceres",
+    "searchKey": "caceres",
+    "municipalityCount": 223
+  },
+  {
+    "code": "11",
+    "name": "Cádiz",
+    "searchKey": "cadiz",
+    "municipalityCount": 45
+  },
+  {
+    "code": "12",
+    "name": "Castellón/Castelló",
+    "searchKey": "castellon castello",
+    "municipalityCount": 135
+  },
+  {
+    "code": "13",
+    "name": "Ciudad Real",
+    "searchKey": "ciudad real",
+    "municipalityCount": 102
+  },
+  {
+    "code": "14",
+    "name": "Córdoba",
+    "searchKey": "cordoba",
+    "municipalityCount": 77
+  },
+  {
+    "code": "15",
+    "name": "A Coruña",
+    "searchKey": "a coruna",
+    "municipalityCount": 93
+  },
+  {
+    "code": "16",
+    "name": "Cuenca",
+    "searchKey": "cuenca",
+    "municipalityCount": 238
+  },
+  {
+    "code": "17",
+    "name": "Girona",
+    "searchKey": "girona",
+    "municipalityCount": 221
+  },
+  {
+    "code": "18",
+    "name": "Granada",
+    "searchKey": "granada",
+    "municipalityCount": 174
+  },
+  {
+    "code": "19",
+    "name": "Guadalajara",
+    "searchKey": "guadalajara",
+    "municipalityCount": 288
+  },
+  {
+    "code": "20",
+    "name": "Gipuzkoa",
+    "searchKey": "gipuzkoa",
+    "municipalityCount": 88
+  },
+  {
+    "code": "21",
+    "name": "Huelva",
+    "searchKey": "huelva",
+    "municipalityCount": 80
+  },
+  {
+    "code": "22",
+    "name": "Huesca",
+    "searchKey": "huesca",
+    "municipalityCount": 202
+  },
+  {
+    "code": "23",
+    "name": "Jaén",
+    "searchKey": "jaen",
+    "municipalityCount": 97
+  },
+  {
+    "code": "24",
+    "name": "León",
+    "searchKey": "leon",
+    "municipalityCount": 211
+  },
+  {
+    "code": "25",
+    "name": "Lleida",
+    "searchKey": "lleida",
+    "municipalityCount": 231
+  },
+  {
+    "code": "26",
+    "name": "La Rioja",
+    "searchKey": "la rioja",
+    "municipalityCount": 174
+  },
+  {
+    "code": "27",
+    "name": "Lugo",
+    "searchKey": "lugo",
+    "municipalityCount": 67
+  },
+  {
+    "code": "28",
+    "name": "Madrid",
+    "searchKey": "madrid",
+    "municipalityCount": 179
+  },
+  {
+    "code": "29",
+    "name": "Málaga",
+    "searchKey": "malaga",
+    "municipalityCount": 103
+  },
+  {
+    "code": "30",
+    "name": "Murcia",
+    "searchKey": "murcia",
+    "municipalityCount": 45
+  },
+  {
+    "code": "31",
+    "name": "Navarra",
+    "searchKey": "navarra",
+    "municipalityCount": 272
+  },
+  {
+    "code": "32",
+    "name": "Ourense",
+    "searchKey": "ourense",
+    "municipalityCount": 92
+  },
+  {
+    "code": "33",
+    "name": "Asturias",
+    "searchKey": "asturias",
+    "municipalityCount": 78
+  },
+  {
+    "code": "34",
+    "name": "Palencia",
+    "searchKey": "palencia",
+    "municipalityCount": 191
+  },
+  {
+    "code": "35",
+    "name": "Las Palmas",
+    "searchKey": "las palmas",
+    "municipalityCount": 34
+  },
+  {
+    "code": "36",
+    "name": "Pontevedra",
+    "searchKey": "pontevedra",
+    "municipalityCount": 61
+  },
+  {
+    "code": "37",
+    "name": "Salamanca",
+    "searchKey": "salamanca",
+    "municipalityCount": 362
+  },
+  {
+    "code": "38",
+    "name": "Santa Cruz de Tenerife",
+    "searchKey": "santa cruz de tenerife",
+    "municipalityCount": 54
+  },
+  {
+    "code": "39",
+    "name": "Cantabria",
+    "searchKey": "cantabria",
+    "municipalityCount": 102
+  },
+  {
+    "code": "40",
+    "name": "Segovia",
+    "searchKey": "segovia",
+    "municipalityCount": 209
+  },
+  {
+    "code": "41",
+    "name": "Sevilla",
+    "searchKey": "sevilla",
+    "municipalityCount": 106
+  },
+  {
+    "code": "42",
+    "name": "Soria",
+    "searchKey": "soria",
+    "municipalityCount": 183
+  },
+  {
+    "code": "43",
+    "name": "Tarragona",
+    "searchKey": "tarragona",
+    "municipalityCount": 184
+  },
+  {
+    "code": "44",
+    "name": "Teruel",
+    "searchKey": "teruel",
+    "municipalityCount": 236
+  },
+  {
+    "code": "45",
+    "name": "Toledo",
+    "searchKey": "toledo",
+    "municipalityCount": 204
+  },
+  {
+    "code": "46",
+    "name": "Valencia/València",
+    "searchKey": "valencia valencia",
+    "municipalityCount": 266
+  },
+  {
+    "code": "47",
+    "name": "Valladolid",
+    "searchKey": "valladolid",
+    "municipalityCount": 225
+  },
+  {
+    "code": "48",
+    "name": "Bizkaia",
+    "searchKey": "bizkaia",
+    "municipalityCount": 113
+  },
+  {
+    "code": "49",
+    "name": "Zamora",
+    "searchKey": "zamora",
+    "municipalityCount": 248
+  },
+  {
+    "code": "50",
+    "name": "Zaragoza",
+    "searchKey": "zaragoza",
+    "municipalityCount": 293
+  },
+  {
+    "code": "51",
+    "name": "Ciudad Autónoma de Ceuta",
+    "searchKey": "ciudad autonoma de ceuta",
+    "municipalityCount": 1
+  },
+  {
+    "code": "52",
+    "name": "Ciudad Autónoma de Melilla",
+    "searchKey": "ciudad autonoma de melilla",
+    "municipalityCount": 1
+  }
+]

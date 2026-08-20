@@ -1,0 +1,625 @@
+{
+  "province": {
+    "code": "14",
+    "name": "Córdoba",
+    "searchKey": "cordoba"
+  },
+  "municipalities": [
+    {
+      "code": "001",
+      "ineCode": "14001",
+      "ineCodeWithCheck": "140018",
+      "checkDigit": "8",
+      "name": "Adamuz",
+      "searchKey": "adamuz"
+    },
+    {
+      "code": "002",
+      "ineCode": "14002",
+      "ineCodeWithCheck": "140023",
+      "checkDigit": "3",
+      "name": "Aguilar de la Frontera",
+      "searchKey": "aguilar de la frontera"
+    },
+    {
+      "code": "003",
+      "ineCode": "14003",
+      "ineCodeWithCheck": "140039",
+      "checkDigit": "9",
+      "name": "Alcaracejos",
+      "searchKey": "alcaracejos"
+    },
+    {
+      "code": "004",
+      "ineCode": "14004",
+      "ineCodeWithCheck": "140044",
+      "checkDigit": "4",
+      "name": "Almedinilla",
+      "searchKey": "almedinilla"
+    },
+    {
+      "code": "005",
+      "ineCode": "14005",
+      "ineCodeWithCheck": "140057",
+      "checkDigit": "7",
+      "name": "Almodóvar del Río",
+      "searchKey": "almodovar del rio"
+    },
+    {
+      "code": "006",
+      "ineCode": "14006",
+      "ineCodeWithCheck": "140060",
+      "checkDigit": "0",
+      "name": "Añora",
+      "searchKey": "anora"
+    },
+    {
+      "code": "007",
+      "ineCode": "14007",
+      "ineCodeWithCheck": "140076",
+      "checkDigit": "6",
+      "name": "Baena",
+      "searchKey": "baena"
+    },
+    {
+      "code": "008",
+      "ineCode": "14008",
+      "ineCodeWithCheck": "140082",
+      "checkDigit": "2",
+      "name": "Belalcázar",
+      "searchKey": "belalcazar"
+    },
+    {
+      "code": "009",
+      "ineCode": "14009",
+      "ineCodeWithCheck": "140095",
+      "checkDigit": "5",
+      "name": "Belmez",
+      "searchKey": "belmez"
+    },
+    {
+      "code": "010",
+      "ineCode": "14010",
+      "ineCodeWithCheck": "140109",
+      "checkDigit": "9",
+      "name": "Benamejí",
+      "searchKey": "benameji"
+    },
+    {
+      "code": "011",
+      "ineCode": "14011",
+      "ineCodeWithCheck": "140116",
+      "checkDigit": "6",
+      "name": "Blázquez, Los",
+      "searchKey": "blazquez los"
+    },
+    {
+      "code": "012",
+      "ineCode": "14012",
+      "ineCodeWithCheck": "140121",
+      "checkDigit": "1",
+      "name": "Bujalance",
+      "searchKey": "bujalance"
+    },
+    {
+      "code": "013",
+      "ineCode": "14013",
+      "ineCodeWithCheck": "140137",
+      "checkDigit": "7",
+      "name": "Cabra",
+      "searchKey": "cabra"
+    },
+    {
+      "code": "014",
+      "ineCode": "14014",
+      "ineCodeWithCheck": "140142",
+      "checkDigit": "2",
+      "name": "Cañete de las Torres",
+      "searchKey": "canete de las torres"
+    },
+    {
+      "code": "015",
+      "ineCode": "14015",
+      "ineCodeWithCheck": "140155",
+      "checkDigit": "5",
+      "name": "Carcabuey",
+      "searchKey": "carcabuey"
+    },
+    {
+      "code": "016",
+      "ineCode": "14016",
+      "ineCodeWithCheck": "140168",
+      "checkDigit": "8",
+      "name": "Cardeña",
+      "searchKey": "cardena"
+    },
+    {
+      "code": "017",
+      "ineCode": "14017",
+      "ineCodeWithCheck": "140174",
+      "checkDigit": "4",
+      "name": "Carlota, La",
+      "searchKey": "carlota la"
+    },
+    {
+      "code": "018",
+      "ineCode": "14018",
+      "ineCodeWithCheck": "140180",
+      "checkDigit": "0",
+      "name": "Carpio, El",
+      "searchKey": "carpio el"
+    },
+    {
+      "code": "019",
+      "ineCode": "14019",
+      "ineCodeWithCheck": "140193",
+      "checkDigit": "3",
+      "name": "Castro del Río",
+      "searchKey": "castro del rio"
+    },
+    {
+      "code": "020",
+      "ineCode": "14020",
+      "ineCodeWithCheck": "140207",
+      "checkDigit": "7",
+      "name": "Conquista",
+      "searchKey": "conquista"
+    },
+    {
+      "code": "021",
+      "ineCode": "14021",
+      "ineCodeWithCheck": "140214",
+      "checkDigit": "4",
+      "name": "Córdoba",
+      "searchKey": "cordoba"
+    },
+    {
+      "code": "022",
+      "ineCode": "14022",
+      "ineCodeWithCheck": "140229",
+      "checkDigit": "9",
+      "name": "Doña Mencía",
+      "searchKey": "dona mencia"
+    },
+    {
+      "code": "023",
+      "ineCode": "14023",
+      "ineCodeWithCheck": "140235",
+      "checkDigit": "5",
+      "name": "Dos Torres",
+      "searchKey": "dos torres"
+    },
+    {
+      "code": "024",
+      "ineCode": "14024",
+      "ineCodeWithCheck": "140240",
+      "checkDigit": "0",
+      "name": "Encinas Reales",
+      "searchKey": "encinas reales"
+    },
+    {
+      "code": "025",
+      "ineCode": "14025",
+      "ineCodeWithCheck": "140253",
+      "checkDigit": "3",
+      "name": "Espejo",
+      "searchKey": "espejo"
+    },
+    {
+      "code": "026",
+      "ineCode": "14026",
+      "ineCodeWithCheck": "140266",
+      "checkDigit": "6",
+      "name": "Espiel",
+      "searchKey": "espiel"
+    },
+    {
+      "code": "027",
+      "ineCode": "14027",
+      "ineCodeWithCheck": "140272",
+      "checkDigit": "2",
+      "name": "Fernán-Núñez",
+      "searchKey": "fernan nunez"
+    },
+    {
+      "code": "901",
+      "ineCode": "14901",
+      "ineCodeWithCheck": "149019",
+      "checkDigit": "9",
+      "name": "Fuente Carreteros",
+      "searchKey": "fuente carreteros"
+    },
+    {
+      "code": "028",
+      "ineCode": "14028",
+      "ineCodeWithCheck": "140288",
+      "checkDigit": "8",
+      "name": "Fuente la Lancha",
+      "searchKey": "fuente la lancha"
+    },
+    {
+      "code": "029",
+      "ineCode": "14029",
+      "ineCodeWithCheck": "140291",
+      "checkDigit": "1",
+      "name": "Fuente Obejuna",
+      "searchKey": "fuente obejuna"
+    },
+    {
+      "code": "030",
+      "ineCode": "14030",
+      "ineCodeWithCheck": "140305",
+      "checkDigit": "5",
+      "name": "Fuente Palmera",
+      "searchKey": "fuente palmera"
+    },
+    {
+      "code": "031",
+      "ineCode": "14031",
+      "ineCodeWithCheck": "140312",
+      "checkDigit": "2",
+      "name": "Fuente-Tójar",
+      "searchKey": "fuente tojar"
+    },
+    {
+      "code": "032",
+      "ineCode": "14032",
+      "ineCodeWithCheck": "140327",
+      "checkDigit": "7",
+      "name": "Granjuela, La",
+      "searchKey": "granjuela la"
+    },
+    {
+      "code": "033",
+      "ineCode": "14033",
+      "ineCodeWithCheck": "140333",
+      "checkDigit": "3",
+      "name": "Guadalcázar",
+      "searchKey": "guadalcazar"
+    },
+    {
+      "code": "902",
+      "ineCode": "14902",
+      "ineCodeWithCheck": "149024",
+      "checkDigit": "4",
+      "name": "Guijarrosa, La",
+      "searchKey": "guijarrosa la"
+    },
+    {
+      "code": "034",
+      "ineCode": "14034",
+      "ineCodeWithCheck": "140348",
+      "checkDigit": "8",
+      "name": "Guijo, El",
+      "searchKey": "guijo el"
+    },
+    {
+      "code": "035",
+      "ineCode": "14035",
+      "ineCodeWithCheck": "140351",
+      "checkDigit": "1",
+      "name": "Hinojosa del Duque",
+      "searchKey": "hinojosa del duque"
+    },
+    {
+      "code": "036",
+      "ineCode": "14036",
+      "ineCodeWithCheck": "140364",
+      "checkDigit": "4",
+      "name": "Hornachuelos",
+      "searchKey": "hornachuelos"
+    },
+    {
+      "code": "037",
+      "ineCode": "14037",
+      "ineCodeWithCheck": "140370",
+      "checkDigit": "0",
+      "name": "Iznájar",
+      "searchKey": "iznajar"
+    },
+    {
+      "code": "038",
+      "ineCode": "14038",
+      "ineCodeWithCheck": "140386",
+      "checkDigit": "6",
+      "name": "Lucena",
+      "searchKey": "lucena"
+    },
+    {
+      "code": "039",
+      "ineCode": "14039",
+      "ineCodeWithCheck": "140399",
+      "checkDigit": "9",
+      "name": "Luque",
+      "searchKey": "luque"
+    },
+    {
+      "code": "040",
+      "ineCode": "14040",
+      "ineCodeWithCheck": "140403",
+      "checkDigit": "3",
+      "name": "Montalbán de Córdoba",
+      "searchKey": "montalban de cordoba"
+    },
+    {
+      "code": "041",
+      "ineCode": "14041",
+      "ineCodeWithCheck": "140410",
+      "checkDigit": "0",
+      "name": "Montemayor",
+      "searchKey": "montemayor"
+    },
+    {
+      "code": "042",
+      "ineCode": "14042",
+      "ineCodeWithCheck": "140425",
+      "checkDigit": "5",
+      "name": "Montilla",
+      "searchKey": "montilla"
+    },
+    {
+      "code": "043",
+      "ineCode": "14043",
+      "ineCodeWithCheck": "140431",
+      "checkDigit": "1",
+      "name": "Montoro",
+      "searchKey": "montoro"
+    },
+    {
+      "code": "044",
+      "ineCode": "14044",
+      "ineCodeWithCheck": "140446",
+      "checkDigit": "6",
+      "name": "Monturque",
+      "searchKey": "monturque"
+    },
+    {
+      "code": "045",
+      "ineCode": "14045",
+      "ineCodeWithCheck": "140459",
+      "checkDigit": "9",
+      "name": "Moriles",
+      "searchKey": "moriles"
+    },
+    {
+      "code": "046",
+      "ineCode": "14046",
+      "ineCodeWithCheck": "140462",
+      "checkDigit": "2",
+      "name": "Nueva Carteya",
+      "searchKey": "nueva carteya"
+    },
+    {
+      "code": "047",
+      "ineCode": "14047",
+      "ineCodeWithCheck": "140478",
+      "checkDigit": "8",
+      "name": "Obejo",
+      "searchKey": "obejo"
+    },
+    {
+      "code": "048",
+      "ineCode": "14048",
+      "ineCodeWithCheck": "140484",
+      "checkDigit": "4",
+      "name": "Palenciana",
+      "searchKey": "palenciana"
+    },
+    {
+      "code": "049",
+      "ineCode": "14049",
+      "ineCodeWithCheck": "140497",
+      "checkDigit": "7",
+      "name": "Palma del Río",
+      "searchKey": "palma del rio"
+    },
+    {
+      "code": "050",
+      "ineCode": "14050",
+      "ineCodeWithCheck": "140500",
+      "checkDigit": "0",
+      "name": "Pedro Abad",
+      "searchKey": "pedro abad"
+    },
+    {
+      "code": "051",
+      "ineCode": "14051",
+      "ineCodeWithCheck": "140517",
+      "checkDigit": "7",
+      "name": "Pedroche",
+      "searchKey": "pedroche"
+    },
+    {
+      "code": "052",
+      "ineCode": "14052",
+      "ineCodeWithCheck": "140522",
+      "checkDigit": "2",
+      "name": "Peñarroya-Pueblonuevo",
+      "searchKey": "penarroya pueblonuevo"
+    },
+    {
+      "code": "053",
+      "ineCode": "14053",
+      "ineCodeWithCheck": "140538",
+      "checkDigit": "8",
+      "name": "Posadas",
+      "searchKey": "posadas"
+    },
+    {
+      "code": "054",
+      "ineCode": "14054",
+      "ineCodeWithCheck": "140543",
+      "checkDigit": "3",
+      "name": "Pozoblanco",
+      "searchKey": "pozoblanco"
+    },
+    {
+      "code": "055",
+      "ineCode": "14055",
+      "ineCodeWithCheck": "140556",
+      "checkDigit": "6",
+      "name": "Priego de Córdoba",
+      "searchKey": "priego de cordoba"
+    },
+    {
+      "code": "056",
+      "ineCode": "14056",
+      "ineCodeWithCheck": "140569",
+      "checkDigit": "9",
+      "name": "Puente Genil",
+      "searchKey": "puente genil"
+    },
+    {
+      "code": "057",
+      "ineCode": "14057",
+      "ineCodeWithCheck": "140575",
+      "checkDigit": "5",
+      "name": "Rambla, La",
+      "searchKey": "rambla la"
+    },
+    {
+      "code": "058",
+      "ineCode": "14058",
+      "ineCodeWithCheck": "140581",
+      "checkDigit": "1",
+      "name": "Rute",
+      "searchKey": "rute"
+    },
+    {
+      "code": "059",
+      "ineCode": "14059",
+      "ineCodeWithCheck": "140594",
+      "checkDigit": "4",
+      "name": "San Sebastián de los Ballesteros",
+      "searchKey": "san sebastian de los ballesteros"
+    },
+    {
+      "code": "061",
+      "ineCode": "14061",
+      "ineCodeWithCheck": "140615",
+      "checkDigit": "5",
+      "name": "Santa Eufemia",
+      "searchKey": "santa eufemia"
+    },
+    {
+      "code": "060",
+      "ineCode": "14060",
+      "ineCodeWithCheck": "140608",
+      "checkDigit": "8",
+      "name": "Santaella",
+      "searchKey": "santaella"
+    },
+    {
+      "code": "062",
+      "ineCode": "14062",
+      "ineCodeWithCheck": "140620",
+      "checkDigit": "0",
+      "name": "Torrecampo",
+      "searchKey": "torrecampo"
+    },
+    {
+      "code": "063",
+      "ineCode": "14063",
+      "ineCodeWithCheck": "140636",
+      "checkDigit": "6",
+      "name": "Valenzuela",
+      "searchKey": "valenzuela"
+    },
+    {
+      "code": "064",
+      "ineCode": "14064",
+      "ineCodeWithCheck": "140641",
+      "checkDigit": "1",
+      "name": "Valsequillo",
+      "searchKey": "valsequillo"
+    },
+    {
+      "code": "065",
+      "ineCode": "14065",
+      "ineCodeWithCheck": "140654",
+      "checkDigit": "4",
+      "name": "Victoria, La",
+      "searchKey": "victoria la"
+    },
+    {
+      "code": "066",
+      "ineCode": "14066",
+      "ineCodeWithCheck": "140667",
+      "checkDigit": "7",
+      "name": "Villa del Río",
+      "searchKey": "villa del rio"
+    },
+    {
+      "code": "067",
+      "ineCode": "14067",
+      "ineCodeWithCheck": "140673",
+      "checkDigit": "3",
+      "name": "Villafranca de Córdoba",
+      "searchKey": "villafranca de cordoba"
+    },
+    {
+      "code": "068",
+      "ineCode": "14068",
+      "ineCodeWithCheck": "140689",
+      "checkDigit": "9",
+      "name": "Villaharta",
+      "searchKey": "villaharta"
+    },
+    {
+      "code": "069",
+      "ineCode": "14069",
+      "ineCodeWithCheck": "140692",
+      "checkDigit": "2",
+      "name": "Villanueva de Córdoba",
+      "searchKey": "villanueva de cordoba"
+    },
+    {
+      "code": "070",
+      "ineCode": "14070",
+      "ineCodeWithCheck": "140706",
+      "checkDigit": "6",
+      "name": "Villanueva del Duque",
+      "searchKey": "villanueva del duque"
+    },
+    {
+      "code": "071",
+      "ineCode": "14071",
+      "ineCodeWithCheck": "140713",
+      "checkDigit": "3",
+      "name": "Villanueva del Rey",
+      "searchKey": "villanueva del rey"
+    },
+    {
+      "code": "072",
+      "ineCode": "14072",
+      "ineCodeWithCheck": "140728",
+      "checkDigit": "8",
+      "name": "Villaralto",
+      "searchKey": "villaralto"
+    },
+    {
+      "code": "073",
+      "ineCode": "14073",
+      "ineCodeWithCheck": "140734",
+      "checkDigit": "4",
+      "name": "Villaviciosa de Córdoba",
+      "searchKey": "villaviciosa de cordoba"
+    },
+    {
+      "code": "074",
+      "ineCode": "14074",
+      "ineCodeWithCheck": "140749",
+      "checkDigit": "9",
+      "name": "Viso, El",
+      "searchKey": "viso el"
+    },
+    {
+      "code": "075",
+      "ineCode": "14075",
+      "ineCodeWithCheck": "140752",
+      "checkDigit": "2",
+      "name": "Zuheros",
+      "searchKey": "zuheros"
+    }
+  ]
+}

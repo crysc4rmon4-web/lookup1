@@ -1,0 +1,1809 @@
+{
+  "province": {
+    "code": "47",
+    "name": "Valladolid",
+    "searchKey": "valladolid"
+  },
+  "municipalities": [
+    {
+      "code": "001",
+      "ineCode": "47001",
+      "ineCodeWithCheck": "470014",
+      "checkDigit": "4",
+      "name": "Adalia",
+      "searchKey": "adalia"
+    },
+    {
+      "code": "002",
+      "ineCode": "47002",
+      "ineCodeWithCheck": "470029",
+      "checkDigit": "9",
+      "name": "Aguasal",
+      "searchKey": "aguasal"
+    },
+    {
+      "code": "003",
+      "ineCode": "47003",
+      "ineCodeWithCheck": "470035",
+      "checkDigit": "5",
+      "name": "Aguilar de Campos",
+      "searchKey": "aguilar de campos"
+    },
+    {
+      "code": "004",
+      "ineCode": "47004",
+      "ineCodeWithCheck": "470040",
+      "checkDigit": "0",
+      "name": "Alaejos",
+      "searchKey": "alaejos"
+    },
+    {
+      "code": "005",
+      "ineCode": "47005",
+      "ineCodeWithCheck": "470053",
+      "checkDigit": "3",
+      "name": "Alcazarén",
+      "searchKey": "alcazaren"
+    },
+    {
+      "code": "006",
+      "ineCode": "47006",
+      "ineCodeWithCheck": "470066",
+      "checkDigit": "6",
+      "name": "Aldea de San Miguel",
+      "searchKey": "aldea de san miguel"
+    },
+    {
+      "code": "007",
+      "ineCode": "47007",
+      "ineCodeWithCheck": "470072",
+      "checkDigit": "2",
+      "name": "Aldeamayor de San Martín",
+      "searchKey": "aldeamayor de san martin"
+    },
+    {
+      "code": "008",
+      "ineCode": "47008",
+      "ineCodeWithCheck": "470088",
+      "checkDigit": "8",
+      "name": "Almenara de Adaja",
+      "searchKey": "almenara de adaja"
+    },
+    {
+      "code": "009",
+      "ineCode": "47009",
+      "ineCodeWithCheck": "470091",
+      "checkDigit": "1",
+      "name": "Amusquillo",
+      "searchKey": "amusquillo"
+    },
+    {
+      "code": "010",
+      "ineCode": "47010",
+      "ineCodeWithCheck": "470105",
+      "checkDigit": "5",
+      "name": "Arroyo de la Encomienda",
+      "searchKey": "arroyo de la encomienda"
+    },
+    {
+      "code": "011",
+      "ineCode": "47011",
+      "ineCodeWithCheck": "470112",
+      "checkDigit": "2",
+      "name": "Ataquines",
+      "searchKey": "ataquines"
+    },
+    {
+      "code": "012",
+      "ineCode": "47012",
+      "ineCodeWithCheck": "470127",
+      "checkDigit": "7",
+      "name": "Bahabón",
+      "searchKey": "bahabon"
+    },
+    {
+      "code": "013",
+      "ineCode": "47013",
+      "ineCodeWithCheck": "470133",
+      "checkDigit": "3",
+      "name": "Barcial de la Loma",
+      "searchKey": "barcial de la loma"
+    },
+    {
+      "code": "014",
+      "ineCode": "47014",
+      "ineCodeWithCheck": "470148",
+      "checkDigit": "8",
+      "name": "Barruelo del Valle",
+      "searchKey": "barruelo del valle"
+    },
+    {
+      "code": "015",
+      "ineCode": "47015",
+      "ineCodeWithCheck": "470151",
+      "checkDigit": "1",
+      "name": "Becilla de Valderaduey",
+      "searchKey": "becilla de valderaduey"
+    },
+    {
+      "code": "016",
+      "ineCode": "47016",
+      "ineCodeWithCheck": "470164",
+      "checkDigit": "4",
+      "name": "Benafarces",
+      "searchKey": "benafarces"
+    },
+    {
+      "code": "017",
+      "ineCode": "47017",
+      "ineCodeWithCheck": "470170",
+      "checkDigit": "0",
+      "name": "Bercero",
+      "searchKey": "bercero"
+    },
+    {
+      "code": "018",
+      "ineCode": "47018",
+      "ineCodeWithCheck": "470186",
+      "checkDigit": "6",
+      "name": "Berceruelo",
+      "searchKey": "berceruelo"
+    },
+    {
+      "code": "019",
+      "ineCode": "47019",
+      "ineCodeWithCheck": "470199",
+      "checkDigit": "9",
+      "name": "Berrueces",
+      "searchKey": "berrueces"
+    },
+    {
+      "code": "020",
+      "ineCode": "47020",
+      "ineCodeWithCheck": "470203",
+      "checkDigit": "3",
+      "name": "Bobadilla del Campo",
+      "searchKey": "bobadilla del campo"
+    },
+    {
+      "code": "021",
+      "ineCode": "47021",
+      "ineCodeWithCheck": "470210",
+      "checkDigit": "0",
+      "name": "Bocigas",
+      "searchKey": "bocigas"
+    },
+    {
+      "code": "022",
+      "ineCode": "47022",
+      "ineCodeWithCheck": "470225",
+      "checkDigit": "5",
+      "name": "Bocos de Duero",
+      "searchKey": "bocos de duero"
+    },
+    {
+      "code": "023",
+      "ineCode": "47023",
+      "ineCodeWithCheck": "470231",
+      "checkDigit": "1",
+      "name": "Boecillo",
+      "searchKey": "boecillo"
+    },
+    {
+      "code": "024",
+      "ineCode": "47024",
+      "ineCodeWithCheck": "470246",
+      "checkDigit": "6",
+      "name": "Bolaños de Campos",
+      "searchKey": "bolanos de campos"
+    },
+    {
+      "code": "025",
+      "ineCode": "47025",
+      "ineCodeWithCheck": "470259",
+      "checkDigit": "9",
+      "name": "Brahojos de Medina",
+      "searchKey": "brahojos de medina"
+    },
+    {
+      "code": "026",
+      "ineCode": "47026",
+      "ineCodeWithCheck": "470262",
+      "checkDigit": "2",
+      "name": "Bustillo de Chaves",
+      "searchKey": "bustillo de chaves"
+    },
+    {
+      "code": "027",
+      "ineCode": "47027",
+      "ineCodeWithCheck": "470278",
+      "checkDigit": "8",
+      "name": "Cabezón de Pisuerga",
+      "searchKey": "cabezon de pisuerga"
+    },
+    {
+      "code": "028",
+      "ineCode": "47028",
+      "ineCodeWithCheck": "470284",
+      "checkDigit": "4",
+      "name": "Cabezón de Valderaduey",
+      "searchKey": "cabezon de valderaduey"
+    },
+    {
+      "code": "029",
+      "ineCode": "47029",
+      "ineCodeWithCheck": "470297",
+      "checkDigit": "7",
+      "name": "Cabreros del Monte",
+      "searchKey": "cabreros del monte"
+    },
+    {
+      "code": "030",
+      "ineCode": "47030",
+      "ineCodeWithCheck": "470301",
+      "checkDigit": "1",
+      "name": "Campaspero",
+      "searchKey": "campaspero"
+    },
+    {
+      "code": "031",
+      "ineCode": "47031",
+      "ineCodeWithCheck": "470318",
+      "checkDigit": "8",
+      "name": "Campillo, El",
+      "searchKey": "campillo el"
+    },
+    {
+      "code": "032",
+      "ineCode": "47032",
+      "ineCodeWithCheck": "470323",
+      "checkDigit": "3",
+      "name": "Camporredondo",
+      "searchKey": "camporredondo"
+    },
+    {
+      "code": "033",
+      "ineCode": "47033",
+      "ineCodeWithCheck": "470339",
+      "checkDigit": "9",
+      "name": "Canalejas de Peñafiel",
+      "searchKey": "canalejas de penafiel"
+    },
+    {
+      "code": "034",
+      "ineCode": "47034",
+      "ineCodeWithCheck": "470344",
+      "checkDigit": "4",
+      "name": "Canillas de Esgueva",
+      "searchKey": "canillas de esgueva"
+    },
+    {
+      "code": "035",
+      "ineCode": "47035",
+      "ineCodeWithCheck": "470357",
+      "checkDigit": "7",
+      "name": "Carpio",
+      "searchKey": "carpio"
+    },
+    {
+      "code": "036",
+      "ineCode": "47036",
+      "ineCodeWithCheck": "470360",
+      "checkDigit": "0",
+      "name": "Casasola de Arión",
+      "searchKey": "casasola de arion"
+    },
+    {
+      "code": "037",
+      "ineCode": "47037",
+      "ineCodeWithCheck": "470376",
+      "checkDigit": "6",
+      "name": "Castrejón de Trabancos",
+      "searchKey": "castrejon de trabancos"
+    },
+    {
+      "code": "038",
+      "ineCode": "47038",
+      "ineCodeWithCheck": "470382",
+      "checkDigit": "2",
+      "name": "Castrillo de Duero",
+      "searchKey": "castrillo de duero"
+    },
+    {
+      "code": "039",
+      "ineCode": "47039",
+      "ineCodeWithCheck": "470395",
+      "checkDigit": "5",
+      "name": "Castrillo-Tejeriego",
+      "searchKey": "castrillo tejeriego"
+    },
+    {
+      "code": "040",
+      "ineCode": "47040",
+      "ineCodeWithCheck": "470409",
+      "checkDigit": "9",
+      "name": "Castrobol",
+      "searchKey": "castrobol"
+    },
+    {
+      "code": "041",
+      "ineCode": "47041",
+      "ineCodeWithCheck": "470416",
+      "checkDigit": "6",
+      "name": "Castrodeza",
+      "searchKey": "castrodeza"
+    },
+    {
+      "code": "042",
+      "ineCode": "47042",
+      "ineCodeWithCheck": "470421",
+      "checkDigit": "1",
+      "name": "Castromembibre",
+      "searchKey": "castromembibre"
+    },
+    {
+      "code": "043",
+      "ineCode": "47043",
+      "ineCodeWithCheck": "470437",
+      "checkDigit": "7",
+      "name": "Castromonte",
+      "searchKey": "castromonte"
+    },
+    {
+      "code": "044",
+      "ineCode": "47044",
+      "ineCodeWithCheck": "470442",
+      "checkDigit": "2",
+      "name": "Castronuevo de Esgueva",
+      "searchKey": "castronuevo de esgueva"
+    },
+    {
+      "code": "045",
+      "ineCode": "47045",
+      "ineCodeWithCheck": "470455",
+      "checkDigit": "5",
+      "name": "Castronuño",
+      "searchKey": "castronuno"
+    },
+    {
+      "code": "046",
+      "ineCode": "47046",
+      "ineCodeWithCheck": "470468",
+      "checkDigit": "8",
+      "name": "Castroponce",
+      "searchKey": "castroponce"
+    },
+    {
+      "code": "047",
+      "ineCode": "47047",
+      "ineCodeWithCheck": "470474",
+      "checkDigit": "4",
+      "name": "Castroverde de Cerrato",
+      "searchKey": "castroverde de cerrato"
+    },
+    {
+      "code": "048",
+      "ineCode": "47048",
+      "ineCodeWithCheck": "470480",
+      "checkDigit": "0",
+      "name": "Ceinos de Campos",
+      "searchKey": "ceinos de campos"
+    },
+    {
+      "code": "049",
+      "ineCode": "47049",
+      "ineCodeWithCheck": "470493",
+      "checkDigit": "3",
+      "name": "Cervillego de la Cruz",
+      "searchKey": "cervillego de la cruz"
+    },
+    {
+      "code": "050",
+      "ineCode": "47050",
+      "ineCodeWithCheck": "470506",
+      "checkDigit": "6",
+      "name": "Cigales",
+      "searchKey": "cigales"
+    },
+    {
+      "code": "051",
+      "ineCode": "47051",
+      "ineCodeWithCheck": "470513",
+      "checkDigit": "3",
+      "name": "Ciguñuela",
+      "searchKey": "cigunuela"
+    },
+    {
+      "code": "052",
+      "ineCode": "47052",
+      "ineCodeWithCheck": "470528",
+      "checkDigit": "8",
+      "name": "Cistérniga",
+      "searchKey": "cisterniga"
+    },
+    {
+      "code": "053",
+      "ineCode": "47053",
+      "ineCodeWithCheck": "470534",
+      "checkDigit": "4",
+      "name": "Cogeces de Íscar",
+      "searchKey": "cogeces de iscar"
+    },
+    {
+      "code": "054",
+      "ineCode": "47054",
+      "ineCodeWithCheck": "470549",
+      "checkDigit": "9",
+      "name": "Cogeces del Monte",
+      "searchKey": "cogeces del monte"
+    },
+    {
+      "code": "055",
+      "ineCode": "47055",
+      "ineCodeWithCheck": "470552",
+      "checkDigit": "2",
+      "name": "Corcos",
+      "searchKey": "corcos"
+    },
+    {
+      "code": "056",
+      "ineCode": "47056",
+      "ineCodeWithCheck": "470565",
+      "checkDigit": "5",
+      "name": "Corrales de Duero",
+      "searchKey": "corrales de duero"
+    },
+    {
+      "code": "057",
+      "ineCode": "47057",
+      "ineCodeWithCheck": "470571",
+      "checkDigit": "1",
+      "name": "Cubillas de Santa Marta",
+      "searchKey": "cubillas de santa marta"
+    },
+    {
+      "code": "058",
+      "ineCode": "47058",
+      "ineCodeWithCheck": "470587",
+      "checkDigit": "7",
+      "name": "Cuenca de Campos",
+      "searchKey": "cuenca de campos"
+    },
+    {
+      "code": "059",
+      "ineCode": "47059",
+      "ineCodeWithCheck": "470590",
+      "checkDigit": "0",
+      "name": "Curiel de Duero",
+      "searchKey": "curiel de duero"
+    },
+    {
+      "code": "060",
+      "ineCode": "47060",
+      "ineCodeWithCheck": "470604",
+      "checkDigit": "4",
+      "name": "Encinas de Esgueva",
+      "searchKey": "encinas de esgueva"
+    },
+    {
+      "code": "061",
+      "ineCode": "47061",
+      "ineCodeWithCheck": "470611",
+      "checkDigit": "1",
+      "name": "Esguevillas de Esgueva",
+      "searchKey": "esguevillas de esgueva"
+    },
+    {
+      "code": "062",
+      "ineCode": "47062",
+      "ineCodeWithCheck": "470626",
+      "checkDigit": "6",
+      "name": "Fombellida",
+      "searchKey": "fombellida"
+    },
+    {
+      "code": "063",
+      "ineCode": "47063",
+      "ineCodeWithCheck": "470632",
+      "checkDigit": "2",
+      "name": "Fompedraza",
+      "searchKey": "fompedraza"
+    },
+    {
+      "code": "064",
+      "ineCode": "47064",
+      "ineCodeWithCheck": "470647",
+      "checkDigit": "7",
+      "name": "Fontihoyuelo",
+      "searchKey": "fontihoyuelo"
+    },
+    {
+      "code": "065",
+      "ineCode": "47065",
+      "ineCodeWithCheck": "470650",
+      "checkDigit": "0",
+      "name": "Fresno el Viejo",
+      "searchKey": "fresno el viejo"
+    },
+    {
+      "code": "066",
+      "ineCode": "47066",
+      "ineCodeWithCheck": "470663",
+      "checkDigit": "3",
+      "name": "Fuensaldaña",
+      "searchKey": "fuensaldana"
+    },
+    {
+      "code": "067",
+      "ineCode": "47067",
+      "ineCodeWithCheck": "470679",
+      "checkDigit": "9",
+      "name": "Fuente el Sol",
+      "searchKey": "fuente el sol"
+    },
+    {
+      "code": "068",
+      "ineCode": "47068",
+      "ineCodeWithCheck": "470685",
+      "checkDigit": "5",
+      "name": "Fuente-Olmedo",
+      "searchKey": "fuente olmedo"
+    },
+    {
+      "code": "069",
+      "ineCode": "47069",
+      "ineCodeWithCheck": "470698",
+      "checkDigit": "8",
+      "name": "Gallegos de Hornija",
+      "searchKey": "gallegos de hornija"
+    },
+    {
+      "code": "070",
+      "ineCode": "47070",
+      "ineCodeWithCheck": "470702",
+      "checkDigit": "2",
+      "name": "Gatón de Campos",
+      "searchKey": "gaton de campos"
+    },
+    {
+      "code": "071",
+      "ineCode": "47071",
+      "ineCodeWithCheck": "470719",
+      "checkDigit": "9",
+      "name": "Geria",
+      "searchKey": "geria"
+    },
+    {
+      "code": "073",
+      "ineCode": "47073",
+      "ineCodeWithCheck": "470730",
+      "checkDigit": "0",
+      "name": "Herrín de Campos",
+      "searchKey": "herrin de campos"
+    },
+    {
+      "code": "074",
+      "ineCode": "47074",
+      "ineCodeWithCheck": "470745",
+      "checkDigit": "5",
+      "name": "Hornillos de Eresma",
+      "searchKey": "hornillos de eresma"
+    },
+    {
+      "code": "075",
+      "ineCode": "47075",
+      "ineCodeWithCheck": "470758",
+      "checkDigit": "8",
+      "name": "Íscar",
+      "searchKey": "iscar"
+    },
+    {
+      "code": "076",
+      "ineCode": "47076",
+      "ineCodeWithCheck": "470761",
+      "checkDigit": "1",
+      "name": "Laguna de Duero",
+      "searchKey": "laguna de duero"
+    },
+    {
+      "code": "077",
+      "ineCode": "47077",
+      "ineCodeWithCheck": "470777",
+      "checkDigit": "7",
+      "name": "Langayo",
+      "searchKey": "langayo"
+    },
+    {
+      "code": "079",
+      "ineCode": "47079",
+      "ineCodeWithCheck": "470796",
+      "checkDigit": "6",
+      "name": "Llano de Olmedo",
+      "searchKey": "llano de olmedo"
+    },
+    {
+      "code": "078",
+      "ineCode": "47078",
+      "ineCodeWithCheck": "470783",
+      "checkDigit": "3",
+      "name": "Lomoviejo",
+      "searchKey": "lomoviejo"
+    },
+    {
+      "code": "080",
+      "ineCode": "47080",
+      "ineCodeWithCheck": "470800",
+      "checkDigit": "0",
+      "name": "Manzanillo",
+      "searchKey": "manzanillo"
+    },
+    {
+      "code": "081",
+      "ineCode": "47081",
+      "ineCodeWithCheck": "470817",
+      "checkDigit": "7",
+      "name": "Marzales",
+      "searchKey": "marzales"
+    },
+    {
+      "code": "082",
+      "ineCode": "47082",
+      "ineCodeWithCheck": "470822",
+      "checkDigit": "2",
+      "name": "Matapozuelos",
+      "searchKey": "matapozuelos"
+    },
+    {
+      "code": "083",
+      "ineCode": "47083",
+      "ineCodeWithCheck": "470838",
+      "checkDigit": "8",
+      "name": "Matilla de los Caños",
+      "searchKey": "matilla de los canos"
+    },
+    {
+      "code": "084",
+      "ineCode": "47084",
+      "ineCodeWithCheck": "470843",
+      "checkDigit": "3",
+      "name": "Mayorga",
+      "searchKey": "mayorga"
+    },
+    {
+      "code": "086",
+      "ineCode": "47086",
+      "ineCodeWithCheck": "470869",
+      "checkDigit": "9",
+      "name": "Medina de Rioseco",
+      "searchKey": "medina de rioseco"
+    },
+    {
+      "code": "085",
+      "ineCode": "47085",
+      "ineCodeWithCheck": "470856",
+      "checkDigit": "6",
+      "name": "Medina del Campo",
+      "searchKey": "medina del campo"
+    },
+    {
+      "code": "087",
+      "ineCode": "47087",
+      "ineCodeWithCheck": "470875",
+      "checkDigit": "5",
+      "name": "Megeces",
+      "searchKey": "megeces"
+    },
+    {
+      "code": "088",
+      "ineCode": "47088",
+      "ineCodeWithCheck": "470881",
+      "checkDigit": "1",
+      "name": "Melgar de Abajo",
+      "searchKey": "melgar de abajo"
+    },
+    {
+      "code": "089",
+      "ineCode": "47089",
+      "ineCodeWithCheck": "470894",
+      "checkDigit": "4",
+      "name": "Melgar de Arriba",
+      "searchKey": "melgar de arriba"
+    },
+    {
+      "code": "090",
+      "ineCode": "47090",
+      "ineCodeWithCheck": "470908",
+      "checkDigit": "8",
+      "name": "Mojados",
+      "searchKey": "mojados"
+    },
+    {
+      "code": "091",
+      "ineCode": "47091",
+      "ineCodeWithCheck": "470915",
+      "checkDigit": "5",
+      "name": "Monasterio de Vega",
+      "searchKey": "monasterio de vega"
+    },
+    {
+      "code": "092",
+      "ineCode": "47092",
+      "ineCodeWithCheck": "470920",
+      "checkDigit": "0",
+      "name": "Montealegre de Campos",
+      "searchKey": "montealegre de campos"
+    },
+    {
+      "code": "093",
+      "ineCode": "47093",
+      "ineCodeWithCheck": "470936",
+      "checkDigit": "6",
+      "name": "Montemayor de Pililla",
+      "searchKey": "montemayor de pililla"
+    },
+    {
+      "code": "094",
+      "ineCode": "47094",
+      "ineCodeWithCheck": "470941",
+      "checkDigit": "1",
+      "name": "Moral de la Reina",
+      "searchKey": "moral de la reina"
+    },
+    {
+      "code": "095",
+      "ineCode": "47095",
+      "ineCodeWithCheck": "470954",
+      "checkDigit": "4",
+      "name": "Moraleja de las Panaderas",
+      "searchKey": "moraleja de las panaderas"
+    },
+    {
+      "code": "096",
+      "ineCode": "47096",
+      "ineCodeWithCheck": "470967",
+      "checkDigit": "7",
+      "name": "Morales de Campos",
+      "searchKey": "morales de campos"
+    },
+    {
+      "code": "097",
+      "ineCode": "47097",
+      "ineCodeWithCheck": "470973",
+      "checkDigit": "3",
+      "name": "Mota del Marqués",
+      "searchKey": "mota del marques"
+    },
+    {
+      "code": "098",
+      "ineCode": "47098",
+      "ineCodeWithCheck": "470989",
+      "checkDigit": "9",
+      "name": "Mucientes",
+      "searchKey": "mucientes"
+    },
+    {
+      "code": "099",
+      "ineCode": "47099",
+      "ineCodeWithCheck": "470992",
+      "checkDigit": "2",
+      "name": "Mudarra, La",
+      "searchKey": "mudarra la"
+    },
+    {
+      "code": "100",
+      "ineCode": "47100",
+      "ineCodeWithCheck": "471006",
+      "checkDigit": "6",
+      "name": "Muriel",
+      "searchKey": "muriel"
+    },
+    {
+      "code": "101",
+      "ineCode": "47101",
+      "ineCodeWithCheck": "471013",
+      "checkDigit": "3",
+      "name": "Nava del Rey",
+      "searchKey": "nava del rey"
+    },
+    {
+      "code": "102",
+      "ineCode": "47102",
+      "ineCodeWithCheck": "471028",
+      "checkDigit": "8",
+      "name": "Nueva Villa de las Torres",
+      "searchKey": "nueva villa de las torres"
+    },
+    {
+      "code": "103",
+      "ineCode": "47103",
+      "ineCodeWithCheck": "471034",
+      "checkDigit": "4",
+      "name": "Olivares de Duero",
+      "searchKey": "olivares de duero"
+    },
+    {
+      "code": "104",
+      "ineCode": "47104",
+      "ineCodeWithCheck": "471049",
+      "checkDigit": "9",
+      "name": "Olmedo",
+      "searchKey": "olmedo"
+    },
+    {
+      "code": "105",
+      "ineCode": "47105",
+      "ineCodeWithCheck": "471052",
+      "checkDigit": "2",
+      "name": "Olmos de Esgueva",
+      "searchKey": "olmos de esgueva"
+    },
+    {
+      "code": "106",
+      "ineCode": "47106",
+      "ineCodeWithCheck": "471065",
+      "checkDigit": "5",
+      "name": "Olmos de Peñafiel",
+      "searchKey": "olmos de penafiel"
+    },
+    {
+      "code": "109",
+      "ineCode": "47109",
+      "ineCodeWithCheck": "471090",
+      "checkDigit": "0",
+      "name": "Palazuelo de Vedija",
+      "searchKey": "palazuelo de vedija"
+    },
+    {
+      "code": "110",
+      "ineCode": "47110",
+      "ineCodeWithCheck": "471104",
+      "checkDigit": "4",
+      "name": "Parrilla, La",
+      "searchKey": "parrilla la"
+    },
+    {
+      "code": "111",
+      "ineCode": "47111",
+      "ineCodeWithCheck": "471111",
+      "checkDigit": "1",
+      "name": "Pedraja de Portillo, La",
+      "searchKey": "pedraja de portillo la"
+    },
+    {
+      "code": "112",
+      "ineCode": "47112",
+      "ineCodeWithCheck": "471126",
+      "checkDigit": "6",
+      "name": "Pedrajas de San Esteban",
+      "searchKey": "pedrajas de san esteban"
+    },
+    {
+      "code": "113",
+      "ineCode": "47113",
+      "ineCodeWithCheck": "471132",
+      "checkDigit": "2",
+      "name": "Pedrosa del Rey",
+      "searchKey": "pedrosa del rey"
+    },
+    {
+      "code": "114",
+      "ineCode": "47114",
+      "ineCodeWithCheck": "471147",
+      "checkDigit": "7",
+      "name": "Peñafiel",
+      "searchKey": "penafiel"
+    },
+    {
+      "code": "115",
+      "ineCode": "47115",
+      "ineCodeWithCheck": "471150",
+      "checkDigit": "0",
+      "name": "Peñaflor de Hornija",
+      "searchKey": "penaflor de hornija"
+    },
+    {
+      "code": "116",
+      "ineCode": "47116",
+      "ineCodeWithCheck": "471163",
+      "checkDigit": "3",
+      "name": "Pesquera de Duero",
+      "searchKey": "pesquera de duero"
+    },
+    {
+      "code": "117",
+      "ineCode": "47117",
+      "ineCodeWithCheck": "471179",
+      "checkDigit": "9",
+      "name": "Piña de Esgueva",
+      "searchKey": "pina de esgueva"
+    },
+    {
+      "code": "118",
+      "ineCode": "47118",
+      "ineCodeWithCheck": "471185",
+      "checkDigit": "5",
+      "name": "Piñel de Abajo",
+      "searchKey": "pinel de abajo"
+    },
+    {
+      "code": "119",
+      "ineCode": "47119",
+      "ineCodeWithCheck": "471198",
+      "checkDigit": "8",
+      "name": "Piñel de Arriba",
+      "searchKey": "pinel de arriba"
+    },
+    {
+      "code": "121",
+      "ineCode": "47121",
+      "ineCodeWithCheck": "471219",
+      "checkDigit": "9",
+      "name": "Pollos",
+      "searchKey": "pollos"
+    },
+    {
+      "code": "122",
+      "ineCode": "47122",
+      "ineCodeWithCheck": "471224",
+      "checkDigit": "4",
+      "name": "Portillo",
+      "searchKey": "portillo"
+    },
+    {
+      "code": "123",
+      "ineCode": "47123",
+      "ineCodeWithCheck": "471230",
+      "checkDigit": "0",
+      "name": "Pozal de Gallinas",
+      "searchKey": "pozal de gallinas"
+    },
+    {
+      "code": "124",
+      "ineCode": "47124",
+      "ineCodeWithCheck": "471245",
+      "checkDigit": "5",
+      "name": "Pozaldez",
+      "searchKey": "pozaldez"
+    },
+    {
+      "code": "125",
+      "ineCode": "47125",
+      "ineCodeWithCheck": "471258",
+      "checkDigit": "8",
+      "name": "Pozuelo de la Orden",
+      "searchKey": "pozuelo de la orden"
+    },
+    {
+      "code": "126",
+      "ineCode": "47126",
+      "ineCodeWithCheck": "471261",
+      "checkDigit": "1",
+      "name": "Puras",
+      "searchKey": "puras"
+    },
+    {
+      "code": "127",
+      "ineCode": "47127",
+      "ineCodeWithCheck": "471277",
+      "checkDigit": "7",
+      "name": "Quintanilla de Arriba",
+      "searchKey": "quintanilla de arriba"
+    },
+    {
+      "code": "129",
+      "ineCode": "47129",
+      "ineCodeWithCheck": "471296",
+      "checkDigit": "6",
+      "name": "Quintanilla de Onésimo",
+      "searchKey": "quintanilla de onesimo"
+    },
+    {
+      "code": "130",
+      "ineCode": "47130",
+      "ineCodeWithCheck": "471300",
+      "checkDigit": "0",
+      "name": "Quintanilla de Trigueros",
+      "searchKey": "quintanilla de trigueros"
+    },
+    {
+      "code": "128",
+      "ineCode": "47128",
+      "ineCodeWithCheck": "471283",
+      "checkDigit": "3",
+      "name": "Quintanilla del Molar",
+      "searchKey": "quintanilla del molar"
+    },
+    {
+      "code": "131",
+      "ineCode": "47131",
+      "ineCodeWithCheck": "471317",
+      "checkDigit": "7",
+      "name": "Rábano",
+      "searchKey": "rabano"
+    },
+    {
+      "code": "132",
+      "ineCode": "47132",
+      "ineCodeWithCheck": "471322",
+      "checkDigit": "2",
+      "name": "Ramiro",
+      "searchKey": "ramiro"
+    },
+    {
+      "code": "133",
+      "ineCode": "47133",
+      "ineCodeWithCheck": "471338",
+      "checkDigit": "8",
+      "name": "Renedo de Esgueva",
+      "searchKey": "renedo de esgueva"
+    },
+    {
+      "code": "134",
+      "ineCode": "47134",
+      "ineCodeWithCheck": "471343",
+      "checkDigit": "3",
+      "name": "Roales de Campos",
+      "searchKey": "roales de campos"
+    },
+    {
+      "code": "135",
+      "ineCode": "47135",
+      "ineCodeWithCheck": "471356",
+      "checkDigit": "6",
+      "name": "Robladillo",
+      "searchKey": "robladillo"
+    },
+    {
+      "code": "137",
+      "ineCode": "47137",
+      "ineCodeWithCheck": "471375",
+      "checkDigit": "5",
+      "name": "Roturas",
+      "searchKey": "roturas"
+    },
+    {
+      "code": "138",
+      "ineCode": "47138",
+      "ineCodeWithCheck": "471381",
+      "checkDigit": "1",
+      "name": "Rubí de Bracamonte",
+      "searchKey": "rubi de bracamonte"
+    },
+    {
+      "code": "139",
+      "ineCode": "47139",
+      "ineCodeWithCheck": "471394",
+      "checkDigit": "4",
+      "name": "Rueda",
+      "searchKey": "rueda"
+    },
+    {
+      "code": "140",
+      "ineCode": "47140",
+      "ineCodeWithCheck": "471408",
+      "checkDigit": "8",
+      "name": "Saelices de Mayorga",
+      "searchKey": "saelices de mayorga"
+    },
+    {
+      "code": "141",
+      "ineCode": "47141",
+      "ineCodeWithCheck": "471415",
+      "checkDigit": "5",
+      "name": "Salvador de Zapardiel",
+      "searchKey": "salvador de zapardiel"
+    },
+    {
+      "code": "142",
+      "ineCode": "47142",
+      "ineCodeWithCheck": "471420",
+      "checkDigit": "0",
+      "name": "San Cebrián de Mazote",
+      "searchKey": "san cebrian de mazote"
+    },
+    {
+      "code": "143",
+      "ineCode": "47143",
+      "ineCodeWithCheck": "471436",
+      "checkDigit": "6",
+      "name": "San Llorente",
+      "searchKey": "san llorente"
+    },
+    {
+      "code": "144",
+      "ineCode": "47144",
+      "ineCodeWithCheck": "471441",
+      "checkDigit": "1",
+      "name": "San Martín de Valvení",
+      "searchKey": "san martin de valveni"
+    },
+    {
+      "code": "145",
+      "ineCode": "47145",
+      "ineCodeWithCheck": "471454",
+      "checkDigit": "4",
+      "name": "San Miguel del Arroyo",
+      "searchKey": "san miguel del arroyo"
+    },
+    {
+      "code": "146",
+      "ineCode": "47146",
+      "ineCodeWithCheck": "471467",
+      "checkDigit": "7",
+      "name": "San Miguel del Pino",
+      "searchKey": "san miguel del pino"
+    },
+    {
+      "code": "147",
+      "ineCode": "47147",
+      "ineCodeWithCheck": "471473",
+      "checkDigit": "3",
+      "name": "San Pablo de la Moraleja",
+      "searchKey": "san pablo de la moraleja"
+    },
+    {
+      "code": "148",
+      "ineCode": "47148",
+      "ineCodeWithCheck": "471489",
+      "checkDigit": "9",
+      "name": "San Pedro de Latarce",
+      "searchKey": "san pedro de latarce"
+    },
+    {
+      "code": "149",
+      "ineCode": "47149",
+      "ineCodeWithCheck": "471492",
+      "checkDigit": "2",
+      "name": "San Pelayo",
+      "searchKey": "san pelayo"
+    },
+    {
+      "code": "150",
+      "ineCode": "47150",
+      "ineCodeWithCheck": "471505",
+      "checkDigit": "5",
+      "name": "San Román de Hornija",
+      "searchKey": "san roman de hornija"
+    },
+    {
+      "code": "151",
+      "ineCode": "47151",
+      "ineCodeWithCheck": "471512",
+      "checkDigit": "2",
+      "name": "San Salvador",
+      "searchKey": "san salvador"
+    },
+    {
+      "code": "156",
+      "ineCode": "47156",
+      "ineCodeWithCheck": "471564",
+      "checkDigit": "4",
+      "name": "San Vicente del Palacio",
+      "searchKey": "san vicente del palacio"
+    },
+    {
+      "code": "152",
+      "ineCode": "47152",
+      "ineCodeWithCheck": "471527",
+      "checkDigit": "7",
+      "name": "Santa Eufemia del Arroyo",
+      "searchKey": "santa eufemia del arroyo"
+    },
+    {
+      "code": "153",
+      "ineCode": "47153",
+      "ineCodeWithCheck": "471533",
+      "checkDigit": "3",
+      "name": "Santervás de Campos",
+      "searchKey": "santervas de campos"
+    },
+    {
+      "code": "154",
+      "ineCode": "47154",
+      "ineCodeWithCheck": "471548",
+      "checkDigit": "8",
+      "name": "Santibáñez de Valcorba",
+      "searchKey": "santibanez de valcorba"
+    },
+    {
+      "code": "155",
+      "ineCode": "47155",
+      "ineCodeWithCheck": "471551",
+      "checkDigit": "1",
+      "name": "Santovenia de Pisuerga",
+      "searchKey": "santovenia de pisuerga"
+    },
+    {
+      "code": "157",
+      "ineCode": "47157",
+      "ineCodeWithCheck": "471570",
+      "checkDigit": "0",
+      "name": "Sardón de Duero",
+      "searchKey": "sardon de duero"
+    },
+    {
+      "code": "158",
+      "ineCode": "47158",
+      "ineCodeWithCheck": "471586",
+      "checkDigit": "6",
+      "name": "Seca, La",
+      "searchKey": "seca la"
+    },
+    {
+      "code": "159",
+      "ineCode": "47159",
+      "ineCodeWithCheck": "471599",
+      "checkDigit": "9",
+      "name": "Serrada",
+      "searchKey": "serrada"
+    },
+    {
+      "code": "160",
+      "ineCode": "47160",
+      "ineCodeWithCheck": "471603",
+      "checkDigit": "3",
+      "name": "Siete Iglesias de Trabancos",
+      "searchKey": "siete iglesias de trabancos"
+    },
+    {
+      "code": "161",
+      "ineCode": "47161",
+      "ineCodeWithCheck": "471610",
+      "checkDigit": "0",
+      "name": "Simancas",
+      "searchKey": "simancas"
+    },
+    {
+      "code": "162",
+      "ineCode": "47162",
+      "ineCodeWithCheck": "471625",
+      "checkDigit": "5",
+      "name": "Tamariz de Campos",
+      "searchKey": "tamariz de campos"
+    },
+    {
+      "code": "163",
+      "ineCode": "47163",
+      "ineCodeWithCheck": "471631",
+      "checkDigit": "1",
+      "name": "Tiedra",
+      "searchKey": "tiedra"
+    },
+    {
+      "code": "164",
+      "ineCode": "47164",
+      "ineCodeWithCheck": "471646",
+      "checkDigit": "6",
+      "name": "Tordehumos",
+      "searchKey": "tordehumos"
+    },
+    {
+      "code": "165",
+      "ineCode": "47165",
+      "ineCodeWithCheck": "471659",
+      "checkDigit": "9",
+      "name": "Tordesillas",
+      "searchKey": "tordesillas"
+    },
+    {
+      "code": "169",
+      "ineCode": "47169",
+      "ineCodeWithCheck": "471697",
+      "checkDigit": "7",
+      "name": "Torre de Esgueva",
+      "searchKey": "torre de esgueva"
+    },
+    {
+      "code": "170",
+      "ineCode": "47170",
+      "ineCodeWithCheck": "471701",
+      "checkDigit": "1",
+      "name": "Torre de Peñafiel",
+      "searchKey": "torre de penafiel"
+    },
+    {
+      "code": "166",
+      "ineCode": "47166",
+      "ineCodeWithCheck": "471662",
+      "checkDigit": "2",
+      "name": "Torrecilla de la Abadesa",
+      "searchKey": "torrecilla de la abadesa"
+    },
+    {
+      "code": "167",
+      "ineCode": "47167",
+      "ineCodeWithCheck": "471678",
+      "checkDigit": "8",
+      "name": "Torrecilla de la Orden",
+      "searchKey": "torrecilla de la orden"
+    },
+    {
+      "code": "168",
+      "ineCode": "47168",
+      "ineCodeWithCheck": "471684",
+      "checkDigit": "4",
+      "name": "Torrecilla de la Torre",
+      "searchKey": "torrecilla de la torre"
+    },
+    {
+      "code": "171",
+      "ineCode": "47171",
+      "ineCodeWithCheck": "471718",
+      "checkDigit": "8",
+      "name": "Torrelobatón",
+      "searchKey": "torrelobaton"
+    },
+    {
+      "code": "172",
+      "ineCode": "47172",
+      "ineCodeWithCheck": "471723",
+      "checkDigit": "3",
+      "name": "Torrescárcela",
+      "searchKey": "torrescarcela"
+    },
+    {
+      "code": "173",
+      "ineCode": "47173",
+      "ineCodeWithCheck": "471739",
+      "checkDigit": "9",
+      "name": "Traspinedo",
+      "searchKey": "traspinedo"
+    },
+    {
+      "code": "174",
+      "ineCode": "47174",
+      "ineCodeWithCheck": "471744",
+      "checkDigit": "4",
+      "name": "Trigueros del Valle",
+      "searchKey": "trigueros del valle"
+    },
+    {
+      "code": "175",
+      "ineCode": "47175",
+      "ineCodeWithCheck": "471757",
+      "checkDigit": "7",
+      "name": "Tudela de Duero",
+      "searchKey": "tudela de duero"
+    },
+    {
+      "code": "176",
+      "ineCode": "47176",
+      "ineCodeWithCheck": "471760",
+      "checkDigit": "0",
+      "name": "Unión de Campos, La",
+      "searchKey": "union de campos la"
+    },
+    {
+      "code": "177",
+      "ineCode": "47177",
+      "ineCodeWithCheck": "471776",
+      "checkDigit": "6",
+      "name": "Urones de Castroponce",
+      "searchKey": "urones de castroponce"
+    },
+    {
+      "code": "178",
+      "ineCode": "47178",
+      "ineCodeWithCheck": "471782",
+      "checkDigit": "2",
+      "name": "Urueña",
+      "searchKey": "uruena"
+    },
+    {
+      "code": "179",
+      "ineCode": "47179",
+      "ineCodeWithCheck": "471795",
+      "checkDigit": "5",
+      "name": "Valbuena de Duero",
+      "searchKey": "valbuena de duero"
+    },
+    {
+      "code": "180",
+      "ineCode": "47180",
+      "ineCodeWithCheck": "471809",
+      "checkDigit": "9",
+      "name": "Valdearcos de la Vega",
+      "searchKey": "valdearcos de la vega"
+    },
+    {
+      "code": "181",
+      "ineCode": "47181",
+      "ineCodeWithCheck": "471816",
+      "checkDigit": "6",
+      "name": "Valdenebro de los Valles",
+      "searchKey": "valdenebro de los valles"
+    },
+    {
+      "code": "182",
+      "ineCode": "47182",
+      "ineCodeWithCheck": "471821",
+      "checkDigit": "1",
+      "name": "Valdestillas",
+      "searchKey": "valdestillas"
+    },
+    {
+      "code": "183",
+      "ineCode": "47183",
+      "ineCodeWithCheck": "471837",
+      "checkDigit": "7",
+      "name": "Valdunquillo",
+      "searchKey": "valdunquillo"
+    },
+    {
+      "code": "186",
+      "ineCode": "47186",
+      "ineCodeWithCheck": "471868",
+      "checkDigit": "8",
+      "name": "Valladolid",
+      "searchKey": "valladolid"
+    },
+    {
+      "code": "184",
+      "ineCode": "47184",
+      "ineCodeWithCheck": "471842",
+      "checkDigit": "2",
+      "name": "Valoria la Buena",
+      "searchKey": "valoria la buena"
+    },
+    {
+      "code": "185",
+      "ineCode": "47185",
+      "ineCodeWithCheck": "471855",
+      "checkDigit": "5",
+      "name": "Valverde de Campos",
+      "searchKey": "valverde de campos"
+    },
+    {
+      "code": "187",
+      "ineCode": "47187",
+      "ineCodeWithCheck": "471874",
+      "checkDigit": "4",
+      "name": "Vega de Ruiponce",
+      "searchKey": "vega de ruiponce"
+    },
+    {
+      "code": "188",
+      "ineCode": "47188",
+      "ineCodeWithCheck": "471880",
+      "checkDigit": "0",
+      "name": "Vega de Valdetronco",
+      "searchKey": "vega de valdetronco"
+    },
+    {
+      "code": "189",
+      "ineCode": "47189",
+      "ineCodeWithCheck": "471893",
+      "checkDigit": "3",
+      "name": "Velascálvaro",
+      "searchKey": "velascalvaro"
+    },
+    {
+      "code": "190",
+      "ineCode": "47190",
+      "ineCodeWithCheck": "471907",
+      "checkDigit": "7",
+      "name": "Velilla",
+      "searchKey": "velilla"
+    },
+    {
+      "code": "191",
+      "ineCode": "47191",
+      "ineCodeWithCheck": "471914",
+      "checkDigit": "4",
+      "name": "Velliza",
+      "searchKey": "velliza"
+    },
+    {
+      "code": "192",
+      "ineCode": "47192",
+      "ineCodeWithCheck": "471929",
+      "checkDigit": "9",
+      "name": "Ventosa de la Cuesta",
+      "searchKey": "ventosa de la cuesta"
+    },
+    {
+      "code": "193",
+      "ineCode": "47193",
+      "ineCodeWithCheck": "471935",
+      "checkDigit": "5",
+      "name": "Viana de Cega",
+      "searchKey": "viana de cega"
+    },
+    {
+      "code": "195",
+      "ineCode": "47195",
+      "ineCodeWithCheck": "471953",
+      "checkDigit": "3",
+      "name": "Villabáñez",
+      "searchKey": "villabanez"
+    },
+    {
+      "code": "196",
+      "ineCode": "47196",
+      "ineCodeWithCheck": "471966",
+      "checkDigit": "6",
+      "name": "Villabaruz de Campos",
+      "searchKey": "villabaruz de campos"
+    },
+    {
+      "code": "197",
+      "ineCode": "47197",
+      "ineCodeWithCheck": "471972",
+      "checkDigit": "2",
+      "name": "Villabrágima",
+      "searchKey": "villabragima"
+    },
+    {
+      "code": "198",
+      "ineCode": "47198",
+      "ineCodeWithCheck": "471988",
+      "checkDigit": "8",
+      "name": "Villacarralón",
+      "searchKey": "villacarralon"
+    },
+    {
+      "code": "199",
+      "ineCode": "47199",
+      "ineCodeWithCheck": "471991",
+      "checkDigit": "1",
+      "name": "Villacid de Campos",
+      "searchKey": "villacid de campos"
+    },
+    {
+      "code": "200",
+      "ineCode": "47200",
+      "ineCodeWithCheck": "472005",
+      "checkDigit": "5",
+      "name": "Villaco",
+      "searchKey": "villaco"
+    },
+    {
+      "code": "203",
+      "ineCode": "47203",
+      "ineCodeWithCheck": "472033",
+      "checkDigit": "3",
+      "name": "Villafrades de Campos",
+      "searchKey": "villafrades de campos"
+    },
+    {
+      "code": "204",
+      "ineCode": "47204",
+      "ineCodeWithCheck": "472048",
+      "checkDigit": "8",
+      "name": "Villafranca de Duero",
+      "searchKey": "villafranca de duero"
+    },
+    {
+      "code": "205",
+      "ineCode": "47205",
+      "ineCodeWithCheck": "472051",
+      "checkDigit": "1",
+      "name": "Villafrechós",
+      "searchKey": "villafrechos"
+    },
+    {
+      "code": "206",
+      "ineCode": "47206",
+      "ineCodeWithCheck": "472064",
+      "checkDigit": "4",
+      "name": "Villafuerte",
+      "searchKey": "villafuerte"
+    },
+    {
+      "code": "207",
+      "ineCode": "47207",
+      "ineCodeWithCheck": "472070",
+      "checkDigit": "0",
+      "name": "Villagarcía de Campos",
+      "searchKey": "villagarcia de campos"
+    },
+    {
+      "code": "208",
+      "ineCode": "47208",
+      "ineCodeWithCheck": "472086",
+      "checkDigit": "6",
+      "name": "Villagómez la Nueva",
+      "searchKey": "villagomez la nueva"
+    },
+    {
+      "code": "209",
+      "ineCode": "47209",
+      "ineCodeWithCheck": "472099",
+      "checkDigit": "9",
+      "name": "Villalán de Campos",
+      "searchKey": "villalan de campos"
+    },
+    {
+      "code": "210",
+      "ineCode": "47210",
+      "ineCodeWithCheck": "472103",
+      "checkDigit": "3",
+      "name": "Villalar de los Comuneros",
+      "searchKey": "villalar de los comuneros"
+    },
+    {
+      "code": "211",
+      "ineCode": "47211",
+      "ineCodeWithCheck": "472110",
+      "checkDigit": "0",
+      "name": "Villalba de la Loma",
+      "searchKey": "villalba de la loma"
+    },
+    {
+      "code": "212",
+      "ineCode": "47212",
+      "ineCodeWithCheck": "472125",
+      "checkDigit": "5",
+      "name": "Villalba de los Alcores",
+      "searchKey": "villalba de los alcores"
+    },
+    {
+      "code": "213",
+      "ineCode": "47213",
+      "ineCodeWithCheck": "472131",
+      "checkDigit": "1",
+      "name": "Villalbarba",
+      "searchKey": "villalbarba"
+    },
+    {
+      "code": "214",
+      "ineCode": "47214",
+      "ineCodeWithCheck": "472146",
+      "checkDigit": "6",
+      "name": "Villalón de Campos",
+      "searchKey": "villalon de campos"
+    },
+    {
+      "code": "215",
+      "ineCode": "47215",
+      "ineCodeWithCheck": "472159",
+      "checkDigit": "9",
+      "name": "Villamuriel de Campos",
+      "searchKey": "villamuriel de campos"
+    },
+    {
+      "code": "216",
+      "ineCode": "47216",
+      "ineCodeWithCheck": "472162",
+      "checkDigit": "2",
+      "name": "Villán de Tordesillas",
+      "searchKey": "villan de tordesillas"
+    },
+    {
+      "code": "217",
+      "ineCode": "47217",
+      "ineCodeWithCheck": "472178",
+      "checkDigit": "8",
+      "name": "Villanubla",
+      "searchKey": "villanubla"
+    },
+    {
+      "code": "218",
+      "ineCode": "47218",
+      "ineCodeWithCheck": "472184",
+      "checkDigit": "4",
+      "name": "Villanueva de Duero",
+      "searchKey": "villanueva de duero"
+    },
+    {
+      "code": "219",
+      "ineCode": "47219",
+      "ineCodeWithCheck": "472197",
+      "checkDigit": "7",
+      "name": "Villanueva de la Condesa",
+      "searchKey": "villanueva de la condesa"
+    },
+    {
+      "code": "220",
+      "ineCode": "47220",
+      "ineCodeWithCheck": "472201",
+      "checkDigit": "1",
+      "name": "Villanueva de los Caballeros",
+      "searchKey": "villanueva de los caballeros"
+    },
+    {
+      "code": "221",
+      "ineCode": "47221",
+      "ineCodeWithCheck": "472218",
+      "checkDigit": "8",
+      "name": "Villanueva de los Infantes",
+      "searchKey": "villanueva de los infantes"
+    },
+    {
+      "code": "222",
+      "ineCode": "47222",
+      "ineCodeWithCheck": "472223",
+      "checkDigit": "3",
+      "name": "Villanueva de San Mancio",
+      "searchKey": "villanueva de san mancio"
+    },
+    {
+      "code": "223",
+      "ineCode": "47223",
+      "ineCodeWithCheck": "472239",
+      "checkDigit": "9",
+      "name": "Villardefrades",
+      "searchKey": "villardefrades"
+    },
+    {
+      "code": "224",
+      "ineCode": "47224",
+      "ineCodeWithCheck": "472244",
+      "checkDigit": "4",
+      "name": "Villarmentero de Esgueva",
+      "searchKey": "villarmentero de esgueva"
+    },
+    {
+      "code": "225",
+      "ineCode": "47225",
+      "ineCodeWithCheck": "472257",
+      "checkDigit": "7",
+      "name": "Villasexmir",
+      "searchKey": "villasexmir"
+    },
+    {
+      "code": "226",
+      "ineCode": "47226",
+      "ineCodeWithCheck": "472260",
+      "checkDigit": "0",
+      "name": "Villavaquerín",
+      "searchKey": "villavaquerin"
+    },
+    {
+      "code": "227",
+      "ineCode": "47227",
+      "ineCodeWithCheck": "472276",
+      "checkDigit": "6",
+      "name": "Villavellid",
+      "searchKey": "villavellid"
+    },
+    {
+      "code": "228",
+      "ineCode": "47228",
+      "ineCodeWithCheck": "472282",
+      "checkDigit": "2",
+      "name": "Villaverde de Medina",
+      "searchKey": "villaverde de medina"
+    },
+    {
+      "code": "229",
+      "ineCode": "47229",
+      "ineCodeWithCheck": "472295",
+      "checkDigit": "5",
+      "name": "Villavicencio de los Caballeros",
+      "searchKey": "villavicencio de los caballeros"
+    },
+    {
+      "code": "194",
+      "ineCode": "47194",
+      "ineCodeWithCheck": "471940",
+      "checkDigit": "0",
+      "name": "Viloria",
+      "searchKey": "viloria"
+    },
+    {
+      "code": "230",
+      "ineCode": "47230",
+      "ineCodeWithCheck": "472309",
+      "checkDigit": "9",
+      "name": "Wamba",
+      "searchKey": "wamba"
+    },
+    {
+      "code": "231",
+      "ineCode": "47231",
+      "ineCodeWithCheck": "472316",
+      "checkDigit": "6",
+      "name": "Zaratán",
+      "searchKey": "zaratan"
+    },
+    {
+      "code": "232",
+      "ineCode": "47232",
+      "ineCodeWithCheck": "472321",
+      "checkDigit": "1",
+      "name": "Zarza, La",
+      "searchKey": "zarza la"
+    }
+  ]
+}

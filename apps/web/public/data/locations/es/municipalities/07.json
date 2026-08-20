@@ -1,0 +1,545 @@
+{
+  "province": {
+    "code": "07",
+    "name": "Illes Balears",
+    "searchKey": "illes balears"
+  },
+  "municipalities": [
+    {
+      "code": "002",
+      "ineCode": "07002",
+      "ineCodeWithCheck": "070027",
+      "checkDigit": "7",
+      "name": "Alaior",
+      "searchKey": "alaior"
+    },
+    {
+      "code": "001",
+      "ineCode": "07001",
+      "ineCodeWithCheck": "070012",
+      "checkDigit": "2",
+      "name": "Alaró",
+      "searchKey": "alaro"
+    },
+    {
+      "code": "003",
+      "ineCode": "07003",
+      "ineCodeWithCheck": "070033",
+      "checkDigit": "3",
+      "name": "Alcúdia",
+      "searchKey": "alcudia"
+    },
+    {
+      "code": "004",
+      "ineCode": "07004",
+      "ineCodeWithCheck": "070048",
+      "checkDigit": "8",
+      "name": "Algaida",
+      "searchKey": "algaida"
+    },
+    {
+      "code": "005",
+      "ineCode": "07005",
+      "ineCodeWithCheck": "070051",
+      "checkDigit": "1",
+      "name": "Andratx",
+      "searchKey": "andratx"
+    },
+    {
+      "code": "901",
+      "ineCode": "07901",
+      "ineCodeWithCheck": "079013",
+      "checkDigit": "3",
+      "name": "Ariany",
+      "searchKey": "ariany"
+    },
+    {
+      "code": "006",
+      "ineCode": "07006",
+      "ineCodeWithCheck": "070064",
+      "checkDigit": "4",
+      "name": "Artà",
+      "searchKey": "arta"
+    },
+    {
+      "code": "007",
+      "ineCode": "07007",
+      "ineCodeWithCheck": "070070",
+      "checkDigit": "0",
+      "name": "Banyalbufar",
+      "searchKey": "banyalbufar"
+    },
+    {
+      "code": "008",
+      "ineCode": "07008",
+      "ineCodeWithCheck": "070086",
+      "checkDigit": "6",
+      "name": "Binissalem",
+      "searchKey": "binissalem"
+    },
+    {
+      "code": "009",
+      "ineCode": "07009",
+      "ineCodeWithCheck": "070099",
+      "checkDigit": "9",
+      "name": "Búger",
+      "searchKey": "buger"
+    },
+    {
+      "code": "010",
+      "ineCode": "07010",
+      "ineCodeWithCheck": "070103",
+      "checkDigit": "3",
+      "name": "Bunyola",
+      "searchKey": "bunyola"
+    },
+    {
+      "code": "011",
+      "ineCode": "07011",
+      "ineCodeWithCheck": "070110",
+      "checkDigit": "0",
+      "name": "Calvià",
+      "searchKey": "calvia"
+    },
+    {
+      "code": "012",
+      "ineCode": "07012",
+      "ineCodeWithCheck": "070125",
+      "checkDigit": "5",
+      "name": "Campanet",
+      "searchKey": "campanet"
+    },
+    {
+      "code": "013",
+      "ineCode": "07013",
+      "ineCodeWithCheck": "070131",
+      "checkDigit": "1",
+      "name": "Campos",
+      "searchKey": "campos"
+    },
+    {
+      "code": "014",
+      "ineCode": "07014",
+      "ineCodeWithCheck": "070146",
+      "checkDigit": "6",
+      "name": "Capdepera",
+      "searchKey": "capdepera"
+    },
+    {
+      "code": "064",
+      "ineCode": "07064",
+      "ineCodeWithCheck": "070645",
+      "checkDigit": "5",
+      "name": "Castell, Es",
+      "searchKey": "castell es"
+    },
+    {
+      "code": "015",
+      "ineCode": "07015",
+      "ineCodeWithCheck": "070159",
+      "checkDigit": "9",
+      "name": "Ciutadella de Menorca",
+      "searchKey": "ciutadella de menorca"
+    },
+    {
+      "code": "016",
+      "ineCode": "07016",
+      "ineCodeWithCheck": "070162",
+      "checkDigit": "2",
+      "name": "Consell",
+      "searchKey": "consell"
+    },
+    {
+      "code": "017",
+      "ineCode": "07017",
+      "ineCodeWithCheck": "070178",
+      "checkDigit": "8",
+      "name": "Costitx",
+      "searchKey": "costitx"
+    },
+    {
+      "code": "018",
+      "ineCode": "07018",
+      "ineCodeWithCheck": "070184",
+      "checkDigit": "4",
+      "name": "Deià",
+      "searchKey": "deia"
+    },
+    {
+      "code": "026",
+      "ineCode": "07026",
+      "ineCodeWithCheck": "070260",
+      "checkDigit": "0",
+      "name": "Eivissa",
+      "searchKey": "eivissa"
+    },
+    {
+      "code": "019",
+      "ineCode": "07019",
+      "ineCodeWithCheck": "070197",
+      "checkDigit": "7",
+      "name": "Escorca",
+      "searchKey": "escorca"
+    },
+    {
+      "code": "020",
+      "ineCode": "07020",
+      "ineCodeWithCheck": "070201",
+      "checkDigit": "1",
+      "name": "Esporles",
+      "searchKey": "esporles"
+    },
+    {
+      "code": "021",
+      "ineCode": "07021",
+      "ineCodeWithCheck": "070218",
+      "checkDigit": "8",
+      "name": "Estellencs",
+      "searchKey": "estellencs"
+    },
+    {
+      "code": "022",
+      "ineCode": "07022",
+      "ineCodeWithCheck": "070223",
+      "checkDigit": "3",
+      "name": "Felanitx",
+      "searchKey": "felanitx"
+    },
+    {
+      "code": "023",
+      "ineCode": "07023",
+      "ineCodeWithCheck": "070239",
+      "checkDigit": "9",
+      "name": "Ferreries",
+      "searchKey": "ferreries"
+    },
+    {
+      "code": "024",
+      "ineCode": "07024",
+      "ineCodeWithCheck": "070244",
+      "checkDigit": "4",
+      "name": "Formentera",
+      "searchKey": "formentera"
+    },
+    {
+      "code": "025",
+      "ineCode": "07025",
+      "ineCodeWithCheck": "070257",
+      "checkDigit": "7",
+      "name": "Fornalutx",
+      "searchKey": "fornalutx"
+    },
+    {
+      "code": "027",
+      "ineCode": "07027",
+      "ineCodeWithCheck": "070276",
+      "checkDigit": "6",
+      "name": "Inca",
+      "searchKey": "inca"
+    },
+    {
+      "code": "028",
+      "ineCode": "07028",
+      "ineCodeWithCheck": "070282",
+      "checkDigit": "2",
+      "name": "Lloret de Vistalegre",
+      "searchKey": "lloret de vistalegre"
+    },
+    {
+      "code": "029",
+      "ineCode": "07029",
+      "ineCodeWithCheck": "070295",
+      "checkDigit": "5",
+      "name": "Lloseta",
+      "searchKey": "lloseta"
+    },
+    {
+      "code": "030",
+      "ineCode": "07030",
+      "ineCodeWithCheck": "070309",
+      "checkDigit": "9",
+      "name": "Llubí",
+      "searchKey": "llubi"
+    },
+    {
+      "code": "031",
+      "ineCode": "07031",
+      "ineCodeWithCheck": "070316",
+      "checkDigit": "6",
+      "name": "Llucmajor",
+      "searchKey": "llucmajor"
+    },
+    {
+      "code": "033",
+      "ineCode": "07033",
+      "ineCodeWithCheck": "070337",
+      "checkDigit": "7",
+      "name": "Manacor",
+      "searchKey": "manacor"
+    },
+    {
+      "code": "034",
+      "ineCode": "07034",
+      "ineCodeWithCheck": "070342",
+      "checkDigit": "2",
+      "name": "Mancor de la Vall",
+      "searchKey": "mancor de la vall"
+    },
+    {
+      "code": "032",
+      "ineCode": "07032",
+      "ineCodeWithCheck": "070321",
+      "checkDigit": "1",
+      "name": "Maó",
+      "searchKey": "mao"
+    },
+    {
+      "code": "035",
+      "ineCode": "07035",
+      "ineCodeWithCheck": "070355",
+      "checkDigit": "5",
+      "name": "Maria de la Salut",
+      "searchKey": "maria de la salut"
+    },
+    {
+      "code": "036",
+      "ineCode": "07036",
+      "ineCodeWithCheck": "070368",
+      "checkDigit": "8",
+      "name": "Marratxí",
+      "searchKey": "marratxi"
+    },
+    {
+      "code": "037",
+      "ineCode": "07037",
+      "ineCodeWithCheck": "070374",
+      "checkDigit": "4",
+      "name": "Mercadal, Es",
+      "searchKey": "mercadal es"
+    },
+    {
+      "code": "902",
+      "ineCode": "07902",
+      "ineCodeWithCheck": "079028",
+      "checkDigit": "8",
+      "name": "Migjorn Gran, Es",
+      "searchKey": "migjorn gran es"
+    },
+    {
+      "code": "038",
+      "ineCode": "07038",
+      "ineCodeWithCheck": "070380",
+      "checkDigit": "0",
+      "name": "Montuïri",
+      "searchKey": "montuiri"
+    },
+    {
+      "code": "039",
+      "ineCode": "07039",
+      "ineCodeWithCheck": "070393",
+      "checkDigit": "3",
+      "name": "Muro",
+      "searchKey": "muro"
+    },
+    {
+      "code": "040",
+      "ineCode": "07040",
+      "ineCodeWithCheck": "070407",
+      "checkDigit": "7",
+      "name": "Palma",
+      "searchKey": "palma"
+    },
+    {
+      "code": "041",
+      "ineCode": "07041",
+      "ineCodeWithCheck": "070414",
+      "checkDigit": "4",
+      "name": "Petra",
+      "searchKey": "petra"
+    },
+    {
+      "code": "044",
+      "ineCode": "07044",
+      "ineCodeWithCheck": "070440",
+      "checkDigit": "0",
+      "name": "Pobla, Sa",
+      "searchKey": "pobla sa"
+    },
+    {
+      "code": "042",
+      "ineCode": "07042",
+      "ineCodeWithCheck": "070429",
+      "checkDigit": "9",
+      "name": "Pollença",
+      "searchKey": "pollenca"
+    },
+    {
+      "code": "043",
+      "ineCode": "07043",
+      "ineCodeWithCheck": "070435",
+      "checkDigit": "5",
+      "name": "Porreres",
+      "searchKey": "porreres"
+    },
+    {
+      "code": "045",
+      "ineCode": "07045",
+      "ineCodeWithCheck": "070453",
+      "checkDigit": "3",
+      "name": "Puigpunyent",
+      "searchKey": "puigpunyent"
+    },
+    {
+      "code": "059",
+      "ineCode": "07059",
+      "ineCodeWithCheck": "070598",
+      "checkDigit": "8",
+      "name": "Salines, Ses",
+      "searchKey": "salines ses"
+    },
+    {
+      "code": "046",
+      "ineCode": "07046",
+      "ineCodeWithCheck": "070466",
+      "checkDigit": "6",
+      "name": "Sant Antoni de Portmany",
+      "searchKey": "sant antoni de portmany"
+    },
+    {
+      "code": "049",
+      "ineCode": "07049",
+      "ineCodeWithCheck": "070491",
+      "checkDigit": "1",
+      "name": "Sant Joan",
+      "searchKey": "sant joan"
+    },
+    {
+      "code": "050",
+      "ineCode": "07050",
+      "ineCodeWithCheck": "070504",
+      "checkDigit": "4",
+      "name": "Sant Joan de Labritja",
+      "searchKey": "sant joan de labritja"
+    },
+    {
+      "code": "048",
+      "ineCode": "07048",
+      "ineCodeWithCheck": "070488",
+      "checkDigit": "8",
+      "name": "Sant Josep de sa Talaia",
+      "searchKey": "sant josep de sa talaia"
+    },
+    {
+      "code": "051",
+      "ineCode": "07051",
+      "ineCodeWithCheck": "070511",
+      "checkDigit": "1",
+      "name": "Sant Llorenç des Cardassar",
+      "searchKey": "sant llorenc des cardassar"
+    },
+    {
+      "code": "052",
+      "ineCode": "07052",
+      "ineCodeWithCheck": "070526",
+      "checkDigit": "6",
+      "name": "Sant Lluís",
+      "searchKey": "sant lluis"
+    },
+    {
+      "code": "053",
+      "ineCode": "07053",
+      "ineCodeWithCheck": "070532",
+      "checkDigit": "2",
+      "name": "Santa Eugènia",
+      "searchKey": "santa eugenia"
+    },
+    {
+      "code": "054",
+      "ineCode": "07054",
+      "ineCodeWithCheck": "070547",
+      "checkDigit": "7",
+      "name": "Santa Eulària des Riu",
+      "searchKey": "santa eularia des riu"
+    },
+    {
+      "code": "055",
+      "ineCode": "07055",
+      "ineCodeWithCheck": "070550",
+      "checkDigit": "0",
+      "name": "Santa Margalida",
+      "searchKey": "santa margalida"
+    },
+    {
+      "code": "056",
+      "ineCode": "07056",
+      "ineCodeWithCheck": "070563",
+      "checkDigit": "3",
+      "name": "Santa María del Camí",
+      "searchKey": "santa maria del cami"
+    },
+    {
+      "code": "057",
+      "ineCode": "07057",
+      "ineCodeWithCheck": "070579",
+      "checkDigit": "9",
+      "name": "Santanyí",
+      "searchKey": "santanyi"
+    },
+    {
+      "code": "058",
+      "ineCode": "07058",
+      "ineCodeWithCheck": "070585",
+      "checkDigit": "5",
+      "name": "Selva",
+      "searchKey": "selva"
+    },
+    {
+      "code": "047",
+      "ineCode": "07047",
+      "ineCodeWithCheck": "070472",
+      "checkDigit": "2",
+      "name": "Sencelles",
+      "searchKey": "sencelles"
+    },
+    {
+      "code": "060",
+      "ineCode": "07060",
+      "ineCodeWithCheck": "070602",
+      "checkDigit": "2",
+      "name": "Sineu",
+      "searchKey": "sineu"
+    },
+    {
+      "code": "061",
+      "ineCode": "07061",
+      "ineCodeWithCheck": "070619",
+      "checkDigit": "9",
+      "name": "Sóller",
+      "searchKey": "soller"
+    },
+    {
+      "code": "062",
+      "ineCode": "07062",
+      "ineCodeWithCheck": "070624",
+      "checkDigit": "4",
+      "name": "Son Servera",
+      "searchKey": "son servera"
+    },
+    {
+      "code": "063",
+      "ineCode": "07063",
+      "ineCodeWithCheck": "070630",
+      "checkDigit": "0",
+      "name": "Valldemossa",
+      "searchKey": "valldemossa"
+    },
+    {
+      "code": "065",
+      "ineCode": "07065",
+      "ineCodeWithCheck": "070658",
+      "checkDigit": "8",
+      "name": "Vilafranca de Bonany",
+      "searchKey": "vilafranca de bonany"
+    }
+  ]
+}

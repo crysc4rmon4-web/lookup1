@@ -1,0 +1,2497 @@
+{
+  "province": {
+    "code": "08",
+    "name": "Barcelona",
+    "searchKey": "barcelona"
+  },
+  "municipalities": [
+    {
+      "code": "001",
+      "ineCode": "08001",
+      "ineCodeWithCheck": "080018",
+      "checkDigit": "8",
+      "name": "Abrera",
+      "searchKey": "abrera"
+    },
+    {
+      "code": "002",
+      "ineCode": "08002",
+      "ineCodeWithCheck": "080023",
+      "checkDigit": "3",
+      "name": "Aguilar de Segarra",
+      "searchKey": "aguilar de segarra"
+    },
+    {
+      "code": "014",
+      "ineCode": "08014",
+      "ineCodeWithCheck": "080142",
+      "checkDigit": "2",
+      "name": "Aiguafreda",
+      "searchKey": "aiguafreda"
+    },
+    {
+      "code": "003",
+      "ineCode": "08003",
+      "ineCodeWithCheck": "080039",
+      "checkDigit": "9",
+      "name": "Alella",
+      "searchKey": "alella"
+    },
+    {
+      "code": "004",
+      "ineCode": "08004",
+      "ineCodeWithCheck": "080044",
+      "checkDigit": "4",
+      "name": "Alpens",
+      "searchKey": "alpens"
+    },
+    {
+      "code": "005",
+      "ineCode": "08005",
+      "ineCodeWithCheck": "080057",
+      "checkDigit": "7",
+      "name": "Ametlla del Vallès, L'",
+      "searchKey": "ametlla del valles l"
+    },
+    {
+      "code": "006",
+      "ineCode": "08006",
+      "ineCodeWithCheck": "080060",
+      "checkDigit": "0",
+      "name": "Arenys de Mar",
+      "searchKey": "arenys de mar"
+    },
+    {
+      "code": "007",
+      "ineCode": "08007",
+      "ineCodeWithCheck": "080076",
+      "checkDigit": "6",
+      "name": "Arenys de Munt",
+      "searchKey": "arenys de munt"
+    },
+    {
+      "code": "008",
+      "ineCode": "08008",
+      "ineCodeWithCheck": "080082",
+      "checkDigit": "2",
+      "name": "Argençola",
+      "searchKey": "argencola"
+    },
+    {
+      "code": "009",
+      "ineCode": "08009",
+      "ineCodeWithCheck": "080095",
+      "checkDigit": "5",
+      "name": "Argentona",
+      "searchKey": "argentona"
+    },
+    {
+      "code": "010",
+      "ineCode": "08010",
+      "ineCodeWithCheck": "080109",
+      "checkDigit": "9",
+      "name": "Artés",
+      "searchKey": "artes"
+    },
+    {
+      "code": "011",
+      "ineCode": "08011",
+      "ineCodeWithCheck": "080116",
+      "checkDigit": "6",
+      "name": "Avià",
+      "searchKey": "avia"
+    },
+    {
+      "code": "012",
+      "ineCode": "08012",
+      "ineCodeWithCheck": "080121",
+      "checkDigit": "1",
+      "name": "Avinyó",
+      "searchKey": "avinyo"
+    },
+    {
+      "code": "013",
+      "ineCode": "08013",
+      "ineCodeWithCheck": "080137",
+      "checkDigit": "7",
+      "name": "Avinyonet del Penedès",
+      "searchKey": "avinyonet del penedes"
+    },
+    {
+      "code": "015",
+      "ineCode": "08015",
+      "ineCodeWithCheck": "080155",
+      "checkDigit": "5",
+      "name": "Badalona",
+      "searchKey": "badalona"
+    },
+    {
+      "code": "904",
+      "ineCode": "08904",
+      "ineCodeWithCheck": "089045",
+      "checkDigit": "5",
+      "name": "Badia del Vallès",
+      "searchKey": "badia del valles"
+    },
+    {
+      "code": "016",
+      "ineCode": "08016",
+      "ineCodeWithCheck": "080168",
+      "checkDigit": "8",
+      "name": "Bagà",
+      "searchKey": "baga"
+    },
+    {
+      "code": "017",
+      "ineCode": "08017",
+      "ineCodeWithCheck": "080174",
+      "checkDigit": "4",
+      "name": "Balenyà",
+      "searchKey": "balenya"
+    },
+    {
+      "code": "018",
+      "ineCode": "08018",
+      "ineCodeWithCheck": "080180",
+      "checkDigit": "0",
+      "name": "Balsareny",
+      "searchKey": "balsareny"
+    },
+    {
+      "code": "252",
+      "ineCode": "08252",
+      "ineCodeWithCheck": "082520",
+      "checkDigit": "0",
+      "name": "Barberà del Vallès",
+      "searchKey": "barbera del valles"
+    },
+    {
+      "code": "019",
+      "ineCode": "08019",
+      "ineCodeWithCheck": "080193",
+      "checkDigit": "3",
+      "name": "Barcelona",
+      "searchKey": "barcelona"
+    },
+    {
+      "code": "020",
+      "ineCode": "08020",
+      "ineCodeWithCheck": "080207",
+      "checkDigit": "7",
+      "name": "Begues",
+      "searchKey": "begues"
+    },
+    {
+      "code": "021",
+      "ineCode": "08021",
+      "ineCodeWithCheck": "080214",
+      "checkDigit": "4",
+      "name": "Bellprat",
+      "searchKey": "bellprat"
+    },
+    {
+      "code": "022",
+      "ineCode": "08022",
+      "ineCodeWithCheck": "080229",
+      "checkDigit": "9",
+      "name": "Berga",
+      "searchKey": "berga"
+    },
+    {
+      "code": "023",
+      "ineCode": "08023",
+      "ineCodeWithCheck": "080235",
+      "checkDigit": "5",
+      "name": "Bigues i Riells del Fai",
+      "searchKey": "bigues i riells del fai"
+    },
+    {
+      "code": "024",
+      "ineCode": "08024",
+      "ineCodeWithCheck": "080240",
+      "checkDigit": "0",
+      "name": "Borredà",
+      "searchKey": "borreda"
+    },
+    {
+      "code": "025",
+      "ineCode": "08025",
+      "ineCodeWithCheck": "080253",
+      "checkDigit": "3",
+      "name": "Bruc, El",
+      "searchKey": "bruc el"
+    },
+    {
+      "code": "026",
+      "ineCode": "08026",
+      "ineCodeWithCheck": "080266",
+      "checkDigit": "6",
+      "name": "Brull, El",
+      "searchKey": "brull el"
+    },
+    {
+      "code": "027",
+      "ineCode": "08027",
+      "ineCodeWithCheck": "080272",
+      "checkDigit": "2",
+      "name": "Cabanyes, Les",
+      "searchKey": "cabanyes les"
+    },
+    {
+      "code": "028",
+      "ineCode": "08028",
+      "ineCodeWithCheck": "080288",
+      "checkDigit": "8",
+      "name": "Cabrera d'Anoia",
+      "searchKey": "cabrera d anoia"
+    },
+    {
+      "code": "029",
+      "ineCode": "08029",
+      "ineCodeWithCheck": "080291",
+      "checkDigit": "1",
+      "name": "Cabrera de Mar",
+      "searchKey": "cabrera de mar"
+    },
+    {
+      "code": "030",
+      "ineCode": "08030",
+      "ineCodeWithCheck": "080305",
+      "checkDigit": "5",
+      "name": "Cabrils",
+      "searchKey": "cabrils"
+    },
+    {
+      "code": "031",
+      "ineCode": "08031",
+      "ineCodeWithCheck": "080312",
+      "checkDigit": "2",
+      "name": "Calaf",
+      "searchKey": "calaf"
+    },
+    {
+      "code": "034",
+      "ineCode": "08034",
+      "ineCodeWithCheck": "080348",
+      "checkDigit": "8",
+      "name": "Calders",
+      "searchKey": "calders"
+    },
+    {
+      "code": "032",
+      "ineCode": "08032",
+      "ineCodeWithCheck": "080327",
+      "checkDigit": "7",
+      "name": "Caldes d'Estrac",
+      "searchKey": "caldes d estrac"
+    },
+    {
+      "code": "033",
+      "ineCode": "08033",
+      "ineCodeWithCheck": "080333",
+      "checkDigit": "3",
+      "name": "Caldes de Montbui",
+      "searchKey": "caldes de montbui"
+    },
+    {
+      "code": "035",
+      "ineCode": "08035",
+      "ineCodeWithCheck": "080351",
+      "checkDigit": "1",
+      "name": "Calella",
+      "searchKey": "calella"
+    },
+    {
+      "code": "037",
+      "ineCode": "08037",
+      "ineCodeWithCheck": "080370",
+      "checkDigit": "0",
+      "name": "Calldetenes",
+      "searchKey": "calldetenes"
+    },
+    {
+      "code": "038",
+      "ineCode": "08038",
+      "ineCodeWithCheck": "080386",
+      "checkDigit": "6",
+      "name": "Callús",
+      "searchKey": "callus"
+    },
+    {
+      "code": "036",
+      "ineCode": "08036",
+      "ineCodeWithCheck": "080364",
+      "checkDigit": "4",
+      "name": "Calonge de Segarra",
+      "searchKey": "calonge de segarra"
+    },
+    {
+      "code": "039",
+      "ineCode": "08039",
+      "ineCodeWithCheck": "080399",
+      "checkDigit": "9",
+      "name": "Campins",
+      "searchKey": "campins"
+    },
+    {
+      "code": "040",
+      "ineCode": "08040",
+      "ineCodeWithCheck": "080403",
+      "checkDigit": "3",
+      "name": "Canet de Mar",
+      "searchKey": "canet de mar"
+    },
+    {
+      "code": "041",
+      "ineCode": "08041",
+      "ineCodeWithCheck": "080410",
+      "checkDigit": "0",
+      "name": "Canovelles",
+      "searchKey": "canovelles"
+    },
+    {
+      "code": "042",
+      "ineCode": "08042",
+      "ineCodeWithCheck": "080425",
+      "checkDigit": "5",
+      "name": "Cànoves i Samalús",
+      "searchKey": "canoves i samalus"
+    },
+    {
+      "code": "043",
+      "ineCode": "08043",
+      "ineCodeWithCheck": "080431",
+      "checkDigit": "1",
+      "name": "Canyelles",
+      "searchKey": "canyelles"
+    },
+    {
+      "code": "044",
+      "ineCode": "08044",
+      "ineCodeWithCheck": "080446",
+      "checkDigit": "6",
+      "name": "Capellades",
+      "searchKey": "capellades"
+    },
+    {
+      "code": "045",
+      "ineCode": "08045",
+      "ineCodeWithCheck": "080459",
+      "checkDigit": "9",
+      "name": "Capolat",
+      "searchKey": "capolat"
+    },
+    {
+      "code": "046",
+      "ineCode": "08046",
+      "ineCodeWithCheck": "080462",
+      "checkDigit": "2",
+      "name": "Cardedeu",
+      "searchKey": "cardedeu"
+    },
+    {
+      "code": "047",
+      "ineCode": "08047",
+      "ineCodeWithCheck": "080478",
+      "checkDigit": "8",
+      "name": "Cardona",
+      "searchKey": "cardona"
+    },
+    {
+      "code": "048",
+      "ineCode": "08048",
+      "ineCodeWithCheck": "080484",
+      "checkDigit": "4",
+      "name": "Carme",
+      "searchKey": "carme"
+    },
+    {
+      "code": "049",
+      "ineCode": "08049",
+      "ineCodeWithCheck": "080497",
+      "checkDigit": "7",
+      "name": "Casserres",
+      "searchKey": "casserres"
+    },
+    {
+      "code": "057",
+      "ineCode": "08057",
+      "ineCodeWithCheck": "080575",
+      "checkDigit": "5",
+      "name": "Castell de l'Areny",
+      "searchKey": "castell de l areny"
+    },
+    {
+      "code": "052",
+      "ineCode": "08052",
+      "ineCodeWithCheck": "080522",
+      "checkDigit": "2",
+      "name": "Castellar de n'Hug",
+      "searchKey": "castellar de n hug"
+    },
+    {
+      "code": "050",
+      "ineCode": "08050",
+      "ineCodeWithCheck": "080500",
+      "checkDigit": "0",
+      "name": "Castellar del Riu",
+      "searchKey": "castellar del riu"
+    },
+    {
+      "code": "051",
+      "ineCode": "08051",
+      "ineCodeWithCheck": "080517",
+      "checkDigit": "7",
+      "name": "Castellar del Vallès",
+      "searchKey": "castellar del valles"
+    },
+    {
+      "code": "053",
+      "ineCode": "08053",
+      "ineCodeWithCheck": "080538",
+      "checkDigit": "8",
+      "name": "Castellbell i el Vilar",
+      "searchKey": "castellbell i el vilar"
+    },
+    {
+      "code": "054",
+      "ineCode": "08054",
+      "ineCodeWithCheck": "080543",
+      "checkDigit": "3",
+      "name": "Castellbisbal",
+      "searchKey": "castellbisbal"
+    },
+    {
+      "code": "055",
+      "ineCode": "08055",
+      "ineCodeWithCheck": "080556",
+      "checkDigit": "6",
+      "name": "Castellcir",
+      "searchKey": "castellcir"
+    },
+    {
+      "code": "056",
+      "ineCode": "08056",
+      "ineCodeWithCheck": "080569",
+      "checkDigit": "9",
+      "name": "Castelldefels",
+      "searchKey": "castelldefels"
+    },
+    {
+      "code": "058",
+      "ineCode": "08058",
+      "ineCodeWithCheck": "080581",
+      "checkDigit": "1",
+      "name": "Castellet i la Gornal",
+      "searchKey": "castellet i la gornal"
+    },
+    {
+      "code": "060",
+      "ineCode": "08060",
+      "ineCodeWithCheck": "080608",
+      "checkDigit": "8",
+      "name": "Castellfollit de Riubregós",
+      "searchKey": "castellfollit de riubregos"
+    },
+    {
+      "code": "059",
+      "ineCode": "08059",
+      "ineCodeWithCheck": "080594",
+      "checkDigit": "4",
+      "name": "Castellfollit del Boix",
+      "searchKey": "castellfollit del boix"
+    },
+    {
+      "code": "061",
+      "ineCode": "08061",
+      "ineCodeWithCheck": "080615",
+      "checkDigit": "5",
+      "name": "Castellgalí",
+      "searchKey": "castellgali"
+    },
+    {
+      "code": "062",
+      "ineCode": "08062",
+      "ineCodeWithCheck": "080620",
+      "checkDigit": "0",
+      "name": "Castellnou de Bages",
+      "searchKey": "castellnou de bages"
+    },
+    {
+      "code": "063",
+      "ineCode": "08063",
+      "ineCodeWithCheck": "080636",
+      "checkDigit": "6",
+      "name": "Castellolí",
+      "searchKey": "castelloli"
+    },
+    {
+      "code": "064",
+      "ineCode": "08064",
+      "ineCodeWithCheck": "080641",
+      "checkDigit": "1",
+      "name": "Castellterçol",
+      "searchKey": "castelltercol"
+    },
+    {
+      "code": "065",
+      "ineCode": "08065",
+      "ineCodeWithCheck": "080654",
+      "checkDigit": "4",
+      "name": "Castellví de la Marca",
+      "searchKey": "castellvi de la marca"
+    },
+    {
+      "code": "066",
+      "ineCode": "08066",
+      "ineCodeWithCheck": "080667",
+      "checkDigit": "7",
+      "name": "Castellví de Rosanes",
+      "searchKey": "castellvi de rosanes"
+    },
+    {
+      "code": "067",
+      "ineCode": "08067",
+      "ineCodeWithCheck": "080673",
+      "checkDigit": "3",
+      "name": "Centelles",
+      "searchKey": "centelles"
+    },
+    {
+      "code": "268",
+      "ineCode": "08268",
+      "ineCodeWithCheck": "082687",
+      "checkDigit": "7",
+      "name": "Cercs",
+      "searchKey": "cercs"
+    },
+    {
+      "code": "266",
+      "ineCode": "08266",
+      "ineCodeWithCheck": "082665",
+      "checkDigit": "5",
+      "name": "Cerdanyola del Vallès",
+      "searchKey": "cerdanyola del valles"
+    },
+    {
+      "code": "068",
+      "ineCode": "08068",
+      "ineCodeWithCheck": "080689",
+      "checkDigit": "9",
+      "name": "Cervelló",
+      "searchKey": "cervello"
+    },
+    {
+      "code": "069",
+      "ineCode": "08069",
+      "ineCodeWithCheck": "080692",
+      "checkDigit": "2",
+      "name": "Collbató",
+      "searchKey": "collbato"
+    },
+    {
+      "code": "070",
+      "ineCode": "08070",
+      "ineCodeWithCheck": "080706",
+      "checkDigit": "6",
+      "name": "Collsuspina",
+      "searchKey": "collsuspina"
+    },
+    {
+      "code": "071",
+      "ineCode": "08071",
+      "ineCodeWithCheck": "080713",
+      "checkDigit": "3",
+      "name": "Copons",
+      "searchKey": "copons"
+    },
+    {
+      "code": "072",
+      "ineCode": "08072",
+      "ineCodeWithCheck": "080728",
+      "checkDigit": "8",
+      "name": "Corbera de Llobregat",
+      "searchKey": "corbera de llobregat"
+    },
+    {
+      "code": "073",
+      "ineCode": "08073",
+      "ineCodeWithCheck": "080734",
+      "checkDigit": "4",
+      "name": "Cornellà de Llobregat",
+      "searchKey": "cornella de llobregat"
+    },
+    {
+      "code": "074",
+      "ineCode": "08074",
+      "ineCodeWithCheck": "080749",
+      "checkDigit": "9",
+      "name": "Cubelles",
+      "searchKey": "cubelles"
+    },
+    {
+      "code": "075",
+      "ineCode": "08075",
+      "ineCodeWithCheck": "080752",
+      "checkDigit": "2",
+      "name": "Dosrius",
+      "searchKey": "dosrius"
+    },
+    {
+      "code": "076",
+      "ineCode": "08076",
+      "ineCodeWithCheck": "080765",
+      "checkDigit": "5",
+      "name": "Esparreguera",
+      "searchKey": "esparreguera"
+    },
+    {
+      "code": "077",
+      "ineCode": "08077",
+      "ineCodeWithCheck": "080771",
+      "checkDigit": "1",
+      "name": "Esplugues de Llobregat",
+      "searchKey": "esplugues de llobregat"
+    },
+    {
+      "code": "078",
+      "ineCode": "08078",
+      "ineCodeWithCheck": "080787",
+      "checkDigit": "7",
+      "name": "Espunyola, L'",
+      "searchKey": "espunyola l"
+    },
+    {
+      "code": "254",
+      "ineCode": "08254",
+      "ineCodeWithCheck": "082541",
+      "checkDigit": "1",
+      "name": "Esquirol, L'",
+      "searchKey": "esquirol l"
+    },
+    {
+      "code": "079",
+      "ineCode": "08079",
+      "ineCodeWithCheck": "080790",
+      "checkDigit": "0",
+      "name": "Estany, L'",
+      "searchKey": "estany l"
+    },
+    {
+      "code": "134",
+      "ineCode": "08134",
+      "ineCodeWithCheck": "081347",
+      "checkDigit": "7",
+      "name": "Figaró-Montmany",
+      "searchKey": "figaro montmany"
+    },
+    {
+      "code": "080",
+      "ineCode": "08080",
+      "ineCodeWithCheck": "080804",
+      "checkDigit": "4",
+      "name": "Fígols",
+      "searchKey": "figols"
+    },
+    {
+      "code": "082",
+      "ineCode": "08082",
+      "ineCodeWithCheck": "080826",
+      "checkDigit": "6",
+      "name": "Fogars de la Selva",
+      "searchKey": "fogars de la selva"
+    },
+    {
+      "code": "081",
+      "ineCode": "08081",
+      "ineCodeWithCheck": "080811",
+      "checkDigit": "1",
+      "name": "Fogars de Montclús",
+      "searchKey": "fogars de montclus"
+    },
+    {
+      "code": "083",
+      "ineCode": "08083",
+      "ineCodeWithCheck": "080832",
+      "checkDigit": "2",
+      "name": "Folgueroles",
+      "searchKey": "folgueroles"
+    },
+    {
+      "code": "084",
+      "ineCode": "08084",
+      "ineCodeWithCheck": "080847",
+      "checkDigit": "7",
+      "name": "Fonollosa",
+      "searchKey": "fonollosa"
+    },
+    {
+      "code": "085",
+      "ineCode": "08085",
+      "ineCodeWithCheck": "080850",
+      "checkDigit": "0",
+      "name": "Font-rubí",
+      "searchKey": "font rubi"
+    },
+    {
+      "code": "086",
+      "ineCode": "08086",
+      "ineCodeWithCheck": "080863",
+      "checkDigit": "3",
+      "name": "Franqueses del Vallès, Les",
+      "searchKey": "franqueses del valles les"
+    },
+    {
+      "code": "090",
+      "ineCode": "08090",
+      "ineCodeWithCheck": "080902",
+      "checkDigit": "2",
+      "name": "Gaià",
+      "searchKey": "gaia"
+    },
+    {
+      "code": "087",
+      "ineCode": "08087",
+      "ineCodeWithCheck": "080879",
+      "checkDigit": "9",
+      "name": "Gallifa",
+      "searchKey": "gallifa"
+    },
+    {
+      "code": "088",
+      "ineCode": "08088",
+      "ineCodeWithCheck": "080885",
+      "checkDigit": "5",
+      "name": "Garriga, La",
+      "searchKey": "garriga la"
+    },
+    {
+      "code": "089",
+      "ineCode": "08089",
+      "ineCodeWithCheck": "080898",
+      "checkDigit": "8",
+      "name": "Gavà",
+      "searchKey": "gava"
+    },
+    {
+      "code": "091",
+      "ineCode": "08091",
+      "ineCodeWithCheck": "080919",
+      "checkDigit": "9",
+      "name": "Gelida",
+      "searchKey": "gelida"
+    },
+    {
+      "code": "092",
+      "ineCode": "08092",
+      "ineCodeWithCheck": "080924",
+      "checkDigit": "4",
+      "name": "Gironella",
+      "searchKey": "gironella"
+    },
+    {
+      "code": "093",
+      "ineCode": "08093",
+      "ineCodeWithCheck": "080930",
+      "checkDigit": "0",
+      "name": "Gisclareny",
+      "searchKey": "gisclareny"
+    },
+    {
+      "code": "094",
+      "ineCode": "08094",
+      "ineCodeWithCheck": "080945",
+      "checkDigit": "5",
+      "name": "Granada, La",
+      "searchKey": "granada la"
+    },
+    {
+      "code": "095",
+      "ineCode": "08095",
+      "ineCodeWithCheck": "080958",
+      "checkDigit": "8",
+      "name": "Granera",
+      "searchKey": "granera"
+    },
+    {
+      "code": "096",
+      "ineCode": "08096",
+      "ineCodeWithCheck": "080961",
+      "checkDigit": "1",
+      "name": "Granollers",
+      "searchKey": "granollers"
+    },
+    {
+      "code": "097",
+      "ineCode": "08097",
+      "ineCodeWithCheck": "080977",
+      "checkDigit": "7",
+      "name": "Gualba",
+      "searchKey": "gualba"
+    },
+    {
+      "code": "099",
+      "ineCode": "08099",
+      "ineCodeWithCheck": "080996",
+      "checkDigit": "6",
+      "name": "Guardiola de Berguedà",
+      "searchKey": "guardiola de bergueda"
+    },
+    {
+      "code": "100",
+      "ineCode": "08100",
+      "ineCodeWithCheck": "081000",
+      "checkDigit": "0",
+      "name": "Gurb",
+      "searchKey": "gurb"
+    },
+    {
+      "code": "101",
+      "ineCode": "08101",
+      "ineCodeWithCheck": "081017",
+      "checkDigit": "7",
+      "name": "Hospitalet de Llobregat, L'",
+      "searchKey": "hospitalet de llobregat l"
+    },
+    {
+      "code": "162",
+      "ineCode": "08162",
+      "ineCodeWithCheck": "081629",
+      "checkDigit": "9",
+      "name": "Hostalets de Pierola, Els",
+      "searchKey": "hostalets de pierola els"
+    },
+    {
+      "code": "102",
+      "ineCode": "08102",
+      "ineCodeWithCheck": "081022",
+      "checkDigit": "2",
+      "name": "Igualada",
+      "searchKey": "igualada"
+    },
+    {
+      "code": "103",
+      "ineCode": "08103",
+      "ineCodeWithCheck": "081038",
+      "checkDigit": "8",
+      "name": "Jorba",
+      "searchKey": "jorba"
+    },
+    {
+      "code": "104",
+      "ineCode": "08104",
+      "ineCodeWithCheck": "081043",
+      "checkDigit": "3",
+      "name": "Llacuna, La",
+      "searchKey": "llacuna la"
+    },
+    {
+      "code": "105",
+      "ineCode": "08105",
+      "ineCodeWithCheck": "081056",
+      "checkDigit": "6",
+      "name": "Llagosta, La",
+      "searchKey": "llagosta la"
+    },
+    {
+      "code": "107",
+      "ineCode": "08107",
+      "ineCodeWithCheck": "081075",
+      "checkDigit": "5",
+      "name": "Lliçà d'Amunt",
+      "searchKey": "llica d amunt"
+    },
+    {
+      "code": "108",
+      "ineCode": "08108",
+      "ineCodeWithCheck": "081081",
+      "checkDigit": "1",
+      "name": "Lliçà de Vall",
+      "searchKey": "llica de vall"
+    },
+    {
+      "code": "106",
+      "ineCode": "08106",
+      "ineCodeWithCheck": "081069",
+      "checkDigit": "9",
+      "name": "Llinars del Vallès",
+      "searchKey": "llinars del valles"
+    },
+    {
+      "code": "109",
+      "ineCode": "08109",
+      "ineCodeWithCheck": "081094",
+      "checkDigit": "4",
+      "name": "Lluçà",
+      "searchKey": "lluca"
+    },
+    {
+      "code": "110",
+      "ineCode": "08110",
+      "ineCodeWithCheck": "081108",
+      "checkDigit": "8",
+      "name": "Malgrat de Mar",
+      "searchKey": "malgrat de mar"
+    },
+    {
+      "code": "111",
+      "ineCode": "08111",
+      "ineCodeWithCheck": "081115",
+      "checkDigit": "5",
+      "name": "Malla",
+      "searchKey": "malla"
+    },
+    {
+      "code": "112",
+      "ineCode": "08112",
+      "ineCodeWithCheck": "081120",
+      "checkDigit": "0",
+      "name": "Manlleu",
+      "searchKey": "manlleu"
+    },
+    {
+      "code": "113",
+      "ineCode": "08113",
+      "ineCodeWithCheck": "081136",
+      "checkDigit": "6",
+      "name": "Manresa",
+      "searchKey": "manresa"
+    },
+    {
+      "code": "242",
+      "ineCode": "08242",
+      "ineCodeWithCheck": "082423",
+      "checkDigit": "3",
+      "name": "Marganell",
+      "searchKey": "marganell"
+    },
+    {
+      "code": "114",
+      "ineCode": "08114",
+      "ineCodeWithCheck": "081141",
+      "checkDigit": "1",
+      "name": "Martorell",
+      "searchKey": "martorell"
+    },
+    {
+      "code": "115",
+      "ineCode": "08115",
+      "ineCodeWithCheck": "081154",
+      "checkDigit": "4",
+      "name": "Martorelles",
+      "searchKey": "martorelles"
+    },
+    {
+      "code": "116",
+      "ineCode": "08116",
+      "ineCodeWithCheck": "081167",
+      "checkDigit": "7",
+      "name": "Masies de Roda, Les",
+      "searchKey": "masies de roda les"
+    },
+    {
+      "code": "117",
+      "ineCode": "08117",
+      "ineCodeWithCheck": "081173",
+      "checkDigit": "3",
+      "name": "Masies de Voltregà, Les",
+      "searchKey": "masies de voltrega les"
+    },
+    {
+      "code": "118",
+      "ineCode": "08118",
+      "ineCodeWithCheck": "081189",
+      "checkDigit": "9",
+      "name": "Masnou, El",
+      "searchKey": "masnou el"
+    },
+    {
+      "code": "119",
+      "ineCode": "08119",
+      "ineCodeWithCheck": "081192",
+      "checkDigit": "2",
+      "name": "Masquefa",
+      "searchKey": "masquefa"
+    },
+    {
+      "code": "120",
+      "ineCode": "08120",
+      "ineCodeWithCheck": "081206",
+      "checkDigit": "6",
+      "name": "Matadepera",
+      "searchKey": "matadepera"
+    },
+    {
+      "code": "121",
+      "ineCode": "08121",
+      "ineCodeWithCheck": "081213",
+      "checkDigit": "3",
+      "name": "Mataró",
+      "searchKey": "mataro"
+    },
+    {
+      "code": "122",
+      "ineCode": "08122",
+      "ineCodeWithCheck": "081228",
+      "checkDigit": "8",
+      "name": "Mediona",
+      "searchKey": "mediona"
+    },
+    {
+      "code": "138",
+      "ineCode": "08138",
+      "ineCodeWithCheck": "081385",
+      "checkDigit": "5",
+      "name": "Moià",
+      "searchKey": "moia"
+    },
+    {
+      "code": "123",
+      "ineCode": "08123",
+      "ineCodeWithCheck": "081234",
+      "checkDigit": "4",
+      "name": "Molins de Rei",
+      "searchKey": "molins de rei"
+    },
+    {
+      "code": "124",
+      "ineCode": "08124",
+      "ineCodeWithCheck": "081249",
+      "checkDigit": "9",
+      "name": "Mollet del Vallès",
+      "searchKey": "mollet del valles"
+    },
+    {
+      "code": "128",
+      "ineCode": "08128",
+      "ineCodeWithCheck": "081287",
+      "checkDigit": "7",
+      "name": "Monistrol de Calders",
+      "searchKey": "monistrol de calders"
+    },
+    {
+      "code": "127",
+      "ineCode": "08127",
+      "ineCodeWithCheck": "081271",
+      "checkDigit": "1",
+      "name": "Monistrol de Montserrat",
+      "searchKey": "monistrol de montserrat"
+    },
+    {
+      "code": "125",
+      "ineCode": "08125",
+      "ineCodeWithCheck": "081252",
+      "checkDigit": "2",
+      "name": "Montcada i Reixac",
+      "searchKey": "montcada i reixac"
+    },
+    {
+      "code": "130",
+      "ineCode": "08130",
+      "ineCodeWithCheck": "081304",
+      "checkDigit": "4",
+      "name": "Montclar",
+      "searchKey": "montclar"
+    },
+    {
+      "code": "131",
+      "ineCode": "08131",
+      "ineCodeWithCheck": "081311",
+      "checkDigit": "1",
+      "name": "Montesquiu",
+      "searchKey": "montesquiu"
+    },
+    {
+      "code": "126",
+      "ineCode": "08126",
+      "ineCodeWithCheck": "081265",
+      "checkDigit": "5",
+      "name": "Montgat",
+      "searchKey": "montgat"
+    },
+    {
+      "code": "132",
+      "ineCode": "08132",
+      "ineCodeWithCheck": "081326",
+      "checkDigit": "6",
+      "name": "Montmajor",
+      "searchKey": "montmajor"
+    },
+    {
+      "code": "133",
+      "ineCode": "08133",
+      "ineCodeWithCheck": "081332",
+      "checkDigit": "2",
+      "name": "Montmaneu",
+      "searchKey": "montmaneu"
+    },
+    {
+      "code": "135",
+      "ineCode": "08135",
+      "ineCodeWithCheck": "081350",
+      "checkDigit": "0",
+      "name": "Montmeló",
+      "searchKey": "montmelo"
+    },
+    {
+      "code": "136",
+      "ineCode": "08136",
+      "ineCodeWithCheck": "081363",
+      "checkDigit": "3",
+      "name": "Montornès del Vallès",
+      "searchKey": "montornes del valles"
+    },
+    {
+      "code": "137",
+      "ineCode": "08137",
+      "ineCodeWithCheck": "081379",
+      "checkDigit": "9",
+      "name": "Montseny",
+      "searchKey": "montseny"
+    },
+    {
+      "code": "129",
+      "ineCode": "08129",
+      "ineCodeWithCheck": "081290",
+      "checkDigit": "0",
+      "name": "Muntanyola",
+      "searchKey": "muntanyola"
+    },
+    {
+      "code": "139",
+      "ineCode": "08139",
+      "ineCodeWithCheck": "081398",
+      "checkDigit": "8",
+      "name": "Mura",
+      "searchKey": "mura"
+    },
+    {
+      "code": "140",
+      "ineCode": "08140",
+      "ineCodeWithCheck": "081402",
+      "checkDigit": "2",
+      "name": "Navarcles",
+      "searchKey": "navarcles"
+    },
+    {
+      "code": "141",
+      "ineCode": "08141",
+      "ineCodeWithCheck": "081419",
+      "checkDigit": "9",
+      "name": "Navàs",
+      "searchKey": "navas"
+    },
+    {
+      "code": "142",
+      "ineCode": "08142",
+      "ineCodeWithCheck": "081424",
+      "checkDigit": "4",
+      "name": "Nou de Berguedà, La",
+      "searchKey": "nou de bergueda la"
+    },
+    {
+      "code": "143",
+      "ineCode": "08143",
+      "ineCodeWithCheck": "081430",
+      "checkDigit": "0",
+      "name": "Òdena",
+      "searchKey": "odena"
+    },
+    {
+      "code": "145",
+      "ineCode": "08145",
+      "ineCodeWithCheck": "081458",
+      "checkDigit": "8",
+      "name": "Olèrdola",
+      "searchKey": "olerdola"
+    },
+    {
+      "code": "146",
+      "ineCode": "08146",
+      "ineCodeWithCheck": "081461",
+      "checkDigit": "1",
+      "name": "Olesa de Bonesvalls",
+      "searchKey": "olesa de bonesvalls"
+    },
+    {
+      "code": "147",
+      "ineCode": "08147",
+      "ineCodeWithCheck": "081477",
+      "checkDigit": "7",
+      "name": "Olesa de Montserrat",
+      "searchKey": "olesa de montserrat"
+    },
+    {
+      "code": "148",
+      "ineCode": "08148",
+      "ineCodeWithCheck": "081483",
+      "checkDigit": "3",
+      "name": "Olivella",
+      "searchKey": "olivella"
+    },
+    {
+      "code": "149",
+      "ineCode": "08149",
+      "ineCodeWithCheck": "081496",
+      "checkDigit": "6",
+      "name": "Olost",
+      "searchKey": "olost"
+    },
+    {
+      "code": "144",
+      "ineCode": "08144",
+      "ineCodeWithCheck": "081445",
+      "checkDigit": "5",
+      "name": "Olvan",
+      "searchKey": "olvan"
+    },
+    {
+      "code": "150",
+      "ineCode": "08150",
+      "ineCodeWithCheck": "081509",
+      "checkDigit": "9",
+      "name": "Orís",
+      "searchKey": "oris"
+    },
+    {
+      "code": "151",
+      "ineCode": "08151",
+      "ineCodeWithCheck": "081516",
+      "checkDigit": "6",
+      "name": "Oristà",
+      "searchKey": "orista"
+    },
+    {
+      "code": "152",
+      "ineCode": "08152",
+      "ineCodeWithCheck": "081521",
+      "checkDigit": "1",
+      "name": "Orpí",
+      "searchKey": "orpi"
+    },
+    {
+      "code": "153",
+      "ineCode": "08153",
+      "ineCodeWithCheck": "081537",
+      "checkDigit": "7",
+      "name": "Òrrius",
+      "searchKey": "orrius"
+    },
+    {
+      "code": "154",
+      "ineCode": "08154",
+      "ineCodeWithCheck": "081542",
+      "checkDigit": "2",
+      "name": "Pacs del Penedès",
+      "searchKey": "pacs del penedes"
+    },
+    {
+      "code": "155",
+      "ineCode": "08155",
+      "ineCodeWithCheck": "081555",
+      "checkDigit": "5",
+      "name": "Palafolls",
+      "searchKey": "palafolls"
+    },
+    {
+      "code": "156",
+      "ineCode": "08156",
+      "ineCodeWithCheck": "081568",
+      "checkDigit": "8",
+      "name": "Palau-solità i Plegamans",
+      "searchKey": "palau solita i plegamans"
+    },
+    {
+      "code": "157",
+      "ineCode": "08157",
+      "ineCodeWithCheck": "081574",
+      "checkDigit": "4",
+      "name": "Pallejà",
+      "searchKey": "palleja"
+    },
+    {
+      "code": "905",
+      "ineCode": "08905",
+      "ineCodeWithCheck": "089058",
+      "checkDigit": "8",
+      "name": "Palma de Cervelló, La",
+      "searchKey": "palma de cervello la"
+    },
+    {
+      "code": "158",
+      "ineCode": "08158",
+      "ineCodeWithCheck": "081580",
+      "checkDigit": "0",
+      "name": "Papiol, El",
+      "searchKey": "papiol el"
+    },
+    {
+      "code": "159",
+      "ineCode": "08159",
+      "ineCodeWithCheck": "081593",
+      "checkDigit": "3",
+      "name": "Parets del Vallès",
+      "searchKey": "parets del valles"
+    },
+    {
+      "code": "160",
+      "ineCode": "08160",
+      "ineCodeWithCheck": "081607",
+      "checkDigit": "7",
+      "name": "Perafita",
+      "searchKey": "perafita"
+    },
+    {
+      "code": "161",
+      "ineCode": "08161",
+      "ineCodeWithCheck": "081614",
+      "checkDigit": "4",
+      "name": "Piera",
+      "searchKey": "piera"
+    },
+    {
+      "code": "163",
+      "ineCode": "08163",
+      "ineCodeWithCheck": "081635",
+      "checkDigit": "5",
+      "name": "Pineda de Mar",
+      "searchKey": "pineda de mar"
+    },
+    {
+      "code": "164",
+      "ineCode": "08164",
+      "ineCodeWithCheck": "081640",
+      "checkDigit": "0",
+      "name": "Pla del Penedès, El",
+      "searchKey": "pla del penedes el"
+    },
+    {
+      "code": "165",
+      "ineCode": "08165",
+      "ineCodeWithCheck": "081653",
+      "checkDigit": "3",
+      "name": "Pobla de Claramunt, La",
+      "searchKey": "pobla de claramunt la"
+    },
+    {
+      "code": "166",
+      "ineCode": "08166",
+      "ineCodeWithCheck": "081666",
+      "checkDigit": "6",
+      "name": "Pobla de Lillet, La",
+      "searchKey": "pobla de lillet la"
+    },
+    {
+      "code": "167",
+      "ineCode": "08167",
+      "ineCodeWithCheck": "081672",
+      "checkDigit": "2",
+      "name": "Polinyà",
+      "searchKey": "polinya"
+    },
+    {
+      "code": "182",
+      "ineCode": "08182",
+      "ineCodeWithCheck": "081825",
+      "checkDigit": "5",
+      "name": "Pont de Vilomara i Rocafort, El",
+      "searchKey": "pont de vilomara i rocafort el"
+    },
+    {
+      "code": "168",
+      "ineCode": "08168",
+      "ineCodeWithCheck": "081688",
+      "checkDigit": "8",
+      "name": "Pontons",
+      "searchKey": "pontons"
+    },
+    {
+      "code": "169",
+      "ineCode": "08169",
+      "ineCodeWithCheck": "081691",
+      "checkDigit": "1",
+      "name": "Prat de Llobregat, El",
+      "searchKey": "prat de llobregat el"
+    },
+    {
+      "code": "171",
+      "ineCode": "08171",
+      "ineCodeWithCheck": "081712",
+      "checkDigit": "2",
+      "name": "Prats de Lluçanès",
+      "searchKey": "prats de llucanes"
+    },
+    {
+      "code": "170",
+      "ineCode": "08170",
+      "ineCodeWithCheck": "081705",
+      "checkDigit": "5",
+      "name": "Prats de Rei, Els",
+      "searchKey": "prats de rei els"
+    },
+    {
+      "code": "230",
+      "ineCode": "08230",
+      "ineCodeWithCheck": "082303",
+      "checkDigit": "3",
+      "name": "Premià de Dalt",
+      "searchKey": "premia de dalt"
+    },
+    {
+      "code": "172",
+      "ineCode": "08172",
+      "ineCodeWithCheck": "081727",
+      "checkDigit": "7",
+      "name": "Premià de Mar",
+      "searchKey": "premia de mar"
+    },
+    {
+      "code": "175",
+      "ineCode": "08175",
+      "ineCodeWithCheck": "081751",
+      "checkDigit": "1",
+      "name": "Puig-reig",
+      "searchKey": "puig reig"
+    },
+    {
+      "code": "174",
+      "ineCode": "08174",
+      "ineCodeWithCheck": "081748",
+      "checkDigit": "8",
+      "name": "Puigdàlber",
+      "searchKey": "puigdalber"
+    },
+    {
+      "code": "176",
+      "ineCode": "08176",
+      "ineCodeWithCheck": "081764",
+      "checkDigit": "4",
+      "name": "Pujalt",
+      "searchKey": "pujalt"
+    },
+    {
+      "code": "177",
+      "ineCode": "08177",
+      "ineCodeWithCheck": "081770",
+      "checkDigit": "0",
+      "name": "Quar, La",
+      "searchKey": "quar la"
+    },
+    {
+      "code": "178",
+      "ineCode": "08178",
+      "ineCodeWithCheck": "081786",
+      "checkDigit": "6",
+      "name": "Rajadell",
+      "searchKey": "rajadell"
+    },
+    {
+      "code": "179",
+      "ineCode": "08179",
+      "ineCodeWithCheck": "081799",
+      "checkDigit": "9",
+      "name": "Rellinars",
+      "searchKey": "rellinars"
+    },
+    {
+      "code": "180",
+      "ineCode": "08180",
+      "ineCodeWithCheck": "081803",
+      "checkDigit": "3",
+      "name": "Ripollet",
+      "searchKey": "ripollet"
+    },
+    {
+      "code": "181",
+      "ineCode": "08181",
+      "ineCodeWithCheck": "081810",
+      "checkDigit": "0",
+      "name": "Roca del Vallès, La",
+      "searchKey": "roca del valles la"
+    },
+    {
+      "code": "183",
+      "ineCode": "08183",
+      "ineCodeWithCheck": "081831",
+      "checkDigit": "1",
+      "name": "Roda de Ter",
+      "searchKey": "roda de ter"
+    },
+    {
+      "code": "184",
+      "ineCode": "08184",
+      "ineCodeWithCheck": "081846",
+      "checkDigit": "6",
+      "name": "Rubí",
+      "searchKey": "rubi"
+    },
+    {
+      "code": "185",
+      "ineCode": "08185",
+      "ineCodeWithCheck": "081859",
+      "checkDigit": "9",
+      "name": "Rubió",
+      "searchKey": "rubio"
+    },
+    {
+      "code": "901",
+      "ineCode": "08901",
+      "ineCodeWithCheck": "089019",
+      "checkDigit": "9",
+      "name": "Rupit i Pruit",
+      "searchKey": "rupit i pruit"
+    },
+    {
+      "code": "187",
+      "ineCode": "08187",
+      "ineCodeWithCheck": "081878",
+      "checkDigit": "8",
+      "name": "Sabadell",
+      "searchKey": "sabadell"
+    },
+    {
+      "code": "188",
+      "ineCode": "08188",
+      "ineCodeWithCheck": "081884",
+      "checkDigit": "4",
+      "name": "Sagàs",
+      "searchKey": "sagas"
+    },
+    {
+      "code": "190",
+      "ineCode": "08190",
+      "ineCodeWithCheck": "081901",
+      "checkDigit": "1",
+      "name": "Saldes",
+      "searchKey": "saldes"
+    },
+    {
+      "code": "191",
+      "ineCode": "08191",
+      "ineCodeWithCheck": "081918",
+      "checkDigit": "8",
+      "name": "Sallent",
+      "searchKey": "sallent"
+    },
+    {
+      "code": "194",
+      "ineCode": "08194",
+      "ineCodeWithCheck": "081944",
+      "checkDigit": "4",
+      "name": "Sant Adrià de Besòs",
+      "searchKey": "sant adria de besos"
+    },
+    {
+      "code": "195",
+      "ineCode": "08195",
+      "ineCodeWithCheck": "081957",
+      "checkDigit": "7",
+      "name": "Sant Agustí de Lluçanès",
+      "searchKey": "sant agusti de llucanes"
+    },
+    {
+      "code": "196",
+      "ineCode": "08196",
+      "ineCodeWithCheck": "081960",
+      "checkDigit": "0",
+      "name": "Sant Andreu de la Barca",
+      "searchKey": "sant andreu de la barca"
+    },
+    {
+      "code": "197",
+      "ineCode": "08197",
+      "ineCodeWithCheck": "081976",
+      "checkDigit": "6",
+      "name": "Sant Andreu de Llavaneres",
+      "searchKey": "sant andreu de llavaneres"
+    },
+    {
+      "code": "198",
+      "ineCode": "08198",
+      "ineCodeWithCheck": "081982",
+      "checkDigit": "2",
+      "name": "Sant Antoni de Vilamajor",
+      "searchKey": "sant antoni de vilamajor"
+    },
+    {
+      "code": "199",
+      "ineCode": "08199",
+      "ineCodeWithCheck": "081995",
+      "checkDigit": "5",
+      "name": "Sant Bartomeu del Grau",
+      "searchKey": "sant bartomeu del grau"
+    },
+    {
+      "code": "200",
+      "ineCode": "08200",
+      "ineCodeWithCheck": "082009",
+      "checkDigit": "9",
+      "name": "Sant Boi de Llobregat",
+      "searchKey": "sant boi de llobregat"
+    },
+    {
+      "code": "201",
+      "ineCode": "08201",
+      "ineCodeWithCheck": "082016",
+      "checkDigit": "6",
+      "name": "Sant Boi de Lluçanès",
+      "searchKey": "sant boi de llucanes"
+    },
+    {
+      "code": "203",
+      "ineCode": "08203",
+      "ineCodeWithCheck": "082037",
+      "checkDigit": "7",
+      "name": "Sant Cebrià de Vallalta",
+      "searchKey": "sant cebria de vallalta"
+    },
+    {
+      "code": "202",
+      "ineCode": "08202",
+      "ineCodeWithCheck": "082021",
+      "checkDigit": "1",
+      "name": "Sant Celoni",
+      "searchKey": "sant celoni"
+    },
+    {
+      "code": "204",
+      "ineCode": "08204",
+      "ineCodeWithCheck": "082042",
+      "checkDigit": "2",
+      "name": "Sant Climent de Llobregat",
+      "searchKey": "sant climent de llobregat"
+    },
+    {
+      "code": "205",
+      "ineCode": "08205",
+      "ineCodeWithCheck": "082055",
+      "checkDigit": "5",
+      "name": "Sant Cugat del Vallès",
+      "searchKey": "sant cugat del valles"
+    },
+    {
+      "code": "206",
+      "ineCode": "08206",
+      "ineCodeWithCheck": "082068",
+      "checkDigit": "8",
+      "name": "Sant Cugat Sesgarrigues",
+      "searchKey": "sant cugat sesgarrigues"
+    },
+    {
+      "code": "207",
+      "ineCode": "08207",
+      "ineCodeWithCheck": "082074",
+      "checkDigit": "4",
+      "name": "Sant Esteve de Palautordera",
+      "searchKey": "sant esteve de palautordera"
+    },
+    {
+      "code": "208",
+      "ineCode": "08208",
+      "ineCodeWithCheck": "082080",
+      "checkDigit": "0",
+      "name": "Sant Esteve Sesrovires",
+      "searchKey": "sant esteve sesrovires"
+    },
+    {
+      "code": "210",
+      "ineCode": "08210",
+      "ineCodeWithCheck": "082107",
+      "checkDigit": "7",
+      "name": "Sant Feliu de Codines",
+      "searchKey": "sant feliu de codines"
+    },
+    {
+      "code": "211",
+      "ineCode": "08211",
+      "ineCodeWithCheck": "082114",
+      "checkDigit": "4",
+      "name": "Sant Feliu de Llobregat",
+      "searchKey": "sant feliu de llobregat"
+    },
+    {
+      "code": "212",
+      "ineCode": "08212",
+      "ineCodeWithCheck": "082129",
+      "checkDigit": "9",
+      "name": "Sant Feliu Sasserra",
+      "searchKey": "sant feliu sasserra"
+    },
+    {
+      "code": "209",
+      "ineCode": "08209",
+      "ineCodeWithCheck": "082093",
+      "checkDigit": "3",
+      "name": "Sant Fost de Campsentelles",
+      "searchKey": "sant fost de campsentelles"
+    },
+    {
+      "code": "213",
+      "ineCode": "08213",
+      "ineCodeWithCheck": "082135",
+      "checkDigit": "5",
+      "name": "Sant Fruitós de Bages",
+      "searchKey": "sant fruitos de bages"
+    },
+    {
+      "code": "215",
+      "ineCode": "08215",
+      "ineCodeWithCheck": "082153",
+      "checkDigit": "3",
+      "name": "Sant Hipòlit de Voltregà",
+      "searchKey": "sant hipolit de voltrega"
+    },
+    {
+      "code": "193",
+      "ineCode": "08193",
+      "ineCodeWithCheck": "081939",
+      "checkDigit": "9",
+      "name": "Sant Iscle de Vallalta",
+      "searchKey": "sant iscle de vallalta"
+    },
+    {
+      "code": "216",
+      "ineCode": "08216",
+      "ineCodeWithCheck": "082166",
+      "checkDigit": "6",
+      "name": "Sant Jaume de Frontanyà",
+      "searchKey": "sant jaume de frontanya"
+    },
+    {
+      "code": "218",
+      "ineCode": "08218",
+      "ineCodeWithCheck": "082188",
+      "checkDigit": "8",
+      "name": "Sant Joan de Vilatorrada",
+      "searchKey": "sant joan de vilatorrada"
+    },
+    {
+      "code": "217",
+      "ineCode": "08217",
+      "ineCodeWithCheck": "082172",
+      "checkDigit": "2",
+      "name": "Sant Joan Despí",
+      "searchKey": "sant joan despi"
+    },
+    {
+      "code": "903",
+      "ineCode": "08903",
+      "ineCodeWithCheck": "089030",
+      "checkDigit": "0",
+      "name": "Sant Julià de Cerdanyola",
+      "searchKey": "sant julia de cerdanyola"
+    },
+    {
+      "code": "220",
+      "ineCode": "08220",
+      "ineCodeWithCheck": "082205",
+      "checkDigit": "5",
+      "name": "Sant Julià de Vilatorta",
+      "searchKey": "sant julia de vilatorta"
+    },
+    {
+      "code": "221",
+      "ineCode": "08221",
+      "ineCodeWithCheck": "082212",
+      "checkDigit": "2",
+      "name": "Sant Just Desvern",
+      "searchKey": "sant just desvern"
+    },
+    {
+      "code": "222",
+      "ineCode": "08222",
+      "ineCodeWithCheck": "082227",
+      "checkDigit": "7",
+      "name": "Sant Llorenç d'Hortons",
+      "searchKey": "sant llorenc d hortons"
+    },
+    {
+      "code": "223",
+      "ineCode": "08223",
+      "ineCodeWithCheck": "082233",
+      "checkDigit": "3",
+      "name": "Sant Llorenç Savall",
+      "searchKey": "sant llorenc savall"
+    },
+    {
+      "code": "225",
+      "ineCode": "08225",
+      "ineCodeWithCheck": "082251",
+      "checkDigit": "1",
+      "name": "Sant Martí d'Albars",
+      "searchKey": "sant marti d albars"
+    },
+    {
+      "code": "224",
+      "ineCode": "08224",
+      "ineCodeWithCheck": "082248",
+      "checkDigit": "8",
+      "name": "Sant Martí de Centelles",
+      "searchKey": "sant marti de centelles"
+    },
+    {
+      "code": "226",
+      "ineCode": "08226",
+      "ineCodeWithCheck": "082264",
+      "checkDigit": "4",
+      "name": "Sant Martí de Tous",
+      "searchKey": "sant marti de tous"
+    },
+    {
+      "code": "227",
+      "ineCode": "08227",
+      "ineCodeWithCheck": "082270",
+      "checkDigit": "0",
+      "name": "Sant Martí Sarroca",
+      "searchKey": "sant marti sarroca"
+    },
+    {
+      "code": "228",
+      "ineCode": "08228",
+      "ineCodeWithCheck": "082286",
+      "checkDigit": "6",
+      "name": "Sant Martí Sesgueioles",
+      "searchKey": "sant marti sesgueioles"
+    },
+    {
+      "code": "229",
+      "ineCode": "08229",
+      "ineCodeWithCheck": "082299",
+      "checkDigit": "9",
+      "name": "Sant Mateu de Bages",
+      "searchKey": "sant mateu de bages"
+    },
+    {
+      "code": "231",
+      "ineCode": "08231",
+      "ineCodeWithCheck": "082310",
+      "checkDigit": "0",
+      "name": "Sant Pere de Ribes",
+      "searchKey": "sant pere de ribes"
+    },
+    {
+      "code": "232",
+      "ineCode": "08232",
+      "ineCodeWithCheck": "082325",
+      "checkDigit": "5",
+      "name": "Sant Pere de Riudebitlles",
+      "searchKey": "sant pere de riudebitlles"
+    },
+    {
+      "code": "233",
+      "ineCode": "08233",
+      "ineCodeWithCheck": "082331",
+      "checkDigit": "1",
+      "name": "Sant Pere de Torelló",
+      "searchKey": "sant pere de torello"
+    },
+    {
+      "code": "234",
+      "ineCode": "08234",
+      "ineCodeWithCheck": "082346",
+      "checkDigit": "6",
+      "name": "Sant Pere de Vilamajor",
+      "searchKey": "sant pere de vilamajor"
+    },
+    {
+      "code": "189",
+      "ineCode": "08189",
+      "ineCodeWithCheck": "081897",
+      "checkDigit": "7",
+      "name": "Sant Pere Sallavinera",
+      "searchKey": "sant pere sallavinera"
+    },
+    {
+      "code": "235",
+      "ineCode": "08235",
+      "ineCodeWithCheck": "082359",
+      "checkDigit": "9",
+      "name": "Sant Pol de Mar",
+      "searchKey": "sant pol de mar"
+    },
+    {
+      "code": "236",
+      "ineCode": "08236",
+      "ineCodeWithCheck": "082362",
+      "checkDigit": "2",
+      "name": "Sant Quintí de Mediona",
+      "searchKey": "sant quinti de mediona"
+    },
+    {
+      "code": "237",
+      "ineCode": "08237",
+      "ineCodeWithCheck": "082378",
+      "checkDigit": "8",
+      "name": "Sant Quirze de Besora",
+      "searchKey": "sant quirze de besora"
+    },
+    {
+      "code": "238",
+      "ineCode": "08238",
+      "ineCodeWithCheck": "082384",
+      "checkDigit": "4",
+      "name": "Sant Quirze del Vallès",
+      "searchKey": "sant quirze del valles"
+    },
+    {
+      "code": "239",
+      "ineCode": "08239",
+      "ineCodeWithCheck": "082397",
+      "checkDigit": "7",
+      "name": "Sant Quirze Safaja",
+      "searchKey": "sant quirze safaja"
+    },
+    {
+      "code": "240",
+      "ineCode": "08240",
+      "ineCodeWithCheck": "082401",
+      "checkDigit": "1",
+      "name": "Sant Sadurní d'Anoia",
+      "searchKey": "sant sadurni d anoia"
+    },
+    {
+      "code": "241",
+      "ineCode": "08241",
+      "ineCodeWithCheck": "082418",
+      "checkDigit": "8",
+      "name": "Sant Sadurní d'Osormort",
+      "searchKey": "sant sadurni d osormort"
+    },
+    {
+      "code": "098",
+      "ineCode": "08098",
+      "ineCodeWithCheck": "080983",
+      "checkDigit": "3",
+      "name": "Sant Salvador de Guardiola",
+      "searchKey": "sant salvador de guardiola"
+    },
+    {
+      "code": "262",
+      "ineCode": "08262",
+      "ineCodeWithCheck": "082628",
+      "checkDigit": "8",
+      "name": "Sant Vicenç de Castellet",
+      "searchKey": "sant vicenc de castellet"
+    },
+    {
+      "code": "264",
+      "ineCode": "08264",
+      "ineCodeWithCheck": "082649",
+      "checkDigit": "9",
+      "name": "Sant Vicenç de Montalt",
+      "searchKey": "sant vicenc de montalt"
+    },
+    {
+      "code": "265",
+      "ineCode": "08265",
+      "ineCodeWithCheck": "082652",
+      "checkDigit": "2",
+      "name": "Sant Vicenç de Torelló",
+      "searchKey": "sant vicenc de torello"
+    },
+    {
+      "code": "263",
+      "ineCode": "08263",
+      "ineCodeWithCheck": "082634",
+      "checkDigit": "4",
+      "name": "Sant Vicenç dels Horts",
+      "searchKey": "sant vicenc dels horts"
+    },
+    {
+      "code": "243",
+      "ineCode": "08243",
+      "ineCodeWithCheck": "082439",
+      "checkDigit": "9",
+      "name": "Santa Cecília de Voltregà",
+      "searchKey": "santa cecilia de voltrega"
+    },
+    {
+      "code": "244",
+      "ineCode": "08244",
+      "ineCodeWithCheck": "082444",
+      "checkDigit": "4",
+      "name": "Santa Coloma de Cervelló",
+      "searchKey": "santa coloma de cervello"
+    },
+    {
+      "code": "245",
+      "ineCode": "08245",
+      "ineCodeWithCheck": "082457",
+      "checkDigit": "7",
+      "name": "Santa Coloma de Gramenet",
+      "searchKey": "santa coloma de gramenet"
+    },
+    {
+      "code": "246",
+      "ineCode": "08246",
+      "ineCodeWithCheck": "082460",
+      "checkDigit": "0",
+      "name": "Santa Eugènia de Berga",
+      "searchKey": "santa eugenia de berga"
+    },
+    {
+      "code": "247",
+      "ineCode": "08247",
+      "ineCodeWithCheck": "082476",
+      "checkDigit": "6",
+      "name": "Santa Eulàlia de Riuprimer",
+      "searchKey": "santa eulalia de riuprimer"
+    },
+    {
+      "code": "248",
+      "ineCode": "08248",
+      "ineCodeWithCheck": "082482",
+      "checkDigit": "2",
+      "name": "Santa Eulàlia de Ronçana",
+      "searchKey": "santa eulalia de roncana"
+    },
+    {
+      "code": "249",
+      "ineCode": "08249",
+      "ineCodeWithCheck": "082495",
+      "checkDigit": "5",
+      "name": "Santa Fe del Penedès",
+      "searchKey": "santa fe del penedes"
+    },
+    {
+      "code": "250",
+      "ineCode": "08250",
+      "ineCodeWithCheck": "082508",
+      "checkDigit": "8",
+      "name": "Santa Margarida de Montbui",
+      "searchKey": "santa margarida de montbui"
+    },
+    {
+      "code": "251",
+      "ineCode": "08251",
+      "ineCodeWithCheck": "082515",
+      "checkDigit": "5",
+      "name": "Santa Margarida i els Monjos",
+      "searchKey": "santa margarida i els monjos"
+    },
+    {
+      "code": "258",
+      "ineCode": "08258",
+      "ineCodeWithCheck": "082589",
+      "checkDigit": "9",
+      "name": "Santa Maria d'Oló",
+      "searchKey": "santa maria d olo"
+    },
+    {
+      "code": "253",
+      "ineCode": "08253",
+      "ineCodeWithCheck": "082536",
+      "checkDigit": "6",
+      "name": "Santa Maria de Besora",
+      "searchKey": "santa maria de besora"
+    },
+    {
+      "code": "256",
+      "ineCode": "08256",
+      "ineCodeWithCheck": "082567",
+      "checkDigit": "7",
+      "name": "Santa Maria de Martorelles",
+      "searchKey": "santa maria de martorelles"
+    },
+    {
+      "code": "255",
+      "ineCode": "08255",
+      "ineCodeWithCheck": "082554",
+      "checkDigit": "4",
+      "name": "Santa Maria de Merlès",
+      "searchKey": "santa maria de merles"
+    },
+    {
+      "code": "257",
+      "ineCode": "08257",
+      "ineCodeWithCheck": "082573",
+      "checkDigit": "3",
+      "name": "Santa Maria de Miralles",
+      "searchKey": "santa maria de miralles"
+    },
+    {
+      "code": "259",
+      "ineCode": "08259",
+      "ineCodeWithCheck": "082592",
+      "checkDigit": "2",
+      "name": "Santa Maria de Palautordera",
+      "searchKey": "santa maria de palautordera"
+    },
+    {
+      "code": "260",
+      "ineCode": "08260",
+      "ineCodeWithCheck": "082606",
+      "checkDigit": "6",
+      "name": "Santa Perpètua de Mogoda",
+      "searchKey": "santa perpetua de mogoda"
+    },
+    {
+      "code": "261",
+      "ineCode": "08261",
+      "ineCodeWithCheck": "082613",
+      "checkDigit": "3",
+      "name": "Santa Susanna",
+      "searchKey": "santa susanna"
+    },
+    {
+      "code": "192",
+      "ineCode": "08192",
+      "ineCodeWithCheck": "081923",
+      "checkDigit": "3",
+      "name": "Santpedor",
+      "searchKey": "santpedor"
+    },
+    {
+      "code": "267",
+      "ineCode": "08267",
+      "ineCodeWithCheck": "082671",
+      "checkDigit": "1",
+      "name": "Sentmenat",
+      "searchKey": "sentmenat"
+    },
+    {
+      "code": "269",
+      "ineCode": "08269",
+      "ineCodeWithCheck": "082690",
+      "checkDigit": "0",
+      "name": "Seva",
+      "searchKey": "seva"
+    },
+    {
+      "code": "270",
+      "ineCode": "08270",
+      "ineCodeWithCheck": "082704",
+      "checkDigit": "4",
+      "name": "Sitges",
+      "searchKey": "sitges"
+    },
+    {
+      "code": "271",
+      "ineCode": "08271",
+      "ineCodeWithCheck": "082711",
+      "checkDigit": "1",
+      "name": "Sobremunt",
+      "searchKey": "sobremunt"
+    },
+    {
+      "code": "272",
+      "ineCode": "08272",
+      "ineCodeWithCheck": "082726",
+      "checkDigit": "6",
+      "name": "Sora",
+      "searchKey": "sora"
+    },
+    {
+      "code": "273",
+      "ineCode": "08273",
+      "ineCodeWithCheck": "082732",
+      "checkDigit": "2",
+      "name": "Subirats",
+      "searchKey": "subirats"
+    },
+    {
+      "code": "274",
+      "ineCode": "08274",
+      "ineCodeWithCheck": "082747",
+      "checkDigit": "7",
+      "name": "Súria",
+      "searchKey": "suria"
+    },
+    {
+      "code": "276",
+      "ineCode": "08276",
+      "ineCodeWithCheck": "082763",
+      "checkDigit": "3",
+      "name": "Tagamanent",
+      "searchKey": "tagamanent"
+    },
+    {
+      "code": "277",
+      "ineCode": "08277",
+      "ineCodeWithCheck": "082779",
+      "checkDigit": "9",
+      "name": "Talamanca",
+      "searchKey": "talamanca"
+    },
+    {
+      "code": "278",
+      "ineCode": "08278",
+      "ineCodeWithCheck": "082785",
+      "checkDigit": "5",
+      "name": "Taradell",
+      "searchKey": "taradell"
+    },
+    {
+      "code": "275",
+      "ineCode": "08275",
+      "ineCodeWithCheck": "082750",
+      "checkDigit": "0",
+      "name": "Tavèrnoles",
+      "searchKey": "tavernoles"
+    },
+    {
+      "code": "280",
+      "ineCode": "08280",
+      "ineCodeWithCheck": "082802",
+      "checkDigit": "2",
+      "name": "Tavertet",
+      "searchKey": "tavertet"
+    },
+    {
+      "code": "281",
+      "ineCode": "08281",
+      "ineCodeWithCheck": "082819",
+      "checkDigit": "9",
+      "name": "Teià",
+      "searchKey": "teia"
+    },
+    {
+      "code": "279",
+      "ineCode": "08279",
+      "ineCodeWithCheck": "082798",
+      "checkDigit": "8",
+      "name": "Terrassa",
+      "searchKey": "terrassa"
+    },
+    {
+      "code": "282",
+      "ineCode": "08282",
+      "ineCodeWithCheck": "082824",
+      "checkDigit": "4",
+      "name": "Tiana",
+      "searchKey": "tiana"
+    },
+    {
+      "code": "283",
+      "ineCode": "08283",
+      "ineCodeWithCheck": "082830",
+      "checkDigit": "0",
+      "name": "Tona",
+      "searchKey": "tona"
+    },
+    {
+      "code": "284",
+      "ineCode": "08284",
+      "ineCodeWithCheck": "082845",
+      "checkDigit": "5",
+      "name": "Tordera",
+      "searchKey": "tordera"
+    },
+    {
+      "code": "285",
+      "ineCode": "08285",
+      "ineCodeWithCheck": "082858",
+      "checkDigit": "8",
+      "name": "Torelló",
+      "searchKey": "torello"
+    },
+    {
+      "code": "286",
+      "ineCode": "08286",
+      "ineCodeWithCheck": "082861",
+      "checkDigit": "1",
+      "name": "Torre de Claramunt, La",
+      "searchKey": "torre de claramunt la"
+    },
+    {
+      "code": "287",
+      "ineCode": "08287",
+      "ineCodeWithCheck": "082877",
+      "checkDigit": "7",
+      "name": "Torrelavit",
+      "searchKey": "torrelavit"
+    },
+    {
+      "code": "288",
+      "ineCode": "08288",
+      "ineCodeWithCheck": "082883",
+      "checkDigit": "3",
+      "name": "Torrelles de Foix",
+      "searchKey": "torrelles de foix"
+    },
+    {
+      "code": "289",
+      "ineCode": "08289",
+      "ineCodeWithCheck": "082896",
+      "checkDigit": "6",
+      "name": "Torrelles de Llobregat",
+      "searchKey": "torrelles de llobregat"
+    },
+    {
+      "code": "290",
+      "ineCode": "08290",
+      "ineCodeWithCheck": "082900",
+      "checkDigit": "0",
+      "name": "Ullastrell",
+      "searchKey": "ullastrell"
+    },
+    {
+      "code": "291",
+      "ineCode": "08291",
+      "ineCodeWithCheck": "082917",
+      "checkDigit": "7",
+      "name": "Vacarisses",
+      "searchKey": "vacarisses"
+    },
+    {
+      "code": "292",
+      "ineCode": "08292",
+      "ineCodeWithCheck": "082922",
+      "checkDigit": "2",
+      "name": "Vallbona d'Anoia",
+      "searchKey": "vallbona d anoia"
+    },
+    {
+      "code": "293",
+      "ineCode": "08293",
+      "ineCodeWithCheck": "082938",
+      "checkDigit": "8",
+      "name": "Vallcebre",
+      "searchKey": "vallcebre"
+    },
+    {
+      "code": "294",
+      "ineCode": "08294",
+      "ineCodeWithCheck": "082943",
+      "checkDigit": "3",
+      "name": "Vallgorguina",
+      "searchKey": "vallgorguina"
+    },
+    {
+      "code": "295",
+      "ineCode": "08295",
+      "ineCodeWithCheck": "082956",
+      "checkDigit": "6",
+      "name": "Vallirana",
+      "searchKey": "vallirana"
+    },
+    {
+      "code": "296",
+      "ineCode": "08296",
+      "ineCodeWithCheck": "082969",
+      "checkDigit": "9",
+      "name": "Vallromanes",
+      "searchKey": "vallromanes"
+    },
+    {
+      "code": "297",
+      "ineCode": "08297",
+      "ineCodeWithCheck": "082975",
+      "checkDigit": "5",
+      "name": "Veciana",
+      "searchKey": "veciana"
+    },
+    {
+      "code": "298",
+      "ineCode": "08298",
+      "ineCodeWithCheck": "082981",
+      "checkDigit": "1",
+      "name": "Vic",
+      "searchKey": "vic"
+    },
+    {
+      "code": "299",
+      "ineCode": "08299",
+      "ineCodeWithCheck": "082994",
+      "checkDigit": "4",
+      "name": "Vilada",
+      "searchKey": "vilada"
+    },
+    {
+      "code": "301",
+      "ineCode": "08301",
+      "ineCodeWithCheck": "083015",
+      "checkDigit": "5",
+      "name": "Viladecans",
+      "searchKey": "viladecans"
+    },
+    {
+      "code": "300",
+      "ineCode": "08300",
+      "ineCodeWithCheck": "083008",
+      "checkDigit": "8",
+      "name": "Viladecavalls",
+      "searchKey": "viladecavalls"
+    },
+    {
+      "code": "305",
+      "ineCode": "08305",
+      "ineCodeWithCheck": "083054",
+      "checkDigit": "4",
+      "name": "Vilafranca del Penedès",
+      "searchKey": "vilafranca del penedes"
+    },
+    {
+      "code": "306",
+      "ineCode": "08306",
+      "ineCodeWithCheck": "083067",
+      "checkDigit": "7",
+      "name": "Vilalba Sasserra",
+      "searchKey": "vilalba sasserra"
+    },
+    {
+      "code": "303",
+      "ineCode": "08303",
+      "ineCodeWithCheck": "083036",
+      "checkDigit": "6",
+      "name": "Vilanova de Sau",
+      "searchKey": "vilanova de sau"
+    },
+    {
+      "code": "302",
+      "ineCode": "08302",
+      "ineCodeWithCheck": "083020",
+      "checkDigit": "0",
+      "name": "Vilanova del Camí",
+      "searchKey": "vilanova del cami"
+    },
+    {
+      "code": "902",
+      "ineCode": "08902",
+      "ineCodeWithCheck": "089024",
+      "checkDigit": "4",
+      "name": "Vilanova del Vallès",
+      "searchKey": "vilanova del valles"
+    },
+    {
+      "code": "307",
+      "ineCode": "08307",
+      "ineCodeWithCheck": "083073",
+      "checkDigit": "3",
+      "name": "Vilanova i la Geltrú",
+      "searchKey": "vilanova i la geltru"
+    },
+    {
+      "code": "214",
+      "ineCode": "08214",
+      "ineCodeWithCheck": "082140",
+      "checkDigit": "0",
+      "name": "Vilassar de Dalt",
+      "searchKey": "vilassar de dalt"
+    },
+    {
+      "code": "219",
+      "ineCode": "08219",
+      "ineCodeWithCheck": "082191",
+      "checkDigit": "1",
+      "name": "Vilassar de Mar",
+      "searchKey": "vilassar de mar"
+    },
+    {
+      "code": "304",
+      "ineCode": "08304",
+      "ineCodeWithCheck": "083041",
+      "checkDigit": "1",
+      "name": "Vilobí del Penedès",
+      "searchKey": "vilobi del penedes"
+    },
+    {
+      "code": "308",
+      "ineCode": "08308",
+      "ineCodeWithCheck": "083089",
+      "checkDigit": "9",
+      "name": "Viver i Serrateix",
+      "searchKey": "viver i serrateix"
+    }
+  ]
+}

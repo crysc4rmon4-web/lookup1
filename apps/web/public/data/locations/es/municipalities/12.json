@@ -1,0 +1,1089 @@
+{
+  "province": {
+    "code": "12",
+    "name": "Castellón/Castelló",
+    "searchKey": "castellon castello"
+  },
+  "municipalities": [
+    {
+      "code": "002",
+      "ineCode": "12002",
+      "ineCodeWithCheck": "120022",
+      "checkDigit": "2",
+      "name": "Aín",
+      "searchKey": "ain"
+    },
+    {
+      "code": "003",
+      "ineCode": "12003",
+      "ineCodeWithCheck": "120038",
+      "checkDigit": "8",
+      "name": "Albocàsser",
+      "searchKey": "albocasser"
+    },
+    {
+      "code": "004",
+      "ineCode": "12004",
+      "ineCodeWithCheck": "120043",
+      "checkDigit": "3",
+      "name": "Alcalà de Xivert",
+      "searchKey": "alcala de xivert"
+    },
+    {
+      "code": "005",
+      "ineCode": "12005",
+      "ineCodeWithCheck": "120056",
+      "checkDigit": "6",
+      "name": "Alcora, l'",
+      "searchKey": "alcora l"
+    },
+    {
+      "code": "006",
+      "ineCode": "12006",
+      "ineCodeWithCheck": "120069",
+      "checkDigit": "9",
+      "name": "Alcudia de Veo",
+      "searchKey": "alcudia de veo"
+    },
+    {
+      "code": "007",
+      "ineCode": "12007",
+      "ineCodeWithCheck": "120075",
+      "checkDigit": "5",
+      "name": "Alfondeguilla",
+      "searchKey": "alfondeguilla"
+    },
+    {
+      "code": "008",
+      "ineCode": "12008",
+      "ineCodeWithCheck": "120081",
+      "checkDigit": "1",
+      "name": "Algimia de Almonacid",
+      "searchKey": "algimia de almonacid"
+    },
+    {
+      "code": "009",
+      "ineCode": "12009",
+      "ineCodeWithCheck": "120094",
+      "checkDigit": "4",
+      "name": "Almassora",
+      "searchKey": "almassora"
+    },
+    {
+      "code": "010",
+      "ineCode": "12010",
+      "ineCodeWithCheck": "120108",
+      "checkDigit": "8",
+      "name": "Almedíjar",
+      "searchKey": "almedijar"
+    },
+    {
+      "code": "011",
+      "ineCode": "12011",
+      "ineCodeWithCheck": "120115",
+      "checkDigit": "5",
+      "name": "Almenara",
+      "searchKey": "almenara"
+    },
+    {
+      "code": "901",
+      "ineCode": "12901",
+      "ineCodeWithCheck": "129018",
+      "checkDigit": "8",
+      "name": "Alqueries, les/Alquerías del Niño Perdido",
+      "searchKey": "alqueries les alquerias del nino perdido"
+    },
+    {
+      "code": "012",
+      "ineCode": "12012",
+      "ineCodeWithCheck": "120120",
+      "checkDigit": "0",
+      "name": "Altura",
+      "searchKey": "altura"
+    },
+    {
+      "code": "013",
+      "ineCode": "12013",
+      "ineCodeWithCheck": "120136",
+      "checkDigit": "6",
+      "name": "Arañuel",
+      "searchKey": "aranuel"
+    },
+    {
+      "code": "014",
+      "ineCode": "12014",
+      "ineCodeWithCheck": "120141",
+      "checkDigit": "1",
+      "name": "Ares del Maestrat",
+      "searchKey": "ares del maestrat"
+    },
+    {
+      "code": "015",
+      "ineCode": "12015",
+      "ineCodeWithCheck": "120154",
+      "checkDigit": "4",
+      "name": "Argelita",
+      "searchKey": "argelita"
+    },
+    {
+      "code": "016",
+      "ineCode": "12016",
+      "ineCodeWithCheck": "120167",
+      "checkDigit": "7",
+      "name": "Artana",
+      "searchKey": "artana"
+    },
+    {
+      "code": "001",
+      "ineCode": "12001",
+      "ineCodeWithCheck": "120017",
+      "checkDigit": "7",
+      "name": "Atzeneta del Maestrat",
+      "searchKey": "atzeneta del maestrat"
+    },
+    {
+      "code": "017",
+      "ineCode": "12017",
+      "ineCodeWithCheck": "120173",
+      "checkDigit": "3",
+      "name": "Ayódar",
+      "searchKey": "ayodar"
+    },
+    {
+      "code": "018",
+      "ineCode": "12018",
+      "ineCodeWithCheck": "120189",
+      "checkDigit": "9",
+      "name": "Azuébar",
+      "searchKey": "azuebar"
+    },
+    {
+      "code": "020",
+      "ineCode": "12020",
+      "ineCodeWithCheck": "120206",
+      "checkDigit": "6",
+      "name": "Barracas",
+      "searchKey": "barracas"
+    },
+    {
+      "code": "022",
+      "ineCode": "12022",
+      "ineCodeWithCheck": "120228",
+      "checkDigit": "8",
+      "name": "Bejís",
+      "searchKey": "bejis"
+    },
+    {
+      "code": "024",
+      "ineCode": "12024",
+      "ineCodeWithCheck": "120249",
+      "checkDigit": "9",
+      "name": "Benafer",
+      "searchKey": "benafer"
+    },
+    {
+      "code": "025",
+      "ineCode": "12025",
+      "ineCodeWithCheck": "120252",
+      "checkDigit": "2",
+      "name": "Benafigos",
+      "searchKey": "benafigos"
+    },
+    {
+      "code": "026",
+      "ineCode": "12026",
+      "ineCodeWithCheck": "120265",
+      "checkDigit": "5",
+      "name": "Benassal",
+      "searchKey": "benassal"
+    },
+    {
+      "code": "027",
+      "ineCode": "12027",
+      "ineCodeWithCheck": "120271",
+      "checkDigit": "1",
+      "name": "Benicarló",
+      "searchKey": "benicarlo"
+    },
+    {
+      "code": "028",
+      "ineCode": "12028",
+      "ineCodeWithCheck": "120287",
+      "checkDigit": "7",
+      "name": "Benicàssim/Benicasim",
+      "searchKey": "benicassim benicasim"
+    },
+    {
+      "code": "029",
+      "ineCode": "12029",
+      "ineCodeWithCheck": "120290",
+      "checkDigit": "0",
+      "name": "Benlloc",
+      "searchKey": "benlloc"
+    },
+    {
+      "code": "021",
+      "ineCode": "12021",
+      "ineCodeWithCheck": "120213",
+      "checkDigit": "3",
+      "name": "Betxí",
+      "searchKey": "betxi"
+    },
+    {
+      "code": "032",
+      "ineCode": "12032",
+      "ineCodeWithCheck": "120326",
+      "checkDigit": "6",
+      "name": "Borriana/Burriana",
+      "searchKey": "borriana burriana"
+    },
+    {
+      "code": "031",
+      "ineCode": "12031",
+      "ineCodeWithCheck": "120311",
+      "checkDigit": "1",
+      "name": "Borriol",
+      "searchKey": "borriol"
+    },
+    {
+      "code": "033",
+      "ineCode": "12033",
+      "ineCodeWithCheck": "120332",
+      "checkDigit": "2",
+      "name": "Cabanes",
+      "searchKey": "cabanes"
+    },
+    {
+      "code": "034",
+      "ineCode": "12034",
+      "ineCodeWithCheck": "120347",
+      "checkDigit": "7",
+      "name": "Càlig",
+      "searchKey": "calig"
+    },
+    {
+      "code": "036",
+      "ineCode": "12036",
+      "ineCodeWithCheck": "120363",
+      "checkDigit": "3",
+      "name": "Canet lo Roig",
+      "searchKey": "canet lo roig"
+    },
+    {
+      "code": "037",
+      "ineCode": "12037",
+      "ineCodeWithCheck": "120379",
+      "checkDigit": "9",
+      "name": "Castell de Cabres",
+      "searchKey": "castell de cabres"
+    },
+    {
+      "code": "038",
+      "ineCode": "12038",
+      "ineCodeWithCheck": "120385",
+      "checkDigit": "5",
+      "name": "Castellfort",
+      "searchKey": "castellfort"
+    },
+    {
+      "code": "039",
+      "ineCode": "12039",
+      "ineCodeWithCheck": "120398",
+      "checkDigit": "8",
+      "name": "Castellnovo",
+      "searchKey": "castellnovo"
+    },
+    {
+      "code": "040",
+      "ineCode": "12040",
+      "ineCodeWithCheck": "120402",
+      "checkDigit": "2",
+      "name": "Castelló de la Plana/Castellón de la Plana",
+      "searchKey": "castello de la plana castellon de la plana"
+    },
+    {
+      "code": "041",
+      "ineCode": "12041",
+      "ineCodeWithCheck": "120419",
+      "checkDigit": "9",
+      "name": "Castillo de Villamalefa",
+      "searchKey": "castillo de villamalefa"
+    },
+    {
+      "code": "042",
+      "ineCode": "12042",
+      "ineCodeWithCheck": "120424",
+      "checkDigit": "4",
+      "name": "Catí",
+      "searchKey": "cati"
+    },
+    {
+      "code": "043",
+      "ineCode": "12043",
+      "ineCodeWithCheck": "120430",
+      "checkDigit": "0",
+      "name": "Caudiel",
+      "searchKey": "caudiel"
+    },
+    {
+      "code": "044",
+      "ineCode": "12044",
+      "ineCodeWithCheck": "120445",
+      "checkDigit": "5",
+      "name": "Cervera del Maestre",
+      "searchKey": "cervera del maestre"
+    },
+    {
+      "code": "053",
+      "ineCode": "12053",
+      "ineCodeWithCheck": "120537",
+      "checkDigit": "7",
+      "name": "Chilches/Xilxes",
+      "searchKey": "chilches xilxes"
+    },
+    {
+      "code": "056",
+      "ineCode": "12056",
+      "ineCodeWithCheck": "120568",
+      "checkDigit": "8",
+      "name": "Chóvar",
+      "searchKey": "chovar"
+    },
+    {
+      "code": "045",
+      "ineCode": "12045",
+      "ineCodeWithCheck": "120458",
+      "checkDigit": "8",
+      "name": "Cinctorres",
+      "searchKey": "cinctorres"
+    },
+    {
+      "code": "046",
+      "ineCode": "12046",
+      "ineCodeWithCheck": "120461",
+      "checkDigit": "1",
+      "name": "Cirat",
+      "searchKey": "cirat"
+    },
+    {
+      "code": "048",
+      "ineCode": "12048",
+      "ineCodeWithCheck": "120483",
+      "checkDigit": "3",
+      "name": "Cortes de Arenoso",
+      "searchKey": "cortes de arenoso"
+    },
+    {
+      "code": "049",
+      "ineCode": "12049",
+      "ineCodeWithCheck": "120496",
+      "checkDigit": "6",
+      "name": "Costur",
+      "searchKey": "costur"
+    },
+    {
+      "code": "050",
+      "ineCode": "12050",
+      "ineCodeWithCheck": "120509",
+      "checkDigit": "9",
+      "name": "Coves de Vinromà, les",
+      "searchKey": "coves de vinroma les"
+    },
+    {
+      "code": "051",
+      "ineCode": "12051",
+      "ineCodeWithCheck": "120516",
+      "checkDigit": "6",
+      "name": "Culla",
+      "searchKey": "culla"
+    },
+    {
+      "code": "057",
+      "ineCode": "12057",
+      "ineCodeWithCheck": "120574",
+      "checkDigit": "4",
+      "name": "Eslida",
+      "searchKey": "eslida"
+    },
+    {
+      "code": "058",
+      "ineCode": "12058",
+      "ineCodeWithCheck": "120580",
+      "checkDigit": "0",
+      "name": "Espadilla",
+      "searchKey": "espadilla"
+    },
+    {
+      "code": "059",
+      "ineCode": "12059",
+      "ineCodeWithCheck": "120593",
+      "checkDigit": "3",
+      "name": "Fanzara",
+      "searchKey": "fanzara"
+    },
+    {
+      "code": "060",
+      "ineCode": "12060",
+      "ineCodeWithCheck": "120607",
+      "checkDigit": "7",
+      "name": "Figueroles",
+      "searchKey": "figueroles"
+    },
+    {
+      "code": "061",
+      "ineCode": "12061",
+      "ineCodeWithCheck": "120614",
+      "checkDigit": "4",
+      "name": "Forcall",
+      "searchKey": "forcall"
+    },
+    {
+      "code": "063",
+      "ineCode": "12063",
+      "ineCodeWithCheck": "120635",
+      "checkDigit": "5",
+      "name": "Fuente la Reina",
+      "searchKey": "fuente la reina"
+    },
+    {
+      "code": "064",
+      "ineCode": "12064",
+      "ineCodeWithCheck": "120640",
+      "checkDigit": "0",
+      "name": "Fuentes de Ayódar",
+      "searchKey": "fuentes de ayodar"
+    },
+    {
+      "code": "065",
+      "ineCode": "12065",
+      "ineCodeWithCheck": "120653",
+      "checkDigit": "3",
+      "name": "Gaibiel",
+      "searchKey": "gaibiel"
+    },
+    {
+      "code": "067",
+      "ineCode": "12067",
+      "ineCodeWithCheck": "120672",
+      "checkDigit": "2",
+      "name": "Geldo",
+      "searchKey": "geldo"
+    },
+    {
+      "code": "068",
+      "ineCode": "12068",
+      "ineCodeWithCheck": "120688",
+      "checkDigit": "8",
+      "name": "Herbers",
+      "searchKey": "herbers"
+    },
+    {
+      "code": "069",
+      "ineCode": "12069",
+      "ineCodeWithCheck": "120691",
+      "checkDigit": "1",
+      "name": "Higueras",
+      "searchKey": "higueras"
+    },
+    {
+      "code": "070",
+      "ineCode": "12070",
+      "ineCodeWithCheck": "120705",
+      "checkDigit": "5",
+      "name": "Jana, la",
+      "searchKey": "jana la"
+    },
+    {
+      "code": "071",
+      "ineCode": "12071",
+      "ineCodeWithCheck": "120712",
+      "checkDigit": "2",
+      "name": "Jérica",
+      "searchKey": "jerica"
+    },
+    {
+      "code": "074",
+      "ineCode": "12074",
+      "ineCodeWithCheck": "120748",
+      "checkDigit": "8",
+      "name": "Llosa, la",
+      "searchKey": "llosa la"
+    },
+    {
+      "code": "072",
+      "ineCode": "12072",
+      "ineCodeWithCheck": "120727",
+      "checkDigit": "7",
+      "name": "Llucena/Lucena del Cid",
+      "searchKey": "llucena lucena del cid"
+    },
+    {
+      "code": "073",
+      "ineCode": "12073",
+      "ineCodeWithCheck": "120733",
+      "checkDigit": "3",
+      "name": "Ludiente",
+      "searchKey": "ludiente"
+    },
+    {
+      "code": "075",
+      "ineCode": "12075",
+      "ineCodeWithCheck": "120751",
+      "checkDigit": "1",
+      "name": "Mata de Morella, la",
+      "searchKey": "mata de morella la"
+    },
+    {
+      "code": "076",
+      "ineCode": "12076",
+      "ineCodeWithCheck": "120764",
+      "checkDigit": "4",
+      "name": "Matet",
+      "searchKey": "matet"
+    },
+    {
+      "code": "077",
+      "ineCode": "12077",
+      "ineCodeWithCheck": "120770",
+      "checkDigit": "0",
+      "name": "Moncofa",
+      "searchKey": "moncofa"
+    },
+    {
+      "code": "078",
+      "ineCode": "12078",
+      "ineCodeWithCheck": "120786",
+      "checkDigit": "6",
+      "name": "Montán",
+      "searchKey": "montan"
+    },
+    {
+      "code": "079",
+      "ineCode": "12079",
+      "ineCodeWithCheck": "120799",
+      "checkDigit": "9",
+      "name": "Montanejos",
+      "searchKey": "montanejos"
+    },
+    {
+      "code": "080",
+      "ineCode": "12080",
+      "ineCodeWithCheck": "120803",
+      "checkDigit": "3",
+      "name": "Morella",
+      "searchKey": "morella"
+    },
+    {
+      "code": "081",
+      "ineCode": "12081",
+      "ineCodeWithCheck": "120810",
+      "checkDigit": "0",
+      "name": "Navajas",
+      "searchKey": "navajas"
+    },
+    {
+      "code": "082",
+      "ineCode": "12082",
+      "ineCodeWithCheck": "120825",
+      "checkDigit": "5",
+      "name": "Nules",
+      "searchKey": "nules"
+    },
+    {
+      "code": "083",
+      "ineCode": "12083",
+      "ineCodeWithCheck": "120831",
+      "checkDigit": "1",
+      "name": "Olocau del Rey",
+      "searchKey": "olocau del rey"
+    },
+    {
+      "code": "084",
+      "ineCode": "12084",
+      "ineCodeWithCheck": "120846",
+      "checkDigit": "6",
+      "name": "Onda",
+      "searchKey": "onda"
+    },
+    {
+      "code": "085",
+      "ineCode": "12085",
+      "ineCodeWithCheck": "120859",
+      "checkDigit": "9",
+      "name": "Orpesa/Oropesa del Mar",
+      "searchKey": "orpesa oropesa del mar"
+    },
+    {
+      "code": "087",
+      "ineCode": "12087",
+      "ineCodeWithCheck": "120878",
+      "checkDigit": "8",
+      "name": "Palanques",
+      "searchKey": "palanques"
+    },
+    {
+      "code": "088",
+      "ineCode": "12088",
+      "ineCodeWithCheck": "120884",
+      "checkDigit": "4",
+      "name": "Pavías",
+      "searchKey": "pavias"
+    },
+    {
+      "code": "089",
+      "ineCode": "12089",
+      "ineCodeWithCheck": "120897",
+      "checkDigit": "7",
+      "name": "Peníscola/Peñíscola",
+      "searchKey": "peniscola peniscola"
+    },
+    {
+      "code": "090",
+      "ineCode": "12090",
+      "ineCodeWithCheck": "120901",
+      "checkDigit": "1",
+      "name": "Pina de Montalgrao",
+      "searchKey": "pina de montalgrao"
+    },
+    {
+      "code": "093",
+      "ineCode": "12093",
+      "ineCodeWithCheck": "120939",
+      "checkDigit": "9",
+      "name": "Pobla de Benifassà, la",
+      "searchKey": "pobla de benifassa la"
+    },
+    {
+      "code": "094",
+      "ineCode": "12094",
+      "ineCodeWithCheck": "120944",
+      "checkDigit": "4",
+      "name": "Pobla Tornesa, la",
+      "searchKey": "pobla tornesa la"
+    },
+    {
+      "code": "091",
+      "ineCode": "12091",
+      "ineCodeWithCheck": "120918",
+      "checkDigit": "8",
+      "name": "Portell de Morella",
+      "searchKey": "portell de morella"
+    },
+    {
+      "code": "092",
+      "ineCode": "12092",
+      "ineCodeWithCheck": "120923",
+      "checkDigit": "3",
+      "name": "Puebla de Arenoso",
+      "searchKey": "puebla de arenoso"
+    },
+    {
+      "code": "095",
+      "ineCode": "12095",
+      "ineCodeWithCheck": "120957",
+      "checkDigit": "7",
+      "name": "Ribesalbes",
+      "searchKey": "ribesalbes"
+    },
+    {
+      "code": "096",
+      "ineCode": "12096",
+      "ineCodeWithCheck": "120960",
+      "checkDigit": "0",
+      "name": "Rossell",
+      "searchKey": "rossell"
+    },
+    {
+      "code": "097",
+      "ineCode": "12097",
+      "ineCodeWithCheck": "120976",
+      "checkDigit": "6",
+      "name": "Sacañet",
+      "searchKey": "sacanet"
+    },
+    {
+      "code": "098",
+      "ineCode": "12098",
+      "ineCodeWithCheck": "120982",
+      "checkDigit": "2",
+      "name": "Salzadella, la",
+      "searchKey": "salzadella la"
+    },
+    {
+      "code": "101",
+      "ineCode": "12101",
+      "ineCodeWithCheck": "121016",
+      "checkDigit": "6",
+      "name": "San Rafael del Río",
+      "searchKey": "san rafael del rio"
+    },
+    {
+      "code": "902",
+      "ineCode": "12902",
+      "ineCodeWithCheck": "129023",
+      "checkDigit": "3",
+      "name": "Sant Joan de Moró",
+      "searchKey": "sant joan de moro"
+    },
+    {
+      "code": "099",
+      "ineCode": "12099",
+      "ineCodeWithCheck": "120995",
+      "checkDigit": "5",
+      "name": "Sant Jordi/San Jorge",
+      "searchKey": "sant jordi san jorge"
+    },
+    {
+      "code": "100",
+      "ineCode": "12100",
+      "ineCodeWithCheck": "121009",
+      "checkDigit": "9",
+      "name": "Sant Mateu",
+      "searchKey": "sant mateu"
+    },
+    {
+      "code": "102",
+      "ineCode": "12102",
+      "ineCodeWithCheck": "121021",
+      "checkDigit": "1",
+      "name": "Santa Magdalena de Pulpis",
+      "searchKey": "santa magdalena de pulpis"
+    },
+    {
+      "code": "104",
+      "ineCode": "12104",
+      "ineCodeWithCheck": "121042",
+      "checkDigit": "2",
+      "name": "Segorbe",
+      "searchKey": "segorbe"
+    },
+    {
+      "code": "103",
+      "ineCode": "12103",
+      "ineCodeWithCheck": "121037",
+      "checkDigit": "7",
+      "name": "Serratella, la",
+      "searchKey": "serratella la"
+    },
+    {
+      "code": "105",
+      "ineCode": "12105",
+      "ineCodeWithCheck": "121055",
+      "checkDigit": "5",
+      "name": "Sierra Engarcerán",
+      "searchKey": "sierra engarceran"
+    },
+    {
+      "code": "106",
+      "ineCode": "12106",
+      "ineCodeWithCheck": "121068",
+      "checkDigit": "8",
+      "name": "Soneja",
+      "searchKey": "soneja"
+    },
+    {
+      "code": "107",
+      "ineCode": "12107",
+      "ineCodeWithCheck": "121074",
+      "checkDigit": "4",
+      "name": "Sot de Ferrer",
+      "searchKey": "sot de ferrer"
+    },
+    {
+      "code": "108",
+      "ineCode": "12108",
+      "ineCodeWithCheck": "121080",
+      "checkDigit": "0",
+      "name": "Suera/Sueras",
+      "searchKey": "suera sueras"
+    },
+    {
+      "code": "109",
+      "ineCode": "12109",
+      "ineCodeWithCheck": "121093",
+      "checkDigit": "3",
+      "name": "Tales",
+      "searchKey": "tales"
+    },
+    {
+      "code": "110",
+      "ineCode": "12110",
+      "ineCodeWithCheck": "121107",
+      "checkDigit": "7",
+      "name": "Teresa",
+      "searchKey": "teresa"
+    },
+    {
+      "code": "111",
+      "ineCode": "12111",
+      "ineCodeWithCheck": "121114",
+      "checkDigit": "4",
+      "name": "Tírig",
+      "searchKey": "tirig"
+    },
+    {
+      "code": "112",
+      "ineCode": "12112",
+      "ineCodeWithCheck": "121129",
+      "checkDigit": "9",
+      "name": "Todolella",
+      "searchKey": "todolella"
+    },
+    {
+      "code": "113",
+      "ineCode": "12113",
+      "ineCodeWithCheck": "121135",
+      "checkDigit": "5",
+      "name": "Toga",
+      "searchKey": "toga"
+    },
+    {
+      "code": "114",
+      "ineCode": "12114",
+      "ineCodeWithCheck": "121140",
+      "checkDigit": "0",
+      "name": "Torás",
+      "searchKey": "toras"
+    },
+    {
+      "code": "115",
+      "ineCode": "12115",
+      "ineCodeWithCheck": "121153",
+      "checkDigit": "3",
+      "name": "Toro, El",
+      "searchKey": "toro el"
+    },
+    {
+      "code": "116",
+      "ineCode": "12116",
+      "ineCodeWithCheck": "121166",
+      "checkDigit": "6",
+      "name": "Torralba del Pinar",
+      "searchKey": "torralba del pinar"
+    },
+    {
+      "code": "119",
+      "ineCode": "12119",
+      "ineCodeWithCheck": "121191",
+      "checkDigit": "1",
+      "name": "Torre d'en Besora, la",
+      "searchKey": "torre d en besora la"
+    },
+    {
+      "code": "120",
+      "ineCode": "12120",
+      "ineCodeWithCheck": "121205",
+      "checkDigit": "5",
+      "name": "Torre d'en Doménec, la",
+      "searchKey": "torre d en domenec la"
+    },
+    {
+      "code": "117",
+      "ineCode": "12117",
+      "ineCodeWithCheck": "121172",
+      "checkDigit": "2",
+      "name": "Torreblanca",
+      "searchKey": "torreblanca"
+    },
+    {
+      "code": "118",
+      "ineCode": "12118",
+      "ineCodeWithCheck": "121188",
+      "checkDigit": "8",
+      "name": "Torrechiva",
+      "searchKey": "torrechiva"
+    },
+    {
+      "code": "121",
+      "ineCode": "12121",
+      "ineCodeWithCheck": "121212",
+      "checkDigit": "2",
+      "name": "Traiguera",
+      "searchKey": "traiguera"
+    },
+    {
+      "code": "122",
+      "ineCode": "12122",
+      "ineCodeWithCheck": "121227",
+      "checkDigit": "7",
+      "name": "Useres, les/Useras",
+      "searchKey": "useres les useras"
+    },
+    {
+      "code": "124",
+      "ineCode": "12124",
+      "ineCodeWithCheck": "121248",
+      "checkDigit": "8",
+      "name": "Vall d'Alba",
+      "searchKey": "vall d alba"
+    },
+    {
+      "code": "126",
+      "ineCode": "12126",
+      "ineCodeWithCheck": "121264",
+      "checkDigit": "4",
+      "name": "Vall d'Uixó, la",
+      "searchKey": "vall d uixo la"
+    },
+    {
+      "code": "125",
+      "ineCode": "12125",
+      "ineCodeWithCheck": "121251",
+      "checkDigit": "1",
+      "name": "Vall de Almonacid",
+      "searchKey": "vall de almonacid"
+    },
+    {
+      "code": "123",
+      "ineCode": "12123",
+      "ineCodeWithCheck": "121233",
+      "checkDigit": "3",
+      "name": "Vallat",
+      "searchKey": "vallat"
+    },
+    {
+      "code": "127",
+      "ineCode": "12127",
+      "ineCodeWithCheck": "121270",
+      "checkDigit": "0",
+      "name": "Vallibona",
+      "searchKey": "vallibona"
+    },
+    {
+      "code": "135",
+      "ineCode": "12135",
+      "ineCodeWithCheck": "121359",
+      "checkDigit": "9",
+      "name": "Vila-real",
+      "searchKey": "vila real"
+    },
+    {
+      "code": "128",
+      "ineCode": "12128",
+      "ineCodeWithCheck": "121286",
+      "checkDigit": "6",
+      "name": "Vilafamés",
+      "searchKey": "vilafames"
+    },
+    {
+      "code": "129",
+      "ineCode": "12129",
+      "ineCodeWithCheck": "121299",
+      "checkDigit": "9",
+      "name": "Vilafranca/Villafranca del Cid",
+      "searchKey": "vilafranca villafranca del cid"
+    },
+    {
+      "code": "132",
+      "ineCode": "12132",
+      "ineCodeWithCheck": "121325",
+      "checkDigit": "5",
+      "name": "Vilanova d'Alcolea",
+      "searchKey": "vilanova d alcolea"
+    },
+    {
+      "code": "134",
+      "ineCode": "12134",
+      "ineCodeWithCheck": "121346",
+      "checkDigit": "6",
+      "name": "Vilar de Canes",
+      "searchKey": "vilar de canes"
+    },
+    {
+      "code": "136",
+      "ineCode": "12136",
+      "ineCodeWithCheck": "121362",
+      "checkDigit": "2",
+      "name": "Vilavella, la",
+      "searchKey": "vilavella la"
+    },
+    {
+      "code": "130",
+      "ineCode": "12130",
+      "ineCodeWithCheck": "121303",
+      "checkDigit": "3",
+      "name": "Villahermosa del Río",
+      "searchKey": "villahermosa del rio"
+    },
+    {
+      "code": "131",
+      "ineCode": "12131",
+      "ineCodeWithCheck": "121310",
+      "checkDigit": "0",
+      "name": "Villamalur",
+      "searchKey": "villamalur"
+    },
+    {
+      "code": "133",
+      "ineCode": "12133",
+      "ineCodeWithCheck": "121331",
+      "checkDigit": "1",
+      "name": "Villanueva de Viver",
+      "searchKey": "villanueva de viver"
+    },
+    {
+      "code": "137",
+      "ineCode": "12137",
+      "ineCodeWithCheck": "121378",
+      "checkDigit": "8",
+      "name": "Villores",
+      "searchKey": "villores"
+    },
+    {
+      "code": "138",
+      "ineCode": "12138",
+      "ineCodeWithCheck": "121384",
+      "checkDigit": "4",
+      "name": "Vinaròs",
+      "searchKey": "vinaros"
+    },
+    {
+      "code": "139",
+      "ineCode": "12139",
+      "ineCodeWithCheck": "121397",
+      "checkDigit": "7",
+      "name": "Vistabella del Maestrat",
+      "searchKey": "vistabella del maestrat"
+    },
+    {
+      "code": "140",
+      "ineCode": "12140",
+      "ineCodeWithCheck": "121401",
+      "checkDigit": "1",
+      "name": "Viver",
+      "searchKey": "viver"
+    },
+    {
+      "code": "052",
+      "ineCode": "12052",
+      "ineCodeWithCheck": "120521",
+      "checkDigit": "1",
+      "name": "Xert",
+      "searchKey": "xert"
+    },
+    {
+      "code": "055",
+      "ineCode": "12055",
+      "ineCodeWithCheck": "120555",
+      "checkDigit": "5",
+      "name": "Xodos/Chodos",
+      "searchKey": "xodos chodos"
+    },
+    {
+      "code": "141",
+      "ineCode": "12141",
+      "ineCodeWithCheck": "121418",
+      "checkDigit": "8",
+      "name": "Zorita del Maestrazgo",
+      "searchKey": "zorita del maestrazgo"
+    },
+    {
+      "code": "142",
+      "ineCode": "12142",
+      "ineCodeWithCheck": "121423",
+      "checkDigit": "3",
+      "name": "Zucaina",
+      "searchKey": "zucaina"
+    }
+  ]
+}

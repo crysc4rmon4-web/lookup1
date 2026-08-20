@@ -1,0 +1,369 @@
+{
+  "province": {
+    "code": "11",
+    "name": "Cádiz",
+    "searchKey": "cadiz"
+  },
+  "municipalities": [
+    {
+      "code": "001",
+      "ineCode": "11001",
+      "ineCodeWithCheck": "110012",
+      "checkDigit": "2",
+      "name": "Alcalá de los Gazules",
+      "searchKey": "alcala de los gazules"
+    },
+    {
+      "code": "002",
+      "ineCode": "11002",
+      "ineCodeWithCheck": "110027",
+      "checkDigit": "7",
+      "name": "Alcalá del Valle",
+      "searchKey": "alcala del valle"
+    },
+    {
+      "code": "003",
+      "ineCode": "11003",
+      "ineCodeWithCheck": "110033",
+      "checkDigit": "3",
+      "name": "Algar",
+      "searchKey": "algar"
+    },
+    {
+      "code": "004",
+      "ineCode": "11004",
+      "ineCodeWithCheck": "110048",
+      "checkDigit": "8",
+      "name": "Algeciras",
+      "searchKey": "algeciras"
+    },
+    {
+      "code": "005",
+      "ineCode": "11005",
+      "ineCodeWithCheck": "110051",
+      "checkDigit": "1",
+      "name": "Algodonales",
+      "searchKey": "algodonales"
+    },
+    {
+      "code": "006",
+      "ineCode": "11006",
+      "ineCodeWithCheck": "110064",
+      "checkDigit": "4",
+      "name": "Arcos de la Frontera",
+      "searchKey": "arcos de la frontera"
+    },
+    {
+      "code": "007",
+      "ineCode": "11007",
+      "ineCodeWithCheck": "110070",
+      "checkDigit": "0",
+      "name": "Barbate",
+      "searchKey": "barbate"
+    },
+    {
+      "code": "008",
+      "ineCode": "11008",
+      "ineCodeWithCheck": "110086",
+      "checkDigit": "6",
+      "name": "Barrios, Los",
+      "searchKey": "barrios los"
+    },
+    {
+      "code": "901",
+      "ineCode": "11901",
+      "ineCodeWithCheck": "119013",
+      "checkDigit": "3",
+      "name": "Benalup-Casas Viejas",
+      "searchKey": "benalup casas viejas"
+    },
+    {
+      "code": "009",
+      "ineCode": "11009",
+      "ineCodeWithCheck": "110099",
+      "checkDigit": "9",
+      "name": "Benaocaz",
+      "searchKey": "benaocaz"
+    },
+    {
+      "code": "010",
+      "ineCode": "11010",
+      "ineCodeWithCheck": "110103",
+      "checkDigit": "3",
+      "name": "Bornos",
+      "searchKey": "bornos"
+    },
+    {
+      "code": "011",
+      "ineCode": "11011",
+      "ineCodeWithCheck": "110110",
+      "checkDigit": "0",
+      "name": "Bosque, El",
+      "searchKey": "bosque el"
+    },
+    {
+      "code": "012",
+      "ineCode": "11012",
+      "ineCodeWithCheck": "110125",
+      "checkDigit": "5",
+      "name": "Cádiz",
+      "searchKey": "cadiz"
+    },
+    {
+      "code": "013",
+      "ineCode": "11013",
+      "ineCodeWithCheck": "110131",
+      "checkDigit": "1",
+      "name": "Castellar de la Frontera",
+      "searchKey": "castellar de la frontera"
+    },
+    {
+      "code": "015",
+      "ineCode": "11015",
+      "ineCodeWithCheck": "110159",
+      "checkDigit": "9",
+      "name": "Chiclana de la Frontera",
+      "searchKey": "chiclana de la frontera"
+    },
+    {
+      "code": "016",
+      "ineCode": "11016",
+      "ineCodeWithCheck": "110162",
+      "checkDigit": "2",
+      "name": "Chipiona",
+      "searchKey": "chipiona"
+    },
+    {
+      "code": "014",
+      "ineCode": "11014",
+      "ineCodeWithCheck": "110146",
+      "checkDigit": "6",
+      "name": "Conil de la Frontera",
+      "searchKey": "conil de la frontera"
+    },
+    {
+      "code": "017",
+      "ineCode": "11017",
+      "ineCodeWithCheck": "110178",
+      "checkDigit": "8",
+      "name": "Espera",
+      "searchKey": "espera"
+    },
+    {
+      "code": "018",
+      "ineCode": "11018",
+      "ineCodeWithCheck": "110184",
+      "checkDigit": "4",
+      "name": "Gastor, El",
+      "searchKey": "gastor el"
+    },
+    {
+      "code": "019",
+      "ineCode": "11019",
+      "ineCodeWithCheck": "110197",
+      "checkDigit": "7",
+      "name": "Grazalema",
+      "searchKey": "grazalema"
+    },
+    {
+      "code": "020",
+      "ineCode": "11020",
+      "ineCodeWithCheck": "110201",
+      "checkDigit": "1",
+      "name": "Jerez de la Frontera",
+      "searchKey": "jerez de la frontera"
+    },
+    {
+      "code": "021",
+      "ineCode": "11021",
+      "ineCodeWithCheck": "110218",
+      "checkDigit": "8",
+      "name": "Jimena de la Frontera",
+      "searchKey": "jimena de la frontera"
+    },
+    {
+      "code": "022",
+      "ineCode": "11022",
+      "ineCodeWithCheck": "110223",
+      "checkDigit": "3",
+      "name": "Línea de la Concepción, La",
+      "searchKey": "linea de la concepcion la"
+    },
+    {
+      "code": "023",
+      "ineCode": "11023",
+      "ineCodeWithCheck": "110239",
+      "checkDigit": "9",
+      "name": "Medina Sidonia",
+      "searchKey": "medina sidonia"
+    },
+    {
+      "code": "024",
+      "ineCode": "11024",
+      "ineCodeWithCheck": "110244",
+      "checkDigit": "4",
+      "name": "Olvera",
+      "searchKey": "olvera"
+    },
+    {
+      "code": "025",
+      "ineCode": "11025",
+      "ineCodeWithCheck": "110257",
+      "checkDigit": "7",
+      "name": "Paterna de Rivera",
+      "searchKey": "paterna de rivera"
+    },
+    {
+      "code": "026",
+      "ineCode": "11026",
+      "ineCodeWithCheck": "110260",
+      "checkDigit": "0",
+      "name": "Prado del Rey",
+      "searchKey": "prado del rey"
+    },
+    {
+      "code": "027",
+      "ineCode": "11027",
+      "ineCodeWithCheck": "110276",
+      "checkDigit": "6",
+      "name": "Puerto de Santa María, El",
+      "searchKey": "puerto de santa maria el"
+    },
+    {
+      "code": "028",
+      "ineCode": "11028",
+      "ineCodeWithCheck": "110282",
+      "checkDigit": "2",
+      "name": "Puerto Real",
+      "searchKey": "puerto real"
+    },
+    {
+      "code": "029",
+      "ineCode": "11029",
+      "ineCodeWithCheck": "110295",
+      "checkDigit": "5",
+      "name": "Puerto Serrano",
+      "searchKey": "puerto serrano"
+    },
+    {
+      "code": "030",
+      "ineCode": "11030",
+      "ineCodeWithCheck": "110309",
+      "checkDigit": "9",
+      "name": "Rota",
+      "searchKey": "rota"
+    },
+    {
+      "code": "031",
+      "ineCode": "11031",
+      "ineCodeWithCheck": "110316",
+      "checkDigit": "6",
+      "name": "San Fernando",
+      "searchKey": "san fernando"
+    },
+    {
+      "code": "902",
+      "ineCode": "11902",
+      "ineCodeWithCheck": "119028",
+      "checkDigit": "8",
+      "name": "San José del Valle",
+      "searchKey": "san jose del valle"
+    },
+    {
+      "code": "903",
+      "ineCode": "11903",
+      "ineCodeWithCheck": "119034",
+      "checkDigit": "4",
+      "name": "San Martín del Tesorillo",
+      "searchKey": "san martin del tesorillo"
+    },
+    {
+      "code": "033",
+      "ineCode": "11033",
+      "ineCodeWithCheck": "110337",
+      "checkDigit": "7",
+      "name": "San Roque",
+      "searchKey": "san roque"
+    },
+    {
+      "code": "032",
+      "ineCode": "11032",
+      "ineCodeWithCheck": "110321",
+      "checkDigit": "1",
+      "name": "Sanlúcar de Barrameda",
+      "searchKey": "sanlucar de barrameda"
+    },
+    {
+      "code": "034",
+      "ineCode": "11034",
+      "ineCodeWithCheck": "110342",
+      "checkDigit": "2",
+      "name": "Setenil de las Bodegas",
+      "searchKey": "setenil de las bodegas"
+    },
+    {
+      "code": "035",
+      "ineCode": "11035",
+      "ineCodeWithCheck": "110355",
+      "checkDigit": "5",
+      "name": "Tarifa",
+      "searchKey": "tarifa"
+    },
+    {
+      "code": "036",
+      "ineCode": "11036",
+      "ineCodeWithCheck": "110368",
+      "checkDigit": "8",
+      "name": "Torre Alháquime",
+      "searchKey": "torre alhaquime"
+    },
+    {
+      "code": "037",
+      "ineCode": "11037",
+      "ineCodeWithCheck": "110374",
+      "checkDigit": "4",
+      "name": "Trebujena",
+      "searchKey": "trebujena"
+    },
+    {
+      "code": "038",
+      "ineCode": "11038",
+      "ineCodeWithCheck": "110380",
+      "checkDigit": "0",
+      "name": "Ubrique",
+      "searchKey": "ubrique"
+    },
+    {
+      "code": "039",
+      "ineCode": "11039",
+      "ineCodeWithCheck": "110393",
+      "checkDigit": "3",
+      "name": "Vejer de la Frontera",
+      "searchKey": "vejer de la frontera"
+    },
+    {
+      "code": "040",
+      "ineCode": "11040",
+      "ineCodeWithCheck": "110407",
+      "checkDigit": "7",
+      "name": "Villaluenga del Rosario",
+      "searchKey": "villaluenga del rosario"
+    },
+    {
+      "code": "041",
+      "ineCode": "11041",
+      "ineCodeWithCheck": "110414",
+      "checkDigit": "4",
+      "name": "Villamartín",
+      "searchKey": "villamartin"
+    },
+    {
+      "code": "042",
+      "ineCode": "11042",
+      "ineCodeWithCheck": "110429",
+      "checkDigit": "9",
+      "name": "Zahara",
+      "searchKey": "zahara"
+    }
+  ]
+}

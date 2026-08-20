@@ -1,0 +1,281 @@
+{
+  "province": {
+    "code": "35",
+    "name": "Las Palmas",
+    "searchKey": "las palmas"
+  },
+  "municipalities": [
+    {
+      "code": "001",
+      "ineCode": "35001",
+      "ineCodeWithCheck": "350017",
+      "checkDigit": "7",
+      "name": "Agaete",
+      "searchKey": "agaete"
+    },
+    {
+      "code": "002",
+      "ineCode": "35002",
+      "ineCodeWithCheck": "350022",
+      "checkDigit": "2",
+      "name": "Agüimes",
+      "searchKey": "aguimes"
+    },
+    {
+      "code": "020",
+      "ineCode": "35020",
+      "ineCodeWithCheck": "350206",
+      "checkDigit": "6",
+      "name": "Aldea de San Nicolás, La",
+      "searchKey": "aldea de san nicolas la"
+    },
+    {
+      "code": "003",
+      "ineCode": "35003",
+      "ineCodeWithCheck": "350038",
+      "checkDigit": "8",
+      "name": "Antigua",
+      "searchKey": "antigua"
+    },
+    {
+      "code": "004",
+      "ineCode": "35004",
+      "ineCodeWithCheck": "350043",
+      "checkDigit": "3",
+      "name": "Arrecife",
+      "searchKey": "arrecife"
+    },
+    {
+      "code": "005",
+      "ineCode": "35005",
+      "ineCodeWithCheck": "350056",
+      "checkDigit": "6",
+      "name": "Artenara",
+      "searchKey": "artenara"
+    },
+    {
+      "code": "006",
+      "ineCode": "35006",
+      "ineCodeWithCheck": "350069",
+      "checkDigit": "9",
+      "name": "Arucas",
+      "searchKey": "arucas"
+    },
+    {
+      "code": "007",
+      "ineCode": "35007",
+      "ineCodeWithCheck": "350075",
+      "checkDigit": "5",
+      "name": "Betancuria",
+      "searchKey": "betancuria"
+    },
+    {
+      "code": "008",
+      "ineCode": "35008",
+      "ineCodeWithCheck": "350081",
+      "checkDigit": "1",
+      "name": "Firgas",
+      "searchKey": "firgas"
+    },
+    {
+      "code": "009",
+      "ineCode": "35009",
+      "ineCodeWithCheck": "350094",
+      "checkDigit": "4",
+      "name": "Gáldar",
+      "searchKey": "galdar"
+    },
+    {
+      "code": "010",
+      "ineCode": "35010",
+      "ineCodeWithCheck": "350108",
+      "checkDigit": "8",
+      "name": "Haría",
+      "searchKey": "haria"
+    },
+    {
+      "code": "011",
+      "ineCode": "35011",
+      "ineCodeWithCheck": "350115",
+      "checkDigit": "5",
+      "name": "Ingenio",
+      "searchKey": "ingenio"
+    },
+    {
+      "code": "012",
+      "ineCode": "35012",
+      "ineCodeWithCheck": "350120",
+      "checkDigit": "0",
+      "name": "Mogán",
+      "searchKey": "mogan"
+    },
+    {
+      "code": "013",
+      "ineCode": "35013",
+      "ineCodeWithCheck": "350136",
+      "checkDigit": "6",
+      "name": "Moya",
+      "searchKey": "moya"
+    },
+    {
+      "code": "014",
+      "ineCode": "35014",
+      "ineCodeWithCheck": "350141",
+      "checkDigit": "1",
+      "name": "Oliva, La",
+      "searchKey": "oliva la"
+    },
+    {
+      "code": "015",
+      "ineCode": "35015",
+      "ineCodeWithCheck": "350154",
+      "checkDigit": "4",
+      "name": "Pájara",
+      "searchKey": "pajara"
+    },
+    {
+      "code": "016",
+      "ineCode": "35016",
+      "ineCodeWithCheck": "350167",
+      "checkDigit": "7",
+      "name": "Palmas de Gran Canaria, Las",
+      "searchKey": "palmas de gran canaria las"
+    },
+    {
+      "code": "017",
+      "ineCode": "35017",
+      "ineCodeWithCheck": "350173",
+      "checkDigit": "3",
+      "name": "Puerto del Rosario",
+      "searchKey": "puerto del rosario"
+    },
+    {
+      "code": "018",
+      "ineCode": "35018",
+      "ineCodeWithCheck": "350189",
+      "checkDigit": "9",
+      "name": "San Bartolomé",
+      "searchKey": "san bartolome"
+    },
+    {
+      "code": "019",
+      "ineCode": "35019",
+      "ineCodeWithCheck": "350192",
+      "checkDigit": "2",
+      "name": "San Bartolomé de Tirajana",
+      "searchKey": "san bartolome de tirajana"
+    },
+    {
+      "code": "021",
+      "ineCode": "35021",
+      "ineCodeWithCheck": "350213",
+      "checkDigit": "3",
+      "name": "Santa Brígida",
+      "searchKey": "santa brigida"
+    },
+    {
+      "code": "022",
+      "ineCode": "35022",
+      "ineCodeWithCheck": "350228",
+      "checkDigit": "8",
+      "name": "Santa Lucía de Tirajana",
+      "searchKey": "santa lucia de tirajana"
+    },
+    {
+      "code": "023",
+      "ineCode": "35023",
+      "ineCodeWithCheck": "350234",
+      "checkDigit": "4",
+      "name": "Santa María de Guía de Gran Canaria",
+      "searchKey": "santa maria de guia de gran canaria"
+    },
+    {
+      "code": "024",
+      "ineCode": "35024",
+      "ineCodeWithCheck": "350249",
+      "checkDigit": "9",
+      "name": "Teguise",
+      "searchKey": "teguise"
+    },
+    {
+      "code": "025",
+      "ineCode": "35025",
+      "ineCodeWithCheck": "350252",
+      "checkDigit": "2",
+      "name": "Tejeda",
+      "searchKey": "tejeda"
+    },
+    {
+      "code": "026",
+      "ineCode": "35026",
+      "ineCodeWithCheck": "350265",
+      "checkDigit": "5",
+      "name": "Telde",
+      "searchKey": "telde"
+    },
+    {
+      "code": "027",
+      "ineCode": "35027",
+      "ineCodeWithCheck": "350271",
+      "checkDigit": "1",
+      "name": "Teror",
+      "searchKey": "teror"
+    },
+    {
+      "code": "028",
+      "ineCode": "35028",
+      "ineCodeWithCheck": "350287",
+      "checkDigit": "7",
+      "name": "Tías",
+      "searchKey": "tias"
+    },
+    {
+      "code": "029",
+      "ineCode": "35029",
+      "ineCodeWithCheck": "350290",
+      "checkDigit": "0",
+      "name": "Tinajo",
+      "searchKey": "tinajo"
+    },
+    {
+      "code": "030",
+      "ineCode": "35030",
+      "ineCodeWithCheck": "350304",
+      "checkDigit": "4",
+      "name": "Tuineje",
+      "searchKey": "tuineje"
+    },
+    {
+      "code": "032",
+      "ineCode": "35032",
+      "ineCodeWithCheck": "350326",
+      "checkDigit": "6",
+      "name": "Valleseco",
+      "searchKey": "valleseco"
+    },
+    {
+      "code": "031",
+      "ineCode": "35031",
+      "ineCodeWithCheck": "350311",
+      "checkDigit": "1",
+      "name": "Valsequillo de Gran Canaria",
+      "searchKey": "valsequillo de gran canaria"
+    },
+    {
+      "code": "033",
+      "ineCode": "35033",
+      "ineCodeWithCheck": "350332",
+      "checkDigit": "2",
+      "name": "Vega de San Mateo",
+      "searchKey": "vega de san mateo"
+    },
+    {
+      "code": "034",
+      "ineCode": "35034",
+      "ineCodeWithCheck": "350347",
+      "checkDigit": "7",
+      "name": "Yaiza",
+      "searchKey": "yaiza"
+    }
+  ]
+}

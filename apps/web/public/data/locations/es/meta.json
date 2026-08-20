@@ -1,0 +1,10 @@
+{
+  "countryCode": "ES",
+  "countryName": "España",
+  "source": "INE",
+  "sourceUrl": "https://www.ine.es/daco/daco42/codmun/26codmun.xlsx",
+  "effectiveDate": "2026-01-01",
+  "generatedAt": "2026-08-20T11:22:29.507102+00:00",
+  "provinceCount": 52,
+  "municipalityCount": 8132
+}

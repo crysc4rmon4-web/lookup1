@@ -1,0 +1,369 @@
+{
+  "province": {
+    "code": "30",
+    "name": "Murcia",
+    "searchKey": "murcia"
+  },
+  "municipalities": [
+    {
+      "code": "001",
+      "ineCode": "30001",
+      "ineCodeWithCheck": "300011",
+      "checkDigit": "1",
+      "name": "Abanilla",
+      "searchKey": "abanilla"
+    },
+    {
+      "code": "002",
+      "ineCode": "30002",
+      "ineCodeWithCheck": "300026",
+      "checkDigit": "6",
+      "name": "Abarán",
+      "searchKey": "abaran"
+    },
+    {
+      "code": "003",
+      "ineCode": "30003",
+      "ineCodeWithCheck": "300032",
+      "checkDigit": "2",
+      "name": "Águilas",
+      "searchKey": "aguilas"
+    },
+    {
+      "code": "004",
+      "ineCode": "30004",
+      "ineCodeWithCheck": "300047",
+      "checkDigit": "7",
+      "name": "Albudeite",
+      "searchKey": "albudeite"
+    },
+    {
+      "code": "005",
+      "ineCode": "30005",
+      "ineCodeWithCheck": "300050",
+      "checkDigit": "0",
+      "name": "Alcantarilla",
+      "searchKey": "alcantarilla"
+    },
+    {
+      "code": "902",
+      "ineCode": "30902",
+      "ineCodeWithCheck": "309027",
+      "checkDigit": "7",
+      "name": "Alcázares, Los",
+      "searchKey": "alcazares los"
+    },
+    {
+      "code": "006",
+      "ineCode": "30006",
+      "ineCodeWithCheck": "300063",
+      "checkDigit": "3",
+      "name": "Aledo",
+      "searchKey": "aledo"
+    },
+    {
+      "code": "007",
+      "ineCode": "30007",
+      "ineCodeWithCheck": "300079",
+      "checkDigit": "9",
+      "name": "Alguazas",
+      "searchKey": "alguazas"
+    },
+    {
+      "code": "008",
+      "ineCode": "30008",
+      "ineCodeWithCheck": "300085",
+      "checkDigit": "5",
+      "name": "Alhama de Murcia",
+      "searchKey": "alhama de murcia"
+    },
+    {
+      "code": "009",
+      "ineCode": "30009",
+      "ineCodeWithCheck": "300098",
+      "checkDigit": "8",
+      "name": "Archena",
+      "searchKey": "archena"
+    },
+    {
+      "code": "010",
+      "ineCode": "30010",
+      "ineCodeWithCheck": "300102",
+      "checkDigit": "2",
+      "name": "Beniel",
+      "searchKey": "beniel"
+    },
+    {
+      "code": "011",
+      "ineCode": "30011",
+      "ineCodeWithCheck": "300119",
+      "checkDigit": "9",
+      "name": "Blanca",
+      "searchKey": "blanca"
+    },
+    {
+      "code": "012",
+      "ineCode": "30012",
+      "ineCodeWithCheck": "300124",
+      "checkDigit": "4",
+      "name": "Bullas",
+      "searchKey": "bullas"
+    },
+    {
+      "code": "013",
+      "ineCode": "30013",
+      "ineCodeWithCheck": "300130",
+      "checkDigit": "0",
+      "name": "Calasparra",
+      "searchKey": "calasparra"
+    },
+    {
+      "code": "014",
+      "ineCode": "30014",
+      "ineCodeWithCheck": "300145",
+      "checkDigit": "5",
+      "name": "Campos del Río",
+      "searchKey": "campos del rio"
+    },
+    {
+      "code": "015",
+      "ineCode": "30015",
+      "ineCodeWithCheck": "300158",
+      "checkDigit": "8",
+      "name": "Caravaca de la Cruz",
+      "searchKey": "caravaca de la cruz"
+    },
+    {
+      "code": "016",
+      "ineCode": "30016",
+      "ineCodeWithCheck": "300161",
+      "checkDigit": "1",
+      "name": "Cartagena",
+      "searchKey": "cartagena"
+    },
+    {
+      "code": "017",
+      "ineCode": "30017",
+      "ineCodeWithCheck": "300177",
+      "checkDigit": "7",
+      "name": "Cehegín",
+      "searchKey": "cehegin"
+    },
+    {
+      "code": "018",
+      "ineCode": "30018",
+      "ineCodeWithCheck": "300183",
+      "checkDigit": "3",
+      "name": "Ceutí",
+      "searchKey": "ceuti"
+    },
+    {
+      "code": "019",
+      "ineCode": "30019",
+      "ineCodeWithCheck": "300196",
+      "checkDigit": "6",
+      "name": "Cieza",
+      "searchKey": "cieza"
+    },
+    {
+      "code": "020",
+      "ineCode": "30020",
+      "ineCodeWithCheck": "300200",
+      "checkDigit": "0",
+      "name": "Fortuna",
+      "searchKey": "fortuna"
+    },
+    {
+      "code": "021",
+      "ineCode": "30021",
+      "ineCodeWithCheck": "300217",
+      "checkDigit": "7",
+      "name": "Fuente Álamo de Murcia",
+      "searchKey": "fuente alamo de murcia"
+    },
+    {
+      "code": "022",
+      "ineCode": "30022",
+      "ineCodeWithCheck": "300222",
+      "checkDigit": "2",
+      "name": "Jumilla",
+      "searchKey": "jumilla"
+    },
+    {
+      "code": "023",
+      "ineCode": "30023",
+      "ineCodeWithCheck": "300238",
+      "checkDigit": "8",
+      "name": "Librilla",
+      "searchKey": "librilla"
+    },
+    {
+      "code": "024",
+      "ineCode": "30024",
+      "ineCodeWithCheck": "300243",
+      "checkDigit": "3",
+      "name": "Lorca",
+      "searchKey": "lorca"
+    },
+    {
+      "code": "025",
+      "ineCode": "30025",
+      "ineCodeWithCheck": "300256",
+      "checkDigit": "6",
+      "name": "Lorquí",
+      "searchKey": "lorqui"
+    },
+    {
+      "code": "026",
+      "ineCode": "30026",
+      "ineCodeWithCheck": "300269",
+      "checkDigit": "9",
+      "name": "Mazarrón",
+      "searchKey": "mazarron"
+    },
+    {
+      "code": "027",
+      "ineCode": "30027",
+      "ineCodeWithCheck": "300275",
+      "checkDigit": "5",
+      "name": "Molina de Segura",
+      "searchKey": "molina de segura"
+    },
+    {
+      "code": "028",
+      "ineCode": "30028",
+      "ineCodeWithCheck": "300281",
+      "checkDigit": "1",
+      "name": "Moratalla",
+      "searchKey": "moratalla"
+    },
+    {
+      "code": "029",
+      "ineCode": "30029",
+      "ineCodeWithCheck": "300294",
+      "checkDigit": "4",
+      "name": "Mula",
+      "searchKey": "mula"
+    },
+    {
+      "code": "030",
+      "ineCode": "30030",
+      "ineCodeWithCheck": "300308",
+      "checkDigit": "8",
+      "name": "Murcia",
+      "searchKey": "murcia"
+    },
+    {
+      "code": "031",
+      "ineCode": "30031",
+      "ineCodeWithCheck": "300315",
+      "checkDigit": "5",
+      "name": "Ojós",
+      "searchKey": "ojos"
+    },
+    {
+      "code": "032",
+      "ineCode": "30032",
+      "ineCodeWithCheck": "300320",
+      "checkDigit": "0",
+      "name": "Pliego",
+      "searchKey": "pliego"
+    },
+    {
+      "code": "033",
+      "ineCode": "30033",
+      "ineCodeWithCheck": "300336",
+      "checkDigit": "6",
+      "name": "Puerto Lumbreras",
+      "searchKey": "puerto lumbreras"
+    },
+    {
+      "code": "034",
+      "ineCode": "30034",
+      "ineCodeWithCheck": "300341",
+      "checkDigit": "1",
+      "name": "Ricote",
+      "searchKey": "ricote"
+    },
+    {
+      "code": "035",
+      "ineCode": "30035",
+      "ineCodeWithCheck": "300354",
+      "checkDigit": "4",
+      "name": "San Javier",
+      "searchKey": "san javier"
+    },
+    {
+      "code": "036",
+      "ineCode": "30036",
+      "ineCodeWithCheck": "300367",
+      "checkDigit": "7",
+      "name": "San Pedro del Pinatar",
+      "searchKey": "san pedro del pinatar"
+    },
+    {
+      "code": "901",
+      "ineCode": "30901",
+      "ineCodeWithCheck": "309012",
+      "checkDigit": "2",
+      "name": "Santomera",
+      "searchKey": "santomera"
+    },
+    {
+      "code": "037",
+      "ineCode": "30037",
+      "ineCodeWithCheck": "300373",
+      "checkDigit": "3",
+      "name": "Torre-Pacheco",
+      "searchKey": "torre pacheco"
+    },
+    {
+      "code": "038",
+      "ineCode": "30038",
+      "ineCodeWithCheck": "300389",
+      "checkDigit": "9",
+      "name": "Torres de Cotillas, Las",
+      "searchKey": "torres de cotillas las"
+    },
+    {
+      "code": "039",
+      "ineCode": "30039",
+      "ineCodeWithCheck": "300392",
+      "checkDigit": "2",
+      "name": "Totana",
+      "searchKey": "totana"
+    },
+    {
+      "code": "040",
+      "ineCode": "30040",
+      "ineCodeWithCheck": "300406",
+      "checkDigit": "6",
+      "name": "Ulea",
+      "searchKey": "ulea"
+    },
+    {
+      "code": "041",
+      "ineCode": "30041",
+      "ineCodeWithCheck": "300413",
+      "checkDigit": "3",
+      "name": "Unión, La",
+      "searchKey": "union la"
+    },
+    {
+      "code": "042",
+      "ineCode": "30042",
+      "ineCodeWithCheck": "300428",
+      "checkDigit": "8",
+      "name": "Villanueva del Río Segura",
+      "searchKey": "villanueva del rio segura"
+    },
+    {
+      "code": "043",
+      "ineCode": "30043",
+      "ineCodeWithCheck": "300434",
+      "checkDigit": "4",
+      "name": "Yecla",
+      "searchKey": "yecla"
+    }
+  ]
+}

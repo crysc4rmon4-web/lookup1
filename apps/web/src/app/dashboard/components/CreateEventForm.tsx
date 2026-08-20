@@ -18,6 +18,7 @@ import {
   LoaderCircle,
   MapPin,
   Plus,
+  Search,
   Sparkles,
   Ticket,
   Users,
@@ -33,6 +34,14 @@ import {
 } from "@/lib/events/event-domain";
 
 import {
+  getSpainMunicipalities,
+  getSpainProvinces,
+  normalizeLocationSearch,
+  type SpainMunicipality,
+  type SpainProvince,
+} from "@/lib/locations/spain-locations";
+
+import {
   createEventDraft,
 } from "@/services/events/create-event-draft";
 
@@ -43,7 +52,6 @@ import {
 
 type CreateEventFormProps = {
   accessToken: string;
-
   defaultCity?: string;
   defaultProvince?: string;
 
@@ -104,6 +112,9 @@ const MINIMUM_START_LEAD_MINUTES =
 const DEFAULT_EVENT_DURATION_HOURS =
   2;
 
+const INPUT_CLASS =
+  "mt-2 w-full rounded-2xl border border-slate-200 bg-[#FBFCFE] px-4 py-3.5 text-sm font-semibold text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-[#5D5FEF] focus:bg-white focus:ring-4 focus:ring-[#5D5FEF]/10 disabled:cursor-not-allowed disabled:opacity-60";
+
 function padNumber(
   value: number,
 ) {
@@ -122,8 +133,7 @@ function toLocalDateTimeInput(
     date.getFullYear(),
     "-",
     padNumber(
-      date.getMonth() +
-        1,
+      date.getMonth() + 1,
     ),
     "-",
     padNumber(
@@ -162,8 +172,8 @@ function roundUpToInterval(
   ) {
     result.setMinutes(
       minutes +
-        intervalMinutes -
-        remainder,
+      intervalMinutes -
+      remainder,
     );
   }
 
@@ -181,9 +191,9 @@ function getMinimumStartDate(
   const withLead =
     new Date(
       now.getTime() +
-        MINIMUM_START_LEAD_MINUTES *
-          60 *
-          1000,
+      MINIMUM_START_LEAD_MINUTES *
+      60 *
+      1000,
     );
 
   return roundUpToInterval(
@@ -199,10 +209,10 @@ function createInitialDates() {
   const end =
     new Date(
       start.getTime() +
-        DEFAULT_EVENT_DURATION_HOURS *
-          60 *
-          60 *
-          1000,
+      DEFAULT_EVENT_DURATION_HOURS *
+      60 *
+      60 *
+      1000,
     );
 
   return {
@@ -309,7 +319,45 @@ function toIsoDateTime(
 
   return date.toISOString();
 }
+function normalizeExternalUrl(
+  value: string,
+): string | null {
+  const trimmed =
+    value.trim();
 
+  if (!trimmed) {
+    return null;
+  }
+
+  const candidate =
+    /^https?:\/\//i.test(
+      trimmed,
+    )
+      ? trimmed
+      : `https://${trimmed}`;
+
+  try {
+    const url =
+      new URL(
+        candidate,
+      );
+
+    if (
+      url.protocol !==
+      "http:" &&
+      url.protocol !==
+      "https:"
+    ) {
+      throw new Error();
+    }
+
+    return url.toString();
+  } catch {
+    throw new Error(
+      "Introduce una dirección web válida.",
+    );
+  }
+}
 function TokenField({
   label,
   description,
@@ -416,18 +464,17 @@ function TokenField({
   ) {
     if (
       event.key ===
-        "Enter" ||
+      "Enter" ||
       event.key ===
-        ","
+      ","
     ) {
       event.preventDefault();
-
       addValue();
     }
 
     if (
       event.key ===
-        "Backspace" &&
+      "Backspace" &&
       !currentValue &&
       values.length > 0
     ) {
@@ -477,7 +524,7 @@ function TokenField({
 
       <div className="mt-3 rounded-2xl border border-slate-200 bg-white px-3 py-3 transition focus-within:border-[#5D5FEF] focus-within:ring-4 focus-within:ring-[#5D5FEF]/10">
         {values.length >
-        0 ? (
+          0 ? (
           <div className="mb-2 flex flex-wrap gap-2">
             {values.map(
               (value) => (
@@ -573,7 +620,6 @@ function SectionHeading({
   description,
 }: {
   icon: ReactNode;
-
   eyebrow: string;
   title: string;
   description: string;
@@ -654,6 +700,62 @@ export function CreateEventForm({
     >(null);
 
   const [
+    provinces,
+    setProvinces,
+  ] =
+    useState<
+      SpainProvince[]
+    >([]);
+
+  const [
+    provincesLoading,
+    setProvincesLoading,
+  ] =
+    useState(true);
+
+  const [
+    provincesError,
+    setProvincesError,
+  ] =
+    useState<
+      string | null
+    >(null);
+
+  const [
+    selectedProvinceCode,
+    setSelectedProvinceCode,
+  ] =
+    useState("");
+
+  const [
+    municipalities,
+    setMunicipalities,
+  ] =
+    useState<
+      SpainMunicipality[]
+    >([]);
+
+  const [
+    municipalitiesLoading,
+    setMunicipalitiesLoading,
+  ] =
+    useState(false);
+
+  const [
+    municipalitiesError,
+    setMunicipalitiesError,
+  ] =
+    useState<
+      string | null
+    >(null);
+
+  const [
+    municipalityMenuOpen,
+    setMunicipalityMenuOpen,
+  ] =
+    useState(false);
+
+  const [
     saving,
     setSaving,
   ] =
@@ -726,23 +828,19 @@ export function CreateEventForm({
           );
         }
       } catch (error) {
-        console.error(
-          "❌ Error cargando categorías de eventos",
-          error,
+        if (!mounted) {
+          return;
+        }
+
+        setCategories(
+          [],
         );
 
-        if (mounted) {
-          setCategories(
-            [],
-          );
-
-          setCategoriesError(
-            error instanceof
-              Error
-              ? error.message
-              : "No se pudieron cargar las categorías.",
-          );
-        }
+        setCategoriesError(
+          error instanceof Error
+            ? error.message
+            : "No se pudieron cargar las categorías.",
+        );
       } finally {
         if (mounted) {
           setCategoriesLoading(
@@ -760,6 +858,209 @@ export function CreateEventForm({
     };
   }, []);
 
+  useEffect(() => {
+    let mounted =
+      true;
+
+    async function loadProvinces() {
+      setProvincesLoading(
+        true,
+      );
+
+      setProvincesError(
+        null,
+      );
+
+      try {
+        const result =
+          await getSpainProvinces();
+
+        if (!mounted) {
+          return;
+        }
+
+        const sorted =
+          [...result].sort(
+            (a, b) =>
+              a.name.localeCompare(
+                b.name,
+                "es",
+                {
+                  sensitivity:
+                    "base",
+                },
+              ),
+          );
+
+        setProvinces(
+          sorted,
+        );
+
+        const normalizedDefault =
+          normalizeLocationSearch(
+            defaultProvince,
+          );
+
+        if (
+          normalizedDefault
+        ) {
+          const match =
+            sorted.find(
+              (province) =>
+                province.searchKey ===
+                normalizedDefault,
+            );
+
+          if (match) {
+            setSelectedProvinceCode(
+              match.code,
+            );
+
+            setForm(
+              (current) => ({
+                ...current,
+                province:
+                  match.name,
+              }),
+            );
+          }
+        }
+      } catch (error) {
+        if (!mounted) {
+          return;
+        }
+
+        setProvinces(
+          [],
+        );
+
+        setProvincesError(
+          error instanceof Error
+            ? error.message
+            : "No se pudo cargar el catálogo de provincias.",
+        );
+      } finally {
+        if (mounted) {
+          setProvincesLoading(
+            false,
+          );
+        }
+      }
+    }
+
+    void loadProvinces();
+
+    return () => {
+      mounted =
+        false;
+    };
+  }, [
+    defaultProvince,
+  ]);
+
+  useEffect(() => {
+    if (
+      !selectedProvinceCode
+    ) {
+      setMunicipalities(
+        [],
+      );
+
+      setMunicipalitiesLoading(
+        false,
+      );
+
+      return;
+    }
+
+    let mounted =
+      true;
+
+    async function loadMunicipalities() {
+      setMunicipalitiesLoading(
+        true,
+      );
+
+      setMunicipalitiesError(
+        null,
+      );
+
+      try {
+        const result =
+          await getSpainMunicipalities(
+            selectedProvinceCode,
+          );
+
+        if (!mounted) {
+          return;
+        }
+
+        setMunicipalities(
+          result,
+        );
+
+        const currentCityKey =
+          normalizeLocationSearch(
+            form.city,
+          );
+
+        if (
+          currentCityKey
+        ) {
+          const exactMatch =
+            result.find(
+              (municipality) =>
+                municipality.searchKey ===
+                currentCityKey,
+            );
+
+          if (
+            exactMatch
+          ) {
+            setForm(
+              (current) => ({
+                ...current,
+                city:
+                  exactMatch.name,
+              }),
+            );
+          }
+        }
+      } catch (error) {
+        if (!mounted) {
+          return;
+        }
+
+        setMunicipalities(
+          [],
+        );
+
+        setMunicipalitiesError(
+          error instanceof Error
+            ? error.message
+            : "No se pudieron cargar los municipios.",
+        );
+      } finally {
+        if (mounted) {
+          setMunicipalitiesLoading(
+            false,
+          );
+        }
+      }
+    }
+
+    void loadMunicipalities();
+
+    return () => {
+      mounted =
+        false;
+    };
+    // Solo debe recargarse cuando cambia la provincia.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    selectedProvinceCode,
+  ]);
+
   const selectedCategory =
     useMemo(
       () =>
@@ -772,6 +1073,117 @@ export function CreateEventForm({
       [
         categories,
         form.category,
+      ],
+    );
+
+  const selectedProvince =
+    useMemo(
+      () =>
+        provinces.find(
+          (province) =>
+            province.code ===
+            selectedProvinceCode,
+        ) ??
+        null,
+      [
+        provinces,
+        selectedProvinceCode,
+      ],
+    );
+
+  const selectedMunicipality =
+    useMemo(
+      () => {
+        const key =
+          normalizeLocationSearch(
+            form.city,
+          );
+
+        if (!key) {
+          return null;
+        }
+
+        return (
+          municipalities.find(
+            (municipality) =>
+              municipality.searchKey ===
+              key,
+          ) ??
+          null
+        );
+      },
+      [
+        form.city,
+        municipalities,
+      ],
+    );
+
+  const filteredMunicipalities =
+    useMemo(
+      () => {
+        const query =
+          normalizeLocationSearch(
+            form.city,
+          );
+
+        if (!query) {
+          return municipalities.slice(
+            0,
+            60,
+          );
+        }
+
+        return municipalities
+          .filter(
+            (municipality) =>
+              municipality.searchKey.includes(
+                query,
+              ),
+          )
+          .sort(
+            (a, b) => {
+              const aStarts =
+                a.searchKey.startsWith(
+                  query,
+                )
+                  ? 0
+                  : 1;
+
+              const bStarts =
+                b.searchKey.startsWith(
+                  query,
+                )
+                  ? 0
+                  : 1;
+
+              if (
+                aStarts !==
+                bStarts
+              ) {
+                return (
+                  aStarts -
+                  bStarts
+                );
+              }
+
+              return a.name.localeCompare(
+                b.name,
+                "es",
+                {
+                  sensitivity:
+                    "base",
+                },
+              );
+            },
+          )
+          .slice(
+            0,
+            60,
+          );
+      },
+      [
+        form.city,
+        municipalities,
       ],
     );
 
@@ -796,6 +1208,71 @@ export function CreateEventForm({
 
     setSaveError(
       null,
+    );
+  }
+
+  function handleProvinceChange(
+    provinceCode: string,
+  ) {
+    const province =
+      provinces.find(
+        (item) =>
+          item.code ===
+          provinceCode,
+      );
+
+    setSelectedProvinceCode(
+      provinceCode,
+    );
+
+    setMunicipalityMenuOpen(
+      false,
+    );
+
+    setMunicipalitiesError(
+      null,
+    );
+
+    setSaveError(
+      null,
+    );
+
+    setForm(
+      (current) => ({
+        ...current,
+
+        province:
+          province?.name ??
+          "",
+
+        city: "",
+      }),
+    );
+  }
+
+  function handleMunicipalityChange(
+    value: string,
+  ) {
+    updateField(
+      "city",
+      value,
+    );
+
+    setMunicipalityMenuOpen(
+      true,
+    );
+  }
+
+  function selectMunicipality(
+    municipality: SpainMunicipality,
+  ) {
+    updateField(
+      "city",
+      municipality.name,
+    );
+
+    setMunicipalityMenuOpen(
+      false,
     );
   }
 
@@ -839,7 +1316,7 @@ export function CreateEventForm({
             currentEnd.getTime(),
           ) ||
           currentEnd.getTime() <=
-            nextStart.getTime();
+          nextStart.getTime();
 
         if (
           !endNeedsUpdate
@@ -854,10 +1331,10 @@ export function CreateEventForm({
         const nextEnd =
           new Date(
             nextStart.getTime() +
-              DEFAULT_EVENT_DURATION_HOURS *
-                60 *
-                60 *
-                1000,
+            DEFAULT_EVENT_DURATION_HOURS *
+            60 *
+            60 *
+            1000,
           );
 
         return {
@@ -893,6 +1370,40 @@ export function CreateEventForm({
     );
 
     try {
+      if (
+        !selectedProvince
+      ) {
+        setSaveError(
+          "Selecciona una provincia oficial del catálogo.",
+        );
+
+        return;
+      }
+
+      if (
+        municipalitiesLoading
+      ) {
+        setSaveError(
+          "Espera a que termine de cargar el municipio.",
+        );
+
+        return;
+      }
+
+      if (
+        !selectedMunicipality
+      ) {
+        setSaveError(
+          "Selecciona un municipio válido de la provincia elegida.",
+        );
+
+        setMunicipalityMenuOpen(
+          true,
+        );
+
+        return;
+      }
+
       const startAt =
         toIsoDateTime(
           form.startAt,
@@ -909,71 +1420,73 @@ export function CreateEventForm({
         form.isFree
           ? null
           : toNullableNumber(
-              form.priceFrom,
-            );
+            form.priceFrom,
+          );
 
       const capacity =
         toNullableNumber(
           form.capacity,
         );
-
+      const externalUrl =
+        normalizeExternalUrl(
+          form.externalUrl,
+        );
       const input: EventDraftCreateInput =
-        {
-          title:
-            form.title,
+      {
+        title:
+          form.title,
 
-          description:
-            form.description,
+        description:
+          form.description,
 
-          category:
-            form.category,
+        category:
+          form.category,
 
-          tags:
-            form.tags,
+        tags:
+          form.tags,
 
-          audience:
-            form.audience,
+        audience:
+          form.audience,
 
-          venueName:
-            form.venueName,
+        venueName:
+          form.venueName,
 
-          address:
-            form.address,
+        address:
+          form.address,
 
-          city:
-            form.city,
+        city:
+          selectedMunicipality.name,
 
-          province:
-            form.province,
+        province:
+          selectedProvince.name,
 
-          postalCode:
-            form.postalCode.trim() ||
-            null,
+        postalCode:
+          form.postalCode.trim() ||
+          null,
 
-          startAt,
-          endAt,
+        startAt,
+        endAt,
 
-          isFree:
-            form.isFree,
+        isFree:
+          form.isFree,
 
-          priceFrom,
+        priceFrom,
 
-          externalUrl:
-            form.externalUrl.trim() ||
-            null,
+        externalUrl,
 
-          externalActionLabel:
-            form.externalActionLabel.trim() ||
-            null,
+        externalActionLabel:
+          form.externalActionLabel.trim() ||
+          null,
 
-          capacity,
-        };
+        capacity,
+      };
 
       /*
-       * La UI reutiliza exactamente el mismo dominio que el servidor.
+       * La UI reutiliza el dominio del servidor para ofrecer
+       * feedback inmediato.
        *
-       * Esto mejora el feedback inmediato, pero la API vuelve a validar
-       * todo y continúa siendo la autoridad de seguridad.
+       * La API vuelve a validar toda la información y continúa
+       * siendo la autoridad de seguridad.
        */
       parseEventDraftCreateInput(
         input,
@@ -993,13 +1506,6 @@ export function CreateEventForm({
         draft,
       );
     } catch (error) {
-      /*
-       * Un error de validación forma parte del uso normal del formulario.
-       *
-       * No lo enviamos a console.error porque Next.js en desarrollo
-       * interpreta esos errores registrados como incidencias y muestra
-       * el overlay de desarrollo.
-       */
       if (
         error instanceof
         EventValidationError
@@ -1148,7 +1654,9 @@ export function CreateEventForm({
                       autoCorrect="on"
                       autoCapitalize="sentences"
                       placeholder="Ej. Encuentro de IA y proyectos locales"
-                      className="mt-2 w-full rounded-2xl border border-slate-200 bg-[#FBFCFE] px-4 py-3.5 text-sm font-semibold text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-[#5D5FEF] focus:bg-white focus:ring-4 focus:ring-[#5D5FEF]/10"
+                      className={
+                        INPUT_CLASS
+                      }
                     />
                   </div>
 
@@ -1361,7 +1869,7 @@ export function CreateEventForm({
                   }
                   eyebrow="02 · Lugar"
                   title="¿Dónde sucede?"
-                  description="LookUp verificará la ubicación antes de guardar coordenadas."
+                  description="Selecciona provincia y municipio del catálogo oficial. LookUp verificará después la dirección exacta."
                 />
 
                 <div className="mt-6 grid gap-4 sm:grid-cols-2">
@@ -1399,7 +1907,9 @@ export function CreateEventForm({
                       autoCorrect="on"
                       autoCapitalize="words"
                       placeholder="Ej. Palacio de la Audiencia"
-                      className="mt-2 w-full rounded-2xl border border-slate-200 bg-[#FBFCFE] px-4 py-3.5 text-sm font-semibold text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-[#5D5FEF] focus:bg-white focus:ring-4 focus:ring-[#5D5FEF]/10"
+                      className={
+                        INPUT_CLASS
+                      }
                     />
                   </div>
 
@@ -1437,45 +1947,9 @@ export function CreateEventForm({
                       autoCorrect="on"
                       autoCapitalize="words"
                       placeholder="Calle, plaza y número"
-                      className="mt-2 w-full rounded-2xl border border-slate-200 bg-[#FBFCFE] px-4 py-3.5 text-sm font-semibold text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-[#5D5FEF] focus:bg-white focus:ring-4 focus:ring-[#5D5FEF]/10"
-                    />
-                  </div>
-
-                  <div>
-                    <label
-                      htmlFor="event-city"
-                      className="text-sm font-black text-slate-900"
-                    >
-                      Ciudad
-                    </label>
-
-                    <input
-                      id="event-city"
-                      value={
-                        form.city
+                      className={
+                        INPUT_CLASS
                       }
-                      onChange={(
-                        event,
-                      ) =>
-                        updateField(
-                          "city",
-                          event
-                            .target
-                            .value,
-                        )
-                      }
-                      required
-                      minLength={
-                        EVENT_LIMITS.cityMin
-                      }
-                      maxLength={
-                        EVENT_LIMITS.cityMax
-                      }
-                      spellCheck
-                      autoCorrect="on"
-                      autoCapitalize="words"
-                      placeholder="Soria"
-                      className="mt-2 w-full rounded-2xl border border-slate-200 bg-[#FBFCFE] px-4 py-3.5 text-sm font-semibold text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-[#5D5FEF] focus:bg-white focus:ring-4 focus:ring-[#5D5FEF]/10"
                     />
                   </div>
 
@@ -1487,34 +1961,245 @@ export function CreateEventForm({
                       Provincia
                     </label>
 
-                    <input
-                      id="event-province"
-                      value={
-                        form.province
-                      }
-                      onChange={(
-                        event,
-                      ) =>
-                        updateField(
-                          "province",
-                          event
-                            .target
-                            .value,
-                        )
-                      }
-                      required
-                      minLength={
-                        EVENT_LIMITS.provinceMin
-                      }
-                      maxLength={
-                        EVENT_LIMITS.provinceMax
-                      }
-                      spellCheck
-                      autoCorrect="on"
-                      autoCapitalize="words"
-                      placeholder="Soria"
-                      className="mt-2 w-full rounded-2xl border border-slate-200 bg-[#FBFCFE] px-4 py-3.5 text-sm font-semibold text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-[#5D5FEF] focus:bg-white focus:ring-4 focus:ring-[#5D5FEF]/10"
-                    />
+                    {provincesLoading ? (
+                      <div className="mt-2 flex items-center gap-2 rounded-2xl border border-slate-200 bg-[#FBFCFE] px-4 py-3.5 text-sm font-semibold text-slate-500">
+                        <LoaderCircle
+                          size={17}
+                          className="animate-spin"
+                        />
+
+                        Cargando…
+                      </div>
+                    ) : (
+                      <div className="relative mt-2">
+                        <select
+                          id="event-province"
+                          value={
+                            selectedProvinceCode
+                          }
+                          onChange={(
+                            event,
+                          ) =>
+                            handleProvinceChange(
+                              event
+                                .target
+                                .value,
+                            )
+                          }
+                          required
+                          disabled={
+                            provinces.length ===
+                            0
+                          }
+                          className="w-full appearance-none rounded-2xl border border-slate-200 bg-[#FBFCFE] px-4 py-3.5 pr-11 text-sm font-bold text-slate-950 outline-none transition focus:border-[#5D5FEF] focus:bg-white focus:ring-4 focus:ring-[#5D5FEF]/10 disabled:cursor-not-allowed disabled:opacity-60"
+                        >
+                          <option value="">
+                            Selecciona provincia
+                          </option>
+
+                          {provinces.map(
+                            (province) => (
+                              <option
+                                key={
+                                  province.code
+                                }
+                                value={
+                                  province.code
+                                }
+                              >
+                                {
+                                  province.name
+                                }
+                              </option>
+                            ),
+                          )}
+                        </select>
+
+                        <ChevronRight
+                          size={18}
+                          className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 rotate-90 text-slate-400"
+                        />
+                      </div>
+                    )}
+
+                    {provincesError ? (
+                      <p className="mt-2 text-xs font-bold text-rose-600">
+                        {
+                          provincesError
+                        }
+                      </p>
+                    ) : null}
+                  </div>
+
+                  <div>
+                    <label
+                      htmlFor="event-city"
+                      className="text-sm font-black text-slate-900"
+                    >
+                      Municipio
+                    </label>
+
+                    <div className="relative mt-2">
+                      <Search
+                        size={17}
+                        className="pointer-events-none absolute left-4 top-1/2 z-10 -translate-y-1/2 text-slate-400"
+                      />
+
+                      <input
+                        id="event-city"
+                        value={
+                          form.city
+                        }
+                        onChange={(
+                          event,
+                        ) =>
+                          handleMunicipalityChange(
+                            event
+                              .target
+                              .value,
+                          )
+                        }
+                        onFocus={() =>
+                          setMunicipalityMenuOpen(
+                            true,
+                          )
+                        }
+                        onBlur={() => {
+                          window.setTimeout(
+                            () =>
+                              setMunicipalityMenuOpen(
+                                false,
+                              ),
+                            120,
+                          );
+                        }}
+                        disabled={
+                          !selectedProvinceCode ||
+                          municipalitiesLoading
+                        }
+                        required
+                        minLength={
+                          EVENT_LIMITS.cityMin
+                        }
+                        maxLength={
+                          EVENT_LIMITS.cityMax
+                        }
+                        autoComplete="off"
+                        spellCheck={false}
+                        placeholder={
+                          !selectedProvinceCode
+                            ? "Primero selecciona provincia"
+                            : municipalitiesLoading
+                              ? "Cargando municipios…"
+                              : "Buscar municipio…"
+                        }
+                        role="combobox"
+                        aria-expanded={
+                          municipalityMenuOpen
+                        }
+                        aria-autocomplete="list"
+                        className="w-full rounded-2xl border border-slate-200 bg-[#FBFCFE] py-3.5 pl-11 pr-4 text-sm font-semibold text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-[#5D5FEF] focus:bg-white focus:ring-4 focus:ring-[#5D5FEF]/10 disabled:cursor-not-allowed disabled:opacity-60"
+                      />
+
+                      {municipalityMenuOpen &&
+                        selectedProvinceCode &&
+                        !municipalitiesLoading ? (
+                        <div
+                          role="listbox"
+                          className="absolute left-0 right-0 top-[calc(100%+0.5rem)] z-40 max-h-64 overflow-y-auto rounded-2xl border border-slate-200 bg-white p-2 shadow-2xl"
+                        >
+                          {filteredMunicipalities.length >
+                            0 ? (
+                            filteredMunicipalities.map(
+                              (
+                                municipality,
+                              ) => (
+                                <button
+                                  key={
+                                    municipality.ineCode
+                                  }
+                                  type="button"
+                                  role="option"
+                                  aria-selected={
+                                    selectedMunicipality?.ineCode ===
+                                    municipality.ineCode
+                                  }
+                                  onMouseDown={(
+                                    event,
+                                  ) => {
+                                    event.preventDefault();
+
+                                    selectMunicipality(
+                                      municipality,
+                                    );
+                                  }}
+                                  className={`flex w-full items-center justify-between rounded-xl px-3 py-3 text-left text-sm transition ${selectedMunicipality?.ineCode ===
+                                    municipality.ineCode
+                                    ? "bg-[#F0F0FF] font-black text-[#5052D9]"
+                                    : "font-semibold text-slate-700 hover:bg-slate-50"
+                                    }`}
+                                >
+                                  <span>
+                                    {
+                                      municipality.name
+                                    }
+                                  </span>
+
+                                  {selectedMunicipality?.ineCode ===
+                                    municipality.ineCode ? (
+                                    <Check
+                                      size={15}
+                                    />
+                                  ) : null}
+                                </button>
+                              ),
+                            )
+                          ) : (
+                            <div className="px-3 py-5 text-center">
+                              <p className="text-sm font-bold text-slate-600">
+                                No encontramos ese municipio.
+                              </p>
+
+                              <p className="mt-1 text-xs text-slate-400">
+                                Comprueba el nombre o prueba otra búsqueda.
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      ) : null}
+                    </div>
+
+                    {municipalitiesLoading ? (
+                      <p className="mt-2 flex items-center gap-1.5 text-xs font-semibold text-slate-400">
+                        <LoaderCircle
+                          size={13}
+                          className="animate-spin"
+                        />
+
+                        Cargando municipios de{" "}
+                        {
+                          selectedProvince?.name
+                        }…
+                      </p>
+                    ) : municipalitiesError ? (
+                      <p className="mt-2 text-xs font-bold text-rose-600">
+                        {
+                          municipalitiesError
+                        }
+                      </p>
+                    ) : selectedMunicipality ? (
+                      <p className="mt-2 flex items-center gap-1.5 text-xs font-bold text-emerald-600">
+                        <Check
+                          size={13}
+                        />
+
+                        Municipio oficial seleccionado
+                      </p>
+                    ) : form.city.trim() ? (
+                      <p className="mt-2 text-xs font-semibold text-amber-600">
+                        Selecciona uno de los resultados para confirmar el municipio.
+                      </p>
+                    ) : null}
                   </div>
 
                   <div className="sm:col-span-2 sm:max-w-[14rem]">
@@ -1546,7 +2231,9 @@ export function CreateEventForm({
                       placeholder="42002"
                       inputMode="numeric"
                       autoComplete="postal-code"
-                      className="mt-2 w-full rounded-2xl border border-slate-200 bg-[#FBFCFE] px-4 py-3.5 text-sm font-semibold text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-[#5D5FEF] focus:bg-white focus:ring-4 focus:ring-[#5D5FEF]/10"
+                      className={
+                        INPUT_CLASS
+                      }
                     />
                   </div>
                 </div>
@@ -1558,7 +2245,7 @@ export function CreateEventForm({
                   />
 
                   <p className="text-xs font-semibold leading-5">
-                    LookUp nunca aceptará silenciosamente una ubicación que no corresponda de forma fiable con la ciudad indicada.
+                    Provincia y municipio proceden del catálogo oficial. La dirección se verificará antes de guardar coordenadas para evitar ubicaciones incorrectas.
                   </p>
                 </div>
               </section>
@@ -1679,11 +2366,10 @@ export function CreateEventForm({
                           true,
                         )
                       }
-                      className={`rounded-xl px-4 py-3 text-sm font-black transition ${
-                        form.isFree
-                          ? "bg-white text-slate-950 shadow-sm"
-                          : "text-slate-500 hover:text-slate-800"
-                      }`}
+                      className={`rounded-xl px-4 py-3 text-sm font-black transition ${form.isFree
+                        ? "bg-white text-slate-950 shadow-sm"
+                        : "text-slate-500 hover:text-slate-800"
+                        }`}
                     >
                       Gratis
                     </button>
@@ -1696,11 +2382,10 @@ export function CreateEventForm({
                           false,
                         )
                       }
-                      className={`rounded-xl px-4 py-3 text-sm font-black transition ${
-                        !form.isFree
-                          ? "bg-white text-slate-950 shadow-sm"
-                          : "text-slate-500 hover:text-slate-800"
-                      }`}
+                      className={`rounded-xl px-4 py-3 text-sm font-black transition ${!form.isFree
+                        ? "bg-white text-slate-950 shadow-sm"
+                        : "text-slate-500 hover:text-slate-800"
+                        }`}
                     >
                       De pago
                     </button>
@@ -1812,7 +2497,7 @@ export function CreateEventForm({
 
                     <input
                       id="event-external-url"
-                      type="url"
+                      type="text"
                       value={
                         form.externalUrl
                       }
@@ -1831,7 +2516,9 @@ export function CreateEventForm({
                       autoCorrect="off"
                       spellCheck={false}
                       placeholder="https://..."
-                      className="mt-2 w-full rounded-2xl border border-slate-200 bg-[#FBFCFE] px-4 py-3.5 text-sm font-semibold text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-[#5D5FEF] focus:bg-white focus:ring-4 focus:ring-[#5D5FEF]/10"
+                      className={
+                        INPUT_CLASS
+                      }
                     />
 
                     {form.externalUrl.trim() ? (
@@ -1865,7 +2552,9 @@ export function CreateEventForm({
                           autoCorrect="on"
                           autoCapitalize="sentences"
                           placeholder="Ej. Reservar plaza"
-                          className="mt-2 w-full rounded-2xl border border-slate-200 bg-[#FBFCFE] px-4 py-3.5 text-sm font-semibold text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-[#5D5FEF] focus:bg-white focus:ring-4 focus:ring-[#5D5FEF]/10"
+                          className={
+                            INPUT_CLASS
+                          }
                         />
                       </div>
                     ) : null}
@@ -1931,7 +2620,11 @@ export function CreateEventForm({
                   saving ||
                   categoriesLoading ||
                   categories.length ===
-                    0
+                  0 ||
+                  provincesLoading ||
+                  provinces.length ===
+                  0 ||
+                  municipalitiesLoading
                 }
                 className="flex min-h-12 flex-1 items-center justify-center gap-2 rounded-2xl bg-[#5D5FEF] px-5 py-3.5 text-sm font-black text-white shadow-lg shadow-[#5D5FEF]/20 transition hover:bg-[#5254DF] disabled:cursor-not-allowed disabled:opacity-50"
               >

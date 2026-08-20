@@ -1,0 +1,17 @@
+{
+  "province": {
+    "code": "51",
+    "name": "Ciudad Autónoma de Ceuta",
+    "searchKey": "ciudad autonoma de ceuta"
+  },
+  "municipalities": [
+    {
+      "code": "001",
+      "ineCode": "51001",
+      "ineCodeWithCheck": "510013",
+      "checkDigit": "3",
+      "name": "Ceuta",
+      "searchKey": "ceuta"
+    }
+  ]
+}
