@@ -26,6 +26,10 @@ import {
   type RadarBlockedZone,
 } from "@lookup/services";
 
+import type {
+  CreatedEventDraft,
+} from "@/lib/events/event-domain";
+
 import {
   BottomNav,
 } from "../../components/bottom-nav";
@@ -58,6 +62,10 @@ import {
   EventsView,
   type EventCard,
 } from "./components/EventsView";
+
+import {
+  CreateEventForm,
+} from "./components/CreateEventForm";
 
 import {
   SettingsView,
@@ -111,7 +119,8 @@ type DeleteAccountResponse = {
   error?: string;
 };
 
-const MAX_BLOCKED_ZONES = 3;
+const MAX_BLOCKED_ZONES =
+  3;
 
 function isSection(
   value: string | null,
@@ -195,6 +204,20 @@ export default function DashboardPage() {
   ] =
     useState<Section>(
       "radar",
+    );
+
+  const [
+    createEventOpen,
+    setCreateEventOpen,
+  ] =
+    useState(false);
+
+  const [
+    createdEventDraft,
+    setCreatedEventDraft,
+  ] =
+    useState<CreatedEventDraft | null>(
+      null,
     );
 
   const [
@@ -379,7 +402,8 @@ export default function DashboardPage() {
     const profileId =
       profile.id;
 
-    let mounted = true;
+    let mounted =
+      true;
 
     async function loadLinks() {
       try {
@@ -410,7 +434,8 @@ export default function DashboardPage() {
     void loadLinks();
 
     return () => {
-      mounted = false;
+      mounted =
+        false;
     };
   }, [
     profile,
@@ -436,7 +461,8 @@ export default function DashboardPage() {
     const profileId =
       profile.id;
 
-    let mounted = true;
+    let mounted =
+      true;
 
     async function loadBusinessProfile() {
       setBusinessProfileLoading(
@@ -477,7 +503,8 @@ export default function DashboardPage() {
     void loadBusinessProfile();
 
     return () => {
-      mounted = false;
+      mounted =
+        false;
     };
   }, [
     profile,
@@ -491,7 +518,8 @@ export default function DashboardPage() {
     const profileId =
       profile.id;
 
-    let mounted = true;
+    let mounted =
+      true;
 
     async function loadBlockedZones() {
       setBlockedZonesLoading(
@@ -532,7 +560,8 @@ export default function DashboardPage() {
     void loadBlockedZones();
 
     return () => {
-      mounted = false;
+      mounted =
+        false;
     };
   }, [
     profile,
@@ -553,6 +582,46 @@ export default function DashboardPage() {
       {
         scroll: false,
       },
+    );
+  }
+
+  function handleOpenCreateEvent() {
+    if (
+      !session?.access_token
+    ) {
+      showToast(
+        "error",
+        "Tu sesión no es válida. Vuelve a iniciar sesión.",
+      );
+
+      return;
+    }
+
+    setCreateEventOpen(
+      true,
+    );
+  }
+
+  function handleCloseCreateEvent() {
+    setCreateEventOpen(
+      false,
+    );
+  }
+
+  function handleEventCreated(
+    draft: CreatedEventDraft,
+  ) {
+    setCreatedEventDraft(
+      draft,
+    );
+
+    setCreateEventOpen(
+      false,
+    );
+
+    showToast(
+      "success",
+      "Borrador creado correctamente. Ya está listo para analizarlo con LookUp.",
     );
   }
 
@@ -860,7 +929,8 @@ export default function DashboardPage() {
         );
 
         const message =
-          error instanceof Error
+          error instanceof
+            Error
             ? error.message
             : "No se pudieron guardar los cambios.";
 
@@ -1116,7 +1186,8 @@ export default function DashboardPage() {
 
         showToast(
           "error",
-          error instanceof Error
+          error instanceof
+            Error
             ? error.message
             : "No se pudo guardar la zona privada.",
         );
@@ -1186,7 +1257,8 @@ export default function DashboardPage() {
 
         showToast(
           "error",
-          error instanceof Error
+          error instanceof
+            Error
             ? error.message
             : "No se pudo eliminar la zona privada.",
         );
@@ -1346,7 +1418,8 @@ export default function DashboardPage() {
         );
 
         setDeleteAccountError(
-          error instanceof Error
+          error instanceof
+            Error
             ? error.message
             : "No se pudo eliminar la cuenta.",
         );
@@ -1395,16 +1468,27 @@ export default function DashboardPage() {
     settingsProfile.username?.trim() ||
     (
       settingsProfile.account_type ===
-        "business"
+      "business"
         ? "tu negocio"
         : "tu perfil"
     );
+
+  const defaultEventCity =
+    businessProfile?.city?.trim() ||
+    settingsProfile.city?.trim() ||
+    "";
+
+  const defaultEventProvince =
+    businessProfile?.province?.trim() ||
+    "";
 
   return (
     <main className="min-h-screen bg-[#F7F8FC]">
       <div className="mx-auto w-full max-w-2xl px-4 pb-6 pt-4 sm:px-6">
         <DashboardHeader
-          section={section}
+          section={
+            section
+          }
         />
 
         {section ===
@@ -1467,15 +1551,23 @@ export default function DashboardPage() {
               events
             }
 
-            onCreateEvent={() =>
-              console.log(
-                "Crear evento",
-              )
+            city={
+              defaultEventCity
             }
 
-            onJoinEvent={(id) =>
+            createdDraft={
+              createdEventDraft
+            }
+
+            onCreateEvent={
+              handleOpenCreateEvent
+            }
+
+            onJoinEvent={(
+              id,
+            ) =>
               console.log(
-                "Unirse",
+                "Ver evento",
                 id,
               )
             }
@@ -1578,6 +1670,31 @@ export default function DashboardPage() {
           }
         />
       </div>
+
+      {createEventOpen &&
+      session?.access_token ? (
+        <CreateEventForm
+          accessToken={
+            session.access_token
+          }
+
+          defaultCity={
+            defaultEventCity
+          }
+
+          defaultProvince={
+            defaultEventProvince
+          }
+
+          onCreated={
+            handleEventCreated
+          }
+
+          onClose={
+            handleCloseCreateEvent
+          }
+        />
+      ) : null}
 
       {settingsEditorSection ? (
         <SettingsProfileEditor

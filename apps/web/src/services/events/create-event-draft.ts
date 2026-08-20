@@ -1,154 +1,162 @@
-export type CreateEventDraftInput = {
-  title: string;
-  description: string;
-  category: string;
-
-  tags: string[];
-  audience: string[];
-
-  venueName: string;
-  address: string;
-  city: string;
-  province: string;
-  postalCode: string;
-
-  startAt: string;
-  endAt: string;
-
-  isFree: boolean;
-  priceFrom: number | null;
-
-  externalUrl: string | null;
-  externalActionLabel: string | null;
-
-  capacity: number | null;
-};
-
-export type CreatedEventDraft = {
-  id: string;
-
-  title: string;
-  description: string;
-
-  category: string;
-
-  venueName: string | null;
-
-  address: string;
-  city: string;
-  cityKey: string;
-  province: string | null;
-  postalCode: string | null;
-
-  latitude: number;
-  longitude: number;
-
-  tags: string[];
-  audience: string[];
-
-  startAt: string;
-  endAt: string;
-
-  status: "draft";
-
-  isFree: boolean;
-  priceFrom: number | null;
-
-  externalUrl: string | null;
-  externalActionLabel: string | null;
-
-  capacity: number | null;
-};
-
-type CreateEventDraftResponse = {
-  draft: CreatedEventDraft;
-};
+import type {
+  CreatedEventDraft,
+  EventDraftCreateInput,
+} from "@/lib/events/event-domain";
 
 type ErrorResponse = {
   error?: string;
 };
 
-function normalizeRequiredText(
-  value: string,
-  fieldName: string,
-): string {
-  const normalized =
-    value.trim();
+type CreateEventDraftResponse = {
+  draft?: unknown;
+};
 
-  if (!normalized) {
-    throw new Error(
-      `${fieldName} es obligatorio.`,
-    );
-  }
-
-  return normalized;
+function isRecord(
+  value: unknown,
+): value is Record<
+  string,
+  unknown
+> {
+  return (
+    typeof value ===
+      "object" &&
+    value !== null &&
+    !Array.isArray(value)
+  );
 }
 
-function normalizeOptionalText(
-  value: string | null,
-): string | null {
-  if (value === null) {
-    return null;
-  }
-
-  const normalized =
-    value.trim();
-
-  return normalized || null;
+function isNullableString(
+  value: unknown,
+): value is string | null {
+  return (
+    typeof value ===
+      "string" ||
+    value === null
+  );
 }
 
-function normalizeStringList(
-  values: string[],
-): string[] {
-  return Array.from(
-    new Set(
-      values
-        .map((value) =>
-          value.trim(),
-        )
-        .filter(Boolean),
-    ),
+function isNullableNumber(
+  value: unknown,
+): value is number | null {
+  return (
+    (
+      typeof value ===
+        "number" &&
+      Number.isFinite(value)
+    ) ||
+    value === null
+  );
+}
+
+function isStringArray(
+  value: unknown,
+): value is string[] {
+  return (
+    Array.isArray(value) &&
+    value.every(
+      (item) =>
+        typeof item ===
+        "string",
+    )
   );
 }
 
 function isCreatedEventDraft(
   value: unknown,
 ): value is CreatedEventDraft {
-  if (
-    !value ||
-    typeof value !==
-      "object"
-  ) {
+  if (!isRecord(value)) {
     return false;
   }
 
-  const draft =
-    value as Record<
-      string,
-      unknown
-    >;
-
   return (
-    typeof draft.id ===
+    typeof value.id ===
       "string" &&
-    typeof draft.title ===
+    typeof value.creatorProfileId ===
       "string" &&
-    typeof draft.city ===
+
+    typeof value.title ===
       "string" &&
-    typeof draft.cityKey ===
+    typeof value.description ===
       "string" &&
-    typeof draft.latitude ===
+    typeof value.category ===
+      "string" &&
+
+    isStringArray(
+      value.tags,
+    ) &&
+    isStringArray(
+      value.audience,
+    ) &&
+
+    typeof value.venueName ===
+      "string" &&
+    typeof value.address ===
+      "string" &&
+
+    typeof value.city ===
+      "string" &&
+    typeof value.cityKey ===
+      "string" &&
+
+    typeof value.province ===
+      "string" &&
+    isNullableString(
+      value.postalCode,
+    ) &&
+
+    typeof value.countryCode ===
+      "string" &&
+
+    typeof value.latitude ===
       "number" &&
-    typeof draft.longitude ===
+    Number.isFinite(
+      value.latitude,
+    ) &&
+
+    typeof value.longitude ===
       "number" &&
-    draft.status ===
-      "draft"
+    Number.isFinite(
+      value.longitude,
+    ) &&
+
+    typeof value.startAt ===
+      "string" &&
+    typeof value.endAt ===
+      "string" &&
+
+    value.status ===
+      "draft" &&
+
+    typeof value.isFree ===
+      "boolean" &&
+    isNullableNumber(
+      value.priceFrom,
+    ) &&
+
+    typeof value.currency ===
+      "string" &&
+
+    isNullableString(
+      value.externalUrl,
+    ) &&
+    isNullableString(
+      value.externalActionLabel,
+    ) &&
+
+    isNullableNumber(
+      value.capacity,
+    ) &&
+
+    typeof value.createdAt ===
+      "string" &&
+    typeof value.updatedAt ===
+      "string"
   );
 }
 
 export async function createEventDraft(
   accessToken: string,
-  input: CreateEventDraftInput,
+  input: EventDraftCreateInput,
 ): Promise<CreatedEventDraft> {
   const normalizedToken =
     accessToken.trim();
@@ -156,133 +164,6 @@ export async function createEventDraft(
   if (!normalizedToken) {
     throw new Error(
       "No hay una sesión válida.",
-    );
-  }
-
-  const title =
-    normalizeRequiredText(
-      input.title,
-      "El título",
-    );
-
-  const description =
-    normalizeRequiredText(
-      input.description,
-      "La descripción",
-    );
-
-  const category =
-    normalizeRequiredText(
-      input.category,
-      "La categoría",
-    );
-
-  const venueName =
-    normalizeRequiredText(
-      input.venueName,
-      "El lugar",
-    );
-
-  const address =
-    normalizeRequiredText(
-      input.address,
-      "La dirección",
-    );
-
-  const city =
-    normalizeRequiredText(
-      input.city,
-      "La ciudad",
-    );
-
-  const province =
-    normalizeRequiredText(
-      input.province,
-      "La provincia",
-    );
-
-  const postalCode =
-    normalizeRequiredText(
-      input.postalCode,
-      "El código postal",
-    );
-
-  const startAt =
-    normalizeRequiredText(
-      input.startAt,
-      "La fecha de inicio",
-    );
-
-  const endAt =
-    normalizeRequiredText(
-      input.endAt,
-      "La fecha de finalización",
-    );
-
-  if (
-    Number.isNaN(
-      Date.parse(startAt),
-    )
-  ) {
-    throw new Error(
-      "La fecha de inicio no es válida.",
-    );
-  }
-
-  if (
-    Number.isNaN(
-      Date.parse(endAt),
-    )
-  ) {
-    throw new Error(
-      "La fecha de finalización no es válida.",
-    );
-  }
-
-  if (
-    Date.parse(endAt) <=
-    Date.parse(startAt)
-  ) {
-    throw new Error(
-      "La hora de finalización debe ser posterior a la de inicio.",
-    );
-  }
-
-  const priceFrom =
-    input.isFree
-      ? null
-      : input.priceFrom;
-
-  if (
-    !input.isFree &&
-    (
-      priceFrom ===
-        null ||
-      !Number.isFinite(
-        priceFrom,
-      ) ||
-      priceFrom <
-        0
-    )
-  ) {
-    throw new Error(
-      "Indica un precio válido para el evento.",
-    );
-  }
-
-  if (
-    input.capacity !==
-      null &&
-    (
-      !Number.isInteger(
-        input.capacity,
-      ) ||
-      input.capacity <=
-        0
-    )
-  ) {
-    throw new Error(
-      "El aforo debe ser un número entero mayor que cero.",
     );
   }
 
@@ -302,48 +183,9 @@ export async function createEventDraft(
         },
 
         body:
-          JSON.stringify({
-            title,
-            description,
-            category,
-
-            tags:
-              normalizeStringList(
-                input.tags,
-              ),
-
-            audience:
-              normalizeStringList(
-                input.audience,
-              ),
-
-            venueName,
-            address,
-            city,
-            province,
-            postalCode,
-
-            startAt,
-            endAt,
-
-            isFree:
-              input.isFree,
-
-            priceFrom,
-
-            externalUrl:
-              normalizeOptionalText(
-                input.externalUrl,
-              ),
-
-            externalActionLabel:
-              normalizeOptionalText(
-                input.externalActionLabel,
-              ),
-
-            capacity:
-              input.capacity,
-          }),
+          JSON.stringify(
+            input,
+          ),
 
         cache:
           "no-store",
