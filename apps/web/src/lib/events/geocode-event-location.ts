@@ -10,16 +10,30 @@ type EventLocationInput = {
 
 export type VerifiedEventLocation = {
   address: string;
+
   city: string;
+  cityKey: string;
+
   province: string;
+
   postalCode: string | null;
+
   countryCode: "ES";
 
   latitude: number;
   longitude: number;
 
+  displayName: string;
+
   attribution: string;
 };
+
+/*
+ * Alias conservado para no romper ningún consumidor
+ * que estuviera utilizando el nombre más reciente.
+ */
+export type GeocodedEventLocation =
+  VerifiedEventLocation;
 
 type NominatimGeocodingProperties = {
   label?: string;
@@ -36,7 +50,9 @@ type NominatimGeocodingProperties = {
   state?: string;
 
   postcode?: string;
+
   country?: string;
+  country_code?: string;
 };
 
 type NominatimFeature = {
@@ -76,6 +92,17 @@ type VerifiedFeature = {
 
   resolvedCity:
     string;
+
+  usedPostalConstraint:
+    boolean;
+};
+
+type SearchResult = {
+  features:
+    NominatimFeature[];
+
+  attribution:
+    string;
 };
 
 const DEFAULT_NOMINATIM_URL =
@@ -84,8 +111,11 @@ const DEFAULT_NOMINATIM_URL =
 const DEFAULT_USER_AGENT =
   "LookUp/1.0";
 
+const DEFAULT_ATTRIBUTION =
+  "Data © OpenStreetMap contributors, ODbL 1.0";
+
 const MAX_RESULTS =
-  5;
+  8;
 
 function clean(
   value:
@@ -96,7 +126,10 @@ function clean(
   return (
     value
       ?.trim()
-      .replace(/\s+/g, " ") ||
+      .replace(
+        /\s+/g,
+        " ",
+      ) ||
     ""
   );
 }
@@ -145,6 +178,14 @@ function normalizePostalCode(
     );
 }
 
+function normalizeCityKey(
+  value: string,
+) {
+  return normalizeComparable(
+    value,
+  );
+}
+
 function getBaseUrl() {
   return (
     process.env
@@ -167,23 +208,30 @@ function getUserAgent() {
   );
 }
 
+function looksLikeHouseNumber(
+  value: string,
+) {
+  return /^\d+[a-z]?([/-]\d+[a-z]?)?(\s*(bis|ter))?$/i.test(
+    clean(
+      value,
+    ),
+  );
+}
+
 /*
- * Nominatim permite búsquedas estructuradas.
+ * Convierte tanto una dirección introducida por el usuario:
  *
- * No debemos enviar:
+ *   Calle El Collado 5
  *
- * Plaza Mayor, Soria,
- * 42002, Soria, Soria, España
+ * como una dirección previamente normalizada por OSM:
  *
- * como una sola cadena.
+ *   Calle El Collado, Soria, Castilla y León, 42002, España
  *
- * Separamos:
+ * en un valor adecuado para el parámetro `street`.
  *
- * street
- * city
- * county
- * postalcode
- * country
+ * Este detalle es importante al editar eventos existentes:
+ * nunca debemos mandar comunidad autónoma, municipio, país,
+ * etc. como parte del nombre de la calle.
  */
 function buildStreetSearchValue(
   input: EventLocationInput,
@@ -197,48 +245,68 @@ function buildStreetSearchValue(
     return "";
   }
 
-  const administrativeValues =
-    new Set(
-      [
-        input.city,
-        input.province,
-        input.postalCode,
-        "España",
-        "Spain",
-      ]
-        .map(
-          normalizeComparable,
-        )
-        .filter(Boolean),
-    );
-
   const parts =
     address
       .split(",")
-      .map(clean)
-      .filter(Boolean);
+      .map(
+        clean,
+      )
+      .filter(
+        Boolean,
+      );
 
-  const streetParts =
-    parts.filter(
-      (part) =>
-        !administrativeValues.has(
-          normalizeComparable(
-            part,
-          ),
-        ),
-    );
+  if (
+    parts.length ===
+    0
+  ) {
+    return address;
+  }
 
-  const street =
-    clean(
-      streetParts.join(
-        ", ",
-      ),
-    );
+  if (
+    parts.length ===
+    1
+  ) {
+    return parts[0] ?? "";
+  }
 
-  return (
-    street ||
-    address
-  );
+  /*
+   * Si la segunda parte es claramente el número,
+   * conservamos calle + número.
+   *
+   * Ej:
+   *   Calle Alcalá, 42, Madrid...
+   */
+  const firstPart =
+    parts[0] ?? "";
+
+  const secondPart =
+    parts[1] ?? "";
+
+  if (
+    secondPart &&
+    looksLikeHouseNumber(
+      secondPart,
+    )
+  ) {
+    return `${firstPart}, ${secondPart}`;
+  }
+
+  /*
+   * Si la dirección ya fue guardada por OSM,
+   * normalmente la primera parte representa el
+   * elemento de calle/plaza/etc. relevante.
+   *
+   * Esto evita volver a incluir:
+   *
+   * municipio
+   * provincia
+   * comunidad autónoma
+   * CP
+   * España
+   *
+   * dentro de `street`.
+   */
+  return firstPart;
 }
 
 function parseCoordinates(
@@ -310,7 +378,9 @@ function getCandidateCities(
     clean(
       geocoding?.district,
     ),
-  ].filter(Boolean);
+  ].filter(
+    Boolean,
+  );
 }
 
 function findDirectCityMatch(
@@ -324,7 +394,9 @@ function findDirectCityMatch(
       expectedCity,
     );
 
-  if (!normalizedExpected) {
+  if (
+    !normalizedExpected
+  ) {
     return null;
   }
 
@@ -358,42 +430,6 @@ function getFeaturePostalCode(
   );
 }
 
-function postalCodeIsCompatible(
-  feature:
-    NominatimFeature,
-  expectedPostalCode:
-    | string
-    | null,
-) {
-  const expected =
-    normalizePostalCode(
-      expectedPostalCode,
-    );
-
-  if (!expected) {
-    return true;
-  }
-
-  const actual =
-    getFeaturePostalCode(
-      feature,
-    );
-
-  /*
-   * Si Nominatim no conoce el código postal,
-   * no descartamos un resultado cuya ciudad
-   * haya sido verificada directamente.
-   */
-  if (!actual) {
-    return true;
-  }
-
-  return (
-    actual ===
-    expected
-  );
-}
-
 function hasExactPostalMatch(
   feature:
     NominatimFeature,
@@ -414,7 +450,50 @@ function hasExactPostalMatch(
   return Boolean(
     expected &&
       actual &&
-      expected === actual,
+      expected ===
+        actual,
+  );
+}
+
+function postalCodeIsCompatible(
+  feature:
+    NominatimFeature,
+  expectedPostalCode:
+    | string
+    | null,
+) {
+  const expected =
+    normalizePostalCode(
+      expectedPostalCode,
+    );
+
+  if (
+    !expected
+  ) {
+    return true;
+  }
+
+  const actual =
+    getFeaturePostalCode(
+      feature,
+    );
+
+  /*
+   * Algunas respuestas válidas de Nominatim
+   * no incluyen postcode.
+   *
+   * Si no existe CP en el resultado, no anulamos
+   * una coincidencia fuerte de municipio.
+   */
+  if (
+    !actual
+  ) {
+    return true;
+  }
+
+  return (
+    actual ===
+    expected
   );
 }
 
@@ -449,10 +528,319 @@ function labelContainsExactComponent(
       normalizeComparable,
     )
     .some(
-      (component) =>
+      (
+        component,
+      ) =>
         component ===
         expected,
     );
+}
+
+function provinceAppearsCompatible(
+  feature:
+    NominatimFeature,
+  expectedProvince:
+    string,
+) {
+  const expected =
+    normalizeComparable(
+      expectedProvince,
+    );
+
+  if (
+    !expected
+  ) {
+    return false;
+  }
+
+  const geocoding =
+    feature.properties
+      ?.geocoding;
+
+  const candidates =
+    [
+      geocoding?.county,
+      geocoding?.state,
+    ]
+      .map(
+        normalizeComparable,
+      )
+      .filter(
+        Boolean,
+      );
+
+  if (
+    candidates.includes(
+      expected,
+    )
+  ) {
+    return true;
+  }
+
+  return labelContainsExactComponent(
+    feature,
+    expectedProvince,
+  );
+}
+
+function addressAppearsCompatible(
+  feature:
+    NominatimFeature,
+  inputAddress:
+    string,
+) {
+  const expectedStreet =
+    normalizeComparable(
+      inputAddress
+        .split(",")[0],
+    );
+
+  if (
+    !expectedStreet
+  ) {
+    return false;
+  }
+
+  const geocoding =
+    feature.properties
+      ?.geocoding;
+
+  const candidateText =
+    normalizeComparable(
+      [
+        geocoding?.street,
+        geocoding?.name,
+        geocoding?.label,
+      ]
+        .filter(
+          Boolean,
+        )
+        .join(
+          " ",
+        ),
+    );
+
+  if (
+    !candidateText
+  ) {
+    return false;
+  }
+
+  if (
+    candidateText.includes(
+      expectedStreet,
+    )
+  ) {
+    return true;
+  }
+
+  /*
+   * Quitamos términos genéricos para que:
+   *
+   * Calle El Collado
+   *
+   * pueda coincidir con:
+   *
+   * El Collado
+   *
+   * sin aceptar una dirección completamente distinta.
+   */
+  const ignoredTokens =
+    new Set([
+      "calle",
+      "c",
+      "avenida",
+      "av",
+      "avda",
+      "plaza",
+      "paseo",
+      "camino",
+      "carretera",
+      "ctra",
+      "via",
+      "numero",
+      "num",
+      "n",
+      "de",
+      "del",
+      "la",
+      "las",
+      "el",
+      "los",
+    ]);
+
+  const tokens =
+    expectedStreet
+      .split(" ")
+      .filter(
+        (
+          token,
+        ) =>
+          token.length >=
+            3 &&
+          !ignoredTokens.has(
+            token,
+          ) &&
+          !/^\d+$/.test(
+            token,
+          ),
+      );
+
+  if (
+    tokens.length ===
+    0
+  ) {
+    return false;
+  }
+
+  const matchedTokens =
+    tokens.filter(
+      (
+        token,
+      ) =>
+        candidateText.includes(
+          token,
+        ),
+    );
+
+  const requiredMatches =
+    tokens.length ===
+      1
+      ? 1
+      : Math.ceil(
+          tokens.length *
+            0.6,
+        );
+
+  return (
+    matchedTokens.length >=
+    requiredMatches
+  );
+}
+
+function calculateFeatureScore(
+  feature:
+    NominatimFeature,
+  input:
+    EventLocationInput,
+  options: {
+    requirePostalMatch:
+      boolean;
+
+    usedPostalConstraint:
+      boolean;
+  },
+) {
+  const coordinates =
+    parseCoordinates(
+      feature,
+    );
+
+  if (
+    !coordinates
+  ) {
+    return null;
+  }
+
+  const directCityMatch =
+    findDirectCityMatch(
+      feature,
+      input.city,
+    );
+
+  const labelCityMatch =
+    labelContainsExactComponent(
+      feature,
+      input.city,
+    );
+
+  /*
+   * Ésta es nuestra barrera principal.
+   *
+   * Nunca aceptamos simplemente features[0].
+   * El municipio seleccionado oficialmente debe
+   * aparecer de forma verificable en el resultado.
+   */
+  if (
+    !directCityMatch &&
+    !labelCityMatch
+  ) {
+    return null;
+  }
+
+  if (
+    options.requirePostalMatch &&
+    !postalCodeIsCompatible(
+      feature,
+      input.postalCode,
+    )
+  ) {
+    return null;
+  }
+
+  let score =
+    0;
+
+  if (
+    directCityMatch
+  ) {
+    score +=
+      100;
+  } else if (
+    labelCityMatch
+  ) {
+    score +=
+      70;
+  }
+
+  if (
+    provinceAppearsCompatible(
+      feature,
+      input.province,
+    )
+  ) {
+    score +=
+      20;
+  }
+
+  if (
+    addressAppearsCompatible(
+      feature,
+      input.address,
+    )
+  ) {
+    score +=
+      30;
+  }
+
+  if (
+    hasExactPostalMatch(
+      feature,
+      input.postalCode,
+    )
+  ) {
+    score +=
+      25;
+  }
+
+  return {
+    score,
+
+    verified: {
+      feature,
+
+      coordinates,
+
+      resolvedCity:
+        directCityMatch ||
+        clean(
+          input.city,
+        ),
+
+      usedPostalConstraint:
+        options.usedPostalConstraint,
+    } satisfies VerifiedFeature,
+  };
 }
 
 function findVerifiedFeature(
@@ -460,120 +848,49 @@ function findVerifiedFeature(
     readonly NominatimFeature[],
   input:
     EventLocationInput,
+  options: {
+    requirePostalMatch:
+      boolean;
+
+    usedPostalConstraint:
+      boolean;
+  },
 ): VerifiedFeature | null {
-  /*
-   * PRIORIDAD 1
-   *
-   * Ciudad explícitamente devuelta
-   * por Nominatim.
-   */
-  for (
-    const feature of
+  const ranked =
     features
-  ) {
-    const coordinates =
-      parseCoordinates(
-        feature,
-      );
-
-    if (!coordinates) {
-      continue;
-    }
-
-    const cityMatch =
-      findDirectCityMatch(
-        feature,
-        input.city,
-      );
-
-    if (!cityMatch) {
-      continue;
-    }
-
-    if (
-      !postalCodeIsCompatible(
-        feature,
-        input.postalCode,
-      )
-    ) {
-      continue;
-    }
-
-    return {
-      feature,
-
-      coordinates,
-
-      resolvedCity:
-        cityMatch,
-    };
-  }
-
-  /*
-   * PRIORIDAD 2
-   *
-   * GeocodeJSON no garantiza que todos los
-   * componentes administrativos estén siempre
-   * disponibles.
-   *
-   * Si no existe city/locality/district,
-   * aceptamos un resultado únicamente cuando:
-   *
-   * - el código postal coincide exactamente
-   * - la etiqueta contiene la ciudad como
-   *   componente completo
-   *
-   * Esto evita volver al comportamiento
-   * inseguro de aceptar features[0].
-   */
-  if (
-    input.postalCode
-  ) {
-    for (
-      const feature of
-      features
-    ) {
-      const coordinates =
-        parseCoordinates(
+      .map(
+        (
           feature,
-        );
-
-      if (!coordinates) {
-        continue;
-      }
-
-      if (
-        !hasExactPostalMatch(
-          feature,
-          input.postalCode,
-        )
-      ) {
-        continue;
-      }
-
-      if (
-        !labelContainsExactComponent(
-          feature,
-          input.city,
-        )
-      ) {
-        continue;
-      }
-
-      return {
-        feature,
-
-        coordinates,
-
-        resolvedCity:
-          clean(
-            input.city,
+        ) =>
+          calculateFeatureScore(
+            feature,
+            input,
+            options,
           ),
-      };
-    }
-  }
+      )
+      .filter(
+        (
+          item,
+        ): item is NonNullable<
+          typeof item
+        > =>
+          item !==
+          null,
+      )
+      .sort(
+        (
+          a,
+          b,
+        ) =>
+          b.score -
+          a.score,
+      );
 
-  return null;
+  return (
+    ranked[0]
+      ?.verified ??
+    null
+  );
 }
 
 function resolveProvince(
@@ -605,7 +922,9 @@ function resolveProvince(
       clean(
         geocoding?.state,
       ),
-    ].filter(Boolean);
+    ].filter(
+      Boolean,
+    );
 
   for (
     const candidate of
@@ -622,12 +941,11 @@ function resolveProvince(
   }
 
   /*
-   * Niveles administrativos de OSM
-   * no siempre corresponden exactamente
-   * a provincia/comunidad autónoma.
+   * El catálogo INE es nuestra autoridad para
+   * provincia/municipio.
    *
-   * Como la ciudad ya ha sido validada,
-   * conservamos aquí la provincia indicada.
+   * OSM puede representar algunos niveles
+   * administrativos de manera diferente.
    */
   return requested;
 }
@@ -666,12 +984,256 @@ function buildStoredAddress(
       input.province,
     ),
   ]
-    .filter(Boolean)
-    .join(", ")
+    .filter(
+      Boolean,
+    )
+    .join(
+      ", ",
+    )
     .slice(
       0,
       300,
     );
+}
+
+function buildStructuredParams(
+  input:
+    EventLocationInput,
+  options: {
+    includePostalCode:
+      boolean;
+  },
+) {
+  const street =
+    buildStreetSearchValue(
+      input,
+    );
+
+  const params =
+    new URLSearchParams({
+      street,
+
+      city:
+        clean(
+          input.city,
+        ),
+
+      county:
+        clean(
+          input.province,
+        ),
+
+      country:
+        "España",
+
+      format:
+        "geocodejson",
+
+      addressdetails:
+        "1",
+
+      countrycodes:
+        "es",
+
+      limit:
+        String(
+          MAX_RESULTS,
+        ),
+    });
+
+  const postalCode =
+    normalizePostalCode(
+      input.postalCode,
+    );
+
+  if (
+    options.includePostalCode &&
+    postalCode
+  ) {
+    params.set(
+      "postalcode",
+      postalCode,
+    );
+  }
+
+  return params;
+}
+
+function buildFreeTextParams(
+  input:
+    EventLocationInput,
+) {
+  const street =
+    buildStreetSearchValue(
+      input,
+    );
+
+  const query =
+    [
+      street,
+
+      clean(
+        input.city,
+      ),
+
+      clean(
+        input.province,
+      ),
+
+      "España",
+    ]
+      .filter(
+        Boolean,
+      )
+      .join(
+        ", ",
+      );
+
+  return new URLSearchParams({
+    q:
+      query,
+
+    format:
+      "geocodejson",
+
+    addressdetails:
+      "1",
+
+    countrycodes:
+      "es",
+
+    limit:
+      String(
+        MAX_RESULTS,
+      ),
+  });
+}
+
+async function executeSearch(
+  params:
+    URLSearchParams,
+): Promise<SearchResult> {
+  let response:
+    Response;
+
+  try {
+    response =
+      await fetch(
+        `${getBaseUrl()}/search?${params.toString()}`,
+        {
+          method:
+            "GET",
+
+          headers: {
+            Accept:
+              "application/json",
+
+            "Accept-Language":
+              "es",
+
+            "User-Agent":
+              getUserAgent(),
+          },
+
+          next: {
+            revalidate:
+              60 *
+              60 *
+              24 *
+              30,
+          },
+        },
+      );
+  } catch {
+    throw new Error(
+      "El servicio de ubicación no está disponible en este momento.",
+    );
+  }
+
+  if (
+    !response.ok
+  ) {
+    throw new Error(
+      "El servicio de ubicación no está disponible en este momento.",
+    );
+  }
+
+  let payload:
+    NominatimResponse;
+
+  try {
+    payload =
+      (await response.json()) as
+        NominatimResponse;
+  } catch {
+    throw new Error(
+      "El servicio de ubicación devolvió una respuesta no válida.",
+    );
+  }
+
+  return {
+    features:
+      Array.isArray(
+        payload.features,
+      )
+        ? payload.features
+        : [],
+
+    attribution:
+      clean(
+        payload.geocoding
+          ?.attribution,
+      ) ||
+      DEFAULT_ATTRIBUTION,
+  };
+}
+
+function resolvePostalCode(
+  verified:
+    VerifiedFeature,
+  input:
+    EventLocationInput,
+) {
+  const geocoderPostalCode =
+    getFeaturePostalCode(
+      verified.feature,
+    );
+
+  /*
+   * Prioridad absoluta:
+   * el CP devuelto por la dirección realmente
+   * encontrada.
+   */
+  if (
+    geocoderPostalCode
+  ) {
+    return geocoderPostalCode;
+  }
+
+  /*
+   * Solo conservamos el CP escrito manualmente
+   * si la búsqueda que produjo el resultado
+   * utilizó realmente ese CP como restricción.
+   *
+   * Si tuvimos que ignorarlo para encontrar
+   * correctamente la dirección, podría estar
+   * equivocado y no debemos persistirlo.
+   */
+  if (
+    verified.usedPostalConstraint
+  ) {
+    const requested =
+      normalizePostalCode(
+        input.postalCode,
+      );
+
+    return (
+      requested ||
+      null
+    );
+  }
+
+  return null;
 }
 
 export async function geocodeEventLocation(
@@ -703,141 +1265,237 @@ export async function geocodeEventLocation(
     );
   }
 
-  /*
-   * Búsqueda estructurada oficial de Nominatim.
-   *
-   * Importante:
-   * no mezclamos `q` con parámetros estructurados.
-   */
-  const params =
-    new URLSearchParams({
-      street,
-
-      city,
-
-      county:
-        province,
-
-      country:
-        "España",
-
-      format:
-        "geocodejson",
-
-      addressdetails:
-        "1",
-
-      countrycodes:
-        "es",
-
-      limit:
-        String(
-          MAX_RESULTS,
-        ),
-    });
-
-  const postalCode =
-    clean(
+  const requestedPostalCode =
+    normalizePostalCode(
       input.postalCode,
     );
 
-  if (postalCode) {
-    params.set(
-      "postalcode",
-      postalCode,
-    );
+  let verified:
+    VerifiedFeature | null =
+    null;
+
+  let finalAttribution =
+    DEFAULT_ATTRIBUTION;
+
+  let sawAnyFeatures =
+    false;
+
+  /*
+   * ==========================================================
+   * INTENTO 1
+   * Dirección estructurada + CP proporcionado.
+   * ==========================================================
+   *
+   * Es el caso más preciso.
+   */
+  if (
+    requestedPostalCode
+  ) {
+    const strictSearch =
+      await executeSearch(
+        buildStructuredParams(
+          input,
+          {
+            includePostalCode:
+              true,
+          },
+        ),
+      );
+
+    finalAttribution =
+      strictSearch.attribution;
+
+    if (
+      strictSearch.features
+        .length >
+      0
+    ) {
+      sawAnyFeatures =
+        true;
+    }
+
+    verified =
+      findVerifiedFeature(
+        strictSearch.features,
+        input,
+        {
+          requirePostalMatch:
+            true,
+
+          usedPostalConstraint:
+            true,
+        },
+      );
   }
 
-  const response =
-    await fetch(
-      `${getBaseUrl()}/search?${params.toString()}`,
-      {
-        method:
-          "GET",
+  /*
+   * ==========================================================
+   * INTENTO 2
+   * Dirección estructurada SIN obligar al CP.
+   * ==========================================================
+   *
+   * Esto resuelve:
+   *
+   * - código postal vacío
+   * - código postal escrito incorrectamente
+   * - códigos postales que Nominatim no asocia bien
+   *
+   * Seguimos exigiendo una coincidencia fiable
+   * del municipio.
+   */
+  if (
+    !verified
+  ) {
+    const relaxedSearch =
+      await executeSearch(
+        buildStructuredParams(
+          input,
+          {
+            includePostalCode:
+              false,
+          },
+        ),
+      );
 
-        headers: {
-          Accept:
-            "application/json",
+    finalAttribution =
+      relaxedSearch.attribution ||
+      finalAttribution;
 
-          "Accept-Language":
-            "es",
+    if (
+      relaxedSearch.features
+        .length >
+      0
+    ) {
+      sawAnyFeatures =
+        true;
+    }
 
-          "User-Agent":
-            getUserAgent(),
+    verified =
+      findVerifiedFeature(
+        relaxedSearch.features,
+        input,
+        {
+          requirePostalMatch:
+            false,
+
+          usedPostalConstraint:
+            false,
         },
-
-        next: {
-          revalidate:
-            60 *
-            60 *
-            24 *
-            30,
-        },
-      },
-    );
-
-  if (!response.ok) {
-    throw new Error(
-      "El servicio de ubicación no está disponible en este momento.",
-    );
+      );
   }
 
-  const payload =
-    (await response.json()) as
-      NominatimResponse;
+  /*
+   * ==========================================================
+   * INTENTO 3
+   * Búsqueda libre controlada.
+   * ==========================================================
+   *
+   * Nominatim no resuelve todas las direcciones
+   * correctamente mediante búsqueda estructurada.
+   *
+   * Esta búsqueda NO mezcla `q` con los parámetros
+   * estructurados.
+   *
+   * Seguimos verificando el resultado antes de
+   * aceptarlo.
+   */
+  if (
+    !verified
+  ) {
+    const fallbackSearch =
+      await executeSearch(
+        buildFreeTextParams(
+          input,
+        ),
+      );
 
-  const features =
-    payload.features ??
-    [];
+    finalAttribution =
+      fallbackSearch.attribution ||
+      finalAttribution;
+
+    if (
+      fallbackSearch.features
+        .length >
+      0
+    ) {
+      sawAnyFeatures =
+        true;
+    }
+
+    verified =
+      findVerifiedFeature(
+        fallbackSearch.features,
+        input,
+        {
+          requirePostalMatch:
+            false,
+
+          usedPostalConstraint:
+            false,
+        },
+      );
+  }
 
   if (
-    features.length ===
-    0
+    !verified
   ) {
+    if (
+      !sawAnyFeatures
+    ) {
+      throw new Error(
+        `No hemos podido encontrar esa dirección en ${city}. Revisa únicamente la calle o el número e inténtalo de nuevo.`,
+      );
+    }
+
     throw new Error(
-      `No hemos podido encontrar esa dirección en ${city}. Revisa la dirección, la ciudad y el código postal.`,
+      `Encontramos resultados parecidos, pero ninguno corresponde de forma suficientemente fiable a ${city}. Revisa la dirección antes de continuar.`,
     );
   }
 
-  const verified =
-    findVerifiedFeature(
-      features,
+  const resolvedPostalCode =
+    resolvePostalCode(
+      verified,
       input,
     );
 
-  if (!verified) {
-    throw new Error(
-      `La dirección encontrada no corresponde de forma fiable a ${city}. Revisa la dirección, la ciudad y el código postal antes de continuar.`,
+  const storedAddress =
+    buildStoredAddress(
+      input,
+      verified.feature,
     );
-  }
 
-  const geocoding =
-    verified.feature
-      .properties
-      ?.geocoding;
-
-  const resolvedPostalCode =
+  /*
+   * Municipio y provincia vienen del selector oficial
+   * de LookUp/INE.
+   *
+   * Nominatim verifica la ubicación física,
+   * pero no sustituye nuestro catálogo territorial.
+   */
+  const resolvedCity =
     clean(
-      geocoding?.postcode,
-    ) ||
-    postalCode ||
-    null;
+      input.city,
+    );
+
+  const resolvedProvince =
+    resolveProvince(
+      verified.feature,
+      province,
+    );
 
   return {
     address:
-      buildStoredAddress(
-        input,
-        verified.feature,
-      ),
+      storedAddress,
 
     city:
-      verified.resolvedCity,
+      resolvedCity,
+
+    cityKey:
+      normalizeCityKey(
+        resolvedCity,
+      ),
 
     province:
-      resolveProvince(
-        verified.feature,
-        province,
-      ),
+      resolvedProvince,
 
     postalCode:
       resolvedPostalCode,
@@ -853,11 +1511,16 @@ export async function geocodeEventLocation(
       verified.coordinates
         .longitude,
 
-    attribution:
+    displayName:
       clean(
-        payload.geocoding
-          ?.attribution,
+        verified.feature
+          .properties
+          ?.geocoding
+          ?.label,
       ) ||
-      "Data © OpenStreetMap contributors, ODbL 1.0",
+      storedAddress,
+
+    attribution:
+      finalAttribution,
   };
 }

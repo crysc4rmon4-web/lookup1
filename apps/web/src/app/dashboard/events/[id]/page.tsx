@@ -303,10 +303,10 @@ function ConfirmationDialog({
             "Cancelar evento",
 
           confirmClass:
-            "bg-amber-500 hover:bg-amber-600 shadow-amber-500/20",
+            "bg-rose-600 hover:bg-rose-700 shadow-rose-600/20",
 
           iconClass:
-            "bg-amber-50 text-amber-600",
+            "bg-rose-50 text-rose-600",
         }
         : {
           icon:

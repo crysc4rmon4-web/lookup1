@@ -2208,6 +2208,9 @@ export function CreateEventForm({
                       className="text-sm font-black text-slate-900"
                     >
                       Código postal
+                      <span className="ml-1 font-medium text-slate-400">
+                        opcional
+                      </span>
                     </label>
 
                     <input
@@ -2235,6 +2238,9 @@ export function CreateEventForm({
                         INPUT_CLASS
                       }
                     />
+                    <p className="mt-2 text-xs font-medium leading-5 text-slate-400">
+                      Si lo dejas vacío, LookUp intentará obtenerlo al verificar la dirección.
+                    </p>
                   </div>
                 </div>
 

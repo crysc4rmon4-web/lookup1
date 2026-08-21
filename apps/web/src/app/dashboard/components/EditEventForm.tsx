@@ -133,7 +133,7 @@ function toLocalDateTimeInput(
 ) {
   const date =
     value instanceof
-    Date
+      Date
       ? value
       : new Date(value);
 
@@ -150,7 +150,7 @@ function toLocalDateTimeInput(
     "-",
     padNumber(
       date.getMonth() +
-        1,
+      1,
     ),
     "-",
     padNumber(
@@ -187,8 +187,8 @@ function roundUpToInterval(
   ) {
     result.setMinutes(
       minutes +
-        intervalMinutes -
-        remainder,
+      intervalMinutes -
+      remainder,
     );
   }
 
@@ -204,9 +204,9 @@ function getMinimumStartDate() {
   return roundUpToInterval(
     new Date(
       Date.now() +
-        MINIMUM_START_LEAD_MINUTES *
-          60 *
-          1000,
+      MINIMUM_START_LEAD_MINUTES *
+      60 *
+      1000,
     ),
     DATE_TIME_STEP_MINUTES,
   );
@@ -263,19 +263,19 @@ function createInitialState(
 
     priceFrom:
       event.priceFrom ===
-      null
+        null
         ? ""
         : String(
-            event.priceFrom,
-          ),
+          event.priceFrom,
+        ),
 
     capacity:
       event.capacity ===
-      null
+        null
         ? ""
         : String(
-            event.capacity,
-          ),
+          event.capacity,
+        ),
 
     externalUrl:
       event.externalUrl ??
@@ -360,9 +360,9 @@ function normalizeExternalUrl(
 
     if (
       url.protocol !==
-        "http:" &&
+      "http:" &&
       url.protocol !==
-        "https:"
+      "https:"
     ) {
       throw new Error();
     }
@@ -481,9 +481,9 @@ function TokenField({
   ) {
     if (
       event.key ===
-        "Enter" ||
+      "Enter" ||
       event.key ===
-        ","
+      ","
     ) {
       event.preventDefault();
 
@@ -492,10 +492,10 @@ function TokenField({
 
     if (
       event.key ===
-        "Backspace" &&
+      "Backspace" &&
       !currentValue &&
       values.length >
-        0
+      0
     ) {
       onChange(
         values.slice(
@@ -521,7 +521,7 @@ function TokenField({
 
       <div className="mt-2 rounded-2xl border border-slate-200 bg-[#FBFCFE] px-3 py-3 transition focus-within:border-[#5D5FEF] focus-within:bg-white focus-within:ring-4 focus-within:ring-[#5D5FEF]/10">
         {values.length >
-        0 ? (
+          0 ? (
           <div className="mb-2 flex flex-wrap gap-2">
             {values.map(
               (value) => (
@@ -768,7 +768,7 @@ export function EditEventForm({
           );
         }
       } catch (
-        loadError
+      loadError
       ) {
         if (mounted) {
           setCategoriesError(
@@ -831,7 +831,7 @@ export function EditEventForm({
         const provinceKey =
           normalizeLocationSearch(
             event.province ??
-              "",
+            "",
           );
 
         const match =
@@ -858,7 +858,7 @@ export function EditEventForm({
           );
         }
       } catch (
-        loadError
+      loadError
       ) {
         if (mounted) {
           setProvincesError(
@@ -949,7 +949,7 @@ export function EditEventForm({
           );
         }
       } catch (
-        loadError
+      loadError
       ) {
         if (mounted) {
           setMunicipalities(
@@ -1188,7 +1188,7 @@ export function EditEventForm({
             currentEnd.getTime(),
           ) &&
           currentEnd.getTime() >
-            nextStart.getTime()
+          nextStart.getTime()
         ) {
           return {
             ...current,
@@ -1201,10 +1201,10 @@ export function EditEventForm({
         const nextEnd =
           new Date(
             nextStart.getTime() +
-              DEFAULT_EVENT_DURATION_HOURS *
-                60 *
-                60 *
-                1000,
+            DEFAULT_EVENT_DURATION_HOURS *
+            60 *
+            60 *
+            1000,
           );
 
         return {
@@ -1271,74 +1271,74 @@ export function EditEventForm({
 
       const input:
         EventDraftCreateInput =
-        {
-          title:
-            form.title,
+      {
+        title:
+          form.title,
 
-          description:
-            form.description,
+        description:
+          form.description,
 
-          category:
-            form.category,
+        category:
+          form.category,
 
-          tags:
-            form.tags,
+        tags:
+          form.tags,
 
-          audience:
-            form.audience,
+        audience:
+          form.audience,
 
-          venueName:
-            form.venueName,
+        venueName:
+          form.venueName,
 
-          address:
-            form.address,
+        address:
+          form.address,
 
-          city:
-            selectedMunicipality.name,
+        city:
+          selectedMunicipality.name,
 
-          province:
-            selectedProvince.name,
+        province:
+          selectedProvince.name,
 
-          postalCode:
-            form.postalCode.trim() ||
-            null,
+        postalCode:
+          form.postalCode.trim() ||
+          null,
 
-          startAt:
-            toIsoDateTime(
-              form.startAt,
-              "La fecha de inicio",
+        startAt:
+          toIsoDateTime(
+            form.startAt,
+            "La fecha de inicio",
+          ),
+
+        endAt:
+          toIsoDateTime(
+            form.endAt,
+            "La fecha de finalización",
+          ),
+
+        isFree:
+          form.isFree,
+
+        priceFrom:
+          form.isFree
+            ? null
+            : toNullableNumber(
+              form.priceFrom,
             ),
 
-          endAt:
-            toIsoDateTime(
-              form.endAt,
-              "La fecha de finalización",
-            ),
+        externalUrl:
+          normalizeExternalUrl(
+            form.externalUrl,
+          ),
 
-          isFree:
-            form.isFree,
+        externalActionLabel:
+          form.externalActionLabel.trim() ||
+          null,
 
-          priceFrom:
-            form.isFree
-              ? null
-              : toNullableNumber(
-                  form.priceFrom,
-                ),
-
-          externalUrl:
-            normalizeExternalUrl(
-              form.externalUrl,
-            ),
-
-          externalActionLabel:
-            form.externalActionLabel.trim() ||
-            null,
-
-          capacity:
-            toNullableNumber(
-              form.capacity,
-            ),
-        };
+        capacity:
+          toNullableNumber(
+            form.capacity,
+          ),
+      };
 
       parseEventDraftCreateInput(
         input,
@@ -1359,12 +1359,12 @@ export function EditEventForm({
         updated,
       );
     } catch (
-      submitError
+    submitError
     ) {
       setSaveError(
         submitError instanceof
           EventValidationError ||
-        submitError instanceof
+          submitError instanceof
           Error
           ? submitError.message
           : "No se pudo actualizar el evento.",
@@ -1788,8 +1788,8 @@ export function EditEventForm({
                       />
 
                       {municipalityMenuOpen &&
-                      selectedProvinceCode &&
-                      !municipalitiesLoading ? (
+                        selectedProvinceCode &&
+                        !municipalitiesLoading ? (
                         <div
                           id="edit-event-municipality-list"
                           role="listbox"
@@ -1823,19 +1823,18 @@ export function EditEventForm({
                                     false,
                                   );
                                 }}
-                                className={`flex w-full items-center justify-between rounded-xl px-3 py-3 text-left text-sm ${
-                                  selectedMunicipality?.ineCode ===
+                                className={`flex w-full items-center justify-between rounded-xl px-3 py-3 text-left text-sm ${selectedMunicipality?.ineCode ===
                                   municipality.ineCode
-                                    ? "bg-[#F0F0FF] font-black text-[#5052D9]"
-                                    : "font-semibold text-slate-700 hover:bg-slate-50"
-                                }`}
+                                  ? "bg-[#F0F0FF] font-black text-[#5052D9]"
+                                  : "font-semibold text-slate-700 hover:bg-slate-50"
+                                  }`}
                               >
                                 {
                                   municipality.name
                                 }
 
                                 {selectedMunicipality?.ineCode ===
-                                municipality.ineCode ? (
+                                  municipality.ineCode ? (
                                   <Check
                                     size={15}
                                   />
@@ -1876,6 +1875,9 @@ export function EditEventForm({
                   <div>
                     <label className="text-sm font-black text-slate-900">
                       Código postal
+                      <span className="ml-1 font-medium text-slate-400">
+                        opcional
+                      </span>
                     </label>
 
                     <input
@@ -1900,6 +1902,9 @@ export function EditEventForm({
                         INPUT_CLASS
                       }
                     />
+                    <p className="mt-2 text-xs font-medium leading-5 text-slate-400">
+                      Si lo dejas vacío, LookUp intentará obtenerlo al verificar la dirección.
+                    </p>
                   </div>
                 </div>
               </section>
@@ -2007,11 +2012,10 @@ export function EditEventForm({
                         true,
                       )
                     }
-                    className={`rounded-xl p-3 text-sm font-black ${
-                      form.isFree
-                        ? "bg-white text-[#5D5FEF] shadow-sm"
-                        : "text-slate-500"
-                    }`}
+                    className={`rounded-xl p-3 text-sm font-black ${form.isFree
+                      ? "bg-white text-[#5D5FEF] shadow-sm"
+                      : "text-slate-500"
+                      }`}
                   >
                     Gratis
                   </button>
@@ -2024,11 +2028,10 @@ export function EditEventForm({
                         false,
                       )
                     }
-                    className={`rounded-xl p-3 text-sm font-black ${
-                      !form.isFree
-                        ? "bg-white text-[#5D5FEF] shadow-sm"
-                        : "text-slate-500"
-                    }`}
+                    className={`rounded-xl p-3 text-sm font-black ${!form.isFree
+                      ? "bg-white text-[#5D5FEF] shadow-sm"
+                      : "text-slate-500"
+                      }`}
                   >
                     De pago
                   </button>
