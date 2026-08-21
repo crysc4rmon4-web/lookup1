@@ -65,7 +65,7 @@ export async function POST(
   try {
     /*
      * ==========================================================
-     * 1. AUTENTICACIÓN
+     * 1. AUTH
      * ==========================================================
      */
 
@@ -118,7 +118,7 @@ export async function POST(
 
     /*
      * ==========================================================
-     * 2. VALIDAR EVENT ID
+     * 2. EVENT ID
      * ==========================================================
      */
 
@@ -150,7 +150,7 @@ export async function POST(
 
     /*
      * ==========================================================
-     * 3. CARGAR BORRADOR Y COMPROBAR PROPIEDAD
+     * 3. EVENTO REAL + PROPIEDAD
      * ==========================================================
      */
 
@@ -209,19 +209,47 @@ export async function POST(
         .toLowerCase();
 
     if (
-      currentStatus !==
+      currentStatus ===
+      "cancelled"
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "Este evento ya está cancelado.",
+        },
+        {
+          status: 409,
+          headers:
+            noStoreHeaders(),
+        },
+      );
+    }
+
+    if (
+      currentStatus ===
       "draft"
     ) {
       return NextResponse.json(
         {
           error:
-            currentStatus ===
-            "published"
-              ? "Este evento ya está publicado."
-              : currentStatus ===
-                  "cancelled"
-                ? "Un evento cancelado no puede publicarse de nuevo."
-                : "Solo los borradores pueden publicarse.",
+            "Un borrador no se cancela. Puedes editarlo o eliminarlo.",
+        },
+        {
+          status: 409,
+          headers:
+            noStoreHeaders(),
+        },
+      );
+    }
+
+    if (
+      currentStatus !==
+      "published"
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "Este evento ya no puede cancelarse.",
         },
         {
           status: 409,
@@ -233,14 +261,9 @@ export async function POST(
 
     /*
      * ==========================================================
-     * 4. VALIDAR FECHA
+     * 4. NO CANCELAR EVENTOS YA FINALIZADOS
      * ==========================================================
      */
-
-    const startAt =
-      new Date(
-        event.start_at,
-      );
 
     const endAt =
       new Date(
@@ -249,16 +272,13 @@ export async function POST(
 
     if (
       Number.isNaN(
-        startAt.getTime(),
-      ) ||
-      Number.isNaN(
         endAt.getTime(),
       )
     ) {
       return NextResponse.json(
         {
           error:
-            "Las fechas del evento no son válidas. Edítalo antes de publicarlo.",
+            "La fecha del evento no es válida.",
         },
         {
           status: 409,
@@ -269,30 +289,13 @@ export async function POST(
     }
 
     if (
-      startAt.getTime() <=
+      endAt.getTime() <
       Date.now()
     ) {
       return NextResponse.json(
         {
           error:
-            "Actualiza la fecha antes de publicar: el evento debe comenzar en el futuro.",
-        },
-        {
-          status: 409,
-          headers:
-            noStoreHeaders(),
-        },
-      );
-    }
-
-    if (
-      endAt.getTime() <=
-      startAt.getTime()
-    ) {
-      return NextResponse.json(
-        {
-          error:
-            "La fecha de finalización debe ser posterior al inicio.",
+            "Un evento que ya finalizó no puede cancelarse.",
         },
         {
           status: 409,
@@ -304,87 +307,17 @@ export async function POST(
 
     /*
      * ==========================================================
-     * 5. EXIGIR REVISIÓN PRE-PUBLICACIÓN
+     * 5. CANCELAR
      * ==========================================================
      *
-     * Intelligence asesora.
+     * De nuevo:
      *
-     * No imponemos una nota mínima artificial, pero sí exigimos
-     * que el creador haya revisado la versión actual del borrador.
+     * status es la fuente de verdad.
      */
 
     const {
-      data: insight,
-      error: insightError,
-    } =
-      await supabaseAdmin
-        .from(
-          "event_insights",
-        )
-        .select(
-          `
-            event_id,
-            created_at
-          `,
-        )
-        .eq(
-          "event_id",
-          eventId,
-        )
-        .eq(
-          "phase",
-          "prepublish",
-        )
-        .order(
-          "created_at",
-          {
-            ascending:
-              false,
-          },
-        )
-        .limit(1)
-        .maybeSingle();
-
-    if (insightError) {
-      throw new Error(
-        `No se pudo comprobar LookUp Intelligence: ${insightError.message}`,
-      );
-    }
-
-    if (!insight) {
-      return NextResponse.json(
-        {
-          error:
-            "Analiza el borrador con LookUp Intelligence antes de publicarlo.",
-        },
-        {
-          status: 409,
-          headers:
-            noStoreHeaders(),
-        },
-      );
-    }
-
-    /*
-     * ==========================================================
-     * 6. PUBLICAR
-     * ==========================================================
-     *
-     * IMPORTANTE:
-     *
-     * events.status es nuestra fuente de verdad.
-     *
-     * No escribimos columnas paralelas como:
-     * - published
-     * - cancelled
-     *
-     * porque no forman parte del esquema actual y además pueden
-     * provocar estados contradictorios.
-     */
-
-    const {
-      data: publishedEvent,
-      error: publishError,
+      data: cancelledEvent,
+      error: cancelError,
     } =
       await supabaseAdmin
         .from(
@@ -392,7 +325,7 @@ export async function POST(
         )
         .update({
           status:
-            "published",
+            "cancelled",
 
           updated_at:
             new Date().toISOString(),
@@ -407,7 +340,7 @@ export async function POST(
         )
         .eq(
           "status",
-          "draft",
+          "published",
         )
         .select(
           `
@@ -418,21 +351,17 @@ export async function POST(
         )
         .maybeSingle();
 
-    if (publishError) {
+    if (cancelError) {
       throw new Error(
-        `No se pudo publicar el evento: ${publishError.message}`,
+        `No se pudo cancelar el evento: ${cancelError.message}`,
       );
     }
 
-    /*
-     * Protege frente a dos publicaciones concurrentes.
-     */
-
-    if (!publishedEvent) {
+    if (!cancelledEvent) {
       return NextResponse.json(
         {
           error:
-            "El evento cambió de estado y ya no está disponible para publicarse.",
+            "El evento cambió de estado y ya no puede cancelarse.",
         },
         {
           status: 409,
@@ -444,15 +373,18 @@ export async function POST(
 
     return NextResponse.json(
       {
+        success:
+          true,
+
         event: {
           id:
-            publishedEvent.id,
+            cancelledEvent.id,
 
           status:
-            publishedEvent.status,
+            cancelledEvent.status,
 
           updatedAt:
-            publishedEvent.updated_at,
+            cancelledEvent.updated_at,
         },
       },
       {
@@ -463,14 +395,14 @@ export async function POST(
     );
   } catch (error) {
     console.error(
-      "❌ Error publicando evento:",
+      "❌ Error cancelando evento:",
       error,
     );
 
     return NextResponse.json(
       {
         error:
-          "No se pudo publicar el evento.",
+          "No se pudo cancelar el evento.",
       },
       {
         status: 500,

@@ -1,22 +1,12 @@
-import "server-only";
-
-import {
-  getOpenAIClient,
-} from "../../openai";
+import OpenAI from "openai";
 
 import type {
   EventIntelligenceConfidence,
   EventIntelligenceVerdict,
   EventLocalAudiencePreview,
   EventPrepublishAdvice,
-} from "../../events/event-intelligence-types";
-
-import type {
-  EventReadinessResult,
-} from "./event-readiness";
-
-export const EVENT_PREPUBLISH_INTELLIGENCE_MODEL =
-  "gpt-4o-mini";
+  EventReadinessPublic,
+} from "@/lib/events/event-intelligence-types";
 
 export type EventPrepublishIntelligenceInput = {
   event: {
@@ -26,11 +16,9 @@ export type EventPrepublishIntelligenceInput = {
 
     category: string;
 
-    tags:
-      readonly string[];
+    tags: string[];
 
-    audience:
-      readonly string[];
+    audience: string[];
 
     city: string;
 
@@ -48,93 +36,141 @@ export type EventPrepublishIntelligenceInput = {
   };
 
   readiness:
-    EventReadinessResult;
+    EventReadinessPublic;
 
   localAudience:
     EventLocalAudiencePreview;
 };
 
-function clean(
-  value:
-    | string
-    | null
-    | undefined,
-) {
+type GeneratedAdvicePayload = {
+  title?: unknown;
+
+  message?: unknown;
+
+  recommendation?: unknown;
+};
+
+const DEFAULT_MODEL =
+  "gpt-4o-mini";
+
+const MAX_TITLE_LENGTH =
+  100;
+
+const MAX_MESSAGE_LENGTH =
+  900;
+
+const MAX_RECOMMENDATION_LENGTH =
+  900;
+
+let openAIClient:
+  OpenAI | null =
+  null;
+
+function getOpenAIClient() {
+  const apiKey =
+    process.env
+      .OPENAI_API_KEY
+      ?.trim();
+
+  if (!apiKey) {
+    throw new Error(
+      "OPENAI_API_KEY no está configurada.",
+    );
+  }
+
+  if (!openAIClient) {
+    openAIClient =
+      new OpenAI({
+        apiKey,
+      });
+  }
+
+  return openAIClient;
+}
+
+function getModel() {
   return (
-    value
-      ?.trim()
-      .replace(/\s+/g, " ") ||
-    ""
+    process.env
+      .OPENAI_EVENT_INTELLIGENCE_MODEL
+      ?.trim() ||
+    DEFAULT_MODEL
   );
 }
 
-function formatList(
-  values:
-    readonly string[],
+function cleanText(
+  value: string,
+) {
+  return value
+    .trim()
+    .replace(
+      /\s+/g,
+      " ",
+    );
+}
+
+function trimToLength(
+  value: string,
+  maximum: number,
 ) {
   const normalized =
-    values
-      .map(clean)
-      .filter(Boolean);
+    cleanText(
+      value,
+    );
 
-  return normalized.length >
+  if (
+    normalized.length <=
+    maximum
+  ) {
+    return normalized;
+  }
+
+  return `${normalized
+    .slice(
+      0,
+      maximum - 1,
+    )
+    .trim()}…`;
+}
+
+function joinHumanList(
+  values: string[],
+) {
+  if (
+    values.length ===
     0
-    ? normalized.join(", ")
-    : "Ninguno";
+  ) {
+    return "";
+  }
+
+  if (
+    values.length ===
+    1
+  ) {
+    return values[0];
+  }
+
+  if (
+    values.length ===
+    2
+  ) {
+    return `${values[0]} y ${values[1]}`;
+  }
+
+  return `${values
+    .slice(
+      0,
+      -1,
+    )
+    .join(", ")} y ${
+    values[
+      values.length - 1
+    ]
+  }`;
 }
 
-export function getEventIntelligenceConfidence(
-  localAudience:
-    EventLocalAudiencePreview,
-): EventIntelligenceConfidence {
-  if (
-    localAudience.sampleStatus ===
-      "unavailable" ||
-    localAudience.sampleStatus ===
-      "no_local_data" ||
-    localAudience.sampleStatus ===
-      "insufficient_sample"
-  ) {
-    return "insufficient";
-  }
-
-  if (
-    localAudience.sampleStatus ===
-    "insufficient_related_sample"
-  ) {
-    return "low";
-  }
-
-  const analyzed =
-    localAudience
-      .analyzedProfiles ??
-    0;
-
-  const related =
-    localAudience
-      .relatedProfiles ??
-    0;
-
-  if (
-    analyzed >= 50 &&
-    related >= 15
-  ) {
-    return "high";
-  }
-
-  if (
-    analyzed >= 15 &&
-    related >= 5
-  ) {
-    return "medium";
-  }
-
-  return "low";
-}
-
-export function getEventIntelligenceVerdict(
+function determineVerdict(
   readiness:
-    EventReadinessResult,
+    EventReadinessPublic,
 ): EventIntelligenceVerdict {
   if (
     readiness.score >=
@@ -145,7 +181,7 @@ export function getEventIntelligenceVerdict(
 
   if (
     readiness.score >=
-    50
+    55
   ) {
     return "improve";
   }
@@ -153,147 +189,185 @@ export function getEventIntelligenceVerdict(
   return "learning";
 }
 
+function determineConfidence(
+  localAudience:
+    EventLocalAudiencePreview,
+): EventIntelligenceConfidence {
+  switch (
+    localAudience.sampleStatus
+  ) {
+    case "sufficient":
+      return "high";
+
+    case "insufficient_related_sample":
+      return "medium";
+
+    case "insufficient_sample":
+      return "low";
+
+    case "no_local_data":
+    case "unavailable":
+    default:
+      return "insufficient";
+  }
+}
+
 function getAdviceTitle(
   readiness:
-    EventReadinessResult,
+    EventReadinessPublic,
 ) {
   if (
     readiness.score >=
-    85
+    92
   ) {
-    return "Buen punto de partida";
+    return "Muy bien encaminado";
   }
 
   if (
     readiness.score >=
-    70
+    78
   ) {
     return "Casi listo para publicar";
   }
 
   if (
     readiness.score >=
-    50
+    58
   ) {
-    return "Hay valor, pero todavía puede mejorar";
+    return "Hay una buena base, pero todavía puede ganar claridad";
   }
 
-  return "Completa la propuesta antes de publicar";
+  return "Conviene reforzar la propuesta antes de publicarla";
 }
 
-function buildAudienceFallbackSentence(
-  input:
-    EventPrepublishIntelligenceInput,
+function buildFailedChecksSummary(
+  readiness:
+    EventReadinessPublic,
 ) {
-  const audience =
-    input.localAudience;
+  const failed =
+    readiness.checks.filter(
+      (check) =>
+        !check.passed,
+    );
 
-  switch (
-    audience.sampleStatus
+  return failed;
+}
+
+function buildFallbackMessage(
+  readiness:
+    EventReadinessPublic,
+) {
+  const failed =
+    buildFailedChecksSummary(
+      readiness,
+    );
+
+  if (
+    failed.length ===
+    0
   ) {
-    case "sufficient": {
-      const related =
-        audience
-          .relatedProfiles ??
-        0;
-
-      const analyzed =
-        audience
-          .analyzedProfiles ??
-        0;
-
-      if (
-        related > 0 &&
-        analyzed > 0
-      ) {
-        return `En ${input.event.city}, LookUp ha podido analizar ${analyzed} perfiles y ${related} presentan una relación clara con la propuesta del evento.`;
-      }
-
-      return `LookUp ya dispone de muestra suficiente en ${input.event.city}, aunque todavía no detecta una audiencia local claramente relacionada con esta propuesta.`;
-    }
-
-    case "insufficient_related_sample":
-      return `LookUp detecta algunas señales relacionadas en ${input.event.city}, pero todavía son demasiado pocas para mostrar una estimación responsable.`;
-
-    case "insufficient_sample":
-      return `Todavía no hay suficientes perfiles analizables en ${input.event.city} para estimar responsablemente el potencial local.`;
-
-    case "no_local_data":
-      return `LookUp todavía no dispone de perfiles analizables en ${input.event.city} para valorar el potencial local.`;
-
-    case "unavailable":
-    default:
-      return "La estimación de audiencia local no está disponible en este momento, pero podemos seguir evaluando la calidad del evento.";
+    return (
+      "La propuesta está bien construida y los elementos principales permiten entender qué ocurrirá, para quién está pensada y cómo participar. " +
+      "No detectamos un problema estructural importante antes de publicarla."
+    );
   }
+
+  const labels =
+    failed.map(
+      (check) =>
+        check.label.toLocaleLowerCase(
+          "es",
+        ),
+    );
+
+  if (
+    failed.length ===
+    1
+  ) {
+    return (
+      `La base del evento está clara, pero todavía merece atención ${labels[0]}. ` +
+      "No impide publicarlo, aunque mejorarlo puede hacer que una persona entienda la propuesta con menos esfuerzo y tenga más motivos para interesarse."
+    );
+  }
+
+  return (
+    `El evento tiene una base reconocible, pero todavía hay varios puntos que conviene trabajar en conjunto: ${joinHumanList(
+      labels,
+    )}. ` +
+    "No son problemas aislados: juntos influyen en lo rápido que una persona entiende qué va a vivir, si la experiencia encaja con ella y cuál debería ser su siguiente paso."
+  );
+}
+
+function buildFallbackRecommendation(
+  readiness:
+    EventReadinessPublic,
+) {
+  const failed =
+    buildFailedChecksSummary(
+      readiness,
+    );
+
+  if (
+    failed.length ===
+    0
+  ) {
+    return null;
+  }
+
+  const actions =
+    failed.map(
+      (
+        check,
+        index,
+      ) => {
+        const message =
+          cleanText(
+            check.message,
+          ).replace(
+            /[.!?]+$/,
+            "",
+          );
+
+        return `${index + 1}) ${check.label}: ${message}.`;
+      },
+    );
+
+  return (
+    `Antes de publicar, prioriza estos ajustes: ${actions.join(
+      " ",
+    )}`
+  );
 }
 
 export function buildFallbackEventPrepublishAdvice(
   input:
     EventPrepublishIntelligenceInput,
 ): EventPrepublishAdvice {
-  const confidence =
-    getEventIntelligenceConfidence(
-      input.localAudience,
-    );
-
-  const verdict =
-    getEventIntelligenceVerdict(
-      input.readiness,
-    );
-
-  const audienceSentence =
-    buildAudienceFallbackSentence(
-      input,
-    );
-
-  const primaryImprovement =
-    input.readiness
-      .improvements[0] ??
-    null;
-
-  const primaryStrength =
-    input.readiness
-      .strengths[0] ??
-    null;
-
-  let message:
-    string;
-
-  if (
-    input.readiness.score >=
-      85 &&
-    primaryStrength
-  ) {
-    message =
-      `${primaryStrength} ${audienceSentence}`;
-  } else if (
-    primaryImprovement
-  ) {
-    message =
-      `${audienceSentence} Antes de publicar, ${primaryImprovement
-        .charAt(0)
-        .toLowerCase()}${primaryImprovement.slice(
-        1,
-      )}`;
-  } else {
-    message =
-      `${audienceSentence} La propuesta contiene la información principal necesaria para continuar.`;
-  }
-
   return {
-    verdict,
+    verdict:
+      determineVerdict(
+        input.readiness,
+      ),
 
-    confidence,
+    confidence:
+      determineConfidence(
+        input.localAudience,
+      ),
 
     title:
       getAdviceTitle(
         input.readiness,
       ),
 
-    message,
+    message:
+      buildFallbackMessage(
+        input.readiness,
+      ),
 
     recommendation:
-      primaryImprovement,
+      buildFallbackRecommendation(
+        input.readiness,
+      ),
 
     source:
       "fallback",
@@ -303,341 +377,594 @@ export function buildFallbackEventPrepublishAdvice(
   };
 }
 
-function buildLocalAudienceContext(
-  localAudience:
-    EventLocalAudiencePreview,
+function normalizeComparableText(
+  value: string,
 ) {
-  switch (
-    localAudience.sampleStatus
-  ) {
-    case "sufficient":
-      return `
-Estado de muestra: suficiente
-Perfiles analizables: ${
-        localAudience
-          .analyzedProfiles ??
-        0
-      }
-Perfiles relacionados: ${
-        localAudience
-          .relatedProfiles ??
-        0
-      }
-Perfiles con relación especialmente fuerte: ${
-        localAudience
-          .strongProfiles ??
-        0
-      }
-Temas agregados presentes en la audiencia relacionada: ${
-        formatList(
-          localAudience
-            .topInterests,
-        )
-      }
-      `.trim();
-
-    case "insufficient_related_sample":
-      return `
-Estado de muestra: existen algunas relaciones, pero son demasiado pocas para mostrar cantidades responsables.
-No existe evidencia suficiente para sacar conclusiones sobre demanda local.
-      `.trim();
-
-    case "insufficient_sample":
-      return `
-Estado de muestra: insuficiente.
-No existen suficientes perfiles analizables para estimar potencial local.
-      `.trim();
-
-    case "no_local_data":
-      return `
-Estado de muestra: sin datos locales analizables.
-No existe evidencia para afirmar demanda, falta de demanda ni rendimiento local.
-      `.trim();
-
-    case "unavailable":
-    default:
-      return `
-La estimación de audiencia local no está disponible temporalmente.
-No existe evidencia local suficiente para sacar conclusiones de mercado.
-      `.trim();
-  }
+  return value
+    .normalize(
+      "NFD",
+    )
+    .replace(
+      /[\u0300-\u036f]/g,
+      "",
+    )
+    .toLocaleLowerCase(
+      "es",
+    )
+    .replace(
+      /[^a-z0-9]+/g,
+      " ",
+    )
+    .trim();
 }
 
-function canGenerateAdviceWithAI(
+const COMPARISON_STOP_WORDS =
+  new Set([
+    "a",
+    "al",
+    "algo",
+    "como",
+    "con",
+    "de",
+    "del",
+    "el",
+    "en",
+    "es",
+    "esta",
+    "este",
+    "esto",
+    "hacer",
+    "la",
+    "las",
+    "lo",
+    "los",
+    "mas",
+    "mejor",
+    "para",
+    "por",
+    "que",
+    "se",
+    "ser",
+    "si",
+    "su",
+    "te",
+    "tu",
+    "un",
+    "una",
+    "y",
+  ]);
+
+function getMeaningfulWords(
+  value: string,
+) {
+  return new Set(
+    normalizeComparableText(
+      value,
+    )
+      .split(
+        " ",
+      )
+      .filter(
+        (word) =>
+          word.length >
+            2 &&
+          !COMPARISON_STOP_WORDS.has(
+            word,
+          ),
+      ),
+  );
+}
+
+function calculateSemanticOverlap(
+  left: string,
+  right: string,
+) {
+  const leftWords =
+    getMeaningfulWords(
+      left,
+    );
+
+  const rightWords =
+    getMeaningfulWords(
+      right,
+    );
+
+  if (
+    leftWords.size ===
+      0 ||
+    rightWords.size ===
+      0
+  ) {
+    return 0;
+  }
+
+  let intersection =
+    0;
+
+  for (
+    const word of
+    leftWords
+  ) {
+    if (
+      rightWords.has(
+        word,
+      )
+    ) {
+      intersection +=
+        1;
+    }
+  }
+
+  /*
+   * Usamos el conjunto más pequeño como divisor.
+   *
+   * Esto detecta específicamente el caso:
+   *
+   * mensaje:
+   * "Te recomiendo hacer el título más específico..."
+   *
+   * recomendación:
+   * "Haz el título más específico..."
+   *
+   * aunque una frase sea más larga.
+   */
+
+  return (
+    intersection /
+    Math.min(
+      leftWords.size,
+      rightWords.size,
+    )
+  );
+}
+
+function areAdviceTextsTooSimilar(
+  message: string,
+  recommendation: string,
+) {
+  const normalizedMessage =
+    normalizeComparableText(
+      message,
+    );
+
+  const normalizedRecommendation =
+    normalizeComparableText(
+      recommendation,
+    );
+
+  if (
+    !normalizedMessage ||
+    !normalizedRecommendation
+  ) {
+    return false;
+  }
+
+  if (
+    normalizedMessage.includes(
+      normalizedRecommendation,
+    ) ||
+    normalizedRecommendation.includes(
+      normalizedMessage,
+    )
+  ) {
+    return true;
+  }
+
+  return (
+    calculateSemanticOverlap(
+      normalizedMessage,
+      normalizedRecommendation,
+    ) >= 0.72
+  );
+}
+
+function getStringProperty(
+  value: unknown,
+) {
+  return typeof value ===
+    "string"
+    ? cleanText(
+        value,
+      )
+    : "";
+}
+
+function getNullableStringProperty(
+  value: unknown,
+) {
+  if (
+    value === null ||
+    value === undefined
+  ) {
+    return null;
+  }
+
+  if (
+    typeof value !==
+    "string"
+  ) {
+    return null;
+  }
+
+  const normalized =
+    cleanText(
+      value,
+    );
+
+  return normalized ||
+    null;
+}
+
+function parseGeneratedPayload(
+  value: string,
+): GeneratedAdvicePayload {
+  let parsed:
+    unknown;
+
+  try {
+    parsed =
+      JSON.parse(
+        value,
+      );
+  } catch {
+    throw new Error(
+      "La respuesta de Intelligence no contiene JSON válido.",
+    );
+  }
+
+  if (
+    typeof parsed !==
+      "object" ||
+    parsed === null ||
+    Array.isArray(
+      parsed,
+    )
+  ) {
+    throw new Error(
+      "La respuesta de Intelligence no tiene el formato esperado.",
+    );
+  }
+
+  return parsed as GeneratedAdvicePayload;
+}
+
+function buildPromptEvidence(
   input:
     EventPrepublishIntelligenceInput,
 ) {
-  const hasAuthorizedImprovement =
-    input.readiness
-      .improvements.length >
-    0;
+  const failedChecks =
+    input.readiness.checks
+      .filter(
+        (check) =>
+          !check.passed,
+      )
+      .map(
+        (check) => ({
+          id:
+            check.id,
 
-  const hasSufficientAudienceEvidence =
-    input.localAudience
-      .sampleStatus ===
-    "sufficient";
+          label:
+            check.label,
 
-  /*
-   * Si el evento ya está preparado y además
-   * no tenemos evidencia local suficiente,
-   * GPT no tiene ninguna decisión adicional
-   * responsable que tomar.
-   *
-   * En ese caso el fallback determinista es
-   * más preciso, más barato y evita fabricar
-   * recomendaciones.
-   */
-  return (
-    hasAuthorizedImprovement ||
-    hasSufficientAudienceEvidence
-  );
+          score:
+            check.score,
+
+          maxScore:
+            check.maxScore,
+
+          message:
+            check.message,
+        }),
+      );
+
+  const passedChecks =
+    input.readiness.checks
+      .filter(
+        (check) =>
+          check.passed,
+      )
+      .map(
+        (check) => ({
+          id:
+            check.id,
+
+          label:
+            check.label,
+
+          message:
+            check.message,
+        }),
+      );
+
+  return {
+    event: {
+      title:
+        input.event.title,
+
+      description:
+        input.event.description,
+
+      category:
+        input.event.category,
+
+      tags:
+        input.event.tags,
+
+      audience:
+        input.event.audience,
+
+      city:
+        input.event.city,
+
+      startAt:
+        input.event.startAt,
+
+      endAt:
+        input.event.endAt,
+
+      isFree:
+        input.event.isFree,
+
+      priceFrom:
+        input.event.priceFrom,
+
+      hasExternalAction:
+        Boolean(
+          input.event
+            .externalUrl,
+        ),
+    },
+
+    readiness: {
+      score:
+        input.readiness
+          .score,
+
+      status:
+        input.readiness
+          .status,
+
+      failedChecks,
+
+      passedChecks,
+
+      strengths:
+        input.readiness
+          .strengths,
+
+      improvements:
+        input.readiness
+          .improvements,
+    },
+
+    localAudience: {
+      sampleStatus:
+        input.localAudience
+          .sampleStatus,
+
+      analyzedProfiles:
+        input.localAudience
+          .analyzedProfiles,
+
+      relatedProfiles:
+        input.localAudience
+          .relatedProfiles,
+
+      strongProfiles:
+        input.localAudience
+          .strongProfiles,
+
+      averageSimilarity:
+        input.localAudience
+          .averageSimilarity,
+
+      topInterests:
+        input.localAudience
+          .topInterests,
+    },
+  };
 }
 
 export async function generateEventPrepublishAdvice(
   input:
     EventPrepublishIntelligenceInput,
 ): Promise<EventPrepublishAdvice> {
-  if (
-    !canGenerateAdviceWithAI(
-      input,
-    )
-  ) {
-    return buildFallbackEventPrepublishAdvice(
-      input,
-    );
-  }
-
-  const confidence =
-    getEventIntelligenceConfidence(
-      input.localAudience,
-    );
-
-  const verdict =
-    getEventIntelligenceVerdict(
-      input.readiness,
-    );
-
-  const primaryImprovement =
-    input.readiness
-      .improvements[0] ??
-    null;
-
-  const authorizedRecommendation =
-    primaryImprovement ??
-    "NINGUNA";
-
-  const openai =
+  const client =
     getOpenAIClient();
 
-  const response =
-    await openai.responses.create({
-      model:
-        EVENT_PREPUBLISH_INTELLIGENCE_MODEL,
+  const model =
+    getModel();
 
-      instructions: `
-Eres LookUp Intelligence.
+  const fallback =
+    buildFallbackEventPrepublishAdvice(
+      input,
+    );
 
-Ayudas a una persona o negocio local ANTES de publicar un evento.
+  const evidence =
+    buildPromptEvidence(
+      input,
+    );
 
-Tu trabajo es convertir evidencia REAL ya calculada por LookUp en una explicación breve y útil.
+  const completion =
+    await client.chat.completions.create({
+      model,
+
+      temperature:
+        0.35,
+
+      response_format: {
+        type:
+          "json_object",
+      },
+
+      messages: [
+        {
+          role:
+            "system",
+
+          content: `
+Eres LookUp Intelligence, un asesor de producto para creadores de eventos.
+
+Tu trabajo NO es elogiar automáticamente al creador ni repetir validaciones técnicas.
+
+Debes explicar de forma humana qué está bien, qué puede frenar la comprensión o el interés y qué puede hacer el creador antes de publicar.
 
 REGLAS OBLIGATORIAS:
 
-- Responde siempre en español.
-- Escribe entre 2 y 4 frases.
-- Máximo 90 palabras.
-- Habla directamente al creador.
-- Utiliza únicamente la información proporcionada.
-- Nunca inventes métricas.
-- Nunca inventes demanda.
-- Nunca predigas asistentes.
-- Nunca prometas ventas, reservas, alcance o éxito.
-- No uses información de perfiles individuales.
-- No menciones embeddings.
-- No menciones vectores.
-- No menciones cosine similarity.
-- No menciones pgvector.
-- No menciones prompts.
-- No expliques mecanismos internos.
+1. Usa exclusivamente la evidencia proporcionada.
+2. No inventes asistentes, demanda, conversiones, comportamiento, popularidad ni estadísticas.
+3. Si hay varios failedChecks, analiza el conjunto. No elijas arbitrariamente solo el primero.
+4. "message" es DIAGNÓSTICO:
+   - explica qué ocurre,
+   - por qué importa,
+   - y cómo afecta a la comprensión de la experiencia.
+5. "recommendation" es ACCIÓN:
+   - debe aportar pasos concretos,
+   - debe cubrir los failedChecks relevantes,
+   - y NO debe repetir con otras palabras el mismo contenido de "message".
+6. Si título y descripción fallan, por ejemplo, el consejo debe explicar cómo trabajan juntos, no generar dos frases aisladas.
+7. Si una mejora se presta a ello, puedes dar un ejemplo breve y realista, pero nunca inventes información que no exista en el evento.
+8. No digas que algo "atraerá más gente" o "aumentará conversiones" si no existe evidencia para afirmarlo.
+9. No menciones OpenAI, GPT, prompts ni modelos.
+10. Escribe español natural, profesional, cercano y directo.
+11. No uses lenguaje robótico como "se recomienda optimizar".
+12. message debe tener aproximadamente 2 a 4 frases.
+13. recommendation puede tener entre 1 y 4 acciones concretas.
+14. Si realmente no hay ninguna mejora material que aportar, recommendation debe ser null.
 
-SOBRE LA AUDIENCIA LOCAL:
+Devuelve SOLAMENTE JSON con esta forma exacta:
 
-- Una relación entre perfiles y evento NO equivale a intención de compra.
-- Una relación entre perfiles y evento NO equivale a asistencia.
-- Si la muestra es insuficiente, dilo sin sacar conclusiones de mercado.
-- La ausencia de datos NO significa que el evento vaya a funcionar mal.
-- La ausencia de datos NO significa que vaya a ser difícil promocionarlo.
-- La ausencia de perfiles relacionados NO demuestra falta de demanda.
+{
+  "title": "string",
+  "message": "string",
+  "recommendation": "string o null"
+}
+          `.trim(),
+        },
 
-SOBRE LAS RECOMENDACIONES:
+        {
+          role:
+            "user",
 
-Recibirás un campo llamado:
-
-RECOMENDACIÓN AUTORIZADA
-
-Esa es la ÚNICA mejora accionable que puedes recomendar.
-
-Si RECOMENDACIÓN AUTORIZADA es NINGUNA:
-
-- No inventes ninguna acción nueva.
-- No sugieras encuestas.
-- No sugieras campañas.
-- No sugieras publicidad.
-- No sugieras estudios de mercado.
-- No sugieras cambiar el precio.
-- No sugieras cambiar la fecha.
-- No sugieras cambiar la ciudad.
-- No sugieras cambiar el público.
-- No sugieras cambiar canales de promoción.
-- No sugieras aumentar presupuesto.
-- Limítate a explicar qué está bien preparado y qué sabemos o no sabemos todavía.
-
-Si existe una RECOMENDACIÓN AUTORIZADA:
-
-- Puedes reformularla de manera natural.
-- No añadas una segunda recomendación que no aparezca en la evidencia.
-
-SOBRE EL TONO:
-
-- Profesional.
-- Humano.
-- Claro.
-- Sin exageración.
-- Sin halagos vacíos.
-- Sin lenguaje de vendedor.
-- Sin fingir certeza.
-
-El análisis pre-publicación mide preparación y señales disponibles.
-Todavía no existe rendimiento real del evento.
-      `.trim(),
-
-      input: `
-EVENTO
-
-Título:
-${clean(
-        input.event.title,
-      )}
-
-Descripción:
-${clean(
-        input.event.description,
-      )}
-
-Categoría:
-${clean(
-        input.event.category,
-      )}
-
-Etiquetas:
-${formatList(
-        input.event.tags,
-      )}
-
-Público declarado:
-${formatList(
-        input.event.audience,
-      )}
-
-Ciudad:
-${clean(
-        input.event.city,
-      )}
-
-Inicio:
-${input.event.startAt}
-
-Fin:
-${input.event.endAt}
-
-Precio:
-${
-        input.event.isFree
-          ? "Gratis"
-          : input.event
-                .priceFrom !==
-              null
-            ? `Desde ${input.event.priceFrom} EUR`
-            : "No definido"
-      }
-
-Acción externa:
-${
-        input.event
-          .externalUrl
-          ? "Sí"
-          : "No"
-      }
-
-
-PREPARACIÓN DETERMINISTA DE LOOKUP
-
-Puntuación:
-${input.readiness.score}/100
-
-Estado:
-${input.readiness.status}
-
-Fortalezas verificadas:
-${formatList(
-        input.readiness
-          .strengths,
-      )}
-
-Mejoras detectadas:
-${formatList(
-        input.readiness
-          .improvements,
-      )}
-
-RECOMENDACIÓN AUTORIZADA:
-${authorizedRecommendation}
-
-
-AUDIENCIA LOCAL AGREGADA
-
-${buildLocalAudienceContext(
-        input.localAudience,
-      )}
-
-
-Escribe únicamente el consejo final que verá el creador.
-      `.trim(),
-
-      max_output_tokens:
-        280,
+          content:
+            JSON.stringify(
+              evidence,
+            ),
+        },
+      ],
     });
 
-  const message =
-    response.output_text
-      .trim()
-      .replace(/\s+/g, " ");
+  const content =
+    completion
+      .choices[0]
+      ?.message
+      ?.content
+      ?.trim();
 
-  if (!message) {
+  if (!content) {
     throw new Error(
-      "OpenAI no devolvió un consejo pre-publicación.",
+      "LookUp Intelligence devolvió una respuesta vacía.",
     );
   }
 
-  return {
-    verdict,
+  const payload =
+    parseGeneratedPayload(
+      content,
+    );
 
-    confidence,
+  const generatedTitle =
+    getStringProperty(
+      payload.title,
+    );
+
+  const generatedMessage =
+    getStringProperty(
+      payload.message,
+    );
+
+  let generatedRecommendation =
+    getNullableStringProperty(
+      payload.recommendation,
+    );
+
+  if (
+    !generatedTitle ||
+    !generatedMessage
+  ) {
+    throw new Error(
+      "LookUp Intelligence devolvió una respuesta incompleta.",
+    );
+  }
+
+  /*
+   * Segunda barrera.
+   *
+   * Aunque el prompt lo prohíbe, ningún modelo generativo
+   * garantiza al 100 % no repetir una idea.
+   *
+   * Si diagnóstico y recomendación son prácticamente lo mismo,
+   * usamos la recomendación determinista construida a partir
+   * de TODOS los checks fallidos.
+   */
+
+  if (
+    generatedRecommendation &&
+    areAdviceTextsTooSimilar(
+      generatedMessage,
+      generatedRecommendation,
+    )
+  ) {
+    generatedRecommendation =
+      fallback
+        .recommendation;
+  }
+
+  /*
+   * Y si incluso el fallback resulta conceptualmente redundante,
+   * no mostramos una segunda caja solo por rellenar espacio.
+   */
+
+  if (
+    generatedRecommendation &&
+    areAdviceTextsTooSimilar(
+      generatedMessage,
+      generatedRecommendation,
+    )
+  ) {
+    generatedRecommendation =
+      null;
+  }
+
+  return {
+    verdict:
+      fallback.verdict,
+
+    confidence:
+      fallback.confidence,
 
     title:
-      getAdviceTitle(
-        input.readiness,
+      trimToLength(
+        generatedTitle,
+        MAX_TITLE_LENGTH,
       ),
 
-    message,
+    message:
+      trimToLength(
+        generatedMessage,
+        MAX_MESSAGE_LENGTH,
+      ),
 
     recommendation:
-      primaryImprovement,
+      generatedRecommendation
+        ? trimToLength(
+            generatedRecommendation,
+            MAX_RECOMMENDATION_LENGTH,
+          )
+        : null,
 
     source:
       "ai",
 
-    model:
-      EVENT_PREPUBLISH_INTELLIGENCE_MODEL,
+    model,
   };
 }
