@@ -6,107 +6,113 @@ export type ExploreEvent = {
   id: string;
 
   creatorProfileId:
-    string;
+  string;
 
   title:
-    string;
+  string;
 
   description:
-    string;
+  string;
 
   category:
-    string;
+  string;
 
   coverImageUrl:
-    string | null;
+  string | null;
 
   tags:
-    string[];
+  string[];
 
   audience:
-    string[];
+  string[];
 
   venueName:
-    string;
+  string;
 
   address:
-    string;
+  string;
 
   city:
-    string;
+  string;
 
   cityKey:
-    string | null;
+  string | null;
 
   province:
-    string | null;
+  string | null;
 
   postalCode:
-    string | null;
+  string | null;
 
   countryCode:
-    string | null;
+  string | null;
 
   startAt:
-    string;
+  string;
 
   endAt:
-    string;
+  string;
 
   lifecycleStatus:
-    ExploreEventLifecycleStatus;
+  ExploreEventLifecycleStatus;
+  
+  isFavorite:
+  boolean;
+
+  canFavorite:
+  boolean;
 
   isFree:
-    boolean;
+  boolean;
 
   priceFrom:
-    number | null;
+  number | null;
 
   currency:
-    string;
+  string;
 
   capacity:
-    number | null;
+  number | null;
 
   createdAt:
-    string;
+  string;
 
   updatedAt:
-    string;
+  string;
 };
 
 type ExploreEventsResponse = {
   city?:
-    string;
+  string;
 
   cityKey?:
-    string;
+  string;
 
   events?:
-    ExploreEvent[];
+  ExploreEvent[];
 
   count?:
-    number;
+  number;
 
   error?:
-    string;
+  string;
 };
 
 type GetExploreEventsInput = {
   accessToken:
-    string;
+  string;
 
   city:
-    string;
+  string;
 
   category?:
-    string | null;
+  string | null;
 
   limit?:
-    number;
+  number;
 
   signal?:
-    AbortSignal;
+  AbortSignal;
 };
 
 export async function getExploreEvents({
@@ -179,17 +185,17 @@ export async function getExploreEvents({
    */
   const requestInit:
     RequestInit = {
-      method:
-        "GET",
+    method:
+      "GET",
 
-      headers: {
-        Authorization:
-          `Bearer ${normalizedToken}`,
-      },
+    headers: {
+      Authorization:
+        `Bearer ${normalizedToken}`,
+    },
 
-      cache:
-        "no-store",
-    };
+    cache:
+      "no-store",
+  };
 
   if (signal) {
     requestInit.signal =
@@ -217,7 +223,7 @@ export async function getExploreEvents({
   if (!response.ok) {
     throw new Error(
       payload?.error ??
-        "No se pudieron cargar los eventos.",
+      "No se pudieron cargar los eventos.",
     );
   }
 

@@ -1566,9 +1566,8 @@ export default function DashboardPage() {
             onJoinEvent={(
               id,
             ) =>
-              console.log(
-                "Ver evento",
-                id,
+              router.push(
+                `/events/${id}`,
               )
             }
           />

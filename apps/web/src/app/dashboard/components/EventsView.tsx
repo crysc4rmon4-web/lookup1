@@ -10,7 +10,6 @@ import {
 import Link from "next/link";
 
 import {
-  Bookmark,
   CalendarDays,
   Check,
   CheckCircle2,
@@ -29,6 +28,14 @@ import {
 import {
   useAuth,
 } from "@/components/auth-provider";
+
+import {
+  EventFavoriteButton,
+} from "@/components/events/EventFavoriteButton";
+
+import {
+  SavedEventsPanel,
+} from "@/components/events/SavedEventsPanel";
 
 import type {
   CreatedEventDraft,
@@ -2226,17 +2233,56 @@ export function EventsView({
                     </div>
                   ) : null}
 
-                  <button
-                    type="button"
-                    onClick={() =>
-                      onJoinEvent(
-                        event.id,
-                      )
-                    }
-                    className="mt-5 w-full rounded-2xl bg-[#5D5FEF] py-3.5 text-sm font-black text-white shadow-md shadow-[#5D5FEF]/15 transition hover:bg-[#5254DF]"
-                  >
-                    Ver evento
-                  </button>
+                  <div className="mt-5 grid gap-3 sm:grid-cols-[auto_1fr]">
+                    <EventFavoriteButton
+                      eventId={
+                        event.id
+                      }
+                      creatorProfileId={
+                        event.creatorProfileId
+                      }
+                      initialIsFavorite={
+                        event.isFavorite
+                      }
+                      initialCanFavorite={
+                        event.canFavorite
+                      }
+                      onChange={(
+                        isFavorite,
+                      ) => {
+                        setExploreEvents(
+                          (
+                            current,
+                          ) =>
+                            current.map(
+                              (
+                                currentEvent,
+                              ) =>
+                                currentEvent.id ===
+                                  event.id
+                                  ? {
+                                    ...currentEvent,
+                                    isFavorite,
+                                  }
+                                  : currentEvent,
+                            ),
+                        );
+                      }}
+                      className="w-full"
+                    />
+
+                    <button
+                      type="button"
+                      onClick={() =>
+                        onJoinEvent(
+                          event.id,
+                        )
+                      }
+                      className="w-full rounded-2xl bg-[#5D5FEF] py-3.5 text-sm font-black text-white shadow-md shadow-[#5D5FEF]/15 transition hover:bg-[#5254DF]"
+                    >
+                      Ver evento
+                    </button>
+                  </div>
                 </div>
               </article>
             ),
@@ -2246,34 +2292,12 @@ export function EventsView({
 
       {activeTab ===
         "saved" ? (
-        <div className="rounded-[2rem] border border-slate-200/80 bg-white p-8 text-center shadow-sm sm:p-10">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-[1.4rem] bg-[#F0F0FF] text-[#5D5FEF]">
-            <Bookmark
-              size={29}
-            />
-          </div>
-
-          <h2 className="mt-5 text-2xl font-black tracking-tight text-slate-950">
-            Tus eventos guardados vivirán aquí
-          </h2>
-
-          <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-slate-500">
-            En el siguiente bloque conectaremos favoritos persistentes para guardar eventos de otras personas y negocios.
-          </p>
-
-          <button
-            type="button"
-            onClick={() =>
-              setActiveTab(
-                "explore",
-              )
-            }
-            className="mt-6 rounded-2xl bg-[#5D5FEF] px-5 py-3.5 text-sm font-black text-white shadow-md shadow-[#5D5FEF]/20 transition hover:bg-[#5254DF]"
-          >
-            Explorar eventos
-          </button>
-        </div>
-      ) : null}
+        <SavedEventsPanel
+          onOpen={
+            onJoinEvent
+          }
+        />
+        ) : null}
 
       {activeTab ===
         "mine" ? (

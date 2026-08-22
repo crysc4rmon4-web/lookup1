@@ -209,7 +209,8 @@ function parseLimit(
 }
 
 function mapEvent(
-  event: EventRow,
+  event:
+    EventRow,
 ) {
   return {
     id:
@@ -296,16 +297,6 @@ export async function GET(
   request: Request,
 ) {
   try {
-    /*
-     * ========================================================
-     * 1. AUTENTICACIÓN
-     * ========================================================
-     *
-     * Explore forma parte del dashboard autenticado.
-     *
-     * Más adelante podremos tener una versión pública
-     * independiente para compartir URLs de eventos.
-     */
     const accessToken =
       getBearerToken(
         request,
@@ -329,8 +320,10 @@ export async function GET(
       getSupabaseAdminClient();
 
     const {
-      data: authData,
-      error: authError,
+      data:
+        authData,
+      error:
+        authError,
     } =
       await supabaseAdmin.auth.getUser(
         accessToken,
@@ -353,11 +346,6 @@ export async function GET(
       );
     }
 
-    /*
-     * ========================================================
-     * 2. FILTROS
-     * ========================================================
-     */
     const url =
       new URL(
         request.url,
@@ -388,10 +376,8 @@ export async function GET(
       );
 
     if (
-      city.length <
-        2 ||
-      city.length >
-        120
+      city.length < 2 ||
+      city.length > 120
     ) {
       return NextResponse.json(
         {
@@ -433,21 +419,6 @@ export async function GET(
     const nowIso =
       new Date().toISOString();
 
-    /*
-     * ========================================================
-     * 3. EVENTOS PUBLICADOS DE ESA CIUDAD
-     * ========================================================
-     *
-     * IMPORTANTE:
-     *
-     * Radar:
-     *   proximidad física en tiempo real.
-     *
-     * Eventos:
-     *   descubrimiento territorial por ciudad.
-     *
-     * Aquí NO utilizamos distancia respecto al creador.
-     */
     let query =
       supabaseAdmin
         .from(
@@ -524,22 +495,94 @@ export async function GET(
       );
     }
 
-    const events =
+    const eventRows =
       (
         data ??
         []
-      ).map(
+      ) as EventRow[];
+
+    const favoriteEventIds =
+      new Set<string>();
+
+    if (
+      eventRows.length >
+      0
+    ) {
+      const {
+        data:
+          favoriteData,
+        error:
+          favoriteError,
+      } =
+        await supabaseAdmin
+          .from(
+            "event_favorites",
+          )
+          .select(
+            "event_id",
+          )
+          .eq(
+            "profile_id",
+            authData.user.id,
+          )
+          .in(
+            "event_id",
+            eventRows.map(
+              (
+                event,
+              ) =>
+                event.id,
+            ),
+          );
+
+      if (
+        favoriteError
+      ) {
+        throw new Error(
+          `No se pudieron comprobar los favoritos: ${favoriteError.message}`,
+        );
+      }
+
+      for (
+        const favorite
+        of favoriteData ??
+        []
+      ) {
+        if (
+          typeof favorite.event_id ===
+          "string"
+        ) {
+          favoriteEventIds.add(
+            favorite.event_id,
+          );
+        }
+      }
+    }
+
+    const events =
+      eventRows.map(
         (
-          rawEvent,
-        ) =>
-          mapEvent(
-            rawEvent as EventRow,
+          event,
+        ) => ({
+          ...mapEvent(
+            event,
           ),
+
+          isFavorite:
+            favoriteEventIds.has(
+              event.id,
+            ),
+
+          canFavorite:
+            event.creator_profile_id !==
+            authData.user.id,
+        }),
       );
 
     return NextResponse.json(
       {
         city,
+
         cityKey,
 
         events,
