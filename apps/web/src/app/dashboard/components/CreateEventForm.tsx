@@ -2097,6 +2097,8 @@ export function CreateEventForm({
                         aria-expanded={
                           municipalityMenuOpen
                         }
+                        aria-controls="event-city-options"
+                        aria-haspopup="listbox"
                         aria-autocomplete="list"
                         className="w-full rounded-2xl border border-slate-200 bg-[#FBFCFE] py-3.5 pl-11 pr-4 text-sm font-semibold text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-[#5D5FEF] focus:bg-white focus:ring-4 focus:ring-[#5D5FEF]/10 disabled:cursor-not-allowed disabled:opacity-60"
                       />
@@ -2105,6 +2107,7 @@ export function CreateEventForm({
                         selectedProvinceCode &&
                         !municipalitiesLoading ? (
                         <div
+                          id="event-city-options"
                           role="listbox"
                           className="absolute left-0 right-0 top-[calc(100%+0.5rem)] z-40 max-h-64 overflow-y-auto rounded-2xl border border-slate-200 bg-white p-2 shadow-2xl"
                         >

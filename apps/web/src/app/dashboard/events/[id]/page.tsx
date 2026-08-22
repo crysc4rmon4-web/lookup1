@@ -1008,9 +1008,6 @@ export default function EventManagementPage() {
     isDraft ||
     isUpcoming;
 
-  const canCancel =
-    isUpcoming ||
-    isLive;
 
   const actionBusy =
     analyzing ||
