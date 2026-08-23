@@ -1,0 +1,244 @@
+import "server-only";
+
+import {
+  calculateLookupCosineSimilarity,
+} from "../embedding";
+
+export type EventRelevanceLevel =
+  | "strong"
+  | "good"
+  | "exploratory"
+  | "low";
+
+export type EventRelevanceResult = {
+  relevanceScore:
+    number;
+
+  semanticSimilarity:
+    number;
+
+  level:
+    EventRelevanceLevel;
+};
+
+export type ExplicitEventInterestInput = {
+  profileInterests:
+    readonly string[];
+
+  category:
+    string;
+
+  tags:
+    readonly string[];
+
+  audience:
+    readonly string[];
+};
+
+function clamp(
+  value: number,
+  min: number,
+  max: number,
+) {
+  return Math.min(
+    Math.max(
+      value,
+      min,
+    ),
+    max,
+  );
+}
+
+function roundSimilarity(
+  value: number,
+) {
+  return (
+    Math.round(
+      value *
+      10_000,
+    ) /
+    10_000
+  );
+}
+
+function normalizeSignal(
+  value: string,
+) {
+  return value
+    .trim()
+    .normalize(
+      "NFD",
+    )
+    .replace(
+      /[\u0300-\u036f]/g,
+      "",
+    )
+    .toLowerCase()
+    .replace(
+      /[-_]+/g,
+      " ",
+    )
+    .replace(
+      /[^a-z0-9\s]+/g,
+      " ",
+    )
+    .replace(
+      /\s+/g,
+      " ",
+    )
+    .trim();
+}
+
+export function getEventRelevanceLevel(
+  relevanceScore:
+    number,
+): EventRelevanceLevel {
+  if (
+    relevanceScore >=
+    75
+  ) {
+    return "strong";
+  }
+
+  if (
+    relevanceScore >=
+    55
+  ) {
+    return "good";
+  }
+
+  if (
+    relevanceScore >=
+    35
+  ) {
+    return "exploratory";
+  }
+
+  return "low";
+}
+
+export function calculateEventRelevance(
+  profileEmbedding:
+    readonly number[],
+
+  eventEmbedding:
+    readonly number[],
+): EventRelevanceResult {
+  const semanticSimilarity =
+    calculateLookupCosineSimilarity(
+      profileEmbedding,
+      eventEmbedding,
+    );
+
+  /*
+   * El porcentaje representa cercanía semántica,
+   * NO una probabilidad de que al usuario le guste.
+   *
+   * No alteramos artificialmente el valor:
+   * simplemente normalizamos el coseno al rango visible 0..100.
+   *
+   * La intención temporal del bloque 11 será una señal
+   * separada y no contaminará este score base.
+   */
+  const relevanceScore =
+    Math.round(
+      clamp(
+        semanticSimilarity,
+        0,
+        1,
+      ) *
+        100,
+    );
+
+  return {
+    relevanceScore,
+
+    semanticSimilarity:
+      roundSimilarity(
+        semanticSimilarity,
+      ),
+
+    level:
+      getEventRelevanceLevel(
+        relevanceScore,
+      ),
+  };
+}
+
+export function findExplicitEventInterestMatches({
+  profileInterests,
+  category,
+  tags,
+  audience,
+}: ExplicitEventInterestInput) {
+  const eventSignals =
+    new Map<
+      string,
+      string
+    >();
+
+  for (
+    const value
+    of [
+      category,
+      ...tags,
+      ...audience,
+    ]
+  ) {
+    const normalized =
+      normalizeSignal(
+        value,
+      );
+
+    if (
+      normalized &&
+      !eventSignals.has(
+        normalized,
+      )
+    ) {
+      eventSignals.set(
+        normalized,
+        value.trim(),
+      );
+    }
+  }
+
+  const matches:
+    string[] =
+    [];
+
+  const seen =
+    new Set<string>();
+
+  for (
+    const interest
+    of profileInterests
+  ) {
+    const normalizedInterest =
+      normalizeSignal(
+        interest,
+      );
+
+    if (
+      !normalizedInterest ||
+      seen.has(
+        normalizedInterest,
+      ) ||
+      !eventSignals.has(
+        normalizedInterest,
+      )
+    ) {
+      continue;
+    }
+
+    seen.add(
+      normalizedInterest,
+    );
+
+    matches.push(
+      interest.trim(),
+    );
+  }
+
+  return matches;
+}

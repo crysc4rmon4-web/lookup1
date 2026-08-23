@@ -44,21 +44,29 @@ export type SyncEventEmbeddingResult = {
     number;
 
   /*
-   * Se utiliza server-side para consultas
-   * pgvector agregadas.
+   * Únicamente para operaciones server-side.
    *
-   * Nunca debe enviarse al navegador.
+   * Nunca debe enviarse directamente al navegador.
    */
   embeddingText:
     string;
 };
 
 type ExistingEventEmbedding = {
-  semantic_text: string;
-  semantic_hash: string;
-  embedding: unknown;
-  model: string;
-  dimensions: number;
+  semantic_text:
+    string;
+
+  semantic_hash:
+    string;
+
+  embedding:
+    unknown;
+
+  model:
+    string;
+
+  dimensions:
+    number;
 };
 
 function validateEventId(
@@ -77,7 +85,8 @@ function validateEventId(
 }
 
 export async function syncEventEmbedding(
-  input: SyncEventEmbeddingInput,
+  input:
+    SyncEventEmbeddingInput,
 ): Promise<SyncEventEmbeddingResult> {
   const eventId =
     validateEventId(
@@ -139,12 +148,39 @@ export async function syncEventEmbedding(
 
   /*
    * ============================================================
-   * 2. CACHE HIT
+   * 2. VALIDAR VECTOR CACHEADO
    * ============================================================
    */
 
+  let existingEmbeddingText:
+    string | null =
+    null;
+
+  if (
+    existingEmbedding
+  ) {
+    try {
+      existingEmbeddingText =
+        normalizeStoredLookupEmbedding(
+          existingEmbedding.embedding,
+        );
+    } catch (
+      embeddingError
+    ) {
+      console.error(
+        "⚠️ Embedding de evento almacenado inválido. Se regenerará.",
+        embeddingError,
+      );
+
+      existingEmbeddingText =
+        null;
+    }
+  }
+
   const embeddingIsCurrent =
     existingEmbedding !==
+      null &&
+    existingEmbeddingText !==
       null &&
     existingEmbedding.semantic_hash ===
       semanticEvent.semanticHash &&
@@ -155,8 +191,15 @@ export async function syncEventEmbedding(
     existingEmbedding.dimensions ===
       EVENT_EMBEDDING_DIMENSIONS;
 
+  /*
+   * ============================================================
+   * 3. CACHE HIT
+   * ============================================================
+   */
+
   if (
-    embeddingIsCurrent
+    embeddingIsCurrent &&
+    existingEmbeddingText
   ) {
     return {
       status:
@@ -175,19 +218,17 @@ export async function syncEventEmbedding(
         EVENT_EMBEDDING_DIMENSIONS,
 
       embeddingText:
-        normalizeStoredLookupEmbedding(
-          existingEmbedding.embedding,
-        ),
+        existingEmbeddingText,
     };
   }
 
   /*
    * ============================================================
-   * 3. OPENAI
+   * 4. OPENAI
    * ============================================================
    *
-   * Solo llegamos aquí cuando el contenido semántico
-   * cambió o todavía no existe vector.
+   * Solo se ejecuta cuando el contenido cambió,
+   * el vector no existe o la cache está corrupta.
    */
 
   const generated =
@@ -198,7 +239,7 @@ export async function syncEventEmbedding(
 
   /*
    * ============================================================
-   * 4. PERSISTIR
+   * 5. PERSISTIR
    * ============================================================
    */
 
@@ -239,7 +280,9 @@ export async function syncEventEmbedding(
         },
       );
 
-  if (upsertError) {
+  if (
+    upsertError
+  ) {
     throw new Error(
       `No se pudo guardar el embedding del evento: ${upsertError.message}`,
     );

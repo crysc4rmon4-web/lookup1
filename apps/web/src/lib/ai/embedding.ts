@@ -16,6 +16,37 @@ export type GeneratedLookupEmbedding = {
   dimensions: number;
 };
 
+function validateLookupEmbedding(
+  embedding:
+    readonly number[],
+  contextLabel:
+    string,
+) {
+  if (
+    embedding.length !==
+    LOOKUP_EMBEDDING_DIMENSIONS
+  ) {
+    throw new Error(
+      `Dimensión de embedding inesperada para ${contextLabel}. Se esperaban ${LOOKUP_EMBEDDING_DIMENSIONS} dimensiones y se recibieron ${embedding.length}.`,
+    );
+  }
+
+  for (
+    const value
+    of embedding
+  ) {
+    if (
+      !Number.isFinite(
+        value,
+      )
+    ) {
+      throw new Error(
+        `El embedding de ${contextLabel} contiene valores no válidos.`,
+      );
+    }
+  }
+}
+
 export async function generateLookupEmbedding(
   semanticText: string,
   contextLabel = "contenido semántico",
@@ -52,14 +83,10 @@ export async function generateLookupEmbedding(
     );
   }
 
-  if (
-    embedding.length !==
-    LOOKUP_EMBEDDING_DIMENSIONS
-  ) {
-    throw new Error(
-      `Dimensión de embedding inesperada para ${contextLabel}. Se esperaban ${LOOKUP_EMBEDDING_DIMENSIONS} dimensiones y se recibieron ${embedding.length}.`,
-    );
-  }
+  validateLookupEmbedding(
+    embedding,
+    contextLabel,
+  );
 
   return {
     embedding,
@@ -76,35 +103,22 @@ export function serializeLookupEmbedding(
   embedding:
     readonly number[],
 ) {
-  if (
-    embedding.length !==
-    LOOKUP_EMBEDDING_DIMENSIONS
-  ) {
-    throw new Error(
-      `No se puede serializar un embedding de ${embedding.length} dimensiones. Se esperaban ${LOOKUP_EMBEDDING_DIMENSIONS}.`,
-    );
-  }
-
-  for (const value of embedding) {
-    if (
-      !Number.isFinite(
-        value,
-      )
-    ) {
-      throw new Error(
-        "El embedding contiene valores no válidos.",
-      );
-    }
-  }
+  validateLookupEmbedding(
+    embedding,
+    "serialización",
+  );
 
   return `[${embedding.join(
     ",",
   )}]`;
 }
 
-export function normalizeStoredLookupEmbedding(
+export function parseStoredLookupEmbedding(
   value: unknown,
 ) {
+  let rawEmbedding:
+    unknown;
+
   if (
     typeof value ===
     "string"
@@ -113,36 +127,165 @@ export function normalizeStoredLookupEmbedding(
       value.trim();
 
     if (
-      normalized.startsWith(
+      !normalized.startsWith(
         "[",
-      ) &&
-      normalized.endsWith(
+      ) ||
+      !normalized.endsWith(
         "]",
       )
     ) {
-      return normalized;
+      throw new Error(
+        "El vector almacenado no tiene un formato válido.",
+      );
     }
 
-    throw new Error(
-      "El vector almacenado no tiene un formato válido.",
-    );
+    try {
+      rawEmbedding =
+        JSON.parse(
+          normalized,
+        );
+    } catch {
+      throw new Error(
+        "El vector almacenado no pudo interpretarse.",
+      );
+    }
+  } else {
+    rawEmbedding =
+      value;
   }
 
   if (
-    Array.isArray(value)
+    !Array.isArray(
+      rawEmbedding,
+    )
   ) {
-    const embedding =
-      value.map(
-        (item) =>
-          Number(item),
-      );
-
-    return serializeLookupEmbedding(
-      embedding,
+    throw new Error(
+      "No se pudo interpretar el vector almacenado.",
     );
   }
 
-  throw new Error(
-    "No se pudo interpretar el vector almacenado.",
+  const embedding =
+    rawEmbedding.map(
+      (
+        item,
+      ) =>
+        Number(
+          item,
+        ),
+    );
+
+  validateLookupEmbedding(
+    embedding,
+    "vector almacenado",
+  );
+
+  return embedding;
+}
+
+export function normalizeStoredLookupEmbedding(
+  value: unknown,
+) {
+  return serializeLookupEmbedding(
+    parseStoredLookupEmbedding(
+      value,
+    ),
+  );
+}
+
+export function calculateLookupCosineSimilarity(
+  left:
+    readonly number[],
+  right:
+    readonly number[],
+) {
+  validateLookupEmbedding(
+    left,
+    "primer vector",
+  );
+
+  validateLookupEmbedding(
+    right,
+    "segundo vector",
+  );
+
+  let dotProduct =
+    0;
+
+  let leftMagnitudeSquared =
+    0;
+
+  let rightMagnitudeSquared =
+    0;
+
+  for (
+    let index = 0;
+    index <
+    LOOKUP_EMBEDDING_DIMENSIONS;
+    index += 1
+  ) {
+    const leftValue =
+      left[index];
+
+    const rightValue =
+      right[index];
+
+    if (
+      leftValue ===
+        undefined ||
+      rightValue ===
+        undefined
+    ) {
+      throw new Error(
+        "No se pudo calcular la similitud porque los vectores están incompletos.",
+      );
+    }
+
+    dotProduct +=
+      leftValue *
+      rightValue;
+
+    leftMagnitudeSquared +=
+      leftValue *
+      leftValue;
+
+    rightMagnitudeSquared +=
+      rightValue *
+      rightValue;
+  }
+
+  const denominator =
+    Math.sqrt(
+      leftMagnitudeSquared,
+    ) *
+    Math.sqrt(
+      rightMagnitudeSquared,
+    );
+
+  if (
+    !Number.isFinite(
+      denominator,
+    ) ||
+    denominator ===
+      0
+  ) {
+    throw new Error(
+      "No se puede calcular similitud con un vector de magnitud cero.",
+    );
+  }
+
+  const similarity =
+    dotProduct /
+    denominator;
+
+  /*
+   * Pequeños errores de coma flotante pueden producir
+   * valores como 1.0000000002.
+   */
+  return Math.max(
+    -1,
+    Math.min(
+      1,
+      similarity,
+    ),
   );
 }

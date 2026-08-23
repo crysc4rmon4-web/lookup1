@@ -3,6 +3,25 @@ import {
 } from "next/server";
 
 import {
+  parseStoredLookupEmbedding,
+} from "@/lib/ai/embedding";
+
+import {
+  calculateEventRelevance,
+  findExplicitEventInterestMatches,
+  type EventRelevanceLevel,
+} from "@/lib/ai/events/event-relevance";
+
+import {
+  EVENT_EMBEDDING_DIMENSIONS,
+  EVENT_EMBEDDING_MODEL,
+} from "@/lib/ai/events/semantic-event";
+
+import {
+  syncProfileEmbedding,
+} from "@/lib/ai/sync-profile-embedding";
+
+import {
   getSupabaseAdminClient,
 } from "@/lib/supabase-admin";
 
@@ -89,6 +108,36 @@ type EventRow = {
     string;
 };
 
+type CurrentProfileRow = {
+  profession:
+    string | null;
+
+  bio:
+    string | null;
+
+  interests:
+    string[] | null;
+};
+
+type EventEmbeddingRow = {
+  event_id:
+    string;
+
+  embedding:
+    unknown;
+};
+
+type ExploreRelevance = {
+  relevanceScore:
+    number;
+
+  relevanceLevel:
+    EventRelevanceLevel;
+
+  matchedInterests:
+    string[];
+};
+
 function getBearerToken(
   request: Request,
 ) {
@@ -121,6 +170,28 @@ function noStoreHeaders() {
   };
 }
 
+function normalizeList(
+  value:
+    string[] | null,
+) {
+  if (
+    !Array.isArray(
+      value,
+    )
+  ) {
+    return [];
+  }
+
+  return value
+    .map(
+      (
+        item,
+      ) =>
+        item.trim(),
+    )
+    .filter(Boolean);
+}
+
 function normalizeLocationKey(
   value: string,
 ) {
@@ -146,7 +217,8 @@ function normalizeLocationKey(
 }
 
 function deriveLifecycleStatus(
-  event: EventRow,
+  event:
+    EventRow,
 ): ExploreLifecycleStatus {
   const startAt =
     new Date(
@@ -297,19 +369,29 @@ export async function GET(
   request: Request,
 ) {
   try {
+    /*
+     * ============================================================
+     * 1. AUTENTICACIÓN
+     * ============================================================
+     */
+
     const accessToken =
       getBearerToken(
         request,
       );
 
-    if (!accessToken) {
+    if (
+      !accessToken
+    ) {
       return NextResponse.json(
         {
           error:
             "No autorizado.",
         },
         {
-          status: 401,
+          status:
+            401,
+
           headers:
             noStoreHeaders(),
         },
@@ -322,12 +404,15 @@ export async function GET(
     const {
       data:
         authData,
+
       error:
         authError,
     } =
-      await supabaseAdmin.auth.getUser(
-        accessToken,
-      );
+      await supabaseAdmin
+        .auth
+        .getUser(
+          accessToken,
+        );
 
     if (
       authError ||
@@ -339,12 +424,20 @@ export async function GET(
             "La sesión no es válida.",
         },
         {
-          status: 401,
+          status:
+            401,
+
           headers:
             noStoreHeaders(),
         },
       );
     }
+
+    /*
+     * ============================================================
+     * 2. FILTROS DE EXPLORACIÓN
+     * ============================================================
+     */
 
     const url =
       new URL(
@@ -376,8 +469,10 @@ export async function GET(
       );
 
     if (
-      city.length < 2 ||
-      city.length > 120
+      city.length <
+        2 ||
+      city.length >
+        120
     ) {
       return NextResponse.json(
         {
@@ -385,7 +480,9 @@ export async function GET(
             "Selecciona una ciudad válida para explorar eventos.",
         },
         {
-          status: 400,
+          status:
+            400,
+
           headers:
             noStoreHeaders(),
         },
@@ -404,7 +501,9 @@ export async function GET(
             "La categoría solicitada no es válida.",
         },
         {
-          status: 400,
+          status:
+            400,
+
           headers:
             noStoreHeaders(),
         },
@@ -417,7 +516,14 @@ export async function GET(
       );
 
     const nowIso =
-      new Date().toISOString();
+      new Date()
+        .toISOString();
+
+    /*
+     * ============================================================
+     * 3. EVENTOS PUBLICADOS DE LA CIUDAD
+     * ============================================================
+     */
 
     let query =
       supabaseAdmin
@@ -475,7 +581,9 @@ export async function GET(
           limit,
         );
 
-    if (category) {
+    if (
+      category
+    ) {
       query =
         query.eq(
           "category",
@@ -489,7 +597,9 @@ export async function GET(
     } =
       await query;
 
-    if (error) {
+    if (
+      error
+    ) {
       throw new Error(
         `No se pudieron cargar los eventos publicados: ${error.message}`,
       );
@@ -501,82 +611,364 @@ export async function GET(
         []
       ) as EventRow[];
 
+    if (
+      eventRows.length ===
+      0
+    ) {
+      return NextResponse.json(
+        {
+          city,
+
+          cityKey,
+
+          events:
+            [],
+
+          count:
+            0,
+        },
+        {
+          status:
+            200,
+
+          headers:
+            noStoreHeaders(),
+        },
+      );
+    }
+
+    /*
+     * ============================================================
+     * 4. FAVORITOS
+     * ============================================================
+     */
+
+    const {
+      data:
+        favoriteData,
+
+      error:
+        favoriteError,
+    } =
+      await supabaseAdmin
+        .from(
+          "event_favorites",
+        )
+        .select(
+          "event_id",
+        )
+        .eq(
+          "profile_id",
+          authData.user.id,
+        )
+        .in(
+          "event_id",
+          eventRows.map(
+            (
+              event,
+            ) =>
+              event.id,
+          ),
+        );
+
+    if (
+      favoriteError
+    ) {
+      throw new Error(
+        `No se pudieron comprobar los favoritos: ${favoriteError.message}`,
+      );
+    }
+
     const favoriteEventIds =
       new Set<string>();
 
-    if (
-      eventRows.length >
-      0
+    for (
+      const favorite
+      of favoriteData ??
+      []
     ) {
+      if (
+        typeof favorite.event_id ===
+        "string"
+      ) {
+        favoriteEventIds.add(
+          favorite.event_id,
+        );
+      }
+    }
+
+    /*
+     * ============================================================
+     * 5. RELEVANCIA SEMÁNTICA
+     * ============================================================
+     *
+     * Esta sección es deliberadamente tolerante a fallos.
+     *
+     * Un problema en embeddings nunca puede impedir
+     * explorar eventos de una ciudad.
+     */
+
+    const relevanceByEventId =
+      new Map<
+        string,
+        ExploreRelevance
+      >();
+
+    try {
       const {
         data:
-          favoriteData,
+          currentProfileData,
+
         error:
-          favoriteError,
+          currentProfileError,
       } =
         await supabaseAdmin
           .from(
-            "event_favorites",
+            "profiles",
           )
           .select(
-            "event_id",
+            `
+              profession,
+              bio,
+              interests
+            `,
           )
           .eq(
-            "profile_id",
+            "id",
             authData.user.id,
           )
-          .in(
-            "event_id",
-            eventRows.map(
-              (
-                event,
-              ) =>
-                event.id,
-            ),
-          );
+          .maybeSingle();
 
       if (
-        favoriteError
+        currentProfileError
       ) {
         throw new Error(
-          `No se pudieron comprobar los favoritos: ${favoriteError.message}`,
+          `No se pudo cargar el perfil para relevancia: ${currentProfileError.message}`,
         );
       }
 
-      for (
-        const favorite
-        of favoriteData ??
-        []
+      const currentProfile =
+        currentProfileData as
+          | CurrentProfileRow
+          | null;
+
+      if (
+        currentProfile
       ) {
-        if (
-          typeof favorite.event_id ===
-          "string"
-        ) {
-          favoriteEventIds.add(
-            favorite.event_id,
+        const profileInterests =
+          normalizeList(
+            currentProfile.interests,
           );
+
+        const profileEmbedding =
+          await syncProfileEmbedding({
+            profileId:
+              authData.user.id,
+
+            profession:
+              currentProfile.profession,
+
+            bio:
+              currentProfile.bio,
+
+            interests:
+              profileInterests,
+          });
+
+        if (
+          profileEmbedding.embeddingText
+        ) {
+          const profileVector =
+            parseStoredLookupEmbedding(
+              profileEmbedding.embeddingText,
+            );
+
+          const {
+            data:
+              eventEmbeddingData,
+
+            error:
+              eventEmbeddingError,
+          } =
+            await supabaseAdmin
+              .from(
+                "event_embeddings",
+              )
+              .select(
+                `
+                  event_id,
+                  embedding
+                `,
+              )
+              .in(
+                "event_id",
+                eventRows.map(
+                  (
+                    event,
+                  ) =>
+                    event.id,
+                ),
+              )
+              .eq(
+                "model",
+                EVENT_EMBEDDING_MODEL,
+              )
+              .eq(
+                "dimensions",
+                EVENT_EMBEDDING_DIMENSIONS,
+              );
+
+          if (
+            eventEmbeddingError
+          ) {
+            throw new Error(
+              `No se pudieron cargar los embeddings de eventos: ${eventEmbeddingError.message}`,
+            );
+          }
+
+          const eventEmbeddingRows =
+            (
+              eventEmbeddingData ??
+              []
+            ) as EventEmbeddingRow[];
+
+          const eventById =
+            new Map(
+              eventRows.map(
+                (
+                  event,
+                ) => [
+                  event.id,
+                  event,
+                ],
+              ),
+            );
+
+          for (
+            const embeddingRow
+            of eventEmbeddingRows
+          ) {
+            const event =
+              eventById.get(
+                embeddingRow.event_id,
+              );
+
+            if (
+              !event ||
+              event.creator_profile_id ===
+                authData.user.id
+            ) {
+              continue;
+            }
+
+            try {
+              const eventVector =
+                parseStoredLookupEmbedding(
+                  embeddingRow.embedding,
+                );
+
+              const relevance =
+                calculateEventRelevance(
+                  profileVector,
+                  eventVector,
+                );
+
+              const matchedInterests =
+                findExplicitEventInterestMatches({
+                  profileInterests,
+
+                  category:
+                    event.category,
+
+                  tags:
+                    normalizeList(
+                      event.tags,
+                    ),
+
+                  audience:
+                    normalizeList(
+                      event.audience,
+                    ),
+                });
+
+              relevanceByEventId.set(
+                event.id,
+                {
+                  relevanceScore:
+                    relevance.relevanceScore,
+
+                  relevanceLevel:
+                    relevance.level,
+
+                  matchedInterests,
+                },
+              );
+            } catch (
+              vectorError
+            ) {
+              console.error(
+                `⚠️ No se pudo calcular relevancia para el evento ${embeddingRow.event_id}:`,
+                vectorError,
+              );
+            }
+          }
         }
       }
+    } catch (
+      relevanceError
+    ) {
+      console.error(
+        "⚠️ Explorar continuará sin relevancia semántica:",
+        relevanceError,
+      );
     }
+
+    /*
+     * ============================================================
+     * 6. RESPUESTA
+     * ============================================================
+     */
 
     const events =
       eventRows.map(
         (
           event,
-        ) => ({
-          ...mapEvent(
-            event,
-          ),
-
-          isFavorite:
-            favoriteEventIds.has(
+        ) => {
+          const relevance =
+            relevanceByEventId.get(
               event.id,
+            );
+
+          return {
+            ...mapEvent(
+              event,
             ),
 
-          canFavorite:
-            event.creator_profile_id !==
-            authData.user.id,
-        }),
+            isFavorite:
+              favoriteEventIds.has(
+                event.id,
+              ),
+
+            canFavorite:
+              event.creator_profile_id !==
+              authData.user.id,
+
+            relevanceScore:
+              relevance
+                ?.relevanceScore ??
+              null,
+
+            relevanceLevel:
+              relevance
+                ?.relevanceLevel ??
+              null,
+
+            matchedInterests:
+              relevance
+                ?.matchedInterests ??
+              [],
+          };
+        },
       );
 
     return NextResponse.json(
@@ -591,12 +983,16 @@ export async function GET(
           events.length,
       },
       {
-        status: 200,
+        status:
+          200,
+
         headers:
           noStoreHeaders(),
       },
     );
-  } catch (error) {
+  } catch (
+    error
+  ) {
     console.error(
       "❌ Error cargando feed público de eventos:",
       error,
@@ -608,7 +1004,9 @@ export async function GET(
           "No se pudieron cargar los eventos de esta ciudad.",
       },
       {
-        status: 500,
+        status:
+          500,
+
         headers:
           noStoreHeaders(),
       },

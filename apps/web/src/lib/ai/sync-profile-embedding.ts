@@ -5,6 +5,11 @@ import {
 } from "../supabase-admin";
 
 import {
+  normalizeStoredLookupEmbedding,
+  serializeLookupEmbedding,
+} from "./embedding";
+
+import {
   buildSemanticProfile,
   PROFILE_EMBEDDING_DIMENSIONS,
   PROFILE_EMBEDDING_MODEL,
@@ -28,17 +33,45 @@ export type SyncProfileEmbeddingStatus =
   | "empty";
 
 export type SyncProfileEmbeddingResult = {
-  status: SyncProfileEmbeddingStatus;
-  semanticHash: string | null;
-  model: string | null;
-  dimensions: number | null;
+  status:
+    SyncProfileEmbeddingStatus;
+
+  semanticHash:
+    string | null;
+
+  semanticText:
+    string | null;
+
+  model:
+    string | null;
+
+  dimensions:
+    number | null;
+
+  /*
+   * Únicamente para lógica server-side.
+   *
+   * Nunca debe enviarse directamente al navegador.
+   */
+  embeddingText:
+    string | null;
 };
 
 type ExistingProfileEmbedding = {
-  semantic_text: string;
-  semantic_hash: string;
-  model: string;
-  dimensions: number;
+  semantic_text:
+    string;
+
+  semantic_hash:
+    string;
+
+  embedding:
+    unknown;
+
+  model:
+    string;
+
+  dimensions:
+    number;
 };
 
 function validateProfileId(
@@ -57,7 +90,8 @@ function validateProfileId(
 }
 
 export async function syncProfileEmbedding(
-  input: SyncProfileEmbeddingInput,
+  input:
+    SyncProfileEmbeddingInput,
 ): Promise<SyncProfileEmbeddingResult> {
   const profileId =
     validateProfileId(
@@ -69,16 +103,8 @@ export async function syncProfileEmbedding(
 
   /*
    * ============================================================
-   * 1. Construir representación semántica
+   * 1. REPRESENTACIÓN SEMÁNTICA ACTUAL
    * ============================================================
-   *
-   * SyncProfileEmbeddingInput extiende SemanticProfileInput,
-   * así que podemos pasar el objeto directamente.
-   *
-   * Esto además respeta exactOptionalPropertyTypes:
-   * una propiedad opcional ausente sigue estando realmente
-   * ausente, en lugar de reconstruirla explícitamente con
-   * valor undefined.
    */
 
   const semanticProfile =
@@ -88,7 +114,7 @@ export async function syncProfileEmbedding(
 
   /*
    * ============================================================
-   * 2. Leer embedding actual
+   * 2. LEER CACHE
    * ============================================================
    */
 
@@ -107,6 +133,7 @@ export async function syncProfileEmbedding(
         `
           semantic_text,
           semantic_hash,
+          embedding,
           model,
           dimensions
         `,
@@ -132,14 +159,8 @@ export async function syncProfileEmbedding(
 
   /*
    * ============================================================
-   * 3. Perfil sin información semántica
+   * 3. PERFIL SIN CONTEXTO SEMÁNTICO
    * ============================================================
-   *
-   * Si anteriormente tenía embedding pero el usuario elimina
-   * profesión, bio e intereses, debemos eliminar el vector.
-   *
-   * Dejarlo sería peligroso porque LookUp seguiría haciendo
-   * matching con información que ya no representa al usuario.
    */
 
   if (!semanticProfile) {
@@ -153,10 +174,16 @@ export async function syncProfileEmbedding(
         semanticHash:
           null,
 
+        semanticText:
+          null,
+
         model:
           null,
 
         dimensions:
+          null,
+
+        embeddingText:
           null,
       };
     }
@@ -175,7 +202,9 @@ export async function syncProfileEmbedding(
           profileId,
         );
 
-    if (deleteError) {
+    if (
+      deleteError
+    ) {
       throw new Error(
         `No se pudo eliminar el embedding obsoleto del perfil: ${deleteError.message}`,
       );
@@ -188,29 +217,60 @@ export async function syncProfileEmbedding(
       semanticHash:
         null,
 
+      semanticText:
+        null,
+
       model:
         null,
 
       dimensions:
+        null,
+
+      embeddingText:
         null,
     };
   }
 
   /*
    * ============================================================
-   * 4. Cache hit
+   * 4. VALIDAR VECTOR CACHEADO
    * ============================================================
    *
-   * No llamamos a OpenAI cuando:
+   * No basta con que hash/modelo/dimensiones coincidan.
    *
-   * - el hash semántico es idéntico
-   * - el texto normalizado es idéntico
-   * - seguimos usando el mismo modelo
-   * - las dimensiones siguen siendo compatibles
+   * Si el vector estuviera corrupto, debemos regenerarlo
+   * en lugar de considerar la cache válida.
    */
+
+  let existingEmbeddingText:
+    string | null =
+    null;
+
+  if (
+    existingEmbedding
+  ) {
+    try {
+      existingEmbeddingText =
+        normalizeStoredLookupEmbedding(
+          existingEmbedding.embedding,
+        );
+    } catch (
+      embeddingError
+    ) {
+      console.error(
+        "⚠️ Embedding de perfil almacenado inválido. Se regenerará.",
+        embeddingError,
+      );
+
+      existingEmbeddingText =
+        null;
+    }
+  }
 
   const embeddingIsCurrent =
     existingEmbedding !==
+      null &&
+    existingEmbeddingText !==
       null &&
     existingEmbedding.semantic_hash ===
       semanticProfile.semanticHash &&
@@ -221,8 +281,15 @@ export async function syncProfileEmbedding(
     existingEmbedding.dimensions ===
       PROFILE_EMBEDDING_DIMENSIONS;
 
+  /*
+   * ============================================================
+   * 5. CACHE HIT
+   * ============================================================
+   */
+
   if (
-    embeddingIsCurrent
+    embeddingIsCurrent &&
+    existingEmbeddingText
   ) {
     return {
       status:
@@ -231,24 +298,24 @@ export async function syncProfileEmbedding(
       semanticHash:
         semanticProfile.semanticHash,
 
+      semanticText:
+        semanticProfile.semanticText,
+
       model:
         PROFILE_EMBEDDING_MODEL,
 
       dimensions:
         PROFILE_EMBEDDING_DIMENSIONS,
+
+      embeddingText:
+        existingEmbeddingText,
     };
   }
 
   /*
    * ============================================================
-   * 5. Generar embedding
+   * 6. GENERAR EMBEDDING
    * ============================================================
-   *
-   * OpenAI solo se llama después de comprobar la cache.
-   *
-   * Además, no modificamos la fila actual hasta obtener un
-   * embedding válido. Si OpenAI falla, el vector anterior queda
-   * intacto y podemos volver a intentarlo posteriormente.
    */
 
   const generated =
@@ -258,7 +325,7 @@ export async function syncProfileEmbedding(
 
   /*
    * ============================================================
-   * 6. Persistir
+   * 7. PERSISTIR
    * ============================================================
    */
 
@@ -299,7 +366,9 @@ export async function syncProfileEmbedding(
         },
       );
 
-  if (upsertError) {
+  if (
+    upsertError
+  ) {
     throw new Error(
       `No se pudo guardar el embedding del perfil: ${upsertError.message}`,
     );
@@ -314,10 +383,18 @@ export async function syncProfileEmbedding(
     semanticHash:
       semanticProfile.semanticHash,
 
+    semanticText:
+      semanticProfile.semanticText,
+
     model:
       generated.model,
 
     dimensions:
       generated.dimensions,
+
+    embeddingText:
+      serializeLookupEmbedding(
+        generated.embedding,
+      ),
   };
 }

@@ -13,6 +13,7 @@ import {
   Users,
 } from "lucide-react";
 
+import Image from "next/image";
 import Link from "next/link";
 
 import {
@@ -35,6 +36,12 @@ import {
 } from "@/components/events/EventFavoriteButton";
 
 import {
+  getEventMatchExplanation,
+  type EventMatchExplanationResult,
+  type EventRelevanceLevel,
+} from "@/services/ai/get-event-match-explanation";
+
+import {
   getPublicEvent,
   type PublicEvent,
 } from "@/services/events/get-public-event";
@@ -46,8 +53,8 @@ type Props = {
 
   searchParams: Promise<{
     returnTo?:
-      | string
-      | string[];
+    | string
+    | string[];
   }>;
 };
 
@@ -175,6 +182,155 @@ function getInitials(
     .toUpperCase();
 }
 
+function getRelevanceLabel(
+  level:
+    EventRelevanceLevel,
+) {
+  switch (
+  level
+  ) {
+    case "strong":
+      return "Muy relevante para ti";
+
+    case "good":
+      return "Puede encajarte bastante";
+
+    case "exploratory":
+      return "Hay puntos por explorar";
+
+    case "low":
+      return "Conexión por explorar";
+  }
+}
+
+function getRelevanceDescription(
+  level:
+    EventRelevanceLevel,
+) {
+  switch (
+  level
+  ) {
+    case "strong":
+      return "Hay una relación clara entre este evento y el contexto de tu perfil.";
+
+    case "good":
+      return "LookUp ha encontrado varias señales que pueden hacerlo interesante para ti.";
+
+    case "exploratory":
+      return "Existen algunos puntos relacionados, aunque no sea una coincidencia directa.";
+
+    case "low":
+      return "No está entre tus coincidencias más claras, pero puede abrirte a algo diferente.";
+  }
+}
+
+function EventIntelligence({
+  result,
+}: {
+  result:
+  EventMatchExplanationResult;
+}) {
+  if (
+    !result.available ||
+    result.relevanceScore ===
+    null ||
+    !result.relevanceLevel ||
+    !result.explanation
+  ) {
+    return null;
+  }
+
+  return (
+    <section className="relative overflow-hidden rounded-[1.7rem] border border-[#E1E2FA] bg-gradient-to-br from-[#FAFAFF] via-white to-[#F4F3FF] p-5 sm:p-6">
+      <div className="pointer-events-none absolute -right-12 -top-16 h-44 w-44 rounded-full bg-[#5D5FEF]/10 blur-3xl" />
+
+      <div className="relative">
+        <div className="flex items-start gap-4">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#5D5FEF] text-white shadow-[0_10px_24px_rgba(93,95,239,0.22)]">
+            <Sparkles
+              size={18}
+            />
+          </div>
+
+          <div className="min-w-0 flex-1">
+            <div className="flex items-start justify-between gap-4">
+              <div className="min-w-0">
+                <p className="text-[9px] font-black uppercase tracking-[0.24em] text-[#5D5FEF]">
+                  LOOKUP INTELLIGENCE
+                </p>
+
+                <h2 className="mt-1 text-lg font-black tracking-tight text-slate-950">
+                  {getRelevanceLabel(
+                    result.relevanceLevel,
+                  )}
+                </h2>
+
+                <p className="mt-1.5 max-w-lg text-xs leading-5 text-slate-400">
+                  {getRelevanceDescription(
+                    result.relevanceLevel,
+                  )}
+                </p>
+              </div>
+
+              <div className="shrink-0 rounded-2xl border border-[#E3E4FB] bg-white px-3.5 py-2.5 text-center shadow-sm">
+                <p className="text-2xl font-black tracking-tight text-[#5D5FEF]">
+                  {
+                    result.relevanceScore
+                  }
+                </p>
+
+                <p className="mt-0.5 text-[8px] font-black uppercase tracking-[0.12em] text-slate-400">
+                  relevancia
+                </p>
+              </div>
+            </div>
+
+            <p className="mt-5 text-sm leading-6 text-slate-600">
+              {
+                result.explanation
+              }
+            </p>
+
+            {result.matchedInterests.length >
+              0 ? (
+              <div className="mt-4 flex flex-wrap gap-1.5">
+                {result.matchedInterests
+                  .slice(
+                    0,
+                    4,
+                  )
+                  .map(
+                    (
+                      interest,
+                    ) => (
+                      <span
+                        key={
+                          interest
+                        }
+                        className="rounded-full border border-[#E5E6F7] bg-white px-2.5 py-1.5 text-[10px] font-bold text-slate-600 shadow-sm"
+                      >
+                        {
+                          interest
+                        }
+                      </span>
+                    ),
+                  )}
+              </div>
+            ) : null}
+
+            <p className="mt-4 text-[9px] font-bold uppercase tracking-[0.1em] text-slate-300">
+              {result.source ===
+                "ai"
+                ? "Interpretado por LookUp Intelligence"
+                : "Interpretación de respaldo de LookUp"}
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 export default function PublicEventPage({
   params,
   searchParams,
@@ -210,8 +366,10 @@ export default function PublicEventPage({
 
   const {
     session,
+    user,
+
     loading:
-      authLoading,
+    authLoading,
   } =
     useAuth();
 
@@ -235,7 +393,9 @@ export default function PublicEventPage({
     loading,
     setLoading,
   ] =
-    useState(true);
+    useState(
+      true,
+    );
 
   const [
     error,
@@ -244,6 +404,28 @@ export default function PublicEventPage({
     useState<
       string | null
     >(null);
+
+  const [
+    intelligenceResult,
+    setIntelligenceResult,
+  ] =
+    useState<
+      EventMatchExplanationResult | null
+    >(null);
+
+  const [
+    intelligenceLoading,
+    setIntelligenceLoading,
+  ] =
+    useState(
+      false,
+    );
+
+  /*
+   * ============================================================
+   * EVENTO + CREADOR
+   * ============================================================
+   */
 
   useEffect(() => {
     if (
@@ -270,6 +452,14 @@ export default function PublicEventPage({
 
       setCreator(
         null,
+      );
+
+      setIntelligenceResult(
+        null,
+      );
+
+      setIntelligenceLoading(
+        false,
       );
 
       setError(
@@ -368,6 +558,14 @@ export default function PublicEventPage({
           null,
         );
 
+        setIntelligenceResult(
+          null,
+        );
+
+        setIntelligenceLoading(
+          false,
+        );
+
         setError(
           loadError instanceof
             Error
@@ -399,6 +597,176 @@ export default function PublicEventPage({
     session
       ?.access_token,
   ]);
+
+  /*
+   * ============================================================
+   * LOOKUP INTELLIGENCE · PERSONA ↔ EVENTO
+   * ============================================================
+   *
+   * El detalle público nunca depende de esta petición.
+   *
+   * Si Intelligence falla:
+   * - el evento sigue visible;
+   * - favoritos siguen funcionando;
+   * - perfil del creador sigue funcionando;
+   * - CTA y Maps siguen funcionando.
+   */
+
+  useEffect(() => {
+    if (
+      authLoading ||
+      !event
+    ) {
+      return;
+    }
+
+    /*
+     * Guardamos una referencia estable al evento validado.
+     *
+     * Al entrar después en una función async, TypeScript
+     * ya no conserva automáticamente el narrowing de un
+     * estado React porque podría cambiar entre renders.
+     */
+    const currentEvent =
+      event;
+
+    const accessToken =
+      session
+        ?.access_token
+        ?.trim();
+
+    /*
+     * No tiene sentido explicar al creador
+     * por qué su propio evento puede interesarle.
+     *
+     * Tampoco analizamos eventos ya finalizados.
+     */
+    if (
+      !accessToken ||
+      !user ||
+      user.id ===
+      currentEvent.creatorProfileId ||
+      currentEvent.lifecycleStatus ===
+      "ended"
+    ) {
+      setIntelligenceResult(
+        null,
+      );
+
+      setIntelligenceLoading(
+        false,
+      );
+
+      return;
+    }
+
+    const validAccessToken =
+      accessToken;
+
+    const controller =
+      new AbortController();
+
+    let cancelled =
+      false;
+
+    async function loadIntelligence() {
+      setIntelligenceLoading(
+        true,
+      );
+
+      setIntelligenceResult(
+        null,
+      );
+
+      try {
+        const result =
+          await getEventMatchExplanation({
+            accessToken:
+              validAccessToken,
+
+            eventId:
+              currentEvent.id,
+
+            signal:
+              controller.signal,
+          });
+
+        if (
+          cancelled
+        ) {
+          return;
+        }
+
+        /*
+         * Estados unavailable son completamente válidos.
+         *
+         * Ejemplo:
+         * perfil sin suficiente contexto semántico.
+         *
+         * Simplemente no mostramos una tarjeta vacía.
+         */
+        setIntelligenceResult(
+          result.available
+            ? result
+            : null,
+        );
+      } catch (
+      intelligenceError
+      ) {
+        if (
+          cancelled ||
+          controller.signal
+            .aborted
+        ) {
+          return;
+        }
+
+        /*
+         * Intelligence es complementaria.
+         *
+         * Nunca convertimos un fallo de IA en un error
+         * de la página pública del evento.
+         */
+        console.error(
+          "❌ LookUp Intelligence no pudo analizar este evento:",
+          intelligenceError,
+        );
+
+        setIntelligenceResult(
+          null,
+        );
+      } finally {
+        if (
+          !cancelled
+        ) {
+          setIntelligenceLoading(
+            false,
+          );
+        }
+      }
+    }
+
+    void loadIntelligence();
+
+    return () => {
+      cancelled =
+        true;
+
+      controller.abort();
+    };
+  }, [
+    authLoading,
+    event,
+    session
+      ?.access_token,
+    user,
+  ]);
+
+  /*
+   * ============================================================
+   * ESTADOS PRINCIPALES
+   * ============================================================
+   */
 
   if (
     loading
@@ -447,10 +815,8 @@ export default function PublicEventPage({
             </h1>
 
             <p className="mt-2 text-sm leading-6 text-rose-700">
-              {
-                error ??
-                "Este evento no está disponible públicamente."
-              }
+              {error ??
+                "Este evento no está disponible públicamente."}
             </p>
           </div>
         </div>
@@ -458,33 +824,45 @@ export default function PublicEventPage({
     );
   }
 
+  /*
+   * ============================================================
+   * DATOS DERIVADOS
+   * ============================================================
+   */
+
   const creatorName =
     creator
       ? creator.account_type ===
-          "business"
+        "business"
         ? creator.business_trade_name ??
-          creator.display_name
+        creator.display_name
         : creator.display_name
       : "Creador";
 
   const profileHref =
     creator
       ? `/profile/${creator.id}?from=event&eventId=${encodeURIComponent(
-          event.id,
-        )}&returnTo=${encodeURIComponent(
-          backHref,
-        )}`
+        event.id,
+      )}&returnTo=${encodeURIComponent(
+        backHref,
+      )}`
       : "";
 
   const mapsHref =
     event.latitude !==
       null &&
-    event.longitude !==
+      event.longitude !==
       null
       ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-          `${event.latitude},${event.longitude}`,
-        )}`
+        `${event.latitude},${event.longitude}`,
+      )}`
       : null;
+
+  /*
+   * ============================================================
+   * RENDER
+   * ============================================================
+   */
 
   return (
     <main className="min-h-screen bg-[#F7F8FC]">
@@ -508,7 +886,7 @@ export default function PublicEventPage({
             <div className="flex flex-wrap items-center gap-2">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.1em]">
                 {event.lifecycleStatus ===
-                "live" ? (
+                  "live" ? (
                   <CircleDot
                     size={12}
                   />
@@ -519,10 +897,10 @@ export default function PublicEventPage({
                 )}
 
                 {event.lifecycleStatus ===
-                "live"
+                  "live"
                   ? "En curso"
                   : event.lifecycleStatus ===
-                      "ended"
+                    "ended"
                     ? "Finalizado"
                     : "Próximo"}
               </span>
@@ -632,7 +1010,7 @@ export default function PublicEventPage({
             </div>
 
             {event.tags.length >
-            0 ? (
+              0 ? (
               <section>
                 <p className="text-xs font-black uppercase tracking-[0.12em] text-[#5D5FEF]">
                   Temas
@@ -659,6 +1037,41 @@ export default function PublicEventPage({
               </section>
             ) : null}
 
+            {intelligenceLoading ? (
+              <section className="relative overflow-hidden rounded-[1.7rem] border border-[#E5E6F7] bg-[#FAFAFF] p-5 sm:p-6">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#EEEEFF] text-[#5D5FEF]">
+                    <Sparkles
+                      size={18}
+                      className="animate-pulse"
+                    />
+                  </div>
+
+                  <div>
+                    <p className="text-[9px] font-black uppercase tracking-[0.24em] text-[#5D5FEF]">
+                      LOOKUP INTELLIGENCE
+                    </p>
+
+                    <p className="mt-1 text-sm font-black text-slate-800">
+                      Entendiendo qué puede aportarte este evento…
+                    </p>
+
+                    <p className="mt-1 text-xs leading-5 text-slate-400">
+                      Estamos comparando su contexto con lo que muestras en tu perfil.
+                    </p>
+                  </div>
+                </div>
+              </section>
+            ) : null}
+
+            {intelligenceResult ? (
+              <EventIntelligence
+                result={
+                  intelligenceResult
+                }
+              />
+            ) : null}
+
             {creator ? (
               <section className="rounded-[1.7rem] border border-slate-200 bg-slate-50 p-5">
                 <p className="text-[10px] font-black uppercase tracking-[0.14em] text-[#5D5FEF]">
@@ -668,11 +1081,13 @@ export default function PublicEventPage({
                 <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-center">
                   <div className="flex min-w-0 flex-1 items-center gap-4">
                     {creator.avatar_url ? (
-                      <img
+                      <Image
                         src={
                           creator.avatar_url
                         }
-                        alt=""
+                        alt={`Imagen de ${creatorName}`}
+                        width={48}
+                        height={48}
                         className="h-12 w-12 shrink-0 rounded-2xl object-cover"
                       />
                     ) : (
@@ -688,7 +1103,7 @@ export default function PublicEventPage({
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
                         {creator.account_type ===
-                        "business" ? (
+                          "business" ? (
                           <Building2
                             size={16}
                             className="text-[#5D5FEF]"
@@ -709,11 +1124,11 @@ export default function PublicEventPage({
 
                       <p className="mt-1 truncate text-sm text-slate-500">
                         {creator.account_type ===
-                        "business"
+                          "business"
                           ? creator.business_sector ??
-                            "Negocio"
+                          "Negocio"
                           : creator.profession ??
-                            "Persona"}
+                          "Persona"}
                       </p>
                     </div>
                   </div>
@@ -800,12 +1215,12 @@ export default function PublicEventPage({
                       }
                     </span>
                   </span>
-                </span>
 
-                <ArrowUpRight
-                  size={17}
-                  className="shrink-0 text-[#5D5FEF] transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-                />
+                  <ArrowUpRight
+                    size={17}
+                    className="shrink-0 text-[#5D5FEF] transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                  />
+                </span>
               </a>
             ) : null}
           </div>

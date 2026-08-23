@@ -2,117 +2,133 @@ export type ExploreEventLifecycleStatus =
   | "upcoming"
   | "live";
 
+export type ExploreEventRelevanceLevel =
+  | "strong"
+  | "good"
+  | "exploratory"
+  | "low";
+
 export type ExploreEvent = {
-  id: string;
+  id:
+    string;
 
   creatorProfileId:
-  string;
+    string;
 
   title:
-  string;
+    string;
 
   description:
-  string;
+    string;
 
   category:
-  string;
+    string;
 
   coverImageUrl:
-  string | null;
+    string | null;
 
   tags:
-  string[];
+    string[];
 
   audience:
-  string[];
+    string[];
 
   venueName:
-  string;
+    string;
 
   address:
-  string;
+    string;
 
   city:
-  string;
+    string;
 
   cityKey:
-  string | null;
+    string | null;
 
   province:
-  string | null;
+    string | null;
 
   postalCode:
-  string | null;
+    string | null;
 
   countryCode:
-  string | null;
+    string | null;
 
   startAt:
-  string;
+    string;
 
   endAt:
-  string;
+    string;
 
   lifecycleStatus:
-  ExploreEventLifecycleStatus;
-  
+    ExploreEventLifecycleStatus;
+
   isFavorite:
-  boolean;
+    boolean;
 
   canFavorite:
-  boolean;
+    boolean;
+
+  relevanceScore:
+    number | null;
+
+  relevanceLevel:
+    ExploreEventRelevanceLevel | null;
+
+  matchedInterests:
+    string[];
 
   isFree:
-  boolean;
+    boolean;
 
   priceFrom:
-  number | null;
+    number | null;
 
   currency:
-  string;
+    string;
 
   capacity:
-  number | null;
+    number | null;
 
   createdAt:
-  string;
+    string;
 
   updatedAt:
-  string;
+    string;
 };
 
 type ExploreEventsResponse = {
   city?:
-  string;
+    string;
 
   cityKey?:
-  string;
+    string;
 
   events?:
-  ExploreEvent[];
+    ExploreEvent[];
 
   count?:
-  number;
+    number;
 
   error?:
-  string;
+    string;
 };
 
 type GetExploreEventsInput = {
   accessToken:
-  string;
+    string;
 
   city:
-  string;
+    string;
 
   category?:
-  string | null;
+    string | null;
 
   limit?:
-  number;
+    number;
 
   signal?:
-  AbortSignal;
+    AbortSignal;
 };
 
 export async function getExploreEvents({
@@ -130,13 +146,17 @@ export async function getExploreEvents({
   const normalizedCity =
     city.trim();
 
-  if (!normalizedToken) {
+  if (
+    !normalizedToken
+  ) {
     throw new Error(
       "No existe una sesión válida.",
     );
   }
 
-  if (!normalizedCity) {
+  if (
+    !normalizedCity
+  ) {
     throw new Error(
       "Selecciona una ciudad para explorar eventos.",
     );
@@ -165,7 +185,8 @@ export async function getExploreEvents({
     });
 
   const normalizedCategory =
-    category?.trim();
+    category
+      ?.trim();
 
   if (
     normalizedCategory
@@ -179,9 +200,6 @@ export async function getExploreEvents({
   /*
    * Con exactOptionalPropertyTypes no debemos
    * enviar signal: undefined.
-   *
-   * Solo añadimos la propiedad cuando realmente
-   * existe un AbortSignal.
    */
   const requestInit:
     RequestInit = {
@@ -197,7 +215,9 @@ export async function getExploreEvents({
       "no-store",
   };
 
-  if (signal) {
+  if (
+    signal
+  ) {
     requestInit.signal =
       signal;
   }
@@ -214,13 +234,16 @@ export async function getExploreEvents({
 
   try {
     payload =
-      (await response.json()) as ExploreEventsResponse;
+      (await response.json()) as
+        ExploreEventsResponse;
   } catch {
     payload =
       null;
   }
 
-  if (!response.ok) {
+  if (
+    !response.ok
+  ) {
     throw new Error(
       payload?.error ??
       "No se pudieron cargar los eventos.",
@@ -228,7 +251,8 @@ export async function getExploreEvents({
   }
 
   return Array.isArray(
-    payload?.events,
+    payload
+      ?.events,
   )
     ? payload.events
     : [];
