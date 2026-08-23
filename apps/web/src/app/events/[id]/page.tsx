@@ -22,10 +22,6 @@ import {
 } from "react";
 
 import {
-  useRouter,
-} from "next/navigation";
-
-import {
   getPublicProfileById,
   type PublicProfile,
 } from "@lookup/services";
@@ -47,7 +43,44 @@ type Props = {
   params: Promise<{
     id: string;
   }>;
+
+  searchParams: Promise<{
+    returnTo?:
+      | string
+      | string[];
+  }>;
 };
+
+function getSafeInternalPath(
+  value:
+    | string
+    | string[]
+    | undefined,
+) {
+  const rawValue =
+    Array.isArray(
+      value,
+    )
+      ? value[0]
+      : value;
+
+  const normalized =
+    rawValue?.trim() ??
+    "";
+
+  if (
+    !normalized.startsWith(
+      "/",
+    ) ||
+    normalized.startsWith(
+      "//",
+    )
+  ) {
+    return "";
+  }
+
+  return normalized;
+}
 
 function formatDate(
   value: string,
@@ -144,6 +177,7 @@ function getInitials(
 
 export default function PublicEventPage({
   params,
+  searchParams,
 }: Props) {
   const {
     id,
@@ -152,8 +186,27 @@ export default function PublicEventPage({
       params,
     );
 
-  const router =
-    useRouter();
+  const query =
+    use(
+      searchParams,
+    );
+
+  const returnTo =
+    getSafeInternalPath(
+      query.returnTo,
+    );
+
+  /*
+   * Nunca usamos router.back() aquí.
+   *
+   * El detalle del evento tiene un destino de retorno
+   * explícito, evitando bucles:
+   *
+   * Evento -> Perfil -> Evento -> Perfil...
+   */
+  const backHref =
+    returnTo ||
+    "/dashboard?section=events";
 
   const {
     session,
@@ -226,13 +279,6 @@ export default function PublicEventPage({
       return;
     }
 
-    /*
-     * TypeScript puede perder el narrowing
-     * dentro de una función async anidada.
-     *
-     * A partir de aquí trabajamos con un string
-     * que ya ha sido validado.
-     */
     const validAccessToken =
       accessToken;
 
@@ -274,14 +320,6 @@ export default function PublicEventPage({
           publicEvent,
         );
 
-        /*
-         * El perfil del creador se obtiene mediante
-         * la proyección pública que ya existe en
-         * @lookup/services.
-         *
-         * No duplicamos lógica ni exponemos
-         * información privada.
-         */
         try {
           const publicCreator =
             await getPublicProfileById(
@@ -296,7 +334,7 @@ export default function PublicEventPage({
             );
           }
         } catch (
-          creatorError
+        creatorError
         ) {
           console.error(
             "❌ Error cargando creador público:",
@@ -312,7 +350,7 @@ export default function PublicEventPage({
           }
         }
       } catch (
-        loadError
+      loadError
       ) {
         if (
           cancelled ||
@@ -390,10 +428,9 @@ export default function PublicEventPage({
     return (
       <main className="min-h-screen bg-[#F7F8FC]">
         <div className="mx-auto max-w-3xl px-5 py-8">
-          <button
-            type="button"
-            onClick={() =>
-              router.back()
+          <Link
+            href={
+              backHref
             }
             className="mb-5 inline-flex items-center gap-2 text-sm font-black text-[#5557D8] transition hover:text-[#494BC8]"
           >
@@ -401,8 +438,8 @@ export default function PublicEventPage({
               size={17}
             />
 
-            Volver
-          </button>
+            Volver a eventos
+          </Link>
 
           <div className="rounded-[2rem] border border-rose-200 bg-rose-50 p-8">
             <h1 className="text-xl font-black text-rose-900">
@@ -430,22 +467,41 @@ export default function PublicEventPage({
         : creator.display_name
       : "Creador";
 
+  const profileHref =
+    creator
+      ? `/profile/${creator.id}?from=event&eventId=${encodeURIComponent(
+          event.id,
+        )}&returnTo=${encodeURIComponent(
+          backHref,
+        )}`
+      : "";
+
+  const mapsHref =
+    event.latitude !==
+      null &&
+    event.longitude !==
+      null
+      ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+          `${event.latitude},${event.longitude}`,
+        )}`
+      : null;
+
   return (
     <main className="min-h-screen bg-[#F7F8FC]">
       <div className="mx-auto max-w-3xl px-5 py-8 pb-24">
-        <button
-          type="button"
-          onClick={() =>
-            router.back()
+        <Link
+          href={
+            backHref
           }
-          className="mb-5 inline-flex items-center gap-2 text-sm font-black text-[#5557D8] transition hover:text-[#494BC8]"
+          className="group mb-5 inline-flex items-center gap-2 rounded-full px-1 py-1 text-sm font-black text-[#5557D8] transition hover:text-[#494BC8]"
         >
           <ArrowLeft
             size={17}
+            className="transition-transform group-hover:-translate-x-0.5"
           />
 
-          Volver
-        </button>
+          Volver a eventos
+        </Link>
 
         <article className="overflow-hidden rounded-[2rem] border border-slate-200/80 bg-white shadow-lg shadow-slate-200/40">
           <header className="bg-gradient-to-br from-[#5D5FEF] via-[#6668F4] to-[#7568F5] p-6 text-white sm:p-8">
@@ -609,64 +665,70 @@ export default function PublicEventPage({
                   Organizado por
                 </p>
 
-                <div className="mt-4 flex items-center gap-4">
-                  {creator.avatar_url ? (
-                    <img
-                      src={
-                        creator.avatar_url
-                      }
-                      alt=""
-                      className="h-12 w-12 shrink-0 rounded-2xl object-cover"
-                    />
-                  ) : (
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#5D5FEF] text-sm font-black text-white">
-                      {
-                        getInitials(
-                          creatorName,
-                        )
-                      }
-                    </div>
-                  )}
-
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2">
-                      {creator.account_type ===
-                      "business" ? (
-                        <Building2
-                          size={16}
-                          className="text-[#5D5FEF]"
-                        />
-                      ) : (
-                        <UserRound
-                          size={16}
-                          className="text-[#5D5FEF]"
-                        />
-                      )}
-
-                      <p className="truncate font-black text-slate-950">
-                        {
-                          creatorName
+                <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-center">
+                  <div className="flex min-w-0 flex-1 items-center gap-4">
+                    {creator.avatar_url ? (
+                      <img
+                        src={
+                          creator.avatar_url
                         }
+                        alt=""
+                        className="h-12 w-12 shrink-0 rounded-2xl object-cover"
+                      />
+                    ) : (
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#5D5FEF] text-sm font-black text-white">
+                        {
+                          getInitials(
+                            creatorName,
+                          )
+                        }
+                      </div>
+                    )}
+
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2">
+                        {creator.account_type ===
+                        "business" ? (
+                          <Building2
+                            size={16}
+                            className="text-[#5D5FEF]"
+                          />
+                        ) : (
+                          <UserRound
+                            size={16}
+                            className="text-[#5D5FEF]"
+                          />
+                        )}
+
+                        <p className="truncate font-black text-slate-950">
+                          {
+                            creatorName
+                          }
+                        </p>
+                      </div>
+
+                      <p className="mt-1 truncate text-sm text-slate-500">
+                        {creator.account_type ===
+                        "business"
+                          ? creator.business_sector ??
+                            "Negocio"
+                          : creator.profession ??
+                            "Persona"}
                       </p>
                     </div>
-
-                    <p className="mt-1 truncate text-sm text-slate-500">
-                      {creator.account_type ===
-                      "business"
-                        ? creator.business_sector ??
-                          "Negocio"
-                        : creator.profession ??
-                          "Persona"}
-                    </p>
                   </div>
 
                   <Link
-                    href={`/profile/${creator.id}?from=event`}
-                    className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-[#5D5FEF] shadow-sm transition hover:bg-[#F0F0FF]"
-                    aria-label="Ver perfil del creador"
+                    href={
+                      profileHref
+                    }
+                    className="group inline-flex shrink-0 items-center justify-center gap-2 rounded-xl border border-[#E1E2FA] bg-white px-4 py-2.5 text-xs font-black text-[#5557D8] shadow-sm transition-all hover:-translate-y-0.5 hover:border-[#CFCFFF] hover:bg-[#F8F8FF] hover:shadow-md"
                   >
+                    Ver perfil
+
                     <ArrowUpRight
-                      size={17}
+                      size={15}
+                      className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
                     />
                   </Link>
                 </div>
@@ -691,7 +753,7 @@ export default function PublicEventPage({
                   }
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#5D5FEF] px-5 py-3 text-sm font-black text-white transition hover:bg-[#5254DF]"
+                  className="group inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#5D5FEF] to-[#7066F4] px-5 py-3 text-sm font-black text-white shadow-md shadow-[#5D5FEF]/15 transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-[#5D5FEF]/20"
                 >
                   <ExternalLink
                     size={17}
@@ -703,26 +765,46 @@ export default function PublicEventPage({
               ) : null}
             </div>
 
-            {event.latitude !==
-              null &&
-            event.longitude !==
-              null ? (
+            {mapsHref ? (
               <a
-                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                  `${event.latitude},${event.longitude}`,
-                )}`}
+                href={
+                  mapsHref
+                }
                 target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-2 text-sm font-black text-[#5557D8] transition hover:text-[#494BC8]"
+                rel="noopener noreferrer"
+                className="group flex w-full items-center justify-between gap-4 rounded-[1.4rem] border border-[#E1E2FA] bg-gradient-to-r from-[#FBFBFF] to-[#F4F3FF] px-4 py-4 transition-all hover:-translate-y-0.5 hover:border-[#CFCFFF] hover:shadow-md hover:shadow-[#5D5FEF]/10"
               >
-                <MapPin
-                  size={16}
-                />
+                <span className="flex min-w-0 items-center gap-3">
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white text-[#5D5FEF] shadow-sm">
+                    <MapPin
+                      size={18}
+                    />
+                  </span>
 
-                Abrir ubicación en el mapa
+                  <span className="min-w-0">
+                    <span className="block text-[10px] font-black uppercase tracking-[0.12em] text-[#5D5FEF]">
+                      Ubicación
+                    </span>
+
+                    <span className="mt-0.5 block text-sm font-black text-slate-900">
+                      Abrir en Google Maps
+                    </span>
+
+                    <span className="mt-0.5 block truncate text-xs text-slate-500">
+                      {
+                        event.venueName
+                      }
+                      {" · "}
+                      {
+                        event.city
+                      }
+                    </span>
+                  </span>
+                </span>
 
                 <ArrowUpRight
-                  size={15}
+                  size={17}
+                  className="shrink-0 text-[#5D5FEF] transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
                 />
               </a>
             ) : null}

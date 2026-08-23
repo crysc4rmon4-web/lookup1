@@ -72,16 +72,15 @@ export type EventCard = {
 type EventsViewProps = {
   /*
    * Se mantiene temporalmente por compatibilidad
-   * con DashboardView.
+   * con DashboardPage.
    *
-   * Explorar ya utiliza el feed real.
+   * Explorar utiliza el feed real.
    */
   events: EventCard[];
 
   city?: string | null;
 
-  createdDraft?:
-  CreatedEventDraft | null;
+  createdDraft?: CreatedEventDraft | null;
 
   onCreateEvent: () => void;
 
@@ -95,12 +94,52 @@ type EventsTab =
   | "saved"
   | "mine";
 
-type MyEventsFilter =
-  | "all"
-  | EventLifecycleStatus;
+type MyEventsSection =
+  | "active"
+  | "drafts"
+  | "ended"
+  | "cancelled";
 
 const EXPLORE_MUNICIPALITY_LIST_ID =
   "explore-municipality-options";
+
+const STATUS_LABELS: Record<
+  EventLifecycleStatus,
+  string
+> = {
+  draft: "Borrador",
+  upcoming: "Próximo",
+  live: "En curso",
+  ended: "Finalizado",
+  cancelled: "Cancelado",
+};
+
+const MY_EVENTS_SECTION_LABELS: Record<
+  MyEventsSection,
+  string
+> = {
+  active: "Activos",
+  drafts: "Borradores",
+  ended: "Finalizados",
+  cancelled: "Cancelados",
+};
+
+const MY_EVENTS_SECTION_DESCRIPTIONS: Record<
+  MyEventsSection,
+  string
+> = {
+  active:
+    "Eventos publicados que están en curso o todavía van a comenzar.",
+
+  drafts:
+    "Eventos que todavía puedes preparar, analizar y publicar.",
+
+  ended:
+    "Historial de eventos que ya finalizaron.",
+
+  cancelled:
+    "Eventos cancelados que conservamos como historial.",
+};
 
 function getInitialEventsTab(): EventsTab {
   if (
@@ -183,36 +222,34 @@ function getInitialExploreProvinceCode() {
     : "";
 }
 
-const STATUS_ORDER:
-  EventLifecycleStatus[] =
-  [
-    "draft",
-    "upcoming",
-    "live",
-    "ended",
-    "cancelled",
-  ];
+function getInitialMyEventsSection(): MyEventsSection {
+  if (
+    typeof window ===
+    "undefined"
+  ) {
+    return "active";
+  }
 
-const STATUS_LABELS:
-  Record<
-    EventLifecycleStatus,
-    string
-  > = {
-  draft:
-    "Borrador",
+  const params =
+    new URLSearchParams(
+      window.location.search,
+    );
 
-  upcoming:
-    "Próximo",
+  const section =
+    params.get(
+      "eventsMine",
+    );
 
-  live:
-    "En curso",
+  if (
+    section === "drafts" ||
+    section === "ended" ||
+    section === "cancelled"
+  ) {
+    return section;
+  }
 
-  ended:
-    "Finalizado",
-
-  cancelled:
-    "Cancelado",
-};
+  return "active";
+}
 
 function formatEventDate(
   value: string,
@@ -233,23 +270,12 @@ function formatEventDate(
   return new Intl.DateTimeFormat(
     "es-ES",
     {
-      weekday:
-        "short",
-
-      day:
-        "numeric",
-
-      month:
-        "short",
-
-      hour:
-        "2-digit",
-
-      minute:
-        "2-digit",
-
-      timeZone:
-        "Europe/Madrid",
+      weekday: "short",
+      day: "numeric",
+      month: "short",
+      hour: "2-digit",
+      minute: "2-digit",
+      timeZone: "Europe/Madrid",
     },
   ).format(
     date,
@@ -261,13 +287,13 @@ function getStatusClasses(
     EventLifecycleStatus,
 ) {
   switch (
-  status
+    status
   ) {
     case "draft":
       return "bg-amber-50 text-amber-700";
 
     case "upcoming":
-      return "bg-indigo-50 text-[#5557D8]";
+      return "bg-[#F0F0FF] text-[#5557D8]";
 
     case "live":
       return "bg-emerald-50 text-emerald-700";
@@ -285,7 +311,7 @@ function getStatusIcon(
     EventLifecycleStatus,
 ) {
   switch (
-  status
+    status
   ) {
     case "draft":
       return (
@@ -319,6 +345,43 @@ function getStatusIcon(
       return (
         <Clock3
           size={13}
+        />
+      );
+  }
+}
+
+function getMyEventsSectionIcon(
+  section:
+    MyEventsSection,
+) {
+  switch (
+    section
+  ) {
+    case "active":
+      return (
+        <CircleDot
+          size={19}
+        />
+      );
+
+    case "drafts":
+      return (
+        <Clock3
+          size={19}
+        />
+      );
+
+    case "ended":
+      return (
+        <Check
+          size={19}
+        />
+      );
+
+    case "cancelled":
+      return (
+        <Clock3
+          size={19}
         />
       );
   }
@@ -362,6 +425,47 @@ function formatExplorePrice(
   }
 
   return "De pago";
+}
+
+function getEmptySectionCopy(
+  section:
+    MyEventsSection,
+) {
+  switch (
+    section
+  ) {
+    case "active":
+      return {
+        title:
+          "No tienes eventos activos",
+        description:
+          "Cuando publiques un evento aparecerá aquí mientras esté próximo o en curso.",
+      };
+
+    case "drafts":
+      return {
+        title:
+          "No tienes borradores",
+        description:
+          "Los eventos que guardes antes de publicar aparecerán aquí para que puedas seguir preparándolos.",
+      };
+
+    case "ended":
+      return {
+        title:
+          "Todavía no hay eventos finalizados",
+        description:
+          "Cuando termine uno de tus eventos, quedará organizado aquí como parte de tu historial.",
+      };
+
+    case "cancelled":
+      return {
+        title:
+          "No tienes eventos cancelados",
+        description:
+          "Si cancelas un evento, quedará aquí separado del resto para mantener tu gestión limpia.",
+      };
+  }
 }
 
 export function EventsView({
@@ -478,11 +582,13 @@ export function EventsView({
     setMunicipalityMenuOpen,
   ] =
     useState(false);
+
   const [
     hasExploreLocationInteraction,
     setHasExploreLocationInteraction,
   ] =
     useState(false);
+
   /*
    * ==========================================================
    * EXPLORE · EVENTS
@@ -540,11 +646,11 @@ export function EventsView({
     >(null);
 
   const [
-    myEventsFilter,
-    setMyEventsFilter,
+    myEventsSection,
+    setMyEventsSection,
   ] =
-    useState<MyEventsFilter>(
-      "all",
+    useState<MyEventsSection>(
+      getInitialMyEventsSection,
     );
 
   const displayCity =
@@ -732,13 +838,14 @@ export function EventsView({
   ]);
 
   /*
- * La ciudad del perfil funciona únicamente como
- * ubicación inicial.
- *
- * Una vez que el usuario empieza a elegir manualmente
- * provincia/municipio, nunca debemos volver a imponer
- * automáticamente la ciudad de su perfil.
- */
+   * La ciudad del perfil únicamente funciona como
+   * ubicación inicial.
+   *
+   * Una vez que el usuario interactúa manualmente con
+   * provincia/municipio, no volvemos a imponer la ciudad
+   * de su perfil.
+   */
+
   useEffect(() => {
     if (
       !profileCity ||
@@ -764,17 +871,12 @@ export function EventsView({
   ]);
 
   /*
-  * Cuando existe una provincia seleccionada,
-  * la ciudad tiene que pertenecer realmente a ella.
-  *
-  * Esto además sanea URLs antiguas o estados imposibles
-  * como:
-  *
-  * eventsProvince=28&eventsCity=Soria
-  *
-  * Madrid + Soria nunca debe poder sobrevivir como
-  * ubicación válida en Explorar.
-  */
+   * Si existe una provincia seleccionada, la ciudad
+   * tiene que pertenecer realmente a ella.
+   *
+   * Sanea además URLs antiguas o estados imposibles.
+   */
+
   useEffect(() => {
     if (
       !selectedProvinceCode ||
@@ -1001,6 +1103,7 @@ export function EventsView({
      * Mientras se escribe no existe todavía
      * un municipio confirmado.
      */
+
     setSelectedExploreCity(
       "",
     );
@@ -1010,10 +1113,10 @@ export function EventsView({
     );
 
     /*
-     * Nunca mostramos resultados de la ciudad
-     * anterior mientras el usuario está buscando
-     * una ubicación nueva.
+     * Nunca mostramos resultados de la ciudad anterior
+     * mientras el usuario busca una nueva.
      */
+
     setExploreEvents(
       [],
     );
@@ -1136,10 +1239,6 @@ export function EventsView({
           return;
         }
 
-        /*
-         * No tener ciudad elegida no es un error.
-         * Es un estado normal de la interfaz.
-         */
         if (
           !selectedExploreCity
         ) {
@@ -1171,15 +1270,12 @@ export function EventsView({
             signal
               ? await getExploreEvents({
                 accessToken,
-
                 city:
                   selectedExploreCity,
-
                 signal,
               })
               : await getExploreEvents({
                 accessToken,
-
                 city:
                   selectedExploreCity,
               });
@@ -1204,9 +1300,9 @@ export function EventsView({
 
           if (
             error instanceof
-            DOMException &&
+              DOMException &&
             error.name ===
-            "AbortError"
+              "AbortError"
           ) {
             return;
           }
@@ -1359,6 +1455,20 @@ export function EventsView({
       );
     }
 
+    if (
+      myEventsSection ===
+      "active"
+    ) {
+      url.searchParams.delete(
+        "eventsMine",
+      );
+    } else {
+      url.searchParams.set(
+        "eventsMine",
+        myEventsSection,
+      );
+    }
+
     window.history.replaceState(
       window.history.state,
       "",
@@ -1368,6 +1478,7 @@ export function EventsView({
     activeTab,
     selectedExploreCity,
     selectedProvinceCode,
+    myEventsSection,
   ]);
 
   /*
@@ -1421,9 +1532,10 @@ export function EventsView({
   ]);
 
   /*
-   * Después de crear un borrador mostramos
-   * automáticamente Mis eventos.
+   * Después de crear un borrador abrimos directamente
+   * Mis eventos > Borradores.
    */
+
   useEffect(() => {
     if (
       !createdDraft
@@ -1433,6 +1545,10 @@ export function EventsView({
 
     setActiveTab(
       "mine",
+    );
+
+    setMyEventsSection(
+      "drafts",
     );
   }, [
     createdDraft,
@@ -1444,17 +1560,17 @@ export function EventsView({
    * ==========================================================
    */
 
-  const statusCounts =
-    useMemo(
+  const myEventsSectionCounts =
+    useMemo<
+      Record<
+        MyEventsSection,
+        number
+      >
+    >(
       () => {
-        const counts:
-          Record<
-            EventLifecycleStatus,
-            number
-          > = {
-          draft: 0,
-          upcoming: 0,
-          live: 0,
+        const counts = {
+          active: 0,
+          drafts: 0,
           ended: 0,
           cancelled: 0,
         };
@@ -1463,9 +1579,30 @@ export function EventsView({
           const event
           of myEvents
         ) {
-          counts[
+          switch (
             event.lifecycleStatus
-          ] += 1;
+          ) {
+            case "upcoming":
+            case "live":
+              counts.active +=
+                1;
+              break;
+
+            case "draft":
+              counts.drafts +=
+                1;
+              break;
+
+            case "ended":
+              counts.ended +=
+                1;
+              break;
+
+            case "cancelled":
+              counts.cancelled +=
+                1;
+              break;
+          }
         }
 
         return counts;
@@ -1478,25 +1615,57 @@ export function EventsView({
   const filteredMyEvents =
     useMemo(
       () => {
-        if (
-          myEventsFilter ===
-          "all"
+        switch (
+          myEventsSection
         ) {
-          return myEvents;
-        }
+          case "active":
+            return myEvents.filter(
+              (
+                event,
+              ) =>
+                event.lifecycleStatus ===
+                  "upcoming" ||
+                event.lifecycleStatus ===
+                  "live",
+            );
 
-        return myEvents.filter(
-          (
-            event,
-          ) =>
-            event.lifecycleStatus ===
-            myEventsFilter,
-        );
+          case "drafts":
+            return myEvents.filter(
+              (
+                event,
+              ) =>
+                event.lifecycleStatus ===
+                "draft",
+            );
+
+          case "ended":
+            return myEvents.filter(
+              (
+                event,
+              ) =>
+                event.lifecycleStatus ===
+                "ended",
+            );
+
+          case "cancelled":
+            return myEvents.filter(
+              (
+                event,
+              ) =>
+                event.lifecycleStatus ===
+                "cancelled",
+            );
+        }
       },
       [
         myEvents,
-        myEventsFilter,
+        myEventsSection,
       ],
+    );
+
+  const emptySectionCopy =
+    getEmptySectionCopy(
+      myEventsSection,
     );
 
   return (
@@ -1538,7 +1707,7 @@ export function EventsView({
           onClick={
             onCreateEvent
           }
-          className="mt-6 flex w-full items-center justify-center gap-2 rounded-2xl bg-white px-5 py-3.5 text-sm font-black text-[#5557D8] shadow-sm transition hover:bg-violet-50 sm:w-auto"
+          className="mt-6 flex w-full items-center justify-center gap-2 rounded-2xl bg-white px-5 py-3.5 text-sm font-black text-[#5557D8] shadow-sm transition-all hover:-translate-y-0.5 hover:bg-violet-50 hover:shadow-md sm:w-auto"
         >
           <Plus
             size={18}
@@ -1556,11 +1725,12 @@ export function EventsView({
               "explore",
             )
           }
-          className={`rounded-xl px-2 py-3 text-xs font-black transition sm:text-sm ${activeTab ===
+          className={`rounded-xl px-2 py-3 text-xs font-black transition sm:text-sm ${
+            activeTab ===
             "explore"
-            ? "bg-[#5D5FEF] text-white shadow-md shadow-[#5D5FEF]/15"
-            : "text-slate-500 hover:bg-[#F3F2FF] hover:text-[#5D5FEF]"
-            }`}
+              ? "bg-[#5D5FEF] text-white shadow-md shadow-[#5D5FEF]/15"
+              : "text-slate-500 hover:bg-[#F3F2FF] hover:text-[#5D5FEF]"
+          }`}
         >
           Explorar
         </button>
@@ -1572,11 +1742,12 @@ export function EventsView({
               "saved",
             )
           }
-          className={`rounded-xl px-2 py-3 text-xs font-black transition sm:text-sm ${activeTab ===
+          className={`rounded-xl px-2 py-3 text-xs font-black transition sm:text-sm ${
+            activeTab ===
             "saved"
-            ? "bg-[#5D5FEF] text-white shadow-md shadow-[#5D5FEF]/15"
-            : "text-slate-500 hover:bg-[#F3F2FF] hover:text-[#5D5FEF]"
-            }`}
+              ? "bg-[#5D5FEF] text-white shadow-md shadow-[#5D5FEF]/15"
+              : "text-slate-500 hover:bg-[#F3F2FF] hover:text-[#5D5FEF]"
+          }`}
         >
           Guardados
         </button>
@@ -1588,18 +1759,19 @@ export function EventsView({
               "mine",
             )
           }
-          className={`rounded-xl px-2 py-3 text-xs font-black transition sm:text-sm ${activeTab ===
+          className={`rounded-xl px-2 py-3 text-xs font-black transition sm:text-sm ${
+            activeTab ===
             "mine"
-            ? "bg-[#5D5FEF] text-white shadow-md shadow-[#5D5FEF]/15"
-            : "text-slate-500 hover:bg-[#F3F2FF] hover:text-[#5D5FEF]"
-            }`}
+              ? "bg-[#5D5FEF] text-white shadow-md shadow-[#5D5FEF]/15"
+              : "text-slate-500 hover:bg-[#F3F2FF] hover:text-[#5D5FEF]"
+          }`}
         >
           Mis eventos
         </button>
       </div>
 
       {activeTab ===
-        "explore" ? (
+      "explore" ? (
         <div className="space-y-4">
           <section className="rounded-[2rem] border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6">
             <div className="flex items-start gap-3">
@@ -1650,9 +1822,9 @@ export function EventsView({
                 </div>
 
                 {profileCity &&
-                  normalizeLocationSearch(
-                    profileCity,
-                  ) !==
+                normalizeLocationSearch(
+                  profileCity,
+                ) !==
                   normalizeLocationSearch(
                     selectedExploreCity,
                   ) ? (
@@ -1822,8 +1994,8 @@ export function EventsView({
                   />
 
                   {municipalityMenuOpen &&
-                    selectedProvinceCode &&
-                    !municipalitiesLoading ? (
+                  selectedProvinceCode &&
+                  !municipalitiesLoading ? (
                     <div
                       id={
                         EXPLORE_MUNICIPALITY_LIST_ID
@@ -1832,7 +2004,7 @@ export function EventsView({
                       className="absolute left-0 right-0 top-[calc(100%+0.5rem)] z-40 max-h-64 overflow-y-auto rounded-2xl border border-slate-200 bg-white p-2 shadow-2xl"
                     >
                       {filteredMunicipalities.length >
-                        0 ? (
+                      0 ? (
                         filteredMunicipalities.map(
                           (
                             municipality,
@@ -1856,11 +2028,12 @@ export function EventsView({
                                   municipality,
                                 );
                               }}
-                              className={`flex w-full items-center justify-between rounded-xl px-3 py-3 text-left text-sm transition ${selectedMunicipalityCode ===
+                              className={`flex w-full items-center justify-between rounded-xl px-3 py-3 text-left text-sm transition ${
+                                selectedMunicipalityCode ===
                                 municipality.ineCode
-                                ? "bg-[#F0F0FF] font-black text-[#5052D9]"
-                                : "font-semibold text-slate-700 hover:bg-slate-50"
-                                }`}
+                                  ? "bg-[#F0F0FF] font-black text-[#5052D9]"
+                                  : "font-semibold text-slate-700 hover:bg-slate-50"
+                              }`}
                             >
                               <span>
                                 {
@@ -1869,7 +2042,7 @@ export function EventsView({
                               </span>
 
                               {selectedMunicipalityCode ===
-                                municipality.ineCode ? (
+                              municipality.ineCode ? (
                                 <Check
                                   size={15}
                                 />
@@ -1920,7 +2093,7 @@ export function EventsView({
             </div>
 
             {profileCity &&
-              !selectedProvinceCode ? (
+            !selectedProvinceCode ? (
               <p className="mt-4 text-xs font-medium leading-5 text-slate-400">
                 LookUp puede usar tu ciudad de perfil directamente. Selecciona provincia y municipio solo cuando quieras explorar otra zona.
               </p>
@@ -1938,15 +2111,17 @@ export function EventsView({
                   ? "Selecciona una ciudad"
                   : exploreEventsLoading
                     ? "Buscando eventos…"
-                    : `${exploreEvents.length} evento${exploreEvents.length ===
-                      1
-                      ? ""
-                      : "s"
-                    } disponible${exploreEvents.length ===
-                      1
-                      ? ""
-                      : "s"
-                    }`}
+                    : `${exploreEvents.length} evento${
+                        exploreEvents.length ===
+                        1
+                          ? ""
+                          : "s"
+                      } disponible${
+                        exploreEvents.length ===
+                        1
+                          ? ""
+                          : "s"
+                      }`}
               </p>
             </div>
 
@@ -2007,8 +2182,8 @@ export function EventsView({
           ) : null}
 
           {selectedExploreCity &&
-            exploreEventsLoading &&
-            exploreEvents.length ===
+          exploreEventsLoading &&
+          exploreEvents.length ===
             0 ? (
             <div className="rounded-[2rem] border border-slate-200/80 bg-white p-8 text-center shadow-sm">
               <RefreshCw
@@ -2020,13 +2195,14 @@ export function EventsView({
                 Buscando eventos en{" "}
                 {
                   displayCity
-                }…
+                }
+                …
               </p>
             </div>
           ) : null}
 
           {selectedExploreCity &&
-            exploreEventsError ? (
+          exploreEventsError ? (
             <div className="rounded-[2rem] border border-rose-200 bg-rose-50 p-6">
               <p className="text-sm font-black text-rose-800">
                 No pudimos cargar Explorar
@@ -2054,9 +2230,9 @@ export function EventsView({
           ) : null}
 
           {selectedExploreCity &&
-            !exploreEventsLoading &&
-            !exploreEventsError &&
-            exploreEvents.length ===
+          !exploreEventsLoading &&
+          !exploreEventsError &&
+          exploreEvents.length ===
             0 ? (
             <div className="rounded-[2rem] border border-slate-200/80 bg-white p-8 text-center shadow-sm sm:p-10">
               <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-[1.4rem] bg-[#F0F0FF] text-[#5D5FEF]">
@@ -2100,7 +2276,7 @@ export function EventsView({
                 key={
                   event.id
                 }
-                className="overflow-hidden rounded-[2rem] border border-slate-200/80 bg-white shadow-sm transition hover:border-[#5D5FEF]/20 hover:shadow-md"
+                className="overflow-hidden rounded-[2rem] border border-slate-200/80 bg-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-[#5D5FEF]/20 hover:shadow-lg hover:shadow-slate-200/60"
               >
                 <div className="p-5 sm:p-6">
                   <div className="flex flex-wrap items-center gap-2">
@@ -2110,7 +2286,7 @@ export function EventsView({
                       )}`}
                     >
                       {event.lifecycleStatus ===
-                        "live" ? (
+                      "live" ? (
                         <CircleDot
                           size={12}
                         />
@@ -2145,7 +2321,7 @@ export function EventsView({
                   </p>
 
                   {event.tags.length >
-                    0 ? (
+                  0 ? (
                     <div className="mt-4 flex flex-wrap gap-2">
                       {event.tags
                         .slice(
@@ -2233,7 +2409,7 @@ export function EventsView({
                     </div>
                   ) : null}
 
-                  <div className="mt-5 grid gap-3 sm:grid-cols-[auto_1fr]">
+                  <div className="mt-5 grid gap-3 sm:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
                     <EventFavoriteButton
                       eventId={
                         event.id
@@ -2259,7 +2435,7 @@ export function EventsView({
                                 currentEvent,
                               ) =>
                                 currentEvent.id ===
-                                  event.id
+                                event.id
                                   ? {
                                     ...currentEvent,
                                     isFavorite,
@@ -2278,9 +2454,14 @@ export function EventsView({
                           event.id,
                         )
                       }
-                      className="w-full rounded-2xl bg-[#5D5FEF] py-3.5 text-sm font-black text-white shadow-md shadow-[#5D5FEF]/15 transition hover:bg-[#5254DF]"
+                      className="group inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-[#5D5FEF] to-[#7066F4] px-5 py-3.5 text-sm font-black text-white shadow-md shadow-[#5D5FEF]/15 transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-[#5D5FEF]/20"
                     >
                       Ver evento
+
+                      <ChevronRight
+                        size={16}
+                        className="transition-transform group-hover:translate-x-0.5"
+                      />
                     </button>
                   </div>
                 </div>
@@ -2291,16 +2472,16 @@ export function EventsView({
       ) : null}
 
       {activeTab ===
-        "saved" ? (
+      "saved" ? (
         <SavedEventsPanel
           onOpen={
             onJoinEvent
           }
         />
-        ) : null}
+      ) : null}
 
       {activeTab ===
-        "mine" ? (
+      "mine" ? (
         <div className="space-y-4">
           {createdDraft ? (
             <div className="flex items-start gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-4">
@@ -2315,34 +2496,25 @@ export function EventsView({
                 </p>
 
                 <p className="mt-1 text-xs font-medium leading-5 text-emerald-700">
-                  “{createdDraft.title}” ya forma parte de tus eventos.
+                  “{createdDraft.title}” ya está organizado dentro de tus borradores.
                 </p>
               </div>
             </div>
           ) : null}
 
-          <div className="rounded-[2rem] border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6">
-            <div className="flex items-center justify-between gap-4">
+          <section className="rounded-[2rem] border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6">
+            <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-[11px] font-black uppercase tracking-[0.16em] text-[#5D5FEF]">
                   Gestión
                 </p>
 
-                <h2 className="mt-1 text-xl font-black tracking-tight text-slate-950">
+                <h2 className="mt-1 text-2xl font-black tracking-tight text-slate-950">
                   Mis eventos
                 </h2>
 
-                <p className="mt-1 text-sm text-slate-500">
-                  {
-                    myEvents.length
-                  }{" "}
-                  evento
-                  {
-                    myEvents.length ===
-                      1
-                      ? ""
-                      : "s"
-                  }
+                <p className="mt-2 max-w-md text-sm leading-6 text-slate-500">
+                  Mantén cada etapa separada para encontrar rápidamente lo que estás gestionando.
                 </p>
               </div>
 
@@ -2355,7 +2527,7 @@ export function EventsView({
                   myEventsLoading
                 }
                 aria-label="Actualizar mis eventos"
-                className="flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 text-[#5D5FEF] transition hover:border-[#5D5FEF]/30 hover:bg-[#F3F2FF] disabled:opacity-50"
+                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-slate-200 bg-white text-[#5D5FEF] shadow-sm transition hover:border-[#5D5FEF]/30 hover:bg-[#F3F2FF] disabled:opacity-50"
               >
                 <RefreshCw
                   size={17}
@@ -2369,67 +2541,99 @@ export function EventsView({
             </div>
 
             {myEvents.length >
-              0 ? (
-              <div className="mt-5 flex gap-2 overflow-x-auto pb-1">
-                <button
-                  type="button"
-                  onClick={() =>
-                    setMyEventsFilter(
-                      "all",
-                    )
-                  }
-                  className={`shrink-0 rounded-full px-3 py-2 text-xs font-black transition ${myEventsFilter ===
-                    "all"
-                    ? "bg-[#5D5FEF] text-white"
-                    : "bg-slate-100 text-slate-600 hover:bg-[#F0F0FF] hover:text-[#5D5FEF]"
-                    }`}
-                >
-                  Todos ·{" "}
-                  {
-                    myEvents.length
-                  }
-                </button>
-
-                {STATUS_ORDER.map(
+            0 ? (
+              <div className="mt-6 grid grid-cols-2 gap-3">
+                {(
+                  [
+                    "active",
+                    "drafts",
+                    "ended",
+                    "cancelled",
+                  ] as MyEventsSection[]
+                ).map(
                   (
-                    status,
-                  ) => (
-                    <button
-                      key={
-                        status
-                      }
-                      type="button"
-                      onClick={() =>
-                        setMyEventsFilter(
-                          status,
-                        )
-                      }
-                      className={`shrink-0 rounded-full px-3 py-2 text-xs font-black transition ${myEventsFilter ===
-                        status
-                        ? "bg-[#5D5FEF] text-white"
-                        : "bg-slate-100 text-slate-600 hover:bg-[#F0F0FF] hover:text-[#5D5FEF]"
+                    section,
+                  ) => {
+                    const selected =
+                      myEventsSection ===
+                      section;
+
+                    return (
+                      <button
+                        key={
+                          section
+                        }
+                        type="button"
+                        onClick={() =>
+                          setMyEventsSection(
+                            section,
+                          )
+                        }
+                        className={`group relative overflow-hidden rounded-[1.35rem] border p-4 text-left transition-all ${
+                          selected
+                            ? "border-[#5D5FEF] bg-gradient-to-br from-[#5D5FEF] to-[#7066F4] text-white shadow-lg shadow-[#5D5FEF]/15"
+                            : "border-slate-200 bg-[#FBFCFE] text-slate-700 hover:-translate-y-0.5 hover:border-[#5D5FEF]/20 hover:bg-[#F8F8FF]"
                         }`}
-                    >
-                      {
-                        STATUS_LABELS[
-                        status
-                        ]
-                      }{" "}
-                      ·{" "}
-                      {
-                        statusCounts[
-                        status
-                        ]
-                      }
-                    </button>
-                  ),
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <span
+                            className={`flex h-10 w-10 items-center justify-center rounded-2xl ${
+                              selected
+                                ? "bg-white/15 text-white"
+                                : "bg-[#F0F0FF] text-[#5D5FEF]"
+                            }`}
+                          >
+                            {getMyEventsSectionIcon(
+                              section,
+                            )}
+                          </span>
+
+                          <span
+                            className={`rounded-full px-2.5 py-1 text-xs font-black ${
+                              selected
+                                ? "bg-white/15 text-white"
+                                : "bg-white text-slate-600 shadow-sm"
+                            }`}
+                          >
+                            {
+                              myEventsSectionCounts[
+                                section
+                              ]
+                            }
+                          </span>
+                        </div>
+
+                        <p className="mt-4 text-sm font-black">
+                          {
+                            MY_EVENTS_SECTION_LABELS[
+                              section
+                            ]
+                          }
+                        </p>
+
+                        <p
+                          className={`mt-1 line-clamp-2 text-[11px] font-medium leading-4 ${
+                            selected
+                              ? "text-indigo-100"
+                              : "text-slate-400"
+                          }`}
+                        >
+                          {
+                            MY_EVENTS_SECTION_DESCRIPTIONS[
+                              section
+                            ]
+                          }
+                        </p>
+                      </button>
+                    );
+                  },
                 )}
               </div>
             ) : null}
-          </div>
+          </section>
 
           {myEventsLoading &&
-            myEvents.length ===
+          myEvents.length ===
             0 ? (
             <div className="rounded-[2rem] border border-slate-200/80 bg-white p-8 text-center shadow-sm">
               <RefreshCw
@@ -2460,7 +2664,10 @@ export function EventsView({
                 onClick={() =>
                   void loadMyEvents()
                 }
-                className="mt-4 rounded-xl bg-rose-700 px-4 py-2.5 text-xs font-black text-white"
+                disabled={
+                  myEventsLoading
+                }
+                className="mt-4 rounded-xl bg-rose-700 px-4 py-2.5 text-xs font-black text-white disabled:opacity-50"
               >
                 Reintentar
               </button>
@@ -2468,8 +2675,8 @@ export function EventsView({
           ) : null}
 
           {!myEventsLoading &&
-            !myEventsError &&
-            myEvents.length ===
+          !myEventsError &&
+          myEvents.length ===
             0 ? (
             <div className="rounded-[2rem] border border-slate-200/80 bg-white p-8 text-center shadow-sm sm:p-10">
               <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-[1.4rem] bg-[#F0F0FF] text-[#5D5FEF]">
@@ -2483,7 +2690,7 @@ export function EventsView({
               </h2>
 
               <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-slate-500">
-                Cuando crees uno, podrás gestionarlo desde aquí durante todo su ciclo de vida.
+                Cuando crees uno, LookUp lo organizará según su etapa para que puedas gestionarlo durante todo su ciclo de vida.
               </p>
 
               <button
@@ -2491,7 +2698,7 @@ export function EventsView({
                 onClick={
                   onCreateEvent
                 }
-                className="mt-6 inline-flex items-center gap-2 rounded-2xl bg-[#5D5FEF] px-5 py-3.5 text-sm font-black text-white"
+                className="mt-6 inline-flex items-center gap-2 rounded-2xl bg-[#5D5FEF] px-5 py-3.5 text-sm font-black text-white shadow-md shadow-[#5D5FEF]/20 transition hover:bg-[#5254DF]"
               >
                 <Plus
                   size={17}
@@ -2503,151 +2710,237 @@ export function EventsView({
           ) : null}
 
           {!myEventsLoading &&
-            !myEventsError &&
-            myEvents.length >
-            0 &&
-            filteredMyEvents.length ===
+          !myEventsError &&
+          myEvents.length >
             0 ? (
-            <div className="rounded-[2rem] border border-slate-200/80 bg-white p-7 text-center shadow-sm">
-              <p className="text-sm font-black text-slate-800">
-                No tienes eventos en este estado.
-              </p>
-            </div>
-          ) : null}
-
-          {filteredMyEvents.map(
-            (
-              event,
-            ) => (
-              <article
-                key={
-                  event.id
-                }
-                className="overflow-hidden rounded-[2rem] border border-slate-200/80 bg-white shadow-sm"
-              >
-                <div className="p-5 sm:p-6">
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="min-w-0 flex-1">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span
-                          className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.08em] ${getStatusClasses(
-                            event.lifecycleStatus,
-                          )}`}
-                        >
-                          {getStatusIcon(
-                            event.lifecycleStatus,
-                          )}
-
-                          {
-                            STATUS_LABELS[
-                            event
-                              .lifecycleStatus
-                            ]
-                          }
-                        </span>
-
-                        <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.08em] text-slate-500">
-                          {
-                            event.category
-                          }
-                        </span>
-                      </div>
-
-                      <h3 className="mt-3 text-xl font-black tracking-tight text-slate-950">
-                        {
-                          event.title
-                        }
-                      </h3>
-                    </div>
-                  </div>
-
-                  <p className="mt-3 line-clamp-2 text-sm leading-6 text-slate-500">
+            <>
+              <div className="flex items-end justify-between gap-4 px-1">
+                <div>
+                  <p className="text-[11px] font-black uppercase tracking-[0.16em] text-[#5D5FEF]">
                     {
-                      event.description
+                      MY_EVENTS_SECTION_LABELS[
+                        myEventsSection
+                      ]
                     }
                   </p>
 
-                  <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                    <div className="flex items-start gap-2.5 rounded-2xl bg-slate-50 px-4 py-3">
-                      <MapPin
-                        size={17}
-                        className="mt-0.5 shrink-0 text-[#5D5FEF]"
-                      />
+                  <p className="mt-1 max-w-lg text-sm leading-6 text-slate-500">
+                    {
+                      MY_EVENTS_SECTION_DESCRIPTIONS[
+                        myEventsSection
+                      ]
+                    }
+                  </p>
+                </div>
 
-                      <div className="min-w-0">
-                        <p className="truncate text-sm font-black text-slate-900">
-                          {
-                            event.venueName
-                          }
-                        </p>
+                <span className="shrink-0 rounded-full bg-[#F0F0FF] px-3 py-1.5 text-xs font-black text-[#5557D8]">
+                  {
+                    filteredMyEvents.length
+                  }
+                </span>
+              </div>
 
-                        <p className="mt-0.5 truncate text-xs text-slate-500">
-                          {
-                            event.city
-                          }
-
-                          {event.province
-                            ? ` · ${event.province}`
-                            : ""}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-start gap-2.5 rounded-2xl bg-slate-50 px-4 py-3">
-                      <CalendarDays
-                        size={17}
-                        className="mt-0.5 shrink-0 text-[#5D5FEF]"
-                      />
-
-                      <div>
-                        <p className="text-sm font-black text-slate-900">
-                          {formatEventDate(
-                            event.startAt,
-                          )}
-                        </p>
-
-                        <p className="mt-0.5 text-xs text-slate-500">
-                          {event.isFree
-                            ? "Gratis"
-                            : event.priceFrom !==
-                              null
-                              ? `Desde ${event.priceFrom} ${event.currency}`
-                              : "De pago"}
-                        </p>
-                      </div>
-                    </div>
+              {filteredMyEvents.length ===
+              0 ? (
+                <div className="rounded-[2rem] border border-slate-200/80 bg-white p-8 text-center shadow-sm">
+                  <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#F0F0FF] text-[#5D5FEF]">
+                    {getMyEventsSectionIcon(
+                      myEventsSection,
+                    )}
                   </div>
 
-                  {event.lifecycleStatus ===
-                    "draft" ? (
-                    <div className="mt-5 flex items-start gap-3 rounded-2xl bg-[#F0F0FF] px-4 py-3.5">
-                      <Sparkles
-                        size={17}
-                        className="mt-0.5 shrink-0 text-[#5D5FEF]"
+                  <h3 className="mt-5 text-xl font-black tracking-tight text-slate-950">
+                    {
+                      emptySectionCopy.title
+                    }
+                  </h3>
+
+                  <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
+                    {
+                      emptySectionCopy.description
+                    }
+                  </p>
+
+                  {myEventsSection ===
+                  "active" ||
+                  myEventsSection ===
+                  "drafts" ? (
+                    <button
+                      type="button"
+                      onClick={
+                        onCreateEvent
+                      }
+                      className="mt-5 inline-flex items-center gap-2 rounded-2xl bg-[#5D5FEF] px-4 py-3 text-sm font-black text-white shadow-md shadow-[#5D5FEF]/15 transition hover:bg-[#5254DF]"
+                    >
+                      <Plus
+                        size={16}
                       />
 
-                      <div>
-                        <p className="text-sm font-black text-[#494BC8]">
-                          Listo para LookUp Intelligence
-                        </p>
-
-                        <p className="mt-1 text-xs font-medium leading-5 text-slate-600">
-                          Analiza la preparación del evento antes de publicarlo.
-                        </p>
-                      </div>
-                    </div>
+                      Crear evento
+                    </button>
                   ) : null}
-
-                  <Link
-                    href={`/dashboard/events/${event.id}`}
-                    className="mt-5 flex w-full items-center justify-center rounded-2xl bg-[#5D5FEF] px-4 py-3.5 text-sm font-black text-white shadow-md shadow-[#5D5FEF]/15 transition hover:bg-[#5254DF]"
-                  >
-                    Gestionar evento
-                  </Link>
                 </div>
-              </article>
-            ),
-          )}
+              ) : null}
+
+              {filteredMyEvents.map(
+                (
+                  event,
+                ) => (
+                  <article
+                    key={
+                      event.id
+                    }
+                    className="overflow-hidden rounded-[2rem] border border-slate-200/80 bg-white shadow-sm transition-all hover:border-[#5D5FEF]/15 hover:shadow-md"
+                  >
+                    <div className="p-5 sm:p-6">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="min-w-0 flex-1">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span
+                              className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.08em] ${getStatusClasses(
+                                event.lifecycleStatus,
+                              )}`}
+                            >
+                              {getStatusIcon(
+                                event.lifecycleStatus,
+                              )}
+
+                              {
+                                STATUS_LABELS[
+                                  event.lifecycleStatus
+                                ]
+                              }
+                            </span>
+
+                            <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[10px] font-black uppercase tracking-[0.08em] text-slate-500">
+                              {
+                                event.category
+                              }
+                            </span>
+                          </div>
+
+                          <h3 className="mt-3 text-xl font-black tracking-tight text-slate-950">
+                            {
+                              event.title
+                            }
+                          </h3>
+                        </div>
+                      </div>
+
+                      <p className="mt-3 line-clamp-2 text-sm leading-6 text-slate-500">
+                        {
+                          event.description
+                        }
+                      </p>
+
+                      <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                        <div className="flex items-start gap-2.5 rounded-2xl bg-slate-50 px-4 py-3">
+                          <MapPin
+                            size={17}
+                            className="mt-0.5 shrink-0 text-[#5D5FEF]"
+                          />
+
+                          <div className="min-w-0">
+                            <p className="truncate text-sm font-black text-slate-900">
+                              {
+                                event.venueName
+                              }
+                            </p>
+
+                            <p className="mt-0.5 truncate text-xs text-slate-500">
+                              {
+                                event.city
+                              }
+
+                              {event.province
+                                ? ` · ${event.province}`
+                                : ""}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-start gap-2.5 rounded-2xl bg-slate-50 px-4 py-3">
+                          <CalendarDays
+                            size={17}
+                            className="mt-0.5 shrink-0 text-[#5D5FEF]"
+                          />
+
+                          <div>
+                            <p className="text-sm font-black text-slate-900">
+                              {formatEventDate(
+                                event.startAt,
+                              )}
+                            </p>
+
+                            <p className="mt-0.5 text-xs text-slate-500">
+                              {event.isFree
+                                ? "Gratis"
+                                : event.priceFrom !==
+                                    null
+                                  ? `Desde ${event.priceFrom} ${event.currency}`
+                                  : "De pago"}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {event.lifecycleStatus ===
+                      "draft" ? (
+                        <div className="mt-5 flex items-start gap-3 rounded-2xl bg-[#F0F0FF] px-4 py-3.5">
+                          <Sparkles
+                            size={17}
+                            className="mt-0.5 shrink-0 text-[#5D5FEF]"
+                          />
+
+                          <div>
+                            <p className="text-sm font-black text-[#494BC8]">
+                              Listo para LookUp Intelligence
+                            </p>
+
+                            <p className="mt-1 text-xs font-medium leading-5 text-slate-600">
+                              Analiza la preparación del evento antes de publicarlo.
+                            </p>
+                          </div>
+                        </div>
+                      ) : null}
+
+                      {event.lifecycleStatus ===
+                      "ended" ? (
+                        <div className="mt-5 flex items-start gap-3 rounded-2xl bg-[#F8F8FF] px-4 py-3.5">
+                          <Sparkles
+                            size={17}
+                            className="mt-0.5 shrink-0 text-[#5D5FEF]"
+                          />
+
+                          <div>
+                            <p className="text-sm font-black text-[#494BC8]">
+                              Historial preparado para Intelligence
+                            </p>
+
+                            <p className="mt-1 text-xs font-medium leading-5 text-slate-600">
+                              Este evento podrá alimentar las métricas y recomendaciones post-evento del bloque Business Intelligence.
+                            </p>
+                          </div>
+                        </div>
+                      ) : null}
+
+                      <Link
+                        href={`/dashboard/events/${event.id}`}
+                        className="group mt-5 flex w-full items-center justify-center gap-2 rounded-2xl bg-[#5D5FEF] px-4 py-3.5 text-sm font-black text-white shadow-md shadow-[#5D5FEF]/15 transition-all hover:-translate-y-0.5 hover:bg-[#5254DF] hover:shadow-lg"
+                      >
+                        Gestionar evento
+
+                        <ChevronRight
+                          size={16}
+                          className="transition-transform group-hover:translate-x-0.5"
+                        />
+                      </Link>
+                    </div>
+                  </article>
+                ),
+              )}
+            </>
+          ) : null}
         </div>
       ) : null}
     </section>

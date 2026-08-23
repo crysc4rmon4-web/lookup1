@@ -445,7 +445,7 @@ export default function DashboardPage() {
     if (
       !profile ||
       profile.account_type !==
-        "business"
+      "business"
     ) {
       setBusinessProfile(
         null,
@@ -750,7 +750,7 @@ export default function DashboardPage() {
   ) => {
     if (
       settingsProfile?.account_type ===
-        "business" &&
+      "business" &&
       (
         businessProfileLoading ||
         !businessProfile
@@ -852,33 +852,33 @@ export default function DashboardPage() {
 
         if (
           currentAccountType ===
-            "business"
+          "business"
         ) {
           setBusinessProfile(
             (current) =>
               current
                 ? {
-                    ...current,
+                  ...current,
 
-                    trade_name:
-                      data.fullName,
+                  trade_name:
+                    data.fullName,
 
-                    sector:
-                      data.profession,
+                  sector:
+                    data.profession,
 
-                    city:
-                      data.businessCity,
+                  city:
+                    data.businessCity,
 
-                    province:
-                      data.businessProvince,
+                  province:
+                    data.businessProvince,
 
-                    website:
-                      data.businessWebsite ||
-                      null,
+                  website:
+                    data.businessWebsite ||
+                    null,
 
-                    updated_at:
-                      new Date().toISOString(),
-                  }
+                  updated_at:
+                    new Date().toISOString(),
+                }
                 : current,
           );
         }
@@ -1116,7 +1116,7 @@ export default function DashboardPage() {
               current.map(
                 (zone) =>
                   zone.id ===
-                  updated.id
+                    updated.id
                     ? updated
                     : zone,
               ),
@@ -1380,13 +1380,13 @@ export default function DashboardPage() {
         ) {
           throw new Error(
             payload?.error ??
-              "No se pudo eliminar la cuenta.",
+            "No se pudo eliminar la cuenta.",
           );
         }
 
         const {
           error:
-            localSignOutError,
+          localSignOutError,
         } =
           await supabase.auth.signOut({
             scope:
@@ -1468,7 +1468,7 @@ export default function DashboardPage() {
     settingsProfile.username?.trim() ||
     (
       settingsProfile.account_type ===
-      "business"
+        "business"
         ? "tu negocio"
         : "tu perfil"
     );
@@ -1493,167 +1493,173 @@ export default function DashboardPage() {
 
         {section ===
           "radar" && (
-          <RadarView
-            enabled={
-              radarPresence.requested
-            }
+            <RadarView
+              enabled={
+                radarPresence.requested
+              }
 
-            radarReady={
-              radarPresence.ready
-            }
+              radarReady={
+                radarPresence.ready
+              }
 
-            privacyBlocked={
-              radarPresence.privacyBlocked
-            }
+              privacyBlocked={
+                radarPresence.privacyBlocked
+              }
 
-            toggleLoading={
-              radarPresence.toggleLoading
-            }
+              toggleLoading={
+                radarPresence.toggleLoading
+              }
 
-            scanLoading={
-              radarScanLoading
-            }
+              scanLoading={
+                radarScanLoading
+              }
 
-            locationLoading={
-              radarPresence.locationLoading
-            }
+              locationLoading={
+                radarPresence.locationLoading
+              }
 
-            locationSyncing={
-              radarPresence.locationSyncing
-            }
+              locationSyncing={
+                radarPresence.locationSyncing
+              }
 
-            locationError={
-              radarPresence.locationError
-            }
+              locationError={
+                radarPresence.locationError
+              }
 
-            accuracy={
-              radarPresence.accuracy
-            }
+              accuracy={
+                radarPresence.accuracy
+              }
 
-            onToggle={
-              handleRadarToggle
-            }
+              onToggle={
+                handleRadarToggle
+              }
 
-            onRefresh={
-              handleRadarRefresh
-            }
+              onRefresh={
+                handleRadarRefresh
+              }
 
-            profiles={
-              profiles
-            }
-          />
-        )}
+              profiles={
+                profiles
+              }
+            />
+          )}
 
         {section ===
           "events" && (
-          <EventsView
-            events={
-              events
-            }
+            <EventsView
+              events={
+                events
+              }
 
-            city={
-              defaultEventCity
-            }
+              city={
+                defaultEventCity
+              }
 
-            createdDraft={
-              createdEventDraft
-            }
+              createdDraft={
+                createdEventDraft
+              }
 
-            onCreateEvent={
-              handleOpenCreateEvent
-            }
+              onCreateEvent={
+                handleOpenCreateEvent
+              }
 
-            onJoinEvent={(
-              id,
-            ) =>
-              router.push(
-                `/events/${id}`,
-              )
-            }
-          />
-        )}
+              onJoinEvent={(
+                id,
+              ) => {
+                const returnTo =
+                  `${window.location.pathname}${window.location.search}`;
+
+                router.push(
+                  `/events/${id}?returnTo=${encodeURIComponent(
+                    returnTo,
+                  )}`,
+                );
+              }}
+            />
+
+          )}
 
         {section ===
           "settings" && (
-          <SettingsView
-            profile={
-              settingsProfile
-            }
+            <SettingsView
+              profile={
+                settingsProfile
+              }
 
-            links={
-              profileLinks
-            }
+              links={
+                profileLinks
+              }
 
-            radarEnabled={
-              radarPresence.enabled
-            }
+              radarEnabled={
+                radarPresence.enabled
+              }
 
-            radarPrivacyBlocked={
-              radarPresence.privacyBlocked
-            }
+              radarPrivacyBlocked={
+                radarPresence.privacyBlocked
+              }
 
-            radarToggleLoading={
-              radarPresence.toggleLoading
-            }
+              radarToggleLoading={
+                radarPresence.toggleLoading
+              }
 
-            profileVisibilitySaving={
-              profileVisibilitySaving
-            }
+              profileVisibilitySaving={
+                profileVisibilitySaving
+              }
 
-            onToggleRadar={
-              handleRadarToggle
-            }
+              onToggleRadar={
+                handleRadarToggle
+              }
 
-            onToggleProfileVisibility={
-              handleToggleProfileVisibility
-            }
+              onToggleProfileVisibility={
+                handleToggleProfileVisibility
+              }
 
-            blockedZones={
-              blockedZones
-            }
+              blockedZones={
+                blockedZones
+              }
 
-            blockedZonesLoading={
-              blockedZonesLoading
-            }
+              blockedZonesLoading={
+                blockedZonesLoading
+              }
 
-            blockedZonesSaving={
-              blockedZonesSaving
-            }
+              blockedZonesSaving={
+                blockedZonesSaving
+              }
 
-            canAddBlockedZone={
-              blockedZones.length <
-              MAX_BLOCKED_ZONES
-            }
+              canAddBlockedZone={
+                blockedZones.length <
+                MAX_BLOCKED_ZONES
+              }
 
-            maxBlockedZones={
-              MAX_BLOCKED_ZONES
-            }
+              maxBlockedZones={
+                MAX_BLOCKED_ZONES
+              }
 
-            onAddBlockedZone={
-              handleAddBlockedZone
-            }
+              onAddBlockedZone={
+                handleAddBlockedZone
+              }
 
-            onEditBlockedZone={
-              handleEditBlockedZone
-            }
+              onEditBlockedZone={
+                handleEditBlockedZone
+              }
 
-            onDeleteBlockedZone={
-              handleDeleteBlockedZone
-            }
+              onDeleteBlockedZone={
+                handleDeleteBlockedZone
+              }
 
-            onEditProfile={
-              handleEditProfile
-            }
+              onEditProfile={
+                handleEditProfile
+              }
 
-            onDeleteAccount={
-              handleOpenDeleteAccount
-            }
+              onDeleteAccount={
+                handleOpenDeleteAccount
+              }
 
-            onLogout={
-              handleLogout
-            }
-          />
-        )}
+              onLogout={
+                handleLogout
+              }
+            />
+          )}
 
         <BottomNav
           active={
@@ -1671,7 +1677,7 @@ export default function DashboardPage() {
       </div>
 
       {createEventOpen &&
-      session?.access_token ? (
+        session?.access_token ? (
         <CreateEventForm
           accessToken={
             session.access_token
