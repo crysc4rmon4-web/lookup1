@@ -7,6 +7,7 @@ import {
 } from "@/lib/ai/embedding";
 
 import {
+  calculateContextualEventRelevance,
   calculateEventRelevance,
   findExplicitEventInterestMatches,
   type EventRelevanceLevel,
@@ -18,8 +19,22 @@ import {
 } from "@/lib/ai/events/semantic-event";
 
 import {
+  syncEventDiscoveryIntent,
+} from "@/lib/ai/events/sync-event-discovery-intent";
+
+import {
   syncProfileEmbedding,
 } from "@/lib/ai/sync-profile-embedding";
+
+import {
+  getEventDiscoveryDateRange,
+} from "@/lib/events/event-discovery-date-range";
+
+import {
+  isEventDiscoveryDateScope,
+  isEventDiscoveryIntentExpired,
+  type EventDiscoveryDateScope,
+} from "@/lib/events/event-discovery-preferences";
 
 import {
   getSupabaseAdminClient,
@@ -37,86 +52,52 @@ type ExploreLifecycleStatus =
 
 type EventRow = {
   id: string;
-
-  creator_profile_id:
-    string;
-
-  title:
-    string;
-
-  description:
-    string;
-
-  category:
-    string;
-
-  cover_image_url:
-    string | null;
-
-  tags:
-    string[] | null;
-
-  audience:
-    string[] | null;
-
-  venue_name:
-    string;
-
-  address:
-    string;
-
-  city:
-    string;
-
-  city_key:
-    string | null;
-
-  province:
-    string | null;
-
-  postal_code:
-    string | null;
-
-  country_code:
-    string | null;
-
-  start_at:
-    string;
-
-  end_at:
-    string;
-
-  status:
-    string | null;
-
-  is_free:
-    boolean | null;
-
-  price_from:
-    number | null;
-
-  currency:
-    string | null;
-
-  capacity:
-    number | null;
-
-  created_at:
-    string;
-
-  updated_at:
-    string;
+  creator_profile_id: string;
+  title: string;
+  description: string;
+  category: string;
+  cover_image_url: string | null;
+  tags: string[] | null;
+  audience: string[] | null;
+  venue_name: string;
+  address: string;
+  city: string;
+  city_key: string | null;
+  province: string | null;
+  postal_code: string | null;
+  country_code: string | null;
+  start_at: string;
+  end_at: string;
+  status: string | null;
+  is_free: boolean | null;
+  price_from: number | null;
+  currency: string | null;
+  capacity: number | null;
+  created_at: string;
+  updated_at: string;
 };
 
 type CurrentProfileRow = {
-  profession:
+  profession: string | null;
+  bio: string | null;
+  interests: string[] | null;
+};
+
+type DiscoveryPreferencesRow = {
+  date_scope:
+    string;
+
+  date_from:
     string | null;
 
-  bio:
+  date_to:
     string | null;
 
-  interests:
-    string[] | null;
+  intent_text:
+    string | null;
+
+  intent_expires_at:
+    string | null;
 };
 
 type EventEmbeddingRow = {
@@ -136,6 +117,9 @@ type ExploreRelevance = {
 
   matchedInterests:
     string[];
+
+  intentBoostApplied:
+    boolean;
 };
 
 function getBearerToken(
@@ -240,8 +224,10 @@ function deriveLifecycleStatus(
     Number.isFinite(
       endAt,
     ) &&
-    startAt <= now &&
-    endAt >= now
+    startAt <=
+      now &&
+    endAt >=
+      now
   ) {
     return "live";
   }
@@ -253,7 +239,9 @@ function parseLimit(
   value:
     string | null,
 ) {
-  if (!value) {
+  if (
+    !value
+  ) {
     return 30;
   }
 
@@ -369,12 +357,6 @@ export async function GET(
   request: Request,
 ) {
   try {
-    /*
-     * ============================================================
-     * 1. AUTENTICACIÓN
-     * ============================================================
-     */
-
     const accessToken =
       getBearerToken(
         request,
@@ -408,11 +390,9 @@ export async function GET(
       error:
         authError,
     } =
-      await supabaseAdmin
-        .auth
-        .getUser(
-          accessToken,
-        );
+      await supabaseAdmin.auth.getUser(
+        accessToken,
+      );
 
     if (
       authError ||
@@ -433,11 +413,8 @@ export async function GET(
       );
     }
 
-    /*
-     * ============================================================
-     * 2. FILTROS DE EXPLORACIÓN
-     * ============================================================
-     */
+    const currentProfileId =
+      authData.user.id;
 
     const url =
       new URL(
@@ -510,19 +487,106 @@ export async function GET(
       );
     }
 
+    /*
+     * ============================================================
+     * PREFERENCIAS DE DESCUBRIMIENTO
+     * ============================================================
+     */
+
+    let preferences:
+      DiscoveryPreferencesRow | null =
+      null;
+
+    try {
+      const {
+        data:
+          preferencesData,
+
+        error:
+          preferencesError,
+      } =
+        await supabaseAdmin
+          .from(
+            "event_discovery_preferences",
+          )
+          .select(
+            `
+              date_scope,
+              date_from,
+              date_to,
+              intent_text,
+              intent_expires_at
+            `,
+          )
+          .eq(
+            "profile_id",
+            currentProfileId,
+          )
+          .maybeSingle();
+
+      if (
+        preferencesError
+      ) {
+        throw new Error(
+          preferencesError.message,
+        );
+      }
+
+      preferences =
+        preferencesData as
+          | DiscoveryPreferencesRow
+          | null;
+    } catch (
+      preferencesError
+    ) {
+      /*
+       * Una preferencia nunca debe romper Explorar.
+       */
+      console.error(
+        "⚠️ Explorar continuará con preferencias por defecto:",
+        preferencesError,
+      );
+    }
+
+    const dateScope:
+      EventDiscoveryDateScope =
+      preferences &&
+      isEventDiscoveryDateScope(
+        preferences.date_scope,
+      )
+        ? preferences.date_scope
+        : "all";
+
+    const dateRange =
+      getEventDiscoveryDateRange({
+        scope:
+          dateScope,
+
+        dateFrom:
+          preferences
+            ?.date_from ??
+          null,
+
+        dateTo:
+          preferences
+            ?.date_to ??
+          null,
+      });
+
     const cityKey =
       normalizeLocationKey(
         city,
       );
 
-    const nowIso =
-      new Date()
-        .toISOString();
-
     /*
      * ============================================================
-     * 3. EVENTOS PUBLICADOS DE LA CIUDAD
+     * EVENTOS
      * ============================================================
+     *
+     * Seleccionamos eventos que se solapan con la ventana:
+     *
+     * end_at > inicio
+     * start_at < final
      */
 
     let query =
@@ -568,7 +632,7 @@ export async function GET(
         )
         .gt(
           "end_at",
-          nowIso,
+          dateRange.fromIso,
         )
         .order(
           "start_at",
@@ -580,6 +644,16 @@ export async function GET(
         .limit(
           limit,
         );
+
+    if (
+      dateRange.toIso
+    ) {
+      query =
+        query.lt(
+          "start_at",
+          dateRange.toIso,
+        );
+    }
 
     if (
       category
@@ -621,6 +695,8 @@ export async function GET(
 
           cityKey,
 
+          dateScope,
+
           events:
             [],
 
@@ -639,7 +715,7 @@ export async function GET(
 
     /*
      * ============================================================
-     * 4. FAVORITOS
+     * FAVORITOS
      * ============================================================
      */
 
@@ -659,7 +735,7 @@ export async function GET(
         )
         .eq(
           "profile_id",
-          authData.user.id,
+          currentProfileId,
         )
         .in(
           "event_id",
@@ -699,13 +775,8 @@ export async function GET(
 
     /*
      * ============================================================
-     * 5. RELEVANCIA SEMÁNTICA
+     * RELEVANCIA · PERFIL + INTENCIÓN ACTUAL
      * ============================================================
-     *
-     * Esta sección es deliberadamente tolerante a fallos.
-     *
-     * Un problema en embeddings nunca puede impedir
-     * explorar eventos de una ciudad.
      */
 
     const relevanceByEventId =
@@ -715,6 +786,10 @@ export async function GET(
       >();
 
     try {
+      let currentProfile:
+        CurrentProfileRow | null =
+        null;
+
       const {
         data:
           currentProfileData,
@@ -735,182 +810,282 @@ export async function GET(
           )
           .eq(
             "id",
-            authData.user.id,
+            currentProfileId,
           )
           .maybeSingle();
 
       if (
         currentProfileError
       ) {
-        throw new Error(
-          `No se pudo cargar el perfil para relevancia: ${currentProfileError.message}`,
+        console.error(
+          "⚠️ No se pudo cargar el perfil para relevancia:",
+          currentProfileError,
         );
+      } else {
+        currentProfile =
+          currentProfileData as
+            | CurrentProfileRow
+            | null;
       }
 
-      const currentProfile =
-        currentProfileData as
-          | CurrentProfileRow
-          | null;
+      const profileInterests =
+        normalizeList(
+          currentProfile
+            ?.interests ??
+          null,
+        );
+
+      let profileVector:
+        number[] | null =
+        null;
 
       if (
         currentProfile
       ) {
-        const profileInterests =
-          normalizeList(
-            currentProfile.interests,
-          );
+        try {
+          const profileEmbedding =
+            await syncProfileEmbedding({
+              profileId:
+                currentProfileId,
 
-        const profileEmbedding =
-          await syncProfileEmbedding({
-            profileId:
-              authData.user.id,
+              profession:
+                currentProfile.profession,
 
-            profession:
-              currentProfile.profession,
+              bio:
+                currentProfile.bio,
 
-            bio:
-              currentProfile.bio,
-
-            interests:
-              profileInterests,
-          });
-
-        if (
-          profileEmbedding.embeddingText
-        ) {
-          const profileVector =
-            parseStoredLookupEmbedding(
-              profileEmbedding.embeddingText,
-            );
-
-          const {
-            data:
-              eventEmbeddingData,
-
-            error:
-              eventEmbeddingError,
-          } =
-            await supabaseAdmin
-              .from(
-                "event_embeddings",
-              )
-              .select(
-                `
-                  event_id,
-                  embedding
-                `,
-              )
-              .in(
-                "event_id",
-                eventRows.map(
-                  (
-                    event,
-                  ) =>
-                    event.id,
-                ),
-              )
-              .eq(
-                "model",
-                EVENT_EMBEDDING_MODEL,
-              )
-              .eq(
-                "dimensions",
-                EVENT_EMBEDDING_DIMENSIONS,
-              );
+              interests:
+                profileInterests,
+            });
 
           if (
-            eventEmbeddingError
+            profileEmbedding.embeddingText
           ) {
-            throw new Error(
-              `No se pudieron cargar los embeddings de eventos: ${eventEmbeddingError.message}`,
-            );
+            profileVector =
+              parseStoredLookupEmbedding(
+                profileEmbedding.embeddingText,
+              );
           }
+        } catch (
+          profileEmbeddingError
+        ) {
+          console.error(
+            "⚠️ Explorar continuará sin relevancia permanente de perfil:",
+            profileEmbeddingError,
+          );
+        }
+      }
 
-          const eventEmbeddingRows =
-            (
-              eventEmbeddingData ??
-              []
-            ) as EventEmbeddingRow[];
+      let intentVector:
+        number[] | null =
+        null;
 
-          const eventById =
-            new Map(
+      const activeIntentText =
+        preferences
+          ?.intent_text
+          ?.trim() ??
+        "";
+
+      const intentIsActive =
+        Boolean(
+          activeIntentText,
+        ) &&
+        !isEventDiscoveryIntentExpired(
+          preferences
+            ?.intent_expires_at ??
+          null,
+        );
+
+      if (
+        intentIsActive
+      ) {
+        try {
+          const intentEmbedding =
+            await syncEventDiscoveryIntent({
+              profileId:
+                currentProfileId,
+
+              intentText:
+                activeIntentText,
+
+              refreshExpiry:
+                false,
+            });
+
+          if (
+            intentEmbedding.embeddingText
+          ) {
+            intentVector =
+              parseStoredLookupEmbedding(
+                intentEmbedding.embeddingText,
+              );
+          }
+        } catch (
+          intentError
+        ) {
+          console.error(
+            "⚠️ Explorar continuará sin intención temporal:",
+            intentError,
+          );
+        }
+      }
+
+      if (
+        profileVector ||
+        intentVector
+      ) {
+        const {
+          data:
+            eventEmbeddingData,
+
+          error:
+            eventEmbeddingError,
+        } =
+          await supabaseAdmin
+            .from(
+              "event_embeddings",
+            )
+            .select(
+              `
+                event_id,
+                embedding
+              `,
+            )
+            .in(
+              "event_id",
               eventRows.map(
                 (
                   event,
-                ) => [
+                ) =>
                   event.id,
-                  event,
-                ],
               ),
+            )
+            .eq(
+              "model",
+              EVENT_EMBEDDING_MODEL,
+            )
+            .eq(
+              "dimensions",
+              EVENT_EMBEDDING_DIMENSIONS,
             );
 
-          for (
-            const embeddingRow
-            of eventEmbeddingRows
+        if (
+          eventEmbeddingError
+        ) {
+          throw new Error(
+            `No se pudieron cargar los embeddings de eventos: ${eventEmbeddingError.message}`,
+          );
+        }
+
+        const eventById =
+          new Map(
+            eventRows.map(
+              (
+                event,
+              ) => [
+                event.id,
+                event,
+              ],
+            ),
+          );
+
+        for (
+          const embeddingRow
+          of (
+            eventEmbeddingData ??
+            []
+          ) as EventEmbeddingRow[]
+        ) {
+          const event =
+            eventById.get(
+              embeddingRow.event_id,
+            );
+
+          /*
+           * Nunca recomendamos al creador
+           * su propio evento.
+           */
+          if (
+            !event ||
+            event.creator_profile_id ===
+              currentProfileId
           ) {
-            const event =
-              eventById.get(
-                embeddingRow.event_id,
+            continue;
+          }
+
+          try {
+            const eventVector =
+              parseStoredLookupEmbedding(
+                embeddingRow.embedding,
               );
 
+            const profileRelevanceScore =
+              profileVector
+                ? calculateEventRelevance(
+                    profileVector,
+                    eventVector,
+                  ).relevanceScore
+                : null;
+
+            const intentRelevanceScore =
+              intentVector
+                ? calculateEventRelevance(
+                    intentVector,
+                    eventVector,
+                  ).relevanceScore
+                : null;
+
+            const contextualRelevance =
+              calculateContextualEventRelevance({
+                profileRelevanceScore,
+
+                intentRelevanceScore,
+              });
+
             if (
-              !event ||
-              event.creator_profile_id ===
-                authData.user.id
+              !contextualRelevance
             ) {
               continue;
             }
 
-            try {
-              const eventVector =
-                parseStoredLookupEmbedding(
-                  embeddingRow.embedding,
-                );
+            relevanceByEventId.set(
+              event.id,
+              {
+                relevanceScore:
+                  contextualRelevance.relevanceScore,
 
-              const relevance =
-                calculateEventRelevance(
-                  profileVector,
-                  eventVector,
-                );
+                relevanceLevel:
+                  contextualRelevance.level,
 
-              const matchedInterests =
-                findExplicitEventInterestMatches({
-                  profileInterests,
+                intentBoostApplied:
+                  contextualRelevance.intentBoostApplied,
 
-                  category:
-                    event.category,
+                matchedInterests:
+                  findExplicitEventInterestMatches({
+                    profileInterests,
 
-                  tags:
-                    normalizeList(
-                      event.tags,
-                    ),
+                    category:
+                      event.category,
 
-                  audience:
-                    normalizeList(
-                      event.audience,
-                    ),
-                });
+                    tags:
+                      normalizeList(
+                        event.tags,
+                      ),
 
-              relevanceByEventId.set(
-                event.id,
-                {
-                  relevanceScore:
-                    relevance.relevanceScore,
-
-                  relevanceLevel:
-                    relevance.level,
-
-                  matchedInterests,
-                },
-              );
-            } catch (
-              vectorError
-            ) {
-              console.error(
-                `⚠️ No se pudo calcular relevancia para el evento ${embeddingRow.event_id}:`,
-                vectorError,
-              );
-            }
+                    audience:
+                      normalizeList(
+                        event.audience,
+                      ),
+                  }),
+              },
+            );
+          } catch (
+            vectorError
+          ) {
+            console.error(
+              `⚠️ No se pudo calcular relevancia para el evento ${embeddingRow.event_id}:`,
+              vectorError,
+            );
           }
         }
       }
@@ -922,12 +1097,6 @@ export async function GET(
         relevanceError,
       );
     }
-
-    /*
-     * ============================================================
-     * 6. RESPUESTA
-     * ============================================================
-     */
 
     const events =
       eventRows.map(
@@ -951,7 +1120,7 @@ export async function GET(
 
             canFavorite:
               event.creator_profile_id !==
-              authData.user.id,
+              currentProfileId,
 
             relevanceScore:
               relevance
@@ -967,6 +1136,11 @@ export async function GET(
               relevance
                 ?.matchedInterests ??
               [],
+
+            intentBoostApplied:
+              relevance
+                ?.intentBoostApplied ??
+              false,
           };
         },
       );
@@ -976,6 +1150,8 @@ export async function GET(
         city,
 
         cityKey,
+
+        dateScope,
 
         events,
 

@@ -35,6 +35,45 @@ export type ExplicitEventInterestInput = {
     readonly string[];
 };
 
+export type ContextualEventRelevanceInput = {
+  profileRelevanceScore:
+    number | null;
+
+  intentRelevanceScore:
+    number | null;
+};
+
+export type ContextualEventRelevanceResult = {
+  relevanceScore:
+    number;
+
+  level:
+    EventRelevanceLevel;
+
+  profileRelevanceScore:
+    number | null;
+
+  intentRelevanceScore:
+    number | null;
+
+  intentBoostApplied:
+    boolean;
+};
+
+/*
+ * La intención actual puede potenciar la relevancia,
+ * pero nunca sustituye silenciosamente la identidad
+ * permanente del usuario.
+ *
+ * Un 45% significa:
+ *
+ * - la intención puede influir de forma clara;
+ * - nunca puede reducir el score del perfil;
+ * - el perfil conserva el peso principal.
+ */
+const EVENT_DISCOVERY_INTENT_BOOST_FACTOR =
+  0.45;
+
 function clamp(
   value: number,
   min: number,
@@ -58,6 +97,29 @@ function roundSimilarity(
       10_000,
     ) /
     10_000
+  );
+}
+
+function normalizeScore(
+  value:
+    number | null,
+) {
+  if (
+    value ===
+      null ||
+    !Number.isFinite(
+      value,
+    )
+  ) {
+    return null;
+  }
+
+  return Math.round(
+    clamp(
+      value,
+      0,
+      100,
+    ),
   );
 }
 
@@ -130,16 +192,6 @@ export function calculateEventRelevance(
       eventEmbedding,
     );
 
-  /*
-   * El porcentaje representa cercanía semántica,
-   * NO una probabilidad de que al usuario le guste.
-   *
-   * No alteramos artificialmente el valor:
-   * simplemente normalizamos el coseno al rango visible 0..100.
-   *
-   * La intención temporal del bloque 11 será una señal
-   * separada y no contaminará este score base.
-   */
   const relevanceScore =
     Math.round(
       clamp(
@@ -162,6 +214,143 @@ export function calculateEventRelevance(
       getEventRelevanceLevel(
         relevanceScore,
       ),
+  };
+}
+
+export function calculateContextualEventRelevance({
+  profileRelevanceScore,
+  intentRelevanceScore,
+}: ContextualEventRelevanceInput): ContextualEventRelevanceResult | null {
+  const profileScore =
+    normalizeScore(
+      profileRelevanceScore,
+    );
+
+  const intentScore =
+    normalizeScore(
+      intentRelevanceScore,
+    );
+
+  if (
+    profileScore ===
+      null &&
+    intentScore ===
+      null
+  ) {
+    return null;
+  }
+
+  /*
+   * Perfil insuficiente pero intención explícita.
+   *
+   * Aquí sí podemos utilizar la intención como contexto
+   * principal porque fue escrita deliberadamente
+   * por el propio usuario y es temporal.
+   */
+  if (
+    profileScore ===
+      null &&
+    intentScore !==
+      null
+  ) {
+    return {
+      relevanceScore:
+        intentScore,
+
+      level:
+        getEventRelevanceLevel(
+          intentScore,
+        ),
+
+      profileRelevanceScore:
+        null,
+
+      intentRelevanceScore:
+        intentScore,
+
+      intentBoostApplied:
+        true,
+    };
+  }
+
+  if (
+    profileScore !==
+      null &&
+    intentScore ===
+      null
+  ) {
+    return {
+      relevanceScore:
+        profileScore,
+
+      level:
+        getEventRelevanceLevel(
+          profileScore,
+        ),
+
+      profileRelevanceScore:
+        profileScore,
+
+      intentRelevanceScore:
+        null,
+
+      intentBoostApplied:
+        false,
+    };
+  }
+
+  if (
+    profileScore ===
+      null ||
+    intentScore ===
+      null
+  ) {
+    return null;
+  }
+
+  /*
+   * Regla fundamental:
+   *
+   * la intención NUNCA baja la relevancia del perfil.
+   */
+  const positiveDifference =
+    Math.max(
+      0,
+      intentScore -
+        profileScore,
+    );
+
+  const boost =
+    Math.round(
+      positiveDifference *
+        EVENT_DISCOVERY_INTENT_BOOST_FACTOR,
+    );
+
+  const relevanceScore =
+    clamp(
+      profileScore +
+        boost,
+      0,
+      100,
+    );
+
+  return {
+    relevanceScore,
+
+    level:
+      getEventRelevanceLevel(
+        relevanceScore,
+      ),
+
+    profileRelevanceScore:
+      profileScore,
+
+    intentRelevanceScore:
+      intentScore,
+
+    intentBoostApplied:
+      boost >
+      0,
   };
 }
 

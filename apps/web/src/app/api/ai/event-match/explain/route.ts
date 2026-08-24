@@ -13,9 +13,14 @@ import {
 } from "@/lib/ai/events/event-match-explanation";
 
 import {
+  calculateContextualEventRelevance,
   calculateEventRelevance,
   findExplicitEventInterestMatches,
 } from "@/lib/ai/events/event-relevance";
+
+import {
+  syncEventDiscoveryIntent,
+} from "@/lib/ai/events/sync-event-discovery-intent";
 
 import {
   syncEventEmbedding,
@@ -24,6 +29,10 @@ import {
 import {
   syncProfileEmbedding,
 } from "@/lib/ai/sync-profile-embedding";
+
+import {
+  isEventDiscoveryIntentExpired,
+} from "@/lib/events/event-discovery-preferences";
 
 import {
   getSupabaseAdminClient,
@@ -36,7 +45,8 @@ export const dynamic =
   "force-dynamic";
 
 type CurrentProfileRow = {
-  id: string;
+  id:
+    string;
 
   profession:
     string | null;
@@ -46,13 +56,11 @@ type CurrentProfileRow = {
 
   interests:
     string[] | null;
-
-  onboarding_completed:
-    boolean;
 };
 
 type PublicEventRow = {
-  id: string;
+  id:
+    string;
 
   creator_profile_id:
     string;
@@ -82,6 +90,14 @@ type PublicEventRow = {
     string | null;
 };
 
+type DiscoveryIntentRow = {
+  intent_text:
+    string | null;
+
+  intent_expires_at:
+    string | null;
+};
+
 type EventMatchUnavailableReason =
   | "own_event"
   | "ended"
@@ -97,7 +113,8 @@ function isUuid(
 }
 
 function getBearerToken(
-  request: Request,
+  request:
+    Request,
 ) {
   const authorization =
     request.headers.get(
@@ -115,7 +132,9 @@ function getBearerToken(
 
   const token =
     authorization
-      .slice(7)
+      .slice(
+        7,
+      )
       .trim();
 
   return token || null;
@@ -181,15 +200,10 @@ function createUnavailablePayload(
 }
 
 export async function POST(
-  request: Request,
+  request:
+    Request,
 ) {
   try {
-    /*
-     * ============================================================
-     * 1. AUTENTICACIÓN
-     * ============================================================
-     */
-
     const accessToken =
       getBearerToken(
         request,
@@ -248,12 +262,6 @@ export async function POST(
       );
     }
 
-    /*
-     * ============================================================
-     * 2. EVENT ID
-     * ============================================================
-     */
-
     let requestBody:
       | {
           eventId?: unknown;
@@ -304,18 +312,14 @@ export async function POST(
 
     /*
      * ============================================================
-     * 3. CONTEXTO REAL
+     * CONTEXTO REAL
      * ============================================================
-     *
-     * No confiamos en información enviada por el navegador.
-     *
-     * Perfil y evento se vuelven a consultar directamente
-     * desde PostgreSQL.
      */
 
     const [
       currentProfileResult,
       eventResult,
+      intentResult,
     ] =
       await Promise.all([
         supabaseAdmin
@@ -327,8 +331,7 @@ export async function POST(
               id,
               profession,
               bio,
-              interests,
-              onboarding_completed
+              interests
             `,
           )
           .eq(
@@ -364,6 +367,22 @@ export async function POST(
             "published",
           )
           .maybeSingle(),
+
+        supabaseAdmin
+          .from(
+            "event_discovery_preferences",
+          )
+          .select(
+            `
+              intent_text,
+              intent_expires_at
+            `,
+          )
+          .eq(
+            "profile_id",
+            currentProfileId,
+          )
+          .maybeSingle(),
       ]);
 
     if (
@@ -382,6 +401,18 @@ export async function POST(
       );
     }
 
+    if (
+      intentResult.error
+    ) {
+      /*
+       * La intención es complementaria.
+       */
+      console.error(
+        "⚠️ No se pudo cargar la intención actual:",
+        intentResult.error,
+      );
+    }
+
     const currentProfile =
       currentProfileResult.data as
         | CurrentProfileRow
@@ -391,6 +422,13 @@ export async function POST(
       eventResult.data as
         | PublicEventRow
         | null;
+
+    const discoveryIntent =
+      intentResult.error
+        ? null
+        : intentResult.data as
+            | DiscoveryIntentRow
+            | null;
 
     if (
       !currentProfile
@@ -428,10 +466,6 @@ export async function POST(
       );
     }
 
-    /*
-     * La relevancia de un evento propio no aporta valor
-     * al creador.
-     */
     if (
       event.creator_profile_id ===
       currentProfileId
@@ -472,87 +506,51 @@ export async function POST(
 
     /*
      * ============================================================
-     * 4. SINCRONIZAR REPRESENTACIONES SEMÁNTICAS
+     * VECTOR DEL EVENTO
      * ============================================================
      *
-     * Ambas funciones utilizan cache por semantic_hash.
-     *
-     * Si nada cambió:
-     * no existe ninguna llamada nueva de embeddings a OpenAI.
+     * Sin él no podemos comparar ni perfil ni intención.
      */
 
-    let profileEmbeddingText:
-      string | null =
-      null;
-
-    let eventEmbeddingText:
-      string | null =
-      null;
+    let eventVector:
+      number[];
 
     try {
-      const [
-        profileEmbedding,
-        eventEmbedding,
-      ] =
-        await Promise.all([
-          syncProfileEmbedding({
-            profileId:
-              currentProfileId,
+      const eventEmbedding =
+        await syncEventEmbedding({
+          eventId:
+            event.id,
 
-            profession:
-              currentProfile.profession,
+          title:
+            event.title,
 
-            bio:
-              currentProfile.bio,
+          description:
+            event.description,
 
-            interests:
-              normalizeList(
-                currentProfile.interests,
-              ),
-          }),
+          category:
+            event.category,
 
-          syncEventEmbedding({
-            eventId:
-              event.id,
+          tags:
+            normalizeList(
+              event.tags,
+            ),
 
-            title:
-              event.title,
+          audience:
+            normalizeList(
+              event.audience,
+            ),
+        });
 
-            description:
-              event.description,
-
-            category:
-              event.category,
-
-            tags:
-              normalizeList(
-                event.tags,
-              ),
-
-            audience:
-              normalizeList(
-                event.audience,
-              ),
-          }),
-        ]);
-
-      profileEmbeddingText =
-        profileEmbedding.embeddingText;
-
-      eventEmbeddingText =
-        eventEmbedding.embeddingText;
+      eventVector =
+        parseStoredLookupEmbedding(
+          eventEmbedding.embeddingText,
+        );
     } catch (
-      embeddingError
+      eventEmbeddingError
     ) {
-      /*
-       * LookUp Intelligence es una capacidad adicional.
-       *
-       * Si OpenAI o la sincronización semántica fallan,
-       * nunca rompemos el detalle público del evento.
-       */
       console.error(
-        "❌ No se pudo preparar la relevancia semántica del evento:",
-        embeddingError,
+        "❌ No se pudo preparar el embedding del evento:",
+        eventEmbeddingError,
       );
 
       return NextResponse.json(
@@ -566,8 +564,148 @@ export async function POST(
       );
     }
 
+    /*
+     * ============================================================
+     * PERFIL PERMANENTE
+     * ============================================================
+     */
+
+    const profileInterests =
+      normalizeList(
+        currentProfile.interests,
+      );
+
+    let profileRelevanceScore:
+      number | null =
+      null;
+
+    try {
+      const profileEmbedding =
+        await syncProfileEmbedding({
+          profileId:
+            currentProfileId,
+
+          profession:
+            currentProfile.profession,
+
+          bio:
+            currentProfile.bio,
+
+          interests:
+            profileInterests,
+        });
+
+      if (
+        profileEmbedding.embeddingText
+      ) {
+        const profileVector =
+          parseStoredLookupEmbedding(
+            profileEmbedding.embeddingText,
+          );
+
+        profileRelevanceScore =
+          calculateEventRelevance(
+            profileVector,
+            eventVector,
+          ).relevanceScore;
+      }
+    } catch (
+      profileError
+    ) {
+      console.error(
+        "⚠️ El análisis continuará sin embedding permanente de perfil:",
+        profileError,
+      );
+    }
+
+    /*
+     * ============================================================
+     * INTENCIÓN ACTUAL
+     * ============================================================
+     */
+
+    let intentRelevanceScore:
+      number | null =
+      null;
+
+    let currentIntentText:
+      string | null =
+      null;
+
+    const storedIntentText =
+      discoveryIntent
+        ?.intent_text
+        ?.trim() ??
+      "";
+
+    const intentIsActive =
+      Boolean(
+        storedIntentText,
+      ) &&
+      !isEventDiscoveryIntentExpired(
+        discoveryIntent
+          ?.intent_expires_at ??
+        null,
+      );
+
     if (
-      !profileEmbeddingText
+      intentIsActive
+    ) {
+      try {
+        const intentEmbedding =
+          await syncEventDiscoveryIntent({
+            profileId:
+              currentProfileId,
+
+            intentText:
+              storedIntentText,
+
+            refreshExpiry:
+              false,
+          });
+
+        if (
+          intentEmbedding.embeddingText
+        ) {
+          const intentVector =
+            parseStoredLookupEmbedding(
+              intentEmbedding.embeddingText,
+            );
+
+          intentRelevanceScore =
+            calculateEventRelevance(
+              intentVector,
+              eventVector,
+            ).relevanceScore;
+
+          currentIntentText =
+            storedIntentText;
+        }
+      } catch (
+        intentError
+      ) {
+        console.error(
+          "⚠️ El análisis continuará sin intención temporal:",
+          intentError,
+        );
+      }
+    }
+
+    /*
+     * ============================================================
+     * RELEVANCIA CONTEXTUAL
+     * ============================================================
+     */
+
+    const relevance =
+      calculateContextualEventRelevance({
+        profileRelevanceScore,
+
+        intentRelevanceScore,
+      });
+
+    if (
+      !relevance
     ) {
       return NextResponse.json(
         createUnavailablePayload(
@@ -579,33 +717,6 @@ export async function POST(
         },
       );
     }
-
-    /*
-     * ============================================================
-     * 5. RELEVANCIA DETERMINISTA
-     * ============================================================
-     */
-
-    const profileEmbedding =
-      parseStoredLookupEmbedding(
-        profileEmbeddingText,
-      );
-
-    const eventEmbedding =
-      parseStoredLookupEmbedding(
-        eventEmbeddingText,
-      );
-
-    const relevance =
-      calculateEventRelevance(
-        profileEmbedding,
-        eventEmbedding,
-      );
-
-    const profileInterests =
-      normalizeList(
-        currentProfile.interests,
-      );
 
     const eventTags =
       normalizeList(
@@ -631,17 +742,30 @@ export async function POST(
           eventAudience,
       });
 
-    /*
-     * ============================================================
-     * 6. CONTEXTO PARA LOOKUP INTELLIGENCE
-     * ============================================================
-     */
-
     const explanationInput:
       EventMatchExplanationInput =
       {
         relevanceScore:
           relevance.relevanceScore,
+
+        profileRelevanceScore:
+          relevance.profileRelevanceScore,
+
+        intentBoostApplied:
+          relevance.intentBoostApplied,
+
+        currentIntent:
+          currentIntentText &&
+          intentRelevanceScore !==
+            null
+            ? {
+                text:
+                  currentIntentText,
+
+                relevanceScore:
+                  intentRelevanceScore,
+              }
+            : null,
 
         matchedInterests,
 
@@ -674,21 +798,10 @@ export async function POST(
         },
       };
 
-    /*
-     * Siempre construimos primero el fallback.
-     *
-     * Así GPT nunca es un punto único de fallo.
-     */
     const fallbackExplanation =
       buildFallbackEventMatchExplanation(
         explanationInput,
       );
-
-    /*
-     * ============================================================
-     * 7. EXPLICACIÓN HUMANA
-     * ============================================================
-     */
 
     try {
       const generated =

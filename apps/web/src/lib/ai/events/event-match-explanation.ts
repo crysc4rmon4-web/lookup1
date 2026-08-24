@@ -11,6 +11,22 @@ export type EventMatchExplanationInput = {
   relevanceScore:
     number;
 
+  profileRelevanceScore:
+    number | null;
+
+  intentBoostApplied:
+    boolean;
+
+  currentIntent:
+    | {
+        text:
+          string;
+
+        relevanceScore:
+          number;
+      }
+    | null;
+
   matchedInterests:
     readonly string[];
 
@@ -132,6 +148,22 @@ export function buildFallbackEventMatchExplanation(
     );
 
   if (
+    input.intentBoostApplied &&
+    input.currentIntent
+  ) {
+    if (
+      matched.length >
+      0
+    ) {
+      return `Hay una conexión clara con temas de tu perfil como ${matched
+        .slice(0, 3)
+        .join(", ")}. Además, este evento encaja especialmente bien con lo que estás buscando ahora, por lo que puede merecer una mirada más cercana.`;
+    }
+
+    return `Este evento tiene varios puntos relacionados con tu contexto y gana relevancia por lo que estás buscando ahora. Su enfoque en ${topic} puede tener sentido para esta búsqueda concreta aunque no coincida literalmente con tus intereses habituales.`;
+  }
+
+  if (
     matched.length >
     0
   ) {
@@ -176,7 +208,7 @@ export function buildFallbackEventMatchExplanation(
     return `Este evento comparte algunos puntos de contexto con tu perfil, pero no aparece entre las coincidencias más claras. Puede tener sentido si ahora te interesa explorar algo relacionado con ${topic}.`;
   }
 
-  return `Este evento no parece de los más alineados con lo que muestras actualmente en tu perfil. Aun así, su enfoque en ${topic} puede ser interesante si te apetece salir de tus temas habituales y descubrir algo diferente.`;
+  return `Este evento no parece de los más alineados con lo que muestras actualmente en tu perfil. Aun así, su enfoque en ${topic} puede ser interesante si te apetece explorar algo diferente.`;
 }
 
 export async function generateEventMatchExplanation(
@@ -194,11 +226,11 @@ export async function generateEventMatchExplanation(
       instructions: `
 Eres LookUp Intelligence, la capa que ayuda a una persona a decidir si un evento puede merecer su atención.
 
-No eres un vendedor.
-No eres un recomendador entusiasta.
-No intentas convencer al usuario.
+Compórtate como un colega informado, observador y útil.
 
-Compórtate como un colega informado, observador y útil que ha entendido tanto su perfil como el evento y le explica la relación de forma sencilla.
+No eres un vendedor.
+No intentas convencer al usuario.
+No exageras coincidencias débiles.
 
 Tu misión es responder:
 
@@ -209,52 +241,62 @@ REGLAS OBLIGATORIAS:
 - Responde siempre en español.
 - Escribe exactamente 2 frases.
 - Máximo 65 palabras en total.
-- Usa lenguaje humano, claro, natural y adulto.
-- Sé concreto antes que espectacular.
+- Sé concreto, natural y adulto.
 - Utiliza únicamente la información proporcionada.
-- Nunca inventes intereses, objetivos, experiencia o intenciones.
+- Nunca inventes intereses, experiencia, objetivos o intenciones.
 - No prometas que el evento gustará.
-- No prometas resultados.
-- No afirmes que el usuario debería asistir.
-- No utilices lenguaje publicitario.
-- No exageres una conexión débil.
-- Si la relevancia es baja, dilo con tacto.
-- Si existen coincidencias explícitas, puedes mencionarlas.
-- Si no existen coincidencias literales, explica únicamente relaciones que puedan justificarse por profesión, bio, intereses, categoría, descripción, etiquetas o público.
+- No afirmes que debería asistir.
 - No hagas inferencias sensibles.
 - No menciones embeddings.
 - No menciones vectores.
-- No menciones similitud coseno.
 - No menciones algoritmos.
 - No menciones inteligencia artificial.
 - No expliques cómo se calculó el score.
-- No repitas el porcentaje porque ya aparecerá visualmente.
-- Evita frases vacías como "este evento es perfecto para ti".
-- Evita "recomendamos encarecidamente".
-- Evita sonar como publicidad.
-- Evita comenzar siempre con "LookUp cree".
-- Puedes usar expresiones naturales como:
-  "Aquí hay una conexión bastante clara..."
-  "Puede tener sentido para ti porque..."
-  "Hay algunos puntos que encajan..."
-  "No es de las coincidencias más directas, pero..."
-  "Lo interesante en tu caso es..."
+- No repitas porcentajes.
+- No uses lenguaje publicitario.
 
-TONO:
+INTENCIÓN ACTUAL:
 
-Sutil.
-Elocuente.
-Cercano.
-Seguro cuando existen datos.
-Prudente cuando no existen.
-Útil para tomar una decisión.
+La intención actual es temporal y fue escrita expresamente por el usuario.
 
-La explicación debe aportar información real, no simplemente reformular el porcentaje.
+- Solo menciónala si se indica que INFLUYÓ EN LA RELEVANCIA.
+- Si no influyó, no atribuyas la recomendación a ella.
+- Si influyó, explica de forma natural que el evento también encaja con lo que está buscando ahora.
+- Puedes parafrasearla, pero nunca inventar objetivos adicionales.
+
+La explicación debe aportar información nueva respecto al número de relevancia.
       `.trim(),
 
       input: `
-NIVEL DE RELEVANCIA CALCULADO POR LOOKUP:
+RELEVANCIA FINAL:
 ${input.relevanceScore}/100
+
+RELEVANCIA DEL PERFIL PERMANENTE:
+${
+  input.profileRelevanceScore ??
+  "No disponible"
+}
+
+LA INTENCIÓN ACTUAL INFLUYÓ:
+${
+  input.intentBoostApplied
+    ? "SÍ"
+    : "NO"
+}
+
+INTENCIÓN ACTUAL:
+${
+  input.currentIntent
+    ?.text ??
+  "Ninguna"
+}
+
+RELEVANCIA DE LA INTENCIÓN ACTUAL:
+${
+  input.currentIntent
+    ?.relevanceScore ??
+  "No disponible"
+}
 
 TU PERFIL
 
@@ -315,7 +357,7 @@ ${
   "No indicado"
 }
 
-COINCIDENCIAS EXPLÍCITAS ENTRE INTERESES Y EVENTO:
+COINCIDENCIAS EXPLÍCITAS:
 ${
   formatList(
     input.matchedInterests,
@@ -323,7 +365,7 @@ ${
   "Ninguna coincidencia literal"
 }
 
-Escribe únicamente las dos frases que verá el usuario.
+Escribe únicamente las dos frases finales que verá el usuario.
       `.trim(),
 
       max_output_tokens:
@@ -338,7 +380,9 @@ Escribe únicamente las dos frases que verá el usuario.
         " ",
       );
 
-  if (!explanation) {
+  if (
+    !explanation
+  ) {
     throw new Error(
       "OpenAI no devolvió una explicación de relevancia del evento.",
     );
