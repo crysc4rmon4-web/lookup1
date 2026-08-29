@@ -15,6 +15,7 @@ import {
   Check,
   ChevronRight,
   CircleDollarSign,
+  ImagePlus,
   LoaderCircle,
   MapPin,
   Plus,
@@ -24,6 +25,10 @@ import {
   Users,
   X,
 } from "lucide-react";
+
+import {
+  EventImagePicker,
+} from "@/components/events/EventImagePicker";
 
 import {
   EVENT_LIMITS,
@@ -44,6 +49,12 @@ import {
 import {
   createEventDraft,
 } from "@/services/events/create-event-draft";
+
+import {
+  removeEventImagesFromStorage,
+  replaceEventImages,
+  uploadEventImages,
+} from "@/services/events/event-images";
 
 import {
   getEventCategories,
@@ -319,6 +330,7 @@ function toIsoDateTime(
 
   return date.toISOString();
 }
+
 function normalizeExternalUrl(
   value: string,
 ): string | null {
@@ -358,6 +370,7 @@ function normalizeExternalUrl(
     );
   }
 }
+
 function TokenField({
   label,
   description,
@@ -469,6 +482,7 @@ function TokenField({
       ","
     ) {
       event.preventDefault();
+
       addValue();
     }
 
@@ -476,7 +490,8 @@ function TokenField({
       event.key ===
       "Backspace" &&
       !currentValue &&
-      values.length > 0
+      values.length >
+      0
     ) {
       onChange(
         values.slice(
@@ -524,7 +539,7 @@ function TokenField({
 
       <div className="mt-3 rounded-2xl border border-slate-200 bg-white px-3 py-3 transition focus-within:border-[#5D5FEF] focus-within:ring-4 focus-within:ring-[#5D5FEF]/10">
         {values.length >
-          0 ? (
+        0 ? (
           <div className="mb-2 flex flex-wrap gap-2">
             {values.map(
               (value) => (
@@ -664,6 +679,14 @@ export function CreateEventForm({
           defaultCity,
           defaultProvince,
         ),
+    );
+
+  const [
+    eventImages,
+    setEventImages,
+  ] =
+    useState<File[]>(
+      [],
     );
 
   const [
@@ -837,7 +860,8 @@ export function CreateEventForm({
         );
 
         setCategoriesError(
-          error instanceof Error
+          error instanceof
+            Error
             ? error.message
             : "No se pudieron cargar las categorías.",
         );
@@ -919,6 +943,7 @@ export function CreateEventForm({
             setForm(
               (current) => ({
                 ...current,
+
                 province:
                   match.name,
               }),
@@ -935,7 +960,8 @@ export function CreateEventForm({
         );
 
         setProvincesError(
-          error instanceof Error
+          error instanceof
+            Error
             ? error.message
             : "No se pudo cargar el catálogo de provincias.",
         );
@@ -1020,6 +1046,7 @@ export function CreateEventForm({
             setForm(
               (current) => ({
                 ...current,
+
                 city:
                   exactMatch.name,
               }),
@@ -1036,7 +1063,8 @@ export function CreateEventForm({
         );
 
         setMunicipalitiesError(
-          error instanceof Error
+          error instanceof
+            Error
             ? error.message
             : "No se pudieron cargar los municipios.",
         );
@@ -1055,6 +1083,7 @@ export function CreateEventForm({
       mounted =
         false;
     };
+
     // Solo debe recargarse cuando cambia la provincia.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
@@ -1201,6 +1230,7 @@ export function CreateEventForm({
     setForm(
       (current) => ({
         ...current,
+
         [key]:
           value,
       }),
@@ -1245,7 +1275,8 @@ export function CreateEventForm({
           province?.name ??
           "",
 
-        city: "",
+        city:
+          "",
       }),
     );
   }
@@ -1284,6 +1315,7 @@ export function CreateEventForm({
         if (!value) {
           return {
             ...current,
+
             startAt:
               value,
           };
@@ -1306,6 +1338,7 @@ export function CreateEventForm({
         ) {
           return {
             ...current,
+
             startAt:
               value,
           };
@@ -1316,13 +1349,14 @@ export function CreateEventForm({
             currentEnd.getTime(),
           ) ||
           currentEnd.getTime() <=
-          nextStart.getTime();
+            nextStart.getTime();
 
         if (
           !endNeedsUpdate
         ) {
           return {
             ...current,
+
             startAt:
               value,
           };
@@ -1420,66 +1454,70 @@ export function CreateEventForm({
         form.isFree
           ? null
           : toNullableNumber(
-            form.priceFrom,
-          );
+              form.priceFrom,
+            );
 
       const capacity =
         toNullableNumber(
           form.capacity,
         );
+
       const externalUrl =
         normalizeExternalUrl(
           form.externalUrl,
         );
-      const input: EventDraftCreateInput =
-      {
-        title:
-          form.title,
 
-        description:
-          form.description,
+      const input:
+        EventDraftCreateInput =
+        {
+          title:
+            form.title,
 
-        category:
-          form.category,
+          description:
+            form.description,
 
-        tags:
-          form.tags,
+          category:
+            form.category,
 
-        audience:
-          form.audience,
+          tags:
+            form.tags,
 
-        venueName:
-          form.venueName,
+          audience:
+            form.audience,
 
-        address:
-          form.address,
+          venueName:
+            form.venueName,
 
-        city:
-          selectedMunicipality.name,
+          address:
+            form.address,
 
-        province:
-          selectedProvince.name,
+          city:
+            selectedMunicipality.name,
 
-        postalCode:
-          form.postalCode.trim() ||
-          null,
+          province:
+            selectedProvince.name,
 
-        startAt,
-        endAt,
+          postalCode:
+            form.postalCode.trim() ||
+            null,
 
-        isFree:
-          form.isFree,
+          startAt,
 
-        priceFrom,
+          endAt,
 
-        externalUrl,
+          isFree:
+            form.isFree,
 
-        externalActionLabel:
-          form.externalActionLabel.trim() ||
-          null,
+          priceFrom,
 
-        capacity,
-      };
+          externalUrl,
+
+          externalActionLabel:
+            form.externalActionLabel.trim() ||
+            null,
+
+          capacity,
+        };
 
       /*
        * La UI reutiliza el dominio del servidor para ofrecer
@@ -1496,11 +1534,81 @@ export function CreateEventForm({
         true,
       );
 
+      /*
+       * Primero creamos el borrador.
+       *
+       * Necesitamos un eventId real antes de subir imágenes para
+       * construir una ruta de Storage propiedad del evento:
+       *
+       * userId / eventId / file
+       */
       const draft =
         await createEventDraft(
           accessToken,
           input,
         );
+
+      if (
+        eventImages.length >
+        0
+      ) {
+        /*
+         * Los binarios viajan directamente:
+         *
+         * navegador → Supabase Storage
+         *
+         * No atraviesan nuestra API de Vercel.
+         */
+        const uploadedImages =
+          await uploadEventImages({
+            creatorProfileId:
+              draft.creatorProfileId,
+
+            eventId:
+              draft.id,
+
+            files:
+              eventImages,
+          });
+
+        try {
+          /*
+           * La API solamente recibe las referencias ya subidas.
+           *
+           * Allí se vuelve a comprobar:
+           * - autenticación,
+           * - propiedad del evento,
+           * - máximo de imágenes,
+           * - orden,
+           * - existencia real en Storage.
+           */
+          await replaceEventImages({
+            accessToken,
+
+            eventId:
+              draft.id,
+
+            images:
+              uploadedImages,
+          });
+        } catch (
+          imagePersistenceError
+        ) {
+          /*
+           * Si Storage funcionó pero PostgreSQL/API no pudo
+           * registrar la galería, retiramos los objetos recién
+           * subidos para no generar archivos huérfanos.
+           */
+          await removeEventImagesFromStorage(
+            uploadedImages.map(
+              (image) =>
+                image.storagePath,
+            ),
+          );
+
+          throw imagePersistenceError;
+        }
+      }
 
       onCreated(
         draft,
@@ -1578,6 +1686,7 @@ export function CreateEventForm({
               <Sparkles
                 size={14}
               />
+
               Intelligence después
             </div>
           </div>
@@ -1595,9 +1704,7 @@ export function CreateEventForm({
                 <SectionHeading
                   icon={
                     <Sparkles
-                      size={
-                        20
-                      }
+                      size={20}
                     />
                   }
                   eyebrow="01 · Propuesta"
@@ -1617,8 +1724,7 @@ export function CreateEventForm({
 
                       <span className="text-xs font-bold text-slate-400">
                         {
-                          form
-                            .title
+                          form.title
                             .length
                         }
                         /
@@ -1638,8 +1744,7 @@ export function CreateEventForm({
                       ) =>
                         updateField(
                           "title",
-                          event
-                            .target
+                          event.target
                             .value,
                         )
                       }
@@ -1671,8 +1776,7 @@ export function CreateEventForm({
 
                       <span className="text-xs font-bold text-slate-400">
                         {
-                          form
-                            .description
+                          form.description
                             .length
                         }
                         /
@@ -1692,8 +1796,7 @@ export function CreateEventForm({
                       ) =>
                         updateField(
                           "description",
-                          event
-                            .target
+                          event.target
                             .value,
                         )
                       }
@@ -1732,9 +1835,7 @@ export function CreateEventForm({
                     {categoriesLoading ? (
                       <div className="mt-2 flex items-center gap-2 rounded-2xl border border-slate-200 bg-[#FBFCFE] px-4 py-4 text-sm font-semibold text-slate-500">
                         <LoaderCircle
-                          size={
-                            17
-                          }
+                          size={17}
                           className="animate-spin"
                         />
 
@@ -1752,8 +1853,7 @@ export function CreateEventForm({
                           ) =>
                             updateField(
                               "category",
-                              event
-                                .target
+                              event.target
                                 .value,
                             )
                           }
@@ -1861,13 +1961,36 @@ export function CreateEventForm({
               <section className="rounded-[1.75rem] border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6">
                 <SectionHeading
                   icon={
-                    <MapPin
-                      size={
-                        20
-                      }
+                    <ImagePlus
+                      size={20}
                     />
                   }
-                  eyebrow="02 · Lugar"
+                  eyebrow="02 · Galería"
+                  title="Enséñalo antes de explicarlo"
+                  description="Añade hasta cinco imágenes. La primera será la portada y puedes cambiar el orden antes de guardar."
+                />
+
+                <EventImagePicker
+                  files={
+                    eventImages
+                  }
+                  onChange={
+                    setEventImages
+                  }
+                  disabled={
+                    saving
+                  }
+                />
+              </section>
+
+              <section className="rounded-[1.75rem] border border-slate-200/80 bg-white p-5 shadow-sm sm:p-6">
+                <SectionHeading
+                  icon={
+                    <MapPin
+                      size={20}
+                    />
+                  }
+                  eyebrow="03 · Lugar"
                   title="¿Dónde sucede?"
                   description="Selecciona provincia y municipio del catálogo oficial. LookUp verificará después la dirección exacta."
                 />
@@ -1891,8 +2014,7 @@ export function CreateEventForm({
                       ) =>
                         updateField(
                           "venueName",
-                          event
-                            .target
+                          event.target
                             .value,
                         )
                       }
@@ -1931,8 +2053,7 @@ export function CreateEventForm({
                       ) =>
                         updateField(
                           "address",
-                          event
-                            .target
+                          event.target
                             .value,
                         )
                       }
@@ -1981,8 +2102,7 @@ export function CreateEventForm({
                             event,
                           ) =>
                             handleProvinceChange(
-                              event
-                                .target
+                              event.target
                                 .value,
                             )
                           }
@@ -1998,7 +2118,9 @@ export function CreateEventForm({
                           </option>
 
                           {provinces.map(
-                            (province) => (
+                            (
+                              province,
+                            ) => (
                               <option
                                 key={
                                   province.code
@@ -2054,8 +2176,7 @@ export function CreateEventForm({
                           event,
                         ) =>
                           handleMunicipalityChange(
-                            event
-                              .target
+                            event.target
                               .value,
                           )
                         }
@@ -2104,15 +2225,15 @@ export function CreateEventForm({
                       />
 
                       {municipalityMenuOpen &&
-                        selectedProvinceCode &&
-                        !municipalitiesLoading ? (
+                      selectedProvinceCode &&
+                      !municipalitiesLoading ? (
                         <div
                           id="event-city-options"
                           role="listbox"
                           className="absolute left-0 right-0 top-[calc(100%+0.5rem)] z-40 max-h-64 overflow-y-auto rounded-2xl border border-slate-200 bg-white p-2 shadow-2xl"
                         >
                           {filteredMunicipalities.length >
-                            0 ? (
+                          0 ? (
                             filteredMunicipalities.map(
                               (
                                 municipality,
@@ -2136,11 +2257,12 @@ export function CreateEventForm({
                                       municipality,
                                     );
                                   }}
-                                  className={`flex w-full items-center justify-between rounded-xl px-3 py-3 text-left text-sm transition ${selectedMunicipality?.ineCode ===
+                                  className={`flex w-full items-center justify-between rounded-xl px-3 py-3 text-left text-sm transition ${
+                                    selectedMunicipality?.ineCode ===
                                     municipality.ineCode
-                                    ? "bg-[#F0F0FF] font-black text-[#5052D9]"
-                                    : "font-semibold text-slate-700 hover:bg-slate-50"
-                                    }`}
+                                      ? "bg-[#F0F0FF] font-black text-[#5052D9]"
+                                      : "font-semibold text-slate-700 hover:bg-slate-50"
+                                  }`}
                                 >
                                   <span>
                                     {
@@ -2149,7 +2271,7 @@ export function CreateEventForm({
                                   </span>
 
                                   {selectedMunicipality?.ineCode ===
-                                    municipality.ineCode ? (
+                                  municipality.ineCode ? (
                                     <Check
                                       size={15}
                                     />
@@ -2211,6 +2333,7 @@ export function CreateEventForm({
                       className="text-sm font-black text-slate-900"
                     >
                       Código postal
+
                       <span className="ml-1 font-medium text-slate-400">
                         opcional
                       </span>
@@ -2226,8 +2349,7 @@ export function CreateEventForm({
                       ) =>
                         updateField(
                           "postalCode",
-                          event
-                            .target
+                          event.target
                             .value,
                         )
                       }
@@ -2241,6 +2363,7 @@ export function CreateEventForm({
                         INPUT_CLASS
                       }
                     />
+
                     <p className="mt-2 text-xs font-medium leading-5 text-slate-400">
                       Si lo dejas vacío, LookUp intentará obtenerlo al verificar la dirección.
                     </p>
@@ -2263,12 +2386,10 @@ export function CreateEventForm({
                 <SectionHeading
                   icon={
                     <CalendarClock
-                      size={
-                        20
-                      }
+                      size={20}
                     />
                   }
-                  eyebrow="03 · Momento"
+                  eyebrow="04 · Momento"
                   title="¿Cuándo ocurre?"
                   description="Solo podrás seleccionar horarios futuros. Si cambias el inicio, LookUp mantendrá un final coherente."
                 />
@@ -2300,8 +2421,7 @@ export function CreateEventForm({
                         event,
                       ) =>
                         handleStartAtChange(
-                          event
-                            .target
+                          event.target
                             .value,
                         )
                       }
@@ -2340,8 +2460,7 @@ export function CreateEventForm({
                       ) =>
                         updateField(
                           "endAt",
-                          event
-                            .target
+                          event.target
                             .value,
                         )
                       }
@@ -2355,12 +2474,10 @@ export function CreateEventForm({
                 <SectionHeading
                   icon={
                     <Ticket
-                      size={
-                        20
-                      }
+                      size={20}
                     />
                   }
-                  eyebrow="04 · Acceso"
+                  eyebrow="05 · Acceso"
                   title="¿Cómo participa la gente?"
                   description="Precio, aforo y una acción externa si existe una inscripción o información adicional."
                 />
@@ -2375,10 +2492,11 @@ export function CreateEventForm({
                           true,
                         )
                       }
-                      className={`rounded-xl px-4 py-3 text-sm font-black transition ${form.isFree
-                        ? "bg-white text-slate-950 shadow-sm"
-                        : "text-slate-500 hover:text-slate-800"
-                        }`}
+                      className={`rounded-xl px-4 py-3 text-sm font-black transition ${
+                        form.isFree
+                          ? "bg-white text-slate-950 shadow-sm"
+                          : "text-slate-500 hover:text-slate-800"
+                      }`}
                     >
                       Gratis
                     </button>
@@ -2391,10 +2509,11 @@ export function CreateEventForm({
                           false,
                         )
                       }
-                      className={`rounded-xl px-4 py-3 text-sm font-black transition ${!form.isFree
-                        ? "bg-white text-slate-950 shadow-sm"
-                        : "text-slate-500 hover:text-slate-800"
-                        }`}
+                      className={`rounded-xl px-4 py-3 text-sm font-black transition ${
+                        !form.isFree
+                          ? "bg-white text-slate-950 shadow-sm"
+                          : "text-slate-500 hover:text-slate-800"
+                      }`}
                     >
                       De pago
                     </button>
@@ -2429,8 +2548,7 @@ export function CreateEventForm({
                             ) =>
                               updateField(
                                 "priceFrom",
-                                event
-                                  .target
+                                event.target
                                   .value,
                               )
                             }
@@ -2454,6 +2572,7 @@ export function CreateEventForm({
                         className="text-sm font-black text-slate-900"
                       >
                         Aforo
+
                         <span className="ml-1 font-medium text-slate-400">
                           opcional
                         </span>
@@ -2481,8 +2600,7 @@ export function CreateEventForm({
                           ) =>
                             updateField(
                               "capacity",
-                              event
-                                .target
+                              event.target
                                 .value,
                             )
                           }
@@ -2499,6 +2617,7 @@ export function CreateEventForm({
                       className="text-sm font-black text-slate-900"
                     >
                       Enlace externo
+
                       <span className="ml-1 font-medium text-slate-400">
                         opcional
                       </span>
@@ -2515,8 +2634,7 @@ export function CreateEventForm({
                       ) =>
                         updateField(
                           "externalUrl",
-                          event
-                            .target
+                          event.target
                             .value,
                         )
                       }
@@ -2549,8 +2667,7 @@ export function CreateEventForm({
                           ) =>
                             updateField(
                               "externalActionLabel",
-                              event
-                                .target
+                              event.target
                                 .value,
                             )
                           }
@@ -2575,9 +2692,7 @@ export function CreateEventForm({
                 <div className="flex items-start gap-4">
                   <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white/10 text-violet-300">
                     <Sparkles
-                      size={
-                        20
-                      }
+                      size={20}
                     />
                   </div>
 
@@ -2629,10 +2744,10 @@ export function CreateEventForm({
                   saving ||
                   categoriesLoading ||
                   categories.length ===
-                  0 ||
+                    0 ||
                   provincesLoading ||
                   provinces.length ===
-                  0 ||
+                    0 ||
                   municipalitiesLoading
                 }
                 className="flex min-h-12 flex-1 items-center justify-center gap-2 rounded-2xl bg-[#5D5FEF] px-5 py-3.5 text-sm font-black text-white shadow-lg shadow-[#5D5FEF]/20 transition hover:bg-[#5254DF] disabled:cursor-not-allowed disabled:opacity-50"
@@ -2644,7 +2759,10 @@ export function CreateEventForm({
                       className="animate-spin"
                     />
 
-                    Verificando y guardando…
+                    {eventImages.length >
+                    0
+                      ? "Verificando, subiendo y guardando…"
+                      : "Verificando y guardando…"}
                   </>
                 ) : (
                   <>
