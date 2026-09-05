@@ -51,6 +51,10 @@ import {
 } from "@/services/events/create-event-draft";
 
 import {
+  deleteEventDraft,
+} from "@/services/events/delete-event-draft";
+
+import {
   removeEventImagesFromStorage,
   replaceEventImages,
   uploadEventImages,
@@ -539,7 +543,7 @@ function TokenField({
 
       <div className="mt-3 rounded-2xl border border-slate-200 bg-white px-3 py-3 transition focus-within:border-[#5D5FEF] focus-within:ring-4 focus-within:ring-[#5D5FEF]/10">
         {values.length >
-        0 ? (
+          0 ? (
           <div className="mb-2 flex flex-wrap gap-2">
             {values.map(
               (value) => (
@@ -1349,7 +1353,7 @@ export function CreateEventForm({
             currentEnd.getTime(),
           ) ||
           currentEnd.getTime() <=
-            nextStart.getTime();
+          nextStart.getTime();
 
         if (
           !endNeedsUpdate
@@ -1454,8 +1458,8 @@ export function CreateEventForm({
         form.isFree
           ? null
           : toNullableNumber(
-              form.priceFrom,
-            );
+            form.priceFrom,
+          );
 
       const capacity =
         toNullableNumber(
@@ -1469,55 +1473,55 @@ export function CreateEventForm({
 
       const input:
         EventDraftCreateInput =
-        {
-          title:
-            form.title,
+      {
+        title:
+          form.title,
 
-          description:
-            form.description,
+        description:
+          form.description,
 
-          category:
-            form.category,
+        category:
+          form.category,
 
-          tags:
-            form.tags,
+        tags:
+          form.tags,
 
-          audience:
-            form.audience,
+        audience:
+          form.audience,
 
-          venueName:
-            form.venueName,
+        venueName:
+          form.venueName,
 
-          address:
-            form.address,
+        address:
+          form.address,
 
-          city:
-            selectedMunicipality.name,
+        city:
+          selectedMunicipality.name,
 
-          province:
-            selectedProvince.name,
+        province:
+          selectedProvince.name,
 
-          postalCode:
-            form.postalCode.trim() ||
-            null,
+        postalCode:
+          form.postalCode.trim() ||
+          null,
 
-          startAt,
+        startAt,
 
-          endAt,
+        endAt,
 
-          isFree:
-            form.isFree,
+        isFree:
+          form.isFree,
 
-          priceFrom,
+        priceFrom,
 
-          externalUrl,
+        externalUrl,
 
-          externalActionLabel:
-            form.externalActionLabel.trim() ||
-            null,
+        externalActionLabel:
+          form.externalActionLabel.trim() ||
+          null,
 
-          capacity,
-        };
+        capacity,
+      };
 
       /*
        * La UI reutiliza el dominio del servidor para ofrecer
@@ -1548,40 +1552,42 @@ export function CreateEventForm({
           input,
         );
 
+      /*
+       * Desde este momento existe un borrador real.
+       *
+       * Si cualquier parte del procesamiento de imágenes falla,
+       * limpiamos tanto Storage como el borrador recién creado.
+       *
+       * Para el usuario, "Guardar borrador" debe comportarse como
+       * una sola operación y nunca dejar eventos duplicados.
+       */
       if (
         eventImages.length >
         0
       ) {
-        /*
-         * Los binarios viajan directamente:
-         *
-         * navegador → Supabase Storage
-         *
-         * No atraviesan nuestra API de Vercel.
-         */
-        const uploadedImages =
-          await uploadEventImages({
-            creatorProfileId:
-              draft.creatorProfileId,
-
-            eventId:
-              draft.id,
-
-            files:
-              eventImages,
-          });
+        let uploadedImagePaths:
+          string[] =
+          [];
 
         try {
-          /*
-           * La API solamente recibe las referencias ya subidas.
-           *
-           * Allí se vuelve a comprobar:
-           * - autenticación,
-           * - propiedad del evento,
-           * - máximo de imágenes,
-           * - orden,
-           * - existencia real en Storage.
-           */
+          const uploadedImages =
+            await uploadEventImages({
+              creatorProfileId:
+                draft.creatorProfileId,
+
+              eventId:
+                draft.id,
+
+              files:
+                eventImages,
+            });
+
+          uploadedImagePaths =
+            uploadedImages.map(
+              (image) =>
+                image.storagePath,
+            );
+
           await replaceEventImages({
             accessToken,
 
@@ -1592,21 +1598,45 @@ export function CreateEventForm({
               uploadedImages,
           });
         } catch (
-          imagePersistenceError
+        imageError
         ) {
           /*
-           * Si Storage funcionó pero PostgreSQL/API no pudo
-           * registrar la galería, retiramos los objetos recién
-           * subidos para no generar archivos huérfanos.
+           * Si los archivos llegaron a Storage pero la galería no
+           * pudo persistirse, eliminamos los objetos recién creados.
            */
-          await removeEventImagesFromStorage(
-            uploadedImages.map(
-              (image) =>
-                image.storagePath,
-            ),
-          );
+          if (
+            uploadedImagePaths.length >
+            0
+          ) {
+            await removeEventImagesFromStorage(
+              uploadedImagePaths,
+            );
+          }
 
-          throw imagePersistenceError;
+          /*
+           * También eliminamos el draft recién creado.
+           *
+           * Así un segundo intento del usuario no genera
+           * un evento duplicado.
+           *
+           * Nunca ocultamos el error original de imágenes si
+           * por alguna razón secundaria falla esta limpieza.
+           */
+          try {
+            await deleteEventDraft(
+              accessToken,
+              draft.id,
+            );
+          } catch (
+          draftCleanupError
+          ) {
+            console.error(
+              "⚠️ No se pudo limpiar el borrador después de fallar la galería:",
+              draftCleanupError,
+            );
+          }
+
+          throw imageError;
         }
       }
 
@@ -2225,15 +2255,15 @@ export function CreateEventForm({
                       />
 
                       {municipalityMenuOpen &&
-                      selectedProvinceCode &&
-                      !municipalitiesLoading ? (
+                        selectedProvinceCode &&
+                        !municipalitiesLoading ? (
                         <div
                           id="event-city-options"
                           role="listbox"
                           className="absolute left-0 right-0 top-[calc(100%+0.5rem)] z-40 max-h-64 overflow-y-auto rounded-2xl border border-slate-200 bg-white p-2 shadow-2xl"
                         >
                           {filteredMunicipalities.length >
-                          0 ? (
+                            0 ? (
                             filteredMunicipalities.map(
                               (
                                 municipality,
@@ -2257,12 +2287,11 @@ export function CreateEventForm({
                                       municipality,
                                     );
                                   }}
-                                  className={`flex w-full items-center justify-between rounded-xl px-3 py-3 text-left text-sm transition ${
-                                    selectedMunicipality?.ineCode ===
-                                    municipality.ineCode
+                                  className={`flex w-full items-center justify-between rounded-xl px-3 py-3 text-left text-sm transition ${selectedMunicipality?.ineCode ===
+                                      municipality.ineCode
                                       ? "bg-[#F0F0FF] font-black text-[#5052D9]"
                                       : "font-semibold text-slate-700 hover:bg-slate-50"
-                                  }`}
+                                    }`}
                                 >
                                   <span>
                                     {
@@ -2271,7 +2300,7 @@ export function CreateEventForm({
                                   </span>
 
                                   {selectedMunicipality?.ineCode ===
-                                  municipality.ineCode ? (
+                                    municipality.ineCode ? (
                                     <Check
                                       size={15}
                                     />
@@ -2492,11 +2521,10 @@ export function CreateEventForm({
                           true,
                         )
                       }
-                      className={`rounded-xl px-4 py-3 text-sm font-black transition ${
-                        form.isFree
+                      className={`rounded-xl px-4 py-3 text-sm font-black transition ${form.isFree
                           ? "bg-white text-slate-950 shadow-sm"
                           : "text-slate-500 hover:text-slate-800"
-                      }`}
+                        }`}
                     >
                       Gratis
                     </button>
@@ -2509,11 +2537,10 @@ export function CreateEventForm({
                           false,
                         )
                       }
-                      className={`rounded-xl px-4 py-3 text-sm font-black transition ${
-                        !form.isFree
+                      className={`rounded-xl px-4 py-3 text-sm font-black transition ${!form.isFree
                           ? "bg-white text-slate-950 shadow-sm"
                           : "text-slate-500 hover:text-slate-800"
-                      }`}
+                        }`}
                     >
                       De pago
                     </button>
@@ -2744,10 +2771,10 @@ export function CreateEventForm({
                   saving ||
                   categoriesLoading ||
                   categories.length ===
-                    0 ||
+                  0 ||
                   provincesLoading ||
                   provinces.length ===
-                    0 ||
+                  0 ||
                   municipalitiesLoading
                 }
                 className="flex min-h-12 flex-1 items-center justify-center gap-2 rounded-2xl bg-[#5D5FEF] px-5 py-3.5 text-sm font-black text-white shadow-lg shadow-[#5D5FEF]/20 transition hover:bg-[#5254DF] disabled:cursor-not-allowed disabled:opacity-50"
@@ -2760,7 +2787,7 @@ export function CreateEventForm({
                     />
 
                     {eventImages.length >
-                    0
+                      0
                       ? "Verificando, subiendo y guardando…"
                       : "Verificando y guardando…"}
                   </>
