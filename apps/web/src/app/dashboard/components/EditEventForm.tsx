@@ -51,6 +51,18 @@ import {
   updateEvent,
 } from "@/services/events/update-event";
 
+import {
+  getEventImages,
+  removeEventImagesFromStorage,
+  replaceEventImages,
+  uploadEventImages,
+} from "@/services/events/event-images";
+
+import {
+  EventImageEditor,
+  type EditableEventImage,
+} from "@/components/events/EventImageEditor";
+
 type EditEventFormProps = {
   accessToken: string;
 
@@ -731,6 +743,147 @@ export function EditEventForm({
       string | null
     >(null);
 
+  const [
+    eventImages,
+    setEventImages,
+  ] =
+    useState<
+      EditableEventImage[]
+    >([]);
+
+  const [
+    initialImagePaths,
+    setInitialImagePaths,
+  ] =
+    useState<
+      string[]
+    >([]);
+
+  const [
+    imagesLoading,
+    setImagesLoading,
+  ] =
+    useState(
+      true,
+    );
+
+  const [
+    imagesError,
+    setImagesError,
+  ] =
+    useState<
+      string | null
+    >(null);
+
+  useEffect(() => {
+    const previousOverflow =
+      document.body.style.overflow;
+
+    document.body.style.overflow =
+      "hidden";
+
+    return () => {
+      document.body.style.overflow =
+        previousOverflow;
+    };
+  }, []);
+
+  useEffect(() => {
+    let mounted =
+      true;
+
+    async function loadImages() {
+      setImagesLoading(
+        true,
+      );
+
+      setImagesError(
+        null,
+      );
+
+      try {
+        const result =
+          await getEventImages(
+            accessToken,
+            event.id,
+          );
+
+        if (!mounted) {
+          return;
+        }
+
+        const loadedImages:
+          EditableEventImage[] =
+          result.images.map(
+            (image) => ({
+              key:
+                `persisted:${image.id}`,
+
+              kind:
+                "persisted",
+
+              id:
+                image.id,
+
+              storagePath:
+                image.storagePath,
+
+              publicUrl:
+                image.publicUrl,
+            }),
+          );
+
+        setEventImages(
+          loadedImages,
+        );
+
+        setInitialImagePaths(
+          result.images.map(
+            (image) =>
+              image.storagePath,
+          ),
+        );
+      } catch (
+      loadError
+      ) {
+        if (!mounted) {
+          return;
+        }
+
+        setEventImages(
+          [],
+        );
+
+        setInitialImagePaths(
+          [],
+        );
+
+        setImagesError(
+          loadError instanceof
+            Error
+            ? loadError.message
+            : "No se pudo cargar la galería actual.",
+        );
+      } finally {
+        if (mounted) {
+          setImagesLoading(
+            false,
+          );
+        }
+      }
+    }
+
+    void loadImages();
+
+    return () => {
+      mounted =
+        false;
+    };
+  }, [
+    accessToken,
+    event.id,
+  ]);
+
   useEffect(() => {
     const refresh =
       () => {
@@ -1241,6 +1394,38 @@ export function EditEventForm({
     );
 
     try {
+
+      if (
+        imagesLoading
+      ) {
+        throw new Error(
+          "Espera a que termine de cargar la galería.",
+        );
+      }
+
+      if (
+        imagesError
+      ) {
+        throw new Error(
+          "No se pudo cargar la galería actual. Cierra y vuelve a abrir el editor antes de guardar.",
+        );
+      }
+
+      const isPublished =
+        event.rawStatus
+          ?.trim()
+          .toLowerCase() ===
+        "published";
+
+      if (
+        isPublished &&
+        eventImages.length ===
+        0
+      ) {
+        throw new Error(
+          "Un evento publicado debe conservar al menos una imagen.",
+        );
+      }
       if (
         !selectedProvince
       ) {
@@ -1355,9 +1540,159 @@ export function EditEventForm({
           input,
         );
 
-      onSaved(
-        updated,
-      );
+      const hasImageChanges =
+        eventImages.length !==
+        initialImagePaths.length ||
+        eventImages.some(
+          (
+            image,
+            index,
+          ) =>
+            image.kind ===
+            "new" ||
+            image.storagePath !==
+            initialImagePaths[
+            index
+            ],
+        );
+
+      if (
+        !hasImageChanges
+      ) {
+        onSaved(
+          updated,
+        );
+
+        return;
+      }
+
+      const newImages =
+        eventImages.filter(
+          (
+            image,
+          ): image is Extract<
+            EditableEventImage,
+            {
+              kind: "new";
+            }
+          > =>
+            image.kind ===
+            "new",
+        );
+
+      let uploadedPaths:
+        string[] =
+        [];
+
+      try {
+        const uploaded =
+          await uploadEventImages({
+            creatorProfileId:
+              event.creatorProfileId,
+
+            eventId:
+              event.id,
+
+            files:
+              newImages.map(
+                (image) =>
+                  image.file,
+              ),
+          });
+
+        uploadedPaths =
+          uploaded.map(
+            (image) =>
+              image.storagePath,
+          );
+
+        const uploadedByKey =
+          new Map<
+            string,
+            string
+          >();
+
+        newImages.forEach(
+          (
+            image,
+            index,
+          ) => {
+            const uploadedImage =
+              uploaded[
+              index
+              ];
+
+            if (
+              uploadedImage
+            ) {
+              uploadedByKey.set(
+                image.key,
+                uploadedImage.storagePath,
+              );
+            }
+          },
+        );
+
+        const finalImages =
+          eventImages.map(
+            (
+              image,
+              position,
+            ) => {
+              const storagePath =
+                image.kind ===
+                  "persisted"
+                  ? image.storagePath
+                  : uploadedByKey.get(
+                    image.key,
+                  );
+
+              if (
+                !storagePath
+              ) {
+                throw new Error(
+                  "No se pudo preparar una de las imágenes nuevas.",
+                );
+              }
+
+              return {
+                storagePath,
+                position,
+              };
+            },
+          );
+
+        const gallery =
+          await replaceEventImages({
+            accessToken,
+
+            eventId:
+              event.id,
+
+            images:
+              finalImages,
+          });
+
+        onSaved({
+          ...updated,
+
+          coverImageUrl:
+            gallery.coverImageUrl,
+        });
+      } catch (
+      galleryError
+      ) {
+        if (
+          uploadedPaths.length >
+          0
+        ) {
+          await removeEventImagesFromStorage(
+            uploadedPaths,
+          );
+        }
+
+        throw galleryError;
+      }
     } catch (
     submitError
     ) {
@@ -1378,7 +1713,7 @@ export function EditEventForm({
 
   return (
     <div className="fixed inset-0 z-[100] bg-slate-950/30 backdrop-blur-sm">
-      <div className="mx-auto flex h-full w-full max-w-3xl flex-col bg-[#F7F8FC] shadow-2xl sm:my-4 sm:h-[calc(100%-2rem)] sm:overflow-hidden sm:rounded-[2rem]">
+      <div className="mx-auto flex h-full w-full max-w-3xl flex-col overflow-hidden bg-[#F7F8FC] shadow-2xl sm:my-4 sm:h-[calc(100%-2rem)] sm:rounded-[2rem]">
         <header className="border-b border-slate-200/80 bg-white px-4 py-4 sm:px-6">
           <div className="flex items-center gap-4">
             <button
@@ -1414,8 +1749,33 @@ export function EditEventForm({
           }
           className="flex min-h-0 flex-1 flex-col"
         >
-          <div className="flex-1 overflow-y-auto px-4 py-5 sm:px-6">
+
+          <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-5 sm:px-6">
             <div className="space-y-5">
+              <EventImageEditor
+                items={
+                  eventImages
+                }
+                onChange={
+                  setEventImages
+                }
+                disabled={
+                  saving ||
+                  imagesLoading
+                }
+                loading={
+                  imagesLoading
+                }
+              />
+
+              {imagesError ? (
+                <div
+                  role="alert"
+                  className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-bold leading-6 text-rose-700"
+                >
+                  {imagesError}
+                </div>
+              ) : null}
               <section className="rounded-[1.75rem] border border-slate-200 bg-white p-5 shadow-sm">
                 <h2 className="text-lg font-black text-slate-950">
                   Propuesta
@@ -2202,6 +2562,10 @@ export function EditEventForm({
                 type="submit"
                 disabled={
                   saving ||
+                  imagesLoading ||
+                  Boolean(
+                    imagesError,
+                  ) ||
                   categoriesLoading ||
                   provincesLoading ||
                   municipalitiesLoading ||

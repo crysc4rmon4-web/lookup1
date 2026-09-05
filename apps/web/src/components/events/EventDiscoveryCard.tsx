@@ -11,63 +11,70 @@ import {
   EventFavoriteButton,
 } from "./EventFavoriteButton";
 
+import {
+  EventCoverImage,
+} from "./EventCoverImage";
+
 export type EventDiscoveryCardEvent = {
   id: string;
 
   creatorProfileId:
-    string;
+  string;
 
   title:
-    string;
+  string;
 
   description:
-    string;
+  string;
 
   category:
-    string;
+  string;
+
+  coverImageUrl?:
+  string | null;
 
   tags:
-    string[];
+  string[];
 
   venueName:
-    string;
+  string;
 
   city:
-    string;
+  string;
 
   province:
-    string | null;
+  string | null;
 
   startAt:
-    string;
+  string;
 
   lifecycleStatus:
-    | "upcoming"
-    | "live"
-    | "ended";
+  | "upcoming"
+  | "live"
+  | "ended";
 
   isFree:
-    boolean;
+  boolean;
 
   priceFrom:
-    number | null;
+  number | null;
 
   currency:
-    string;
+  string;
 
   capacity:
-    number | null;
+  number | null;
 
   isFavorite:
-    boolean;
+  boolean;
 
   canFavorite:
-    boolean;
+  boolean;
 };
 
 type EventDiscoveryCardProps = {
   event:
-    EventDiscoveryCardEvent;
+  EventDiscoveryCardEvent;
 
   onOpen: (
     eventId: string,
@@ -189,6 +196,33 @@ export function EventDiscoveryCard({
 }: EventDiscoveryCardProps) {
   return (
     <article className="overflow-hidden rounded-[2rem] border border-slate-200/80 bg-white shadow-sm transition hover:border-[#5D5FEF]/20 hover:shadow-md">
+      {event.coverImageUrl ? (
+        <button
+          type="button"
+          onClick={() =>
+            onOpen(
+              event.id,
+            )
+          }
+          aria-label={`Abrir ${event.title}`}
+          className="group relative block aspect-[16/9] w-full overflow-hidden bg-slate-100 text-left"
+        >
+          <EventCoverImage
+            src={
+              event.coverImageUrl
+            }
+            alt={`Portada de ${event.title}`}
+            className="absolute inset-0 transition-transform duration-500 ease-out group-hover:scale-[1.025]"
+          />
+
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/25 via-transparent to-transparent" />
+
+          <span className="pointer-events-none absolute bottom-3 right-3 rounded-full bg-white/95 px-3 py-1.5 text-[11px] font-black text-slate-800 shadow-sm backdrop-blur">
+            Ver evento
+          </span>
+        </button>
+      ) : null}
+
       <div className="p-5 sm:p-6">
         <div className="flex items-start justify-between gap-4">
           <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
@@ -198,7 +232,7 @@ export function EventDiscoveryCard({
               )}`}
             >
               {event.lifecycleStatus ===
-              "live" ? (
+                "live" ? (
                 <CircleDot
                   size={12}
                 />
@@ -253,7 +287,7 @@ export function EventDiscoveryCard({
         </p>
 
         {event.tags.length >
-        0 ? (
+          0 ? (
           <div className="mt-4 flex flex-wrap gap-2">
             {event.tags
               .slice(

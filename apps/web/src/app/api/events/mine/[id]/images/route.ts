@@ -26,10 +26,10 @@ type RouteContext = {
 
 type ImageInput = {
   storagePath:
-    string;
+  string;
 
   position:
-    number;
+  number;
 };
 
 function noStoreHeaders() {
@@ -80,9 +80,9 @@ function parseImages(
 ): ImageInput[] {
   if (
     typeof value !==
-      "object" ||
+    "object" ||
     value ===
-      null ||
+    null ||
     Array.isArray(
       value,
     )
@@ -105,7 +105,7 @@ function parseImages(
       images,
     ) ||
     images.length >
-      EVENT_IMAGES_MAX_COUNT
+    EVENT_IMAGES_MAX_COUNT
   ) {
     throw new Error(
       `Puedes guardar hasta ${EVENT_IMAGES_MAX_COUNT} imágenes.`,
@@ -119,9 +119,9 @@ function parseImages(
     ) => {
       if (
         typeof image !==
-          "object" ||
+        "object" ||
         image ===
-          null ||
+        null ||
         Array.isArray(
           image,
         )
@@ -149,12 +149,12 @@ function parseImages(
       if (
         !storagePath ||
         typeof position !==
-          "number" ||
+        "number" ||
         !Number.isInteger(
           position,
         ) ||
         position !==
-          index
+        index
       ) {
         throw new Error(
           "El orden de las imágenes no es válido.",
@@ -167,6 +167,227 @@ function parseImages(
       };
     },
   );
+}
+
+export async function GET(
+  request: Request,
+  context: RouteContext,
+) {
+  try {
+    const accessToken =
+      getBearerToken(
+        request,
+      );
+
+    if (!accessToken) {
+      return NextResponse.json(
+        {
+          error:
+            "No autorizado.",
+        },
+        {
+          status: 401,
+          headers:
+            noStoreHeaders(),
+        },
+      );
+    }
+
+    const {
+      id: rawEventId,
+    } =
+      await context.params;
+
+    const eventId =
+      rawEventId.trim();
+
+    if (
+      !isUuid(
+        eventId,
+      )
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "El evento solicitado no es válido.",
+        },
+        {
+          status: 400,
+          headers:
+            noStoreHeaders(),
+        },
+      );
+    }
+
+    const supabaseAdmin =
+      getSupabaseAdminClient();
+
+    const {
+      data: authData,
+      error: authError,
+    } =
+      await supabaseAdmin.auth.getUser(
+        accessToken,
+      );
+
+    if (
+      authError ||
+      !authData.user
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "La sesión no es válida.",
+        },
+        {
+          status: 401,
+          headers:
+            noStoreHeaders(),
+        },
+      );
+    }
+
+    const {
+      data: event,
+      error: eventError,
+    } =
+      await supabaseAdmin
+        .from(
+          "events",
+        )
+        .select(
+          `
+            id,
+            cover_image_url
+          `,
+        )
+        .eq(
+          "id",
+          eventId,
+        )
+        .eq(
+          "creator_profile_id",
+          authData.user.id,
+        )
+        .maybeSingle();
+
+    if (eventError) {
+      throw new Error(
+        `No se pudo comprobar el evento: ${eventError.message}`,
+      );
+    }
+
+    if (!event) {
+      return NextResponse.json(
+        {
+          error:
+            "El evento no existe o no te pertenece.",
+        },
+        {
+          status: 404,
+          headers:
+            noStoreHeaders(),
+        },
+      );
+    }
+
+    const {
+      data: imageRows,
+      error: imageRowsError,
+    } =
+      await supabaseAdmin
+        .from(
+          "event_images",
+        )
+        .select(
+          `
+            id,
+            storage_path,
+            position
+          `,
+        )
+        .eq(
+          "event_id",
+          eventId,
+        )
+        .order(
+          "position",
+          {
+            ascending:
+              true,
+          },
+        );
+
+    if (imageRowsError) {
+      throw new Error(
+        `No se pudo cargar la galería: ${imageRowsError.message}`,
+      );
+    }
+
+    const images =
+      (imageRows ?? [])
+        .map(
+          (image) => {
+            const {
+              data:
+              publicUrlData,
+            } =
+              supabaseAdmin.storage
+                .from(
+                  EVENT_IMAGES_BUCKET,
+                )
+                .getPublicUrl(
+                  image.storage_path,
+                );
+
+            return {
+              id:
+                image.id,
+
+              storagePath:
+                image.storage_path,
+
+              publicUrl:
+                publicUrlData.publicUrl,
+
+              position:
+                image.position,
+            };
+          },
+        );
+
+    return NextResponse.json(
+      {
+        images,
+
+        coverImageUrl:
+          event.cover_image_url ??
+          null,
+      },
+      {
+        status: 200,
+        headers:
+          noStoreHeaders(),
+      },
+    );
+  } catch (error) {
+    console.error(
+      "❌ Error cargando imágenes del evento:",
+      error,
+    );
+
+    return NextResponse.json(
+      {
+        error:
+          "No se pudieron cargar las imágenes del evento.",
+      },
+      {
+        status: 500,
+        headers:
+          noStoreHeaders(),
+      },
+    );
+  }
 }
 
 export async function PUT(
@@ -281,10 +502,10 @@ export async function PUT(
 
     const {
       data:
-        authData,
+      authData,
 
       error:
-        authError,
+      authError,
     } =
       await supabaseAdmin.auth.getUser(
         accessToken,
@@ -314,10 +535,10 @@ export async function PUT(
 
     const {
       data:
-        eventData,
+      eventData,
 
       error:
-        eventError,
+      eventError,
     } =
       await supabaseAdmin
         .from(
@@ -364,9 +585,9 @@ export async function PUT(
 
     if (
       eventData.status !==
-        "draft" &&
+      "draft" &&
       eventData.status !==
-        "published"
+      "published"
     ) {
       return NextResponse.json(
         {
@@ -385,16 +606,37 @@ export async function PUT(
 
     if (
       eventData.status ===
-        "published" &&
+      "published" &&
       new Date(
         eventData.start_at,
       ).getTime() <=
-        Date.now()
+      Date.now()
     ) {
       return NextResponse.json(
         {
           error:
             "Un evento que ya comenzó no puede cambiar sus imágenes.",
+        },
+        {
+          status:
+            409,
+
+          headers:
+            noStoreHeaders(),
+        },
+      );
+    }
+
+    if (
+      eventData.status ===
+      "published" &&
+      images.length ===
+      0
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "Un evento publicado debe conservar al menos una imagen.",
         },
         {
           status:
@@ -446,10 +688,10 @@ export async function PUT(
 
       const {
         data:
-          storedObjects,
+        storedObjects,
 
         error:
-          storageError,
+        storageError,
       } =
         await supabaseAdmin.storage
           .from(
@@ -514,10 +756,10 @@ export async function PUT(
 
     const {
       data:
-        previousImages,
+      previousImages,
 
       error:
-        previousImagesError,
+      previousImagesError,
     } =
       await supabaseAdmin
         .from(
@@ -541,7 +783,7 @@ export async function PUT(
 
     const {
       error:
-        deleteError,
+      deleteError,
     } =
       await supabaseAdmin
         .from(
@@ -562,13 +804,13 @@ export async function PUT(
     let persistedImages:
       {
         id:
-          string;
+        string;
 
         storage_path:
-          string;
+        string;
 
         position:
-          number;
+        number;
       }[] =
       [];
 
@@ -578,10 +820,10 @@ export async function PUT(
     ) {
       const {
         data:
-          insertedData,
+        insertedData,
 
         error:
-          insertError,
+        insertError,
       } =
         await supabaseAdmin
           .from(
@@ -669,7 +911,7 @@ export async function PUT(
 
     const {
       error:
-        coverUpdateError,
+      coverUpdateError,
     } =
       await supabaseAdmin
         .from(
@@ -735,7 +977,7 @@ export async function PUT(
     ) {
       const {
         error:
-          removeError,
+        removeError,
       } =
         await supabaseAdmin.storage
           .from(

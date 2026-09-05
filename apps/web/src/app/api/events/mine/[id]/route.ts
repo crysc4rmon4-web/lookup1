@@ -43,74 +43,76 @@ type EventRow = {
   id: string;
 
   creator_profile_id:
-    string;
+  string;
 
   title: string;
   description: string;
   category: string;
+  cover_image_url:
+  string | null;
 
   tags:
-    string[] | null;
+  string[] | null;
 
   audience:
-    string[] | null;
+  string[] | null;
 
   venue_name:
-    string;
+  string;
 
   address:
-    string;
+  string;
 
   city:
-    string;
+  string;
 
   province:
-    string | null;
+  string | null;
 
   postal_code:
-    string | null;
+  string | null;
 
   country_code:
-    string | null;
+  string | null;
 
   latitude:
-    number | string | null;
+  number | string | null;
 
   longitude:
-    number | string | null;
+  number | string | null;
 
   start_at:
-    string;
+  string;
 
   end_at:
-    string;
+  string;
 
   status:
-    string | null;
+  string | null;
 
   is_free:
-    boolean | null;
+  boolean | null;
 
   price_from:
-    number | null;
+  number | null;
 
   currency:
-    string | null;
+  string | null;
 
   capacity:
-    number | null;
+  number | null;
 
   external_url:
-    string | null;
+  string | null;
 
   external_action_label:
-    string | null;
+  string | null;
 
   created_at:
-    string;
+  string;
 
   updated_at:
-    string;
+  string;
 };
 
 type VerifiedLocation = {
@@ -129,6 +131,7 @@ const EVENT_SELECT = `
   title,
   description,
   category,
+  cover_image_url,
   tags,
   audience,
   venue_name,
@@ -348,7 +351,7 @@ function datesEqual(
       secondTime,
     ) &&
     firstTime ===
-      secondTime
+    secondTime
   );
 }
 
@@ -369,11 +372,11 @@ function toFiniteCoordinate(
 
   const numberValue =
     typeof value ===
-    "number"
+      "number"
       ? value
       : Number(
-          value,
-        );
+        value,
+      );
 
   return Number.isFinite(
     numberValue,
@@ -397,9 +400,9 @@ function hasValidCoordinates(
 
   return (
     latitude !==
-      null &&
+    null &&
     longitude !==
-      null &&
+    null &&
     latitude >= -90 &&
     latitude <= 90 &&
     longitude >= -180 &&
@@ -415,27 +418,27 @@ function hasLocationChanged(
     normalizeComparableText(
       currentEvent.address,
     ) !==
-      normalizeComparableText(
-        input.address,
-      ) ||
+    normalizeComparableText(
+      input.address,
+    ) ||
     normalizeComparableText(
       currentEvent.city,
     ) !==
-      normalizeComparableText(
-        input.city,
-      ) ||
+    normalizeComparableText(
+      input.city,
+    ) ||
     normalizeComparableText(
       currentEvent.province,
     ) !==
-      normalizeComparableText(
-        input.province,
-      ) ||
+    normalizeComparableText(
+      input.province,
+    ) ||
     normalizeComparableText(
       currentEvent.postal_code,
     ) !==
-      normalizeComparableText(
-        input.postalCode,
-      )
+    normalizeComparableText(
+      input.postalCode,
+    )
   );
 }
 
@@ -666,6 +669,9 @@ function mapEvent(
     category:
       event.category,
 
+        coverImageUrl:
+    event.cover_image_url,
+
     tags:
       event.tags ??
       [],
@@ -855,8 +861,8 @@ async function getOwnedEvent(
 
   return data
     ? (
-        data as EventRow
-      )
+      data as EventRow
+    )
     : null;
 }
 
@@ -1044,16 +1050,16 @@ export async function PATCH(
     const currentStatus =
       String(
         currentEvent.status ??
-          "",
+        "",
       )
         .trim()
         .toLowerCase();
 
     if (
       currentStatus !==
-        "draft" &&
+      "draft" &&
       currentStatus !==
-        "published"
+      "published"
     ) {
       return NextResponse.json(
         {
@@ -1086,7 +1092,7 @@ export async function PATCH(
           currentStart,
         ) ||
         currentStart <=
-          Date.now()
+        Date.now()
       ) {
         return NextResponse.json(
           {
@@ -1275,7 +1281,7 @@ export async function PATCH(
             verified.longitude,
         };
       } catch (
-        locationError
+      locationError
       ) {
         return NextResponse.json(
           {
@@ -1478,7 +1484,7 @@ export async function PATCH(
      */
     const {
       error:
-        insightDeleteError,
+      insightDeleteError,
     } =
       await auth.supabaseAdmin
         .from(
@@ -1537,7 +1543,7 @@ export async function PATCH(
           input.audience,
       });
     } catch (
-      embeddingError
+    embeddingError
     ) {
       console.error(
         "❌ El evento se actualizó pero no pudo sincronizarse su embedding:",
@@ -1712,7 +1718,7 @@ export async function DELETE(
      */
     const {
       error:
-        insightDeleteError,
+      insightDeleteError,
     } =
       await auth.supabaseAdmin
         .from(
@@ -1734,7 +1740,7 @@ export async function DELETE(
 
     const {
       error:
-        embeddingDeleteError,
+      embeddingDeleteError,
     } =
       await auth.supabaseAdmin
         .from(
@@ -1757,7 +1763,7 @@ export async function DELETE(
     const {
       data: deletedEvent,
       error:
-        eventDeleteError,
+      eventDeleteError,
     } =
       await auth.supabaseAdmin
         .from(

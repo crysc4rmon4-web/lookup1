@@ -23,6 +23,10 @@ import {
 } from "lucide-react";
 
 import {
+  EventCoverImage,
+} from "@/components/events/EventCoverImage";
+
+import {
   useParams,
   useRouter,
 } from "next/navigation";
@@ -1055,7 +1059,25 @@ export default function EventManagementPage() {
               </button>
             ) : null}
           </div>
+          {event.coverImageUrl ? (
+            <section className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-sm">
+              <div className="relative aspect-[16/8] overflow-hidden bg-slate-100 sm:aspect-[16/7]">
+                <EventCoverImage
+                  src={
+                    event.coverImageUrl
+                  }
+                  alt={`Portada de ${event.title}`}
+                  className="absolute inset-0"
+                />
 
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/20 via-transparent to-transparent" />
+
+                <div className="absolute bottom-4 left-4 rounded-full bg-white/95 px-3 py-1.5 text-[11px] font-black text-slate-800 shadow-sm backdrop-blur">
+                  Portada del evento
+                </div>
+              </div>
+            </section>
+          ) : null}
           <section className="overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#5D5FEF] via-[#6668F4] to-[#7B6CF6] p-6 text-white shadow-lg shadow-[#5D5FEF]/20 sm:p-7">
             <div className="flex flex-wrap items-center gap-2">
               <span className="rounded-full bg-white/15 px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-white">

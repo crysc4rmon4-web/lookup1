@@ -232,6 +232,63 @@ export async function POST(
     }
 
     /*
+ * ==========================================================
+ * 4. VALIDAR GALERÍA
+ * ==========================================================
+ *
+ * Un evento público necesita al menos una imagen.
+ * La imagen en position 0 se considera automáticamente
+ * la portada del evento.
+ */
+
+const {
+  count: imageCount,
+  error: imageCountError,
+} =
+  await supabaseAdmin
+    .from(
+      "event_images",
+    )
+    .select(
+      "id",
+      {
+        count:
+          "exact",
+        head:
+          true,
+      },
+    )
+    .eq(
+      "event_id",
+      eventId,
+    );
+
+if (imageCountError) {
+  throw new Error(
+    `No se pudo comprobar la galería del evento: ${imageCountError.message}`,
+  );
+}
+
+if (
+  !imageCount ||
+  imageCount <
+    1
+) {
+  return NextResponse.json(
+    {
+      error:
+        "Añade al menos una imagen antes de publicar el evento. La primera imagen será su portada.",
+    },
+    {
+      status:
+        409,
+      headers:
+        noStoreHeaders(),
+    },
+  );
+}
+
+    /*
      * ==========================================================
      * 4. VALIDAR FECHA
      * ==========================================================

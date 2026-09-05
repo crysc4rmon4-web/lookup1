@@ -23,68 +23,70 @@ type EventRow = {
   id: string;
 
   creator_profile_id:
-    string;
+  string;
 
   title: string;
   description: string;
   category: string;
 
+  cover_image_url:
+  string | null;
   tags:
-    string[] | null;
+  string[] | null;
 
   audience:
-    string[] | null;
+  string[] | null;
 
   venue_name:
-    string;
+  string;
 
   address:
-    string;
+  string;
 
   city:
-    string;
+  string;
 
   province:
-    string | null;
+  string | null;
 
   postal_code:
-    string | null;
+  string | null;
 
   country_code:
-    string | null;
+  string | null;
 
   start_at:
-    string;
+  string;
 
   end_at:
-    string;
+  string;
 
   status:
-    string | null;
+  string | null;
 
   is_free:
-    boolean | null;
+  boolean | null;
 
   price_from:
-    number | null;
+  number | null;
 
   currency:
-    string | null;
+  string | null;
 
   capacity:
-    number | null;
+  number | null;
 
   external_url:
-    string | null;
+  string | null;
 
   external_action_label:
-    string | null;
+  string | null;
 
   created_at:
-    string;
+  string;
 
   updated_at:
-    string;
+  string;
 };
 
 function getBearerToken(
@@ -177,9 +179,9 @@ function deriveLifecycleStatus(
 
   if (
     startAt <=
-      now &&
+    now &&
     endAt >=
-      now
+    now
   ) {
     return "live";
   }
@@ -260,6 +262,7 @@ export async function GET(
             title,
             description,
             category,
+            cover_image_url,
             tags,
             audience,
             venue_name,
@@ -325,6 +328,9 @@ export async function GET(
 
             category:
               event.category,
+
+              coverImageUrl:
+  event.cover_image_url,
 
             tags:
               event.tags ??

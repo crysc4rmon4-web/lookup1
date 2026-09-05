@@ -26,6 +26,10 @@ import {
 } from "lucide-react";
 
 import {
+  EventCoverImage,
+} from "@/components/events/EventCoverImage";
+
+import {
   useAuth,
 } from "@/components/auth-provider";
 
@@ -1853,9 +1857,9 @@ export function EventsView({
             )
           }
           className={`rounded-xl px-2 py-3 text-xs font-black transition sm:text-sm ${activeTab ===
-              "explore"
-              ? "bg-[#5D5FEF] text-white shadow-md shadow-[#5D5FEF]/15"
-              : "text-slate-500 hover:bg-[#F3F2FF] hover:text-[#5D5FEF]"
+            "explore"
+            ? "bg-[#5D5FEF] text-white shadow-md shadow-[#5D5FEF]/15"
+            : "text-slate-500 hover:bg-[#F3F2FF] hover:text-[#5D5FEF]"
             }`}
         >
           Explorar
@@ -1869,9 +1873,9 @@ export function EventsView({
             )
           }
           className={`rounded-xl px-2 py-3 text-xs font-black transition sm:text-sm ${activeTab ===
-              "saved"
-              ? "bg-[#5D5FEF] text-white shadow-md shadow-[#5D5FEF]/15"
-              : "text-slate-500 hover:bg-[#F3F2FF] hover:text-[#5D5FEF]"
+            "saved"
+            ? "bg-[#5D5FEF] text-white shadow-md shadow-[#5D5FEF]/15"
+            : "text-slate-500 hover:bg-[#F3F2FF] hover:text-[#5D5FEF]"
             }`}
         >
           Guardados
@@ -1885,9 +1889,9 @@ export function EventsView({
             )
           }
           className={`rounded-xl px-2 py-3 text-xs font-black transition sm:text-sm ${activeTab ===
-              "mine"
-              ? "bg-[#5D5FEF] text-white shadow-md shadow-[#5D5FEF]/15"
-              : "text-slate-500 hover:bg-[#F3F2FF] hover:text-[#5D5FEF]"
+            "mine"
+            ? "bg-[#5D5FEF] text-white shadow-md shadow-[#5D5FEF]/15"
+            : "text-slate-500 hover:bg-[#F3F2FF] hover:text-[#5D5FEF]"
             }`}
         >
           Mis eventos
@@ -2153,9 +2157,9 @@ export function EventsView({
                                 );
                               }}
                               className={`flex w-full items-center justify-between rounded-xl px-3 py-3 text-left text-sm transition ${selectedMunicipalityCode ===
-                                  municipality.ineCode
-                                  ? "bg-[#F0F0FF] font-black text-[#5052D9]"
-                                  : "font-semibold text-slate-700 hover:bg-slate-50"
+                                municipality.ineCode
+                                ? "bg-[#F0F0FF] font-black text-[#5052D9]"
+                                : "font-semibold text-slate-700 hover:bg-slate-50"
                                 }`}
                             >
                               <span>
@@ -2414,8 +2418,25 @@ export function EventsView({
                   key={
                     event.id
                   }
-                  className="overflow-hidden rounded-[2rem] border border-slate-200/80 bg-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-[#5D5FEF]/20 hover:shadow-lg hover:shadow-slate-200/60"
+                  className="overflow-hidden rounded-[2rem] border border-slate-200/80 bg-white shadow-sm transition-all hover:border-[#5D5FEF]/15 hover:shadow-md"
                 >
+                  {event.coverImageUrl ? (
+                    <Link
+                      href={`/dashboard/events/${event.id}`}
+                      className="group relative block aspect-[16/7] overflow-hidden bg-slate-100"
+                    >
+                      <EventCoverImage
+                        src={
+                          event.coverImageUrl
+                        }
+                        alt={`Portada de ${event.title}`}
+                        className="absolute inset-0 transition-transform duration-500 group-hover:scale-[1.025]"
+                      />
+
+                      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/20 via-transparent to-transparent" />
+                    </Link>
+                  ) : null}
+
                   <div className="p-5 sm:p-6">
                     <div className="flex flex-wrap items-center gap-2">
                       <span
@@ -2756,15 +2777,15 @@ export function EventsView({
                           )
                         }
                         className={`group relative overflow-hidden rounded-[1.35rem] border p-4 text-left transition-all ${selected
-                            ? "border-[#5D5FEF] bg-gradient-to-br from-[#5D5FEF] to-[#7066F4] text-white shadow-lg shadow-[#5D5FEF]/15"
-                            : "border-slate-200 bg-[#FBFCFE] text-slate-700 hover:-translate-y-0.5 hover:border-[#5D5FEF]/20 hover:bg-[#F8F8FF]"
+                          ? "border-[#5D5FEF] bg-gradient-to-br from-[#5D5FEF] to-[#7066F4] text-white shadow-lg shadow-[#5D5FEF]/15"
+                          : "border-slate-200 bg-[#FBFCFE] text-slate-700 hover:-translate-y-0.5 hover:border-[#5D5FEF]/20 hover:bg-[#F8F8FF]"
                           }`}
                       >
                         <div className="flex items-start justify-between gap-3">
                           <span
                             className={`flex h-10 w-10 items-center justify-center rounded-2xl ${selected
-                                ? "bg-white/15 text-white"
-                                : "bg-[#F0F0FF] text-[#5D5FEF]"
+                              ? "bg-white/15 text-white"
+                              : "bg-[#F0F0FF] text-[#5D5FEF]"
                               }`}
                           >
                             {getMyEventsSectionIcon(
@@ -2774,8 +2795,8 @@ export function EventsView({
 
                           <span
                             className={`rounded-full px-2.5 py-1 text-xs font-black ${selected
-                                ? "bg-white/15 text-white"
-                                : "bg-white text-slate-600 shadow-sm"
+                              ? "bg-white/15 text-white"
+                              : "bg-white text-slate-600 shadow-sm"
                               }`}
                           >
                             {
@@ -2796,8 +2817,8 @@ export function EventsView({
 
                         <p
                           className={`mt-1 line-clamp-2 text-[11px] font-medium leading-4 ${selected
-                              ? "text-indigo-100"
-                              : "text-slate-400"
+                            ? "text-indigo-100"
+                            : "text-slate-400"
                             }`}
                         >
                           {

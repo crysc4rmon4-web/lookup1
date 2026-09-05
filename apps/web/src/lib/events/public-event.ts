@@ -1,3 +1,7 @@
+import type {
+  PersistedEventImage,
+} from "./event-images";
+
 export type PublicEventLifecycleStatus =
   | "upcoming"
   | "live"
@@ -15,6 +19,8 @@ export type PublicEvent = {
   category: string;
 
   coverImageUrl: string | null;
+
+  images: PersistedEventImage[];
 
   tags: string[];
 
@@ -241,6 +247,8 @@ export function mapPublicEventRow(
 
     coverImageUrl:
       event.cover_image_url,
+
+      images: [],
 
     tags:
       event.tags ??

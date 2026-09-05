@@ -19,6 +19,9 @@ export type MyEvent = {
   category:
     string;
 
+  coverImageUrl:
+    string | null;
+
   tags: string[];
 
   audience:

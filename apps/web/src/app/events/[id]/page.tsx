@@ -36,6 +36,10 @@ import {
 } from "@/components/events/EventFavoriteButton";
 
 import {
+  EventGallery,
+} from "@/components/events/EventGallery";
+
+import {
   getEventMatchExplanation,
   type EventMatchExplanationResult,
   type EventRelevanceLevel,
@@ -882,6 +886,18 @@ export default function PublicEventPage({
         </Link>
 
         <article className="overflow-hidden rounded-[2rem] border border-slate-200/80 bg-white shadow-lg shadow-slate-200/40">
+          <EventGallery
+            title={
+              event.title
+            }
+            images={
+              event.images
+            }
+            coverImageUrl={
+              event.coverImageUrl
+            }
+          />
+
           <header className="bg-gradient-to-br from-[#5D5FEF] via-[#6668F4] to-[#7568F5] p-6 text-white sm:p-8">
             <div className="flex flex-wrap items-center gap-2">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.1em]">

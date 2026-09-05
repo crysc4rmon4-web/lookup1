@@ -24,6 +24,17 @@ type ReplaceEventImagesInput = {
   images: readonly EventImageReference[];
 };
 
+type GetEventImagesResponse = {
+  images?:
+  PersistedEventImage[];
+
+  coverImageUrl?:
+  string | null;
+
+  error?:
+  string;
+};
+
 type ReplaceEventImagesResponse = {
   images?: PersistedEventImage[];
   coverImageUrl?: string | null;
@@ -211,6 +222,81 @@ export async function uploadEventImages({
 
     throw error;
   }
+}
+
+export async function getEventImages(
+  accessToken: string,
+  eventId: string,
+) {
+  const normalizedToken =
+    accessToken.trim();
+
+  const normalizedEventId =
+    eventId.trim();
+
+  if (
+    !normalizedToken
+  ) {
+    throw new Error(
+      "No hay una sesión válida.",
+    );
+  }
+
+  if (
+    !normalizedEventId
+  ) {
+    throw new Error(
+      "El evento solicitado no es válido.",
+    );
+  }
+
+  const response =
+    await fetch(
+      `/api/events/mine/${encodeURIComponent(
+        normalizedEventId,
+      )}/images`,
+      {
+        method:
+          "GET",
+
+        headers: {
+          Authorization:
+            `Bearer ${normalizedToken}`,
+        },
+
+        cache:
+          "no-store",
+      },
+    );
+
+  const payload =
+    (await response
+      .json()
+      .catch(
+        () => ({}),
+      )) as GetEventImagesResponse;
+
+  if (
+    !response.ok
+  ) {
+    throw new Error(
+      payload.error ||
+      "No se pudieron cargar las imágenes del evento.",
+    );
+  }
+
+  return {
+    images:
+      Array.isArray(
+        payload.images,
+      )
+        ? payload.images
+        : [],
+
+    coverImageUrl:
+      payload.coverImageUrl ??
+      null,
+  };
 }
 
 export async function replaceEventImages({

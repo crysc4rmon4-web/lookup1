@@ -12,6 +12,10 @@ import {
   type PublicEventRow,
 } from "@/lib/events/public-event";
 
+import {
+  EVENT_IMAGES_BUCKET,
+} from "@/lib/events/event-images";
+
 export const runtime =
   "nodejs";
 
@@ -174,13 +178,82 @@ export async function GET(
         },
       );
     }
+    const {
+      data: imageRows,
+      error: imageRowsError,
+    } =
+      await supabaseAdmin
+        .from(
+          "event_images",
+        )
+        .select(
+          `
+        id,
+        storage_path,
+        position
+      `,
+        )
+        .eq(
+          "event_id",
+          id,
+        )
+        .order(
+          "position",
+          {
+            ascending:
+              true,
+          },
+        );
+
+    if (imageRowsError) {
+      throw new Error(
+        `No se pudo cargar la galería del evento: ${imageRowsError.message}`,
+      );
+    }
+
+    const images =
+      (imageRows ?? [])
+        .map(
+          (image) => {
+            const {
+              data: publicUrlData,
+            } =
+              supabaseAdmin.storage
+                .from(
+                  EVENT_IMAGES_BUCKET,
+                )
+                .getPublicUrl(
+                  image.storage_path,
+                );
+
+            return {
+              id:
+                image.id,
+
+              storagePath:
+                image.storage_path,
+
+              publicUrl:
+                publicUrlData.publicUrl,
+
+              position:
+                image.position,
+            };
+          },
+        );
+
+
+    const publicEvent =
+      mapPublicEventRow(
+        data as PublicEventRow,
+      );
 
     return NextResponse.json(
       {
-        event:
-          mapPublicEventRow(
-            data as PublicEventRow,
-          ),
+        event: {
+          ...publicEvent,
+          images,
+        },
       },
       {
         status: 200,
