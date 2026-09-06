@@ -63,6 +63,15 @@ import {
   type EditableEventImage,
 } from "@/components/events/EventImageEditor";
 
+import {
+  EventLocationMap,
+} from "@/components/events/EventLocationMap";
+
+import {
+  previewEventLocation,
+  type EventLocationPreview,
+} from "@/services/events/preview-event-location";
+
 type EditEventFormProps = {
   accessToken: string;
 
@@ -775,6 +784,43 @@ export function EditEventForm({
       string | null
     >(null);
 
+  const [
+    locationPreview,
+    setLocationPreview,
+  ] =
+    useState<
+      EventLocationPreview | null
+    >(null);
+
+  const [
+    locationAdjustment,
+    setLocationAdjustment,
+  ] =
+    useState<{
+      latitude: number;
+      longitude: number;
+    } | null>(null);
+
+  const [
+    locationPreviewLoading,
+    setLocationPreviewLoading,
+  ] =
+    useState(false);
+
+  const [
+    locationPreviewError,
+    setLocationPreviewError,
+  ] =
+    useState<
+      string | null
+    >(null);
+
+  const [
+    locationNeedsVerification,
+    setLocationNeedsVerification,
+  ] =
+    useState(false);
+
   useEffect(() => {
     const previousOverflow =
       document.body.style.overflow;
@@ -1254,6 +1300,43 @@ export function EditEventForm({
     form.startAt ||
     minimumStartAt;
 
+  const mapLatitude =
+    locationPreview?.latitude ??
+    event.latitude;
+
+  const mapLongitude =
+    locationPreview?.longitude ??
+    event.longitude;
+
+  const hasMapCoordinates =
+    !locationNeedsVerification &&
+    mapLatitude !== null &&
+    mapLongitude !== null &&
+    Number.isFinite(
+      mapLatitude,
+    ) &&
+    Number.isFinite(
+      mapLongitude,
+    );
+
+  function invalidateLocationPreview() {
+    setLocationPreview(
+      null,
+    );
+
+    setLocationAdjustment(
+      null,
+    );
+
+    setLocationPreviewError(
+      null,
+    );
+
+    setLocationNeedsVerification(
+      true,
+    );
+  }
+
   function updateField<
     Key extends keyof EventFormState,
   >(
@@ -1268,7 +1351,15 @@ export function EditEventForm({
           value,
       }),
     );
-
+    if (
+      key === "venueName" ||
+      key === "address" ||
+      key === "city" ||
+      key === "province" ||
+      key === "postalCode"
+    ) {
+      invalidateLocationPreview();
+    }
     setSaveError(
       null,
     );
@@ -1292,6 +1383,8 @@ export function EditEventForm({
       false,
     );
 
+    invalidateLocationPreview();
+
     setForm(
       (current) => ({
         ...current,
@@ -1304,6 +1397,199 @@ export function EditEventForm({
           "",
       }),
     );
+
+    setSaveError(
+      null,
+    );
+  }
+
+  async function handleVerifyLocation() {
+    if (
+      locationPreviewLoading ||
+      saving
+    ) {
+      return;
+    }
+
+    setLocationPreviewError(
+      null,
+    );
+
+    if (!selectedProvince) {
+      setLocationPreviewError(
+        "Selecciona una provincia oficial.",
+      );
+
+      return;
+    }
+
+    if (!selectedMunicipality) {
+      setMunicipalityMenuOpen(
+        true,
+      );
+
+      setLocationPreviewError(
+        "Selecciona un municipio válido.",
+      );
+
+      return;
+    }
+
+    if (
+      form.venueName.trim().length <
+      EVENT_LIMITS.venueNameMin
+    ) {
+      setLocationPreviewError(
+        "Indica primero el lugar del evento.",
+      );
+
+      return;
+    }
+
+    if (
+      form.address.trim().length <
+      EVENT_LIMITS.addressMin
+    ) {
+      setLocationPreviewError(
+        "Introduce una dirección completa.",
+      );
+
+      return;
+    }
+
+    setLocationPreviewLoading(
+      true,
+    );
+
+    try {
+      const preview =
+        await previewEventLocation({
+          accessToken,
+
+          venueName:
+            form.venueName,
+
+          address:
+            form.address,
+
+          city:
+            selectedMunicipality.name,
+
+          province:
+            selectedProvince.name,
+
+          postalCode:
+            form.postalCode.trim() ||
+            null,
+        });
+
+      setLocationPreview(
+        preview,
+      );
+
+      setLocationAdjustment(
+        null,
+      );
+
+      setLocationNeedsVerification(
+        false,
+      );
+
+      setLocationPreviewError(
+        null,
+      );
+
+      if (
+        !form.postalCode.trim() &&
+        preview.postalCode
+      ) {
+        setForm(
+          (current) => ({
+            ...current,
+
+            postalCode:
+              preview.postalCode ??
+              "",
+          }),
+        );
+      }
+    } catch (
+    verifyError
+    ) {
+      setLocationPreview(
+        null,
+      );
+
+      setLocationAdjustment(
+        null,
+      );
+
+      setLocationPreviewError(
+        verifyError instanceof
+          Error
+          ? verifyError.message
+          : "No se pudo verificar la ubicación.",
+      );
+    } finally {
+      setLocationPreviewLoading(
+        false,
+      );
+    }
+  }
+
+  function handleMapPositionChange(
+    position: {
+      latitude: number;
+      longitude: number;
+    },
+  ) {
+    const baseLatitude =
+      locationPreview?.latitude ??
+      event.latitude;
+
+    const baseLongitude =
+      locationPreview?.longitude ??
+      event.longitude;
+
+    if (
+      baseLatitude === null ||
+      baseLongitude === null
+    ) {
+      return;
+    }
+
+    const latitudeDifference =
+      Math.abs(
+        position.latitude -
+        baseLatitude,
+      );
+
+    const longitudeDifference =
+      Math.abs(
+        position.longitude -
+        baseLongitude,
+      );
+
+    if (
+      latitudeDifference <
+      0.000001 &&
+      longitudeDifference <
+      0.000001
+    ) {
+      setLocationAdjustment(
+        null,
+      );
+
+      return;
+    }
+
+    setLocationAdjustment({
+      latitude:
+        position.latitude,
+
+      longitude:
+        position.longitude,
+    });
 
     setSaveError(
       null,
@@ -1454,6 +1740,14 @@ export function EditEventForm({
         );
       }
 
+      if (
+        locationNeedsVerification
+      ) {
+        throw new Error(
+          "Verifica la ubicación en el mapa antes de guardar los cambios.",
+        );
+      }
+
       const input:
         EventDraftCreateInput =
       {
@@ -1488,8 +1782,7 @@ export function EditEventForm({
           form.postalCode.trim() ||
           null,
 
-        locationAdjustment:
-          null,
+        locationAdjustment,
 
         startAt:
           toIsoDateTime(
@@ -2269,6 +2562,129 @@ export function EditEventForm({
                       Si lo dejas vacío, LookUp intentará obtenerlo al verificar la dirección.
                     </p>
                   </div>
+                </div>
+                <div className="mt-6 border-t border-slate-100 pt-6">
+                  <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <MapPin
+                          size={17}
+                          className="text-[#5D5FEF]"
+                        />
+
+                        <p className="text-sm font-black text-slate-950">
+                          Punto exacto del evento
+                        </p>
+                      </div>
+
+                      <p className="mt-1 text-xs font-medium leading-5 text-slate-500">
+                        Puedes comprobar de nuevo la dirección o mover ligeramente el pin para señalar la entrada exacta.
+                      </p>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={
+                        handleVerifyLocation
+                      }
+                      disabled={
+                        saving ||
+                        locationPreviewLoading ||
+                        !selectedProvince ||
+                        !selectedMunicipality ||
+                        !form.venueName.trim() ||
+                        !form.address.trim()
+                      }
+                      className="inline-flex shrink-0 items-center justify-center gap-2 rounded-2xl border border-[#5D5FEF]/20 bg-[#F0F0FF] px-4 py-3 text-sm font-black text-[#5052D9] transition hover:bg-[#E8E8FF] disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      {locationPreviewLoading ? (
+                        <LoaderCircle
+                          size={17}
+                          className="animate-spin"
+                        />
+                      ) : (
+                        <MapPin
+                          size={17}
+                        />
+                      )}
+
+                      {locationPreviewLoading
+                        ? "Verificando…"
+                        : "Verificar ubicación"}
+                    </button>
+                  </div>
+
+                  {locationPreviewError ? (
+                    <div
+                      role="alert"
+                      className="mt-4 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-bold leading-6 text-rose-700"
+                    >
+                      {
+                        locationPreviewError
+                      }
+                    </div>
+                  ) : null}
+
+                  {hasMapCoordinates ? (
+                    <div className="mt-5 overflow-hidden rounded-[1.5rem] border border-slate-200 bg-white shadow-sm">
+                      <EventLocationMap
+                        latitude={
+                          mapLatitude
+                        }
+                        longitude={
+                          mapLongitude
+                        }
+                        editable
+                        onPositionChange={
+                          handleMapPositionChange
+                        }
+                        className="h-64 sm:h-72"
+                      />
+
+                      <div className="p-4">
+                        <div className="flex items-start gap-3">
+                          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
+                            <Check
+                              size={17}
+                            />
+                          </div>
+
+                          <div>
+                            <p className="text-sm font-black text-slate-950">
+                              Ubicación lista
+                            </p>
+
+                            <p className="mt-1 text-xs font-semibold leading-5 text-slate-600">
+                              {locationPreview
+                                ? locationPreview.displayName
+                                : `${event.venueName} · ${event.address}, ${event.city}`}
+                            </p>
+
+                            {locationAdjustment ? (
+                              <p className="mt-2 text-xs font-bold text-[#5D5FEF]">
+                                Has afinado manualmente el punto del evento.
+                              </p>
+                            ) : null}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ) : locationNeedsVerification ? (
+                    <div className="mt-4 flex gap-3 rounded-2xl bg-amber-50 px-4 py-3.5 text-amber-950">
+                      <MapPin
+                        size={17}
+                        className="mt-0.5 shrink-0"
+                      />
+
+                      <p className="text-xs font-semibold leading-5">
+                        Has cambiado datos de ubicación. Pulsa{" "}
+                        <span className="font-black">
+                          Verificar ubicación
+                        </span>{" "}
+                        para actualizar el mapa antes de guardar.
+                      </p>
+                    </div>
+                  ) : null}
                 </div>
               </section>
 

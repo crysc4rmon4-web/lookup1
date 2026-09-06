@@ -707,6 +707,16 @@ function mapEvent(
     countryCode:
       event.country_code,
 
+    latitude:
+      toFiniteCoordinate(
+        event.latitude,
+      ),
+
+    longitude:
+      toFiniteCoordinate(
+        event.longitude,
+      ),
+
     startAt:
       event.start_at,
 

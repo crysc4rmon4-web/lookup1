@@ -55,6 +55,12 @@ type EventRow = {
   country_code:
   string | null;
 
+  latitude:
+  number | string | null;
+
+  longitude:
+  number | string | null;
+
   start_at:
   string;
 
@@ -271,6 +277,8 @@ export async function GET(
             province,
             postal_code,
             country_code,
+            latitude,
+            longitude,
             start_at,
             end_at,
             status,
@@ -329,8 +337,8 @@ export async function GET(
             category:
               event.category,
 
-              coverImageUrl:
-  event.cover_image_url,
+            coverImageUrl:
+              event.cover_image_url,
 
             tags:
               event.tags ??
@@ -357,6 +365,21 @@ export async function GET(
 
             countryCode:
               event.country_code,
+            latitude:
+              event.latitude ===
+                null
+                ? null
+                : Number(
+                  event.latitude,
+                ),
+
+            longitude:
+              event.longitude ===
+                null
+                ? null
+                : Number(
+                  event.longitude,
+                ),
 
             startAt:
               event.start_at,

@@ -9,77 +9,83 @@ export type MyEvent = {
   id: string;
 
   creatorProfileId:
-    string;
+  string;
 
   title: string;
 
   description:
-    string;
+  string;
 
   category:
-    string;
+  string;
 
   coverImageUrl:
-    string | null;
+  string | null;
 
   tags: string[];
 
   audience:
-    string[];
+  string[];
 
   venueName:
-    string;
+  string;
 
   address:
-    string;
+  string;
 
   city:
-    string;
+  string;
 
   province:
-    string | null;
+  string | null;
 
   postalCode:
-    string | null;
+  string | null;
 
   countryCode:
-    string | null;
+  string | null;
+
+  latitude:
+  number | null;
+
+  longitude:
+  number | null;
 
   startAt:
-    string;
+  string;
 
   endAt:
-    string;
+  string;
 
   rawStatus:
-    string | null;
+  string | null;
 
   lifecycleStatus:
-    EventLifecycleStatus;
+  EventLifecycleStatus;
 
   isFree:
-    boolean;
+  boolean;
 
   priceFrom:
-    number | null;
+  number | null;
 
   currency:
-    string;
+  string;
 
   capacity:
-    number | null;
+  number | null;
 
   externalUrl:
-    string | null;
+  string | null;
 
   externalActionLabel:
-    string | null;
+  string | null;
 
   createdAt:
-    string;
+  string;
 
   updatedAt:
-    string;
+  string;
 };
 
 type GetMyEventsResponse = {
@@ -133,7 +139,7 @@ export async function getMyEvents(
   ) {
     throw new Error(
       payload?.error ??
-        "No se pudieron cargar tus eventos.",
+      "No se pudieron cargar tus eventos.",
     );
   }
 
