@@ -40,6 +40,10 @@ import {
 } from "@/components/events/EventGallery";
 
 import {
+  EventLocationMap,
+} from "@/components/events/EventLocationMap";
+
+import {
   getEventMatchExplanation,
   type EventMatchExplanationResult,
   type EventRelevanceLevel,
@@ -1196,48 +1200,72 @@ export default function PublicEventPage({
               ) : null}
             </div>
 
-            {mapsHref ? (
-              <a
-                href={
-                  mapsHref
-                }
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group flex w-full items-center justify-between gap-4 rounded-[1.4rem] border border-[#E1E2FA] bg-gradient-to-r from-[#FBFBFF] to-[#F4F3FF] px-4 py-4 transition-all hover:-translate-y-0.5 hover:border-[#CFCFFF] hover:shadow-md hover:shadow-[#5D5FEF]/10"
-              >
-                <span className="flex min-w-0 items-center gap-3">
-                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white text-[#5D5FEF] shadow-sm">
-                    <MapPin
-                      size={18}
-                    />
-                  </span>
+            {mapsHref &&
+              event.latitude !==
+              null &&
+              event.longitude !==
+              null ? (
+              <section className="overflow-hidden rounded-[1.5rem] border border-[#E1E2FA] bg-white">
+                <EventLocationMap
+                  latitude={
+                    event.latitude
+                  }
+                  longitude={
+                    event.longitude
+                  }
+                  className="h-44 sm:h-48"
+                />
 
-                  <span className="min-w-0">
-                    <span className="block text-[10px] font-black uppercase tracking-[0.12em] text-[#5D5FEF]">
-                      Ubicación
+                <div className="p-3">
+                  <a
+                    href={
+                      mapsHref
+                    }
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group flex w-full items-center justify-between gap-4 rounded-[1.2rem] bg-gradient-to-r from-[#FBFBFF] to-[#F4F3FF] px-4 py-3.5 transition-all hover:bg-[#F4F3FF]"
+                  >
+                    <span className="flex min-w-0 items-center gap-3">
+                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-[#5D5FEF] shadow-sm">
+                        <MapPin
+                          size={17}
+                        />
+                      </span>
+
+                      <span className="min-w-0">
+                        <span className="block text-[9px] font-black uppercase tracking-[0.14em] text-[#5D5FEF]">
+                          Ubicación
+                        </span>
+
+                        <span className="mt-0.5 block text-sm font-black text-slate-900">
+                          {
+                            event.venueName
+                          }
+                        </span>
+
+                        <span className="mt-0.5 block truncate text-xs text-slate-500">
+                          {
+                            event.city
+                          }
+
+                          {event.province
+                            ? ` · ${event.province}`
+                            : ""}
+                        </span>
+                      </span>
                     </span>
 
-                    <span className="mt-0.5 block text-sm font-black text-slate-900">
-                      Abrir en Google Maps
-                    </span>
+                    <span className="inline-flex shrink-0 items-center gap-1.5 text-xs font-black text-[#5557D8]">
+                      Abrir
 
-                    <span className="mt-0.5 block truncate text-xs text-slate-500">
-                      {
-                        event.venueName
-                      }
-                      {" · "}
-                      {
-                        event.city
-                      }
+                      <ArrowUpRight
+                        size={15}
+                        className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                      />
                     </span>
-                  </span>
-
-                  <ArrowUpRight
-                    size={17}
-                    className="shrink-0 text-[#5D5FEF] transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-                  />
-                </span>
-              </a>
+                  </a>
+                </div>
+              </section>
             ) : null}
           </div>
         </article>

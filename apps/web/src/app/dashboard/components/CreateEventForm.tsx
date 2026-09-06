@@ -31,6 +31,10 @@ import {
 } from "@/components/events/EventImagePicker";
 
 import {
+  EventLocationMap,
+} from "@/components/events/EventLocationMap";
+
+import {
   EVENT_LIMITS,
   EventValidationError,
   parseEventDraftCreateInput,
@@ -65,8 +69,14 @@ import {
   type EventCategory,
 } from "@/services/events/get-event-categories";
 
+import {
+  previewEventLocation,
+  type EventLocationPreview,
+} from "@/services/events/preview-event-location";
+
 type CreateEventFormProps = {
   accessToken: string;
+
   defaultCity?: string;
   defaultProvince?: string;
 
@@ -148,7 +158,8 @@ function toLocalDateTimeInput(
     date.getFullYear(),
     "-",
     padNumber(
-      date.getMonth() + 1,
+      date.getMonth() +
+      1,
     ),
     "-",
     padNumber(
@@ -477,7 +488,8 @@ function TokenField({
   }
 
   function handleKeyDown(
-    event: KeyboardEvent<HTMLInputElement>,
+    event:
+      KeyboardEvent<HTMLInputElement>,
   ) {
     if (
       event.key ===
@@ -796,6 +808,39 @@ export function CreateEventForm({
       string | null
     >(null);
 
+  const [
+    locationPreview,
+    setLocationPreview,
+  ] =
+    useState<
+      EventLocationPreview | null
+    >(null);
+
+  const [
+    locationAdjustment,
+    setLocationAdjustment,
+  ] =
+    useState<{
+      latitude: number;
+      longitude: number;
+    } | null>(
+      null,
+    );
+
+  const [
+    locationPreviewLoading,
+    setLocationPreviewLoading,
+  ] =
+    useState(false);
+
+  const [
+    locationPreviewError,
+    setLocationPreviewError,
+  ] =
+    useState<
+      string | null
+    >(null);
+
   useEffect(() => {
     const refreshMinimum =
       () => {
@@ -909,7 +954,10 @@ export function CreateEventForm({
 
         const sorted =
           [...result].sort(
-            (a, b) =>
+            (
+              a,
+              b,
+            ) =>
               a.name.localeCompare(
                 b.name,
                 "es",
@@ -934,7 +982,9 @@ export function CreateEventForm({
         ) {
           const match =
             sorted.find(
-              (province) =>
+              (
+                province,
+              ) =>
                 province.searchKey ===
                 normalizedDefault,
             );
@@ -1039,7 +1089,9 @@ export function CreateEventForm({
         ) {
           const exactMatch =
             result.find(
-              (municipality) =>
+              (
+                municipality,
+              ) =>
                 municipality.searchKey ===
                 currentCityKey,
             );
@@ -1098,7 +1150,9 @@ export function CreateEventForm({
     useMemo(
       () =>
         categories.find(
-          (category) =>
+          (
+            category,
+          ) =>
             category.slug ===
             form.category,
         ) ??
@@ -1113,7 +1167,9 @@ export function CreateEventForm({
     useMemo(
       () =>
         provinces.find(
-          (province) =>
+          (
+            province,
+          ) =>
             province.code ===
             selectedProvinceCode,
         ) ??
@@ -1138,7 +1194,9 @@ export function CreateEventForm({
 
         return (
           municipalities.find(
-            (municipality) =>
+            (
+              municipality,
+            ) =>
               municipality.searchKey ===
               key,
           ) ??
@@ -1168,13 +1226,18 @@ export function CreateEventForm({
 
         return municipalities
           .filter(
-            (municipality) =>
+            (
+              municipality,
+            ) =>
               municipality.searchKey.includes(
                 query,
               ),
           )
           .sort(
-            (a, b) => {
+            (
+              a,
+              b,
+            ) => {
               const aStarts =
                 a.searchKey.startsWith(
                   query,
@@ -1225,11 +1288,26 @@ export function CreateEventForm({
       ? form.startAt
       : minimumStartAt;
 
+  function invalidateLocationPreview() {
+    setLocationPreview(
+      null,
+    );
+
+    setLocationAdjustment(
+      null,
+    );
+
+    setLocationPreviewError(
+      null,
+    );
+  }
+
   function updateField<
     Key extends keyof EventFormState,
   >(
     key: Key,
-    value: EventFormState[Key],
+    value:
+      EventFormState[Key],
   ) {
     setForm(
       (current) => ({
@@ -1239,6 +1317,16 @@ export function CreateEventForm({
           value,
       }),
     );
+
+    if (
+      key === "venueName" ||
+      key === "address" ||
+      key === "city" ||
+      key === "province" ||
+      key === "postalCode"
+    ) {
+      invalidateLocationPreview();
+    }
 
     setSaveError(
       null,
@@ -1250,7 +1338,9 @@ export function CreateEventForm({
   ) {
     const province =
       provinces.find(
-        (item) =>
+        (
+          item,
+        ) =>
           item.code ===
           provinceCode,
       );
@@ -1270,6 +1360,8 @@ export function CreateEventForm({
     setSaveError(
       null,
     );
+
+    invalidateLocationPreview();
 
     setForm(
       (current) => ({
@@ -1299,7 +1391,8 @@ export function CreateEventForm({
   }
 
   function selectMunicipality(
-    municipality: SpainMunicipality,
+    municipality:
+      SpainMunicipality,
   ) {
     updateField(
       "city",
@@ -1308,6 +1401,200 @@ export function CreateEventForm({
 
     setMunicipalityMenuOpen(
       false,
+    );
+  }
+
+  async function handleVerifyLocation() {
+    if (
+      locationPreviewLoading ||
+      saving
+    ) {
+      return;
+    }
+
+    setLocationPreviewError(
+      null,
+    );
+
+    if (!selectedProvince) {
+      setLocationPreviewError(
+        "Selecciona primero una provincia.",
+      );
+
+      return;
+    }
+
+    if (!selectedMunicipality) {
+      setMunicipalityMenuOpen(
+        true,
+      );
+
+      setLocationPreviewError(
+        "Selecciona un municipio válido.",
+      );
+
+      return;
+    }
+
+    if (
+      form.venueName
+        .trim()
+        .length <
+      EVENT_LIMITS.venueNameMin
+    ) {
+      setLocationPreviewError(
+        "Indica primero el lugar del evento.",
+      );
+
+      return;
+    }
+
+    if (
+      form.address
+        .trim()
+        .length <
+      EVENT_LIMITS.addressMin
+    ) {
+      setLocationPreviewError(
+        "Introduce una dirección completa antes de verificarla.",
+      );
+
+      return;
+    }
+
+    setLocationPreviewLoading(
+      true,
+    );
+
+    try {
+      const preview =
+        await previewEventLocation({
+          accessToken,
+
+          venueName:
+            form.venueName,
+
+          address:
+            form.address,
+
+          city:
+            selectedMunicipality.name,
+
+          province:
+            selectedProvince.name,
+
+          postalCode:
+            form.postalCode
+              .trim() ||
+            null,
+        });
+
+      setLocationPreview(
+        preview,
+      );
+
+      setLocationAdjustment(
+        null,
+      );
+
+      setLocationPreviewError(
+        null,
+      );
+
+      /*
+       * Si el usuario no indicó CP y el geocodificador encontró
+       * uno fiable, lo reflejamos en el formulario.
+       *
+       * Usamos setForm directamente para no invalidar el preview
+       * que acabamos de verificar.
+       */
+      if (
+        !form.postalCode.trim() &&
+        preview.postalCode
+      ) {
+        setForm(
+          (current) => ({
+            ...current,
+
+            postalCode:
+              preview.postalCode ??
+              "",
+          }),
+        );
+      }
+    } catch (
+    verifyError
+    ) {
+      setLocationPreview(
+        null,
+      );
+
+      setLocationAdjustment(
+        null,
+      );
+
+      setLocationPreviewError(
+        verifyError instanceof
+          Error
+          ? verifyError.message
+          : "No se pudo verificar la ubicación.",
+      );
+    } finally {
+      setLocationPreviewLoading(
+        false,
+      );
+    }
+  }
+
+  function handleMapPositionChange(
+    position: {
+      latitude: number;
+      longitude: number;
+    },
+  ) {
+    if (!locationPreview) {
+      return;
+    }
+
+    const latitudeDifference =
+      Math.abs(
+        position.latitude -
+        locationPreview.latitude,
+      );
+
+    const longitudeDifference =
+      Math.abs(
+        position.longitude -
+        locationPreview.longitude,
+      );
+
+    /*
+     * Si vuelve prácticamente al punto que verificó el servidor
+     * no enviamos un ajuste redundante.
+     */
+    if (
+      latitudeDifference <
+      0.000001 &&
+      longitudeDifference <
+      0.000001
+    ) {
+      setLocationAdjustment(
+        null,
+      );
+
+      return;
+    }
+
+    setLocationAdjustment({
+      latitude:
+        position.latitude,
+
+      longitude:
+        position.longitude,
+    });
+
+    setSaveError(
+      null,
     );
   }
 
@@ -1395,7 +1682,8 @@ export function CreateEventForm({
   }
 
   async function handleSubmit(
-    event: FormEvent<HTMLFormElement>,
+    event:
+      FormEvent<HTMLFormElement>,
   ) {
     event.preventDefault();
 
@@ -1502,8 +1790,11 @@ export function CreateEventForm({
           selectedProvince.name,
 
         postalCode:
-          form.postalCode.trim() ||
+          form.postalCode
+            .trim() ||
           null,
+
+        locationAdjustment,
 
         startAt,
 
@@ -1517,18 +1808,18 @@ export function CreateEventForm({
         externalUrl,
 
         externalActionLabel:
-          form.externalActionLabel.trim() ||
+          form.externalActionLabel
+            .trim() ||
           null,
 
         capacity,
       };
 
       /*
-       * La UI reutiliza el dominio del servidor para ofrecer
-       * feedback inmediato.
+       * Feedback inmediato en cliente.
        *
-       * La API vuelve a validar toda la información y continúa
-       * siendo la autoridad de seguridad.
+       * El servidor vuelve a validar todo y continúa siendo
+       * la autoridad real.
        */
       parseEventDraftCreateInput(
         input,
@@ -1539,12 +1830,8 @@ export function CreateEventForm({
       );
 
       /*
-       * Primero creamos el borrador.
-       *
-       * Necesitamos un eventId real antes de subir imágenes para
-       * construir una ruta de Storage propiedad del evento:
-       *
-       * userId / eventId / file
+       * Primero creamos el borrador porque necesitamos el eventId
+       * para construir la ruta definitiva de Storage.
        */
       const draft =
         await createEventDraft(
@@ -1553,13 +1840,10 @@ export function CreateEventForm({
         );
 
       /*
-       * Desde este momento existe un borrador real.
+       * Si falla cualquier parte de la galería, eliminamos tanto
+       * los objetos subidos como el borrador recién creado.
        *
-       * Si cualquier parte del procesamiento de imágenes falla,
-       * limpiamos tanto Storage como el borrador recién creado.
-       *
-       * Para el usuario, "Guardar borrador" debe comportarse como
-       * una sola operación y nunca dejar eventos duplicados.
+       * Así reintentar nunca genera borradores duplicados.
        */
       if (
         eventImages.length >
@@ -1584,7 +1868,9 @@ export function CreateEventForm({
 
           uploadedImagePaths =
             uploadedImages.map(
-              (image) =>
+              (
+                image,
+              ) =>
                 image.storagePath,
             );
 
@@ -1600,10 +1886,6 @@ export function CreateEventForm({
         } catch (
         imageError
         ) {
-          /*
-           * Si los archivos llegaron a Storage pero la galería no
-           * pudo persistirse, eliminamos los objetos recién creados.
-           */
           if (
             uploadedImagePaths.length >
             0
@@ -1613,15 +1895,6 @@ export function CreateEventForm({
             );
           }
 
-          /*
-           * También eliminamos el draft recién creado.
-           *
-           * Así un segundo intento del usuario no genera
-           * un evento duplicado.
-           *
-           * Nunca ocultamos el error original de imágenes si
-           * por alguna razón secundaria falla esta limpieza.
-           */
           try {
             await deleteEventDraft(
               accessToken,
@@ -2022,7 +2295,7 @@ export function CreateEventForm({
                   }
                   eyebrow="03 · Lugar"
                   title="¿Dónde sucede?"
-                  description="Selecciona provincia y municipio del catálogo oficial. LookUp verificará después la dirección exacta."
+                  description="Selecciona provincia y municipio del catálogo oficial. Después confirma visualmente el punto exacto."
                 />
 
                 <div className="mt-6 grid gap-4 sm:grid-cols-2">
@@ -2287,11 +2560,12 @@ export function CreateEventForm({
                                       municipality,
                                     );
                                   }}
-                                  className={`flex w-full items-center justify-between rounded-xl px-3 py-3 text-left text-sm transition ${selectedMunicipality?.ineCode ===
-                                      municipality.ineCode
+                                  className={`flex w-full items-center justify-between rounded-xl px-3 py-3 text-left text-sm transition ${
+                                    selectedMunicipality?.ineCode ===
+                                    municipality.ineCode
                                       ? "bg-[#F0F0FF] font-black text-[#5052D9]"
                                       : "font-semibold text-slate-700 hover:bg-slate-50"
-                                    }`}
+                                  }`}
                                 >
                                   <span>
                                     {
@@ -2399,15 +2673,142 @@ export function CreateEventForm({
                   </div>
                 </div>
 
-                <div className="mt-5 flex gap-3 rounded-2xl bg-amber-50 px-4 py-3.5 text-amber-950">
-                  <MapPin
-                    size={17}
-                    className="mt-0.5 shrink-0"
-                  />
+                <div className="mt-6 border-t border-slate-100 pt-6">
+                  <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <MapPin
+                          size={17}
+                          className="text-[#5D5FEF]"
+                        />
 
-                  <p className="text-xs font-semibold leading-5">
-                    Provincia y municipio proceden del catálogo oficial. La dirección se verificará antes de guardar coordenadas para evitar ubicaciones incorrectas.
-                  </p>
+                        <p className="text-sm font-black text-slate-950">
+                          Confirma el punto exacto
+                        </p>
+                      </div>
+
+                      <p className="mt-1 max-w-xl text-xs font-medium leading-5 text-slate-500">
+                        Verificamos primero la dirección. Después puedes mover el pin ligeramente para marcar la entrada o el punto exacto del encuentro.
+                      </p>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={
+                        handleVerifyLocation
+                      }
+                      disabled={
+                        saving ||
+                        locationPreviewLoading ||
+                        !selectedProvince ||
+                        !selectedMunicipality ||
+                        !form.venueName.trim() ||
+                        !form.address.trim()
+                      }
+                      className="inline-flex shrink-0 items-center justify-center gap-2 rounded-2xl border border-[#5D5FEF]/20 bg-[#F0F0FF] px-4 py-3 text-sm font-black text-[#5052D9] transition hover:bg-[#E8E8FF] disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      {locationPreviewLoading ? (
+                        <LoaderCircle
+                          size={17}
+                          className="animate-spin"
+                        />
+                      ) : (
+                        <MapPin
+                          size={17}
+                        />
+                      )}
+
+                      {locationPreviewLoading
+                        ? "Verificando…"
+                        : locationPreview
+                          ? "Verificar de nuevo"
+                          : "Verificar ubicación"}
+                    </button>
+                  </div>
+
+                  {locationPreviewError ? (
+                    <div
+                      role="alert"
+                      className="mt-4 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-bold leading-6 text-rose-700"
+                    >
+                      {
+                        locationPreviewError
+                      }
+                    </div>
+                  ) : null}
+
+                  {locationPreview ? (
+                    <div className="mt-5 overflow-hidden rounded-[1.5rem] border border-slate-200 bg-white shadow-sm">
+                      <EventLocationMap
+                        /*
+                         * Mantenemos como props las coordenadas verificadas
+                         * originales.
+                         *
+                         * El propio mapa mueve el marker internamente.
+                         * Así actualizar locationAdjustment no destruye y
+                         * reconstruye MapLibre cada vez que arrastramos el pin.
+                         */
+                        latitude={
+                          locationPreview.latitude
+                        }
+                        longitude={
+                          locationPreview.longitude
+                        }
+                        editable
+                        onPositionChange={
+                          handleMapPositionChange
+                        }
+                        className="h-64 sm:h-72"
+                      />
+
+                      <div className="p-4">
+                        <div className="flex items-start gap-3">
+                          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
+                            <Check
+                              size={17}
+                            />
+                          </div>
+
+                          <div className="min-w-0">
+                            <p className="text-sm font-black text-slate-950">
+                              Ubicación verificada
+                            </p>
+
+                            <p className="mt-1 text-xs font-semibold leading-5 text-slate-600">
+                              {
+                                locationPreview.displayName
+                              }
+                            </p>
+
+                            {locationAdjustment ? (
+                              <p className="mt-2 text-xs font-bold text-[#5D5FEF]">
+                                Has afinado manualmente el punto del evento.
+                              </p>
+                            ) : (
+                              <p className="mt-2 text-xs font-medium text-slate-400">
+                                Si el pin ya señala el lugar correcto, no necesitas hacer nada más.
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="mt-4 flex gap-3 rounded-2xl bg-slate-50 px-4 py-3.5 text-slate-600">
+                      <MapPin
+                        size={17}
+                        className="mt-0.5 shrink-0 text-slate-400"
+                      />
+
+                      <p className="text-xs font-semibold leading-5">
+                        Completa lugar, dirección, provincia y municipio. Después pulsa{" "}
+                        <span className="font-black text-slate-800">
+                          Verificar ubicación
+                        </span>{" "}
+                        para verla en el mapa antes de guardar.
+                      </p>
+                    </div>
+                  )}
                 </div>
               </section>
 
@@ -2521,10 +2922,11 @@ export function CreateEventForm({
                           true,
                         )
                       }
-                      className={`rounded-xl px-4 py-3 text-sm font-black transition ${form.isFree
+                      className={`rounded-xl px-4 py-3 text-sm font-black transition ${
+                        form.isFree
                           ? "bg-white text-slate-950 shadow-sm"
                           : "text-slate-500 hover:text-slate-800"
-                        }`}
+                      }`}
                     >
                       Gratis
                     </button>
@@ -2537,10 +2939,11 @@ export function CreateEventForm({
                           false,
                         )
                       }
-                      className={`rounded-xl px-4 py-3 text-sm font-black transition ${!form.isFree
+                      className={`rounded-xl px-4 py-3 text-sm font-black transition ${
+                        !form.isFree
                           ? "bg-white text-slate-950 shadow-sm"
                           : "text-slate-500 hover:text-slate-800"
-                        }`}
+                      }`}
                     >
                       De pago
                     </button>
@@ -2769,6 +3172,7 @@ export function CreateEventForm({
                 type="submit"
                 disabled={
                   saving ||
+                  locationPreviewLoading ||
                   categoriesLoading ||
                   categories.length ===
                   0 ||

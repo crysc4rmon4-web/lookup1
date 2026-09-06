@@ -11,6 +11,8 @@ import { RadarProvider } from "../components/radar-provider";
 
 import "./globals.css";
 
+import "maplibre-gl/dist/maplibre-gl.css";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],

@@ -12,6 +12,10 @@ import {
 } from "@/lib/events/geocode-event-location";
 
 import {
+  applyEventLocationAdjustment,
+} from "@/lib/events/event-location-adjustment";
+
+import {
   getSupabaseAdminClient,
 } from "@/lib/supabase-admin";
 
@@ -25,12 +29,12 @@ type ProfileRow = {
   id: string;
 
   account_type:
-    | "person"
-    | "business"
-    | null;
+  | "person"
+  | "business"
+  | null;
 
   onboarding_completed:
-    boolean;
+  boolean;
 };
 
 function getBearerToken(
@@ -174,9 +178,9 @@ export async function POST(
 
     const {
       data:
-        profileData,
+      profileData,
       error:
-        profileError,
+      profileError,
     } =
       await supabaseAdmin
         .from(
@@ -203,8 +207,8 @@ export async function POST(
 
     const profile =
       profileData as
-        | ProfileRow
-        | null;
+      | ProfileRow
+      | null;
 
     if (
       !profile ||
@@ -241,9 +245,9 @@ export async function POST(
 
     const {
       data:
-        categoryData,
+      categoryData,
       error:
-        categoryError,
+      categoryError,
     } =
       await supabaseAdmin
         .from(
@@ -298,34 +302,48 @@ export async function POST(
      * → provincia
      */
 
-    let location;
+       let location;
 
     try {
-      location =
-        await geocodeEventLocation(
-          {
-            venueName:
-              input.venueName,
+      const verifiedLocation =
+        await geocodeEventLocation({
+          venueName:
+            input.venueName,
 
-            address:
-              input.address,
+          address:
+            input.address,
 
-            city:
-              input.city,
+          city:
+            input.city,
 
-            province:
-              input.province,
+          province:
+            input.province,
 
-            postalCode:
-              input.postalCode,
-          },
+          postalCode:
+            input.postalCode,
+        });
+
+      const adjustedLocation =
+        applyEventLocationAdjustment(
+          verifiedLocation,
+          input.locationAdjustment,
         );
+
+      location = {
+        ...verifiedLocation,
+
+        latitude:
+          adjustedLocation.latitude,
+
+        longitude:
+          adjustedLocation.longitude,
+      };
     } catch (
       locationError
     ) {
       const message =
         locationError instanceof
-        Error
+          Error
           ? locationError.message
           : "No se pudo verificar la ubicación.";
 
@@ -378,9 +396,9 @@ export async function POST(
 
     const {
       data:
-        eventData,
+      eventData,
       error:
-        eventError,
+      eventError,
     } =
       await supabaseAdmin
         .from(
@@ -499,10 +517,9 @@ export async function POST(
       !eventData
     ) {
       throw new Error(
-        `No se pudo crear el borrador: ${
-          eventError
-            ?.message ??
-          "respuesta vacía"
+        `No se pudo crear el borrador: ${eventError
+          ?.message ??
+        "respuesta vacía"
         }`,
       );
     }

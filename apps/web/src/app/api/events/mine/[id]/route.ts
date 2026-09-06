@@ -17,6 +17,10 @@ import {
 } from "@/lib/events/geocode-event-location";
 
 import {
+  applyEventLocationAdjustment,
+} from "@/lib/events/event-location-adjustment";
+
+import {
   getSupabaseAdminClient,
 } from "@/lib/supabase-admin";
 
@@ -500,7 +504,12 @@ function hasEventChanged(
   ) {
     return true;
   }
-
+  if (
+    input.locationAdjustment !==
+    null
+  ) {
+    return true;
+  }
   if (
     !datesEqual(
       currentEvent.start_at,
@@ -669,8 +678,8 @@ function mapEvent(
     category:
       event.category,
 
-        coverImageUrl:
-    event.cover_image_url,
+    coverImageUrl:
+      event.cover_image_url,
 
     tags:
       event.tags ??
@@ -1227,8 +1236,13 @@ export async function PATCH(
         currentEvent.longitude,
       );
 
+    const hasLocationAdjustment =
+      input.locationAdjustment !==
+      null;
+
     const mustVerifyLocation =
       locationChanged ||
+      hasLocationAdjustment ||
       !hasValidCoordinates(
         currentEvent,
       );
@@ -1258,6 +1272,12 @@ export async function PATCH(
               input.postalCode,
           });
 
+        const adjustedLocation =
+          applyEventLocationAdjustment(
+            verified,
+            input.locationAdjustment,
+          );
+
         location = {
           address:
             verified.address,
@@ -1275,10 +1295,10 @@ export async function PATCH(
             verified.countryCode,
 
           latitude:
-            verified.latitude,
+            adjustedLocation.latitude,
 
           longitude:
-            verified.longitude,
+            adjustedLocation.longitude,
         };
       } catch (
       locationError

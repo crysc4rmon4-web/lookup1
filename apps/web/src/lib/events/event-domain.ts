@@ -30,6 +30,11 @@ export const EVENT_LIMITS = {
   capacityMax: 1_000_000,
 } as const;
 
+export type EventLocationAdjustment = {
+  latitude: number;
+  longitude: number;
+};
+
 export type EventDraftCreateInput = {
   title: string;
   description: string;
@@ -43,6 +48,9 @@ export type EventDraftCreateInput = {
   city: string;
   province: string;
   postalCode: string | null;
+
+  locationAdjustment:
+  EventLocationAdjustment | null;
 
   startAt: string;
   endAt: string;
@@ -69,6 +77,9 @@ export type ParsedEventDraftCreateInput = {
   city: string;
   province: string;
   postalCode: string | null;
+
+  locationAdjustment:
+  EventLocationAdjustment | null;
 
   startAt: Date;
   endAt: Date;
@@ -396,10 +407,10 @@ function getNullableNumber(
 
   const numberValue =
     typeof value ===
-    "number"
+      "number"
       ? value
       : typeof value ===
-          "string"
+        "string"
         ? Number(value)
         : Number.NaN;
 
@@ -429,7 +440,7 @@ function parseDate(
 
   if (
     typeof value !==
-      "string" ||
+    "string" ||
     !value.trim()
   ) {
     throw new EventValidationError(
@@ -473,9 +484,9 @@ function validateExternalUrl(
 
   if (
     url.protocol !==
-      "https:" &&
+    "https:" &&
     url.protocol !==
-      "http:"
+    "http:"
   ) {
     throw new EventValidationError(
       "El enlace externo debe comenzar por http:// o https://.",
@@ -483,6 +494,75 @@ function validateExternalUrl(
   }
 
   return url.toString();
+}
+
+function getLocationAdjustment(
+  value: Record<string, unknown>,
+): EventLocationAdjustment | null {
+  const raw =
+    value.locationAdjustment;
+
+  if (
+    raw ===
+    undefined ||
+    raw ===
+    null
+  ) {
+    return null;
+  }
+
+  if (
+    !isRecord(
+      raw,
+    )
+  ) {
+    throw new EventValidationError(
+      "El ajuste de ubicación no es válido.",
+    );
+  }
+
+  const latitude =
+    raw.latitude;
+
+  const longitude =
+    raw.longitude;
+
+  if (
+    typeof latitude !==
+    "number" ||
+    !Number.isFinite(
+      latitude,
+    ) ||
+    latitude <
+    -90 ||
+    latitude >
+    90
+  ) {
+    throw new EventValidationError(
+      "La latitud ajustada no es válida.",
+    );
+  }
+
+  if (
+    typeof longitude !==
+    "number" ||
+    !Number.isFinite(
+      longitude,
+    ) ||
+    longitude <
+    -180 ||
+    longitude >
+    180
+  ) {
+    throw new EventValidationError(
+      "La longitud ajustada no es válida.",
+    );
+  }
+
+  return {
+    latitude,
+    longitude,
+  };
 }
 
 export function parseEventDraftCreateInput(
@@ -591,6 +671,11 @@ export function parseEventDraftCreateInput(
       EVENT_LIMITS.postalCodeMax,
     );
 
+  const locationAdjustment =
+    getLocationAdjustment(
+      value,
+    );
+
   const startAt =
     parseDate(
       value,
@@ -644,7 +729,7 @@ export function parseEventDraftCreateInput(
   if (!isFree) {
     if (
       rawPriceFrom ===
-        null ||
+      null ||
       rawPriceFrom < 0
     ) {
       throw new EventValidationError(
@@ -655,7 +740,7 @@ export function parseEventDraftCreateInput(
     priceFrom =
       Math.round(
         rawPriceFrom *
-          100,
+        100,
       ) / 100;
   }
 
@@ -706,7 +791,7 @@ export function parseEventDraftCreateInput(
       ) ||
       rawCapacity <= 0 ||
       rawCapacity >
-        EVENT_LIMITS.capacityMax
+      EVENT_LIMITS.capacityMax
     ) {
       throw new EventValidationError(
         `El aforo debe ser un número entero entre 1 y ${EVENT_LIMITS.capacityMax}.`,
@@ -730,6 +815,8 @@ export function parseEventDraftCreateInput(
     city,
     province,
     postalCode,
+
+    locationAdjustment,
 
     startAt,
     endAt,

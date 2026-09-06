@@ -1488,6 +1488,9 @@ export function EditEventForm({
           form.postalCode.trim() ||
           null,
 
+        locationAdjustment:
+          null,
+
         startAt:
           toIsoDateTime(
             form.startAt,
