@@ -2283,7 +2283,7 @@ export function EditEventForm({
 
                 <div className="mt-5 grid gap-4 sm:grid-cols-2">
                   <div>
-                    <label className="text-sm font-black">
+                    <label className="text-sm font-black text-slate-900">
                       Empieza
                     </label>
 
@@ -2316,7 +2316,7 @@ export function EditEventForm({
                   </div>
 
                   <div>
-                    <label className="text-sm font-black">
+                    <label className="text-sm font-black text-slate-900">
                       Termina
                     </label>
 
@@ -2400,7 +2400,7 @@ export function EditEventForm({
                 <div className="mt-4 grid gap-4 sm:grid-cols-2">
                   {!form.isFree ? (
                     <div>
-                      <label className="text-sm font-black">
+                      <label className="text-sm font-black text-slate-900">
                         Precio desde
                       </label>
 
@@ -2435,7 +2435,7 @@ export function EditEventForm({
                   ) : null}
 
                   <div>
-                    <label className="text-sm font-black">
+                    <label className="text-sm font-black text-slate-900">
                       <Users
                         size={15}
                         className="mr-1 inline"
@@ -2470,7 +2470,7 @@ export function EditEventForm({
                 </div>
 
                 <div className="mt-5 border-t border-slate-100 pt-5">
-                  <label className="text-sm font-black">
+                  <label className="text-sm font-black text-slate-900">
                     Enlace externo
                   </label>
 
@@ -2498,7 +2498,7 @@ export function EditEventForm({
 
                   {form.externalUrl.trim() ? (
                     <div className="mt-4">
-                      <label className="text-sm font-black">
+                      <label className="text-sm font-black text-slate-900">
                         Texto del botón
                       </label>
 
