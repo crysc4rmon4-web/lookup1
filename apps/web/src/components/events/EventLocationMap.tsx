@@ -5,6 +5,11 @@ import {
   useRef,
 } from "react";
 
+import type {
+  Map as LeafletMap,
+  Marker as LeafletMarker,
+} from "leaflet";
+
 type EventLocationPosition = {
   latitude: number;
   longitude: number;
@@ -22,9 +27,6 @@ type EventLocationMapProps = {
 
   className?: string;
 };
-
-const MAP_STYLE =
-  "https://tiles.openfreemap.org/styles/liberty";
 
 function hasValidCoordinates(
   latitude: number,
@@ -52,19 +54,19 @@ export function EventLocationMap({
   className = "h-48",
 }: EventLocationMapProps) {
   const containerRef =
-    useRef<
-      HTMLDivElement | null
-    >(null);
+    useRef<HTMLDivElement | null>(
+      null,
+    );
 
   const mapRef =
-    useRef<
-      import("maplibre-gl").Map | null
-    >(null);
+    useRef<LeafletMap | null>(
+      null,
+    );
 
   const markerRef =
-    useRef<
-      import("maplibre-gl").Marker | null
-    >(null);
+    useRef<LeafletMarker | null>(
+      null,
+    );
 
   const onPositionChangeRef =
     useRef(
@@ -79,12 +81,10 @@ export function EventLocationMap({
   ]);
 
   /*
-   * Inicializamos MapLibre una única vez por modo
-   * editable/no editable.
+   * Creamos Leaflet una sola vez.
    *
-   * Los cambios posteriores de coordenadas se gestionan
-   * en otro efecto para no destruir el mapa cada vez
-   * que el creador mueve el pin.
+   * El mapa usa tiles raster de Stadia Maps.
+   * No depende de WebGL ni de Web Workers.
    */
   useEffect(() => {
     const container =
@@ -103,167 +103,291 @@ export function EventLocationMap({
     let disposed =
       false;
 
+    let resizeObserver:
+      ResizeObserver | null =
+      null;
+
     async function initializeMap() {
-      const maplibregl =
-        await import(
-          "maplibre-gl"
-        );
+      try {
+        const L =
+          await import(
+            "leaflet"
+          );
 
-      if (
-        disposed ||
-        !containerRef.current
-      ) {
-        return;
-      }
+        if (
+          disposed ||
+          !containerRef.current
+        ) {
+          return;
+        }
 
-      const center:
-        [number, number] =
-        [
-          longitude,
-          latitude,
-        ];
+        const stadiaApiKey =
+          process.env
+            .NEXT_PUBLIC_STADIA_MAPS_API_KEY
+            ?.trim();
 
-      const map =
-        new maplibregl.Map({
-          container:
+        if (!stadiaApiKey) {
+          throw new Error(
+            "Falta NEXT_PUBLIC_STADIA_MAPS_API_KEY.",
+          );
+        }
+
+        const center:
+          [number, number] =
+          [
+            latitude,
+            longitude,
+          ];
+
+        const map =
+          L.map(
             containerRef.current,
+            {
+              attributionControl:
+                true,
 
-          style:
-            MAP_STYLE,
+              zoomControl:
+                editable,
 
+              dragging:
+                editable,
+
+              scrollWheelZoom:
+                false,
+
+              doubleClickZoom:
+                editable,
+
+              boxZoom:
+                editable,
+
+              keyboard:
+                editable,
+            },
+          );
+
+        map.setView(
           center,
-
-          zoom:
-            editable
-              ? 17
-              : 15,
-
-          attributionControl:
-            false,
-
-          dragPan:
-            editable,
-
-          scrollZoom:
-            false,
-
-          boxZoom:
-            editable,
-
-          doubleClickZoom:
-            editable,
-
-          keyboard:
-            editable,
-
-          dragRotate:
-            false,
-
-          touchZoomRotate:
-            editable,
-        });
-
-      mapRef.current =
-        map;
-
-      map.addControl(
-        new maplibregl.AttributionControl({
-          compact:
-            true,
-        }),
-        "bottom-right",
-      );
-
-      if (editable) {
-        map.addControl(
-          new maplibregl.NavigationControl({
-            showCompass:
-              false,
-
-            showZoom:
-              true,
-          }),
-          "top-right",
+          editable
+            ? 17
+            : 15,
         );
-      }
 
-      const marker =
-        new maplibregl.Marker({
-          draggable:
-            editable,
-        })
-          .setLngLat(
+        mapRef.current =
+          map;
+
+        /*
+         * Stadia Maps · Alidade Smooth.
+         *
+         * La API key se envía como query parameter,
+         * forma soportada oficialmente por Stadia.
+         */
+        const tileUrl =
+          `https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png?api_key=${encodeURIComponent(
+            stadiaApiKey,
+          )}`;
+
+        const tileLayer =
+          L.tileLayer(
+            tileUrl,
+            {
+              maxZoom:
+                20,
+
+              attribution:
+                '&copy; <a href="https://stadiamaps.com/attribution/" target="_blank" rel="noopener noreferrer">Stadia Maps</a>, ' +
+                '&copy; <a href="https://openmaptiles.org/" target="_blank" rel="noopener noreferrer">OpenMapTiles</a> ' +
+                '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a>',
+            },
+          );
+
+        tileLayer.on(
+          "tileerror",
+          (tileError) => {
+            console.error(
+              "❌ No se pudo cargar un tile de Stadia Maps:",
+              tileError,
+            );
+          },
+        );
+
+        tileLayer.addTo(
+          map,
+        );
+
+        /*
+         * Marcador propio.
+         *
+         * Evitamos depender de los PNG internos
+         * del marcador por defecto de Leaflet.
+         */
+        const markerIcon =
+          L.divIcon({
+            className:
+              "lookup-event-location-marker",
+
+            html: `
+              <div
+                style="
+                  width: 30px;
+                  height: 30px;
+                  border-radius: 9999px;
+                  background: #5D5FEF;
+                  border: 4px solid white;
+                  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.28);
+                  position: relative;
+                "
+              >
+                <div
+                  style="
+                    position: absolute;
+                    left: 50%;
+                    top: 50%;
+                    width: 6px;
+                    height: 6px;
+                    border-radius: 9999px;
+                    background: white;
+                    transform: translate(-50%, -50%);
+                  "
+                ></div>
+              </div>
+            `,
+
+            iconSize:
+              [
+                30,
+                30,
+              ],
+
+            iconAnchor:
+              [
+                15,
+                15,
+              ],
+          });
+
+        const marker =
+          L.marker(
             center,
-          )
-          .addTo(
+            {
+              icon:
+                markerIcon,
+
+              draggable:
+                editable,
+
+              autoPan:
+                editable,
+
+              title:
+                editable
+                  ? "Mueve el punto exacto del evento"
+                  : "Ubicación del evento",
+
+              alt:
+                "Ubicación del evento",
+            },
+          ).addTo(
             map,
           );
 
-      markerRef.current =
-        marker;
+        markerRef.current =
+          marker;
 
-      function emitPosition(
-        nextLongitude:
-          number,
-        nextLatitude:
-          number,
-      ) {
-        onPositionChangeRef
-          .current?.({
-            latitude:
-              nextLatitude,
+        function emitPosition(
+          nextLatitude: number,
+          nextLongitude: number,
+        ) {
+          onPositionChangeRef
+            .current?.({
+              latitude:
+                nextLatitude,
 
-            longitude:
-              nextLongitude,
-          });
-      }
+              longitude:
+                nextLongitude,
+            });
+        }
 
-      if (editable) {
-        marker.on(
-          "dragend",
+        if (editable) {
+          marker.on(
+            "dragend",
+            () => {
+              const next =
+                marker.getLatLng();
+
+              emitPosition(
+                next.lat,
+                next.lng,
+              );
+            },
+          );
+
+          map.on(
+            "click",
+            (
+              mapEvent,
+            ) => {
+              marker.setLatLng(
+                mapEvent.latlng,
+              );
+
+              emitPosition(
+                mapEvent.latlng.lat,
+                mapEvent.latlng.lng,
+              );
+            },
+          );
+        }
+
+        /*
+         * El mapa vive dentro de modales.
+         *
+         * Leaflet necesita recalcular el tamaño
+         * después de que el modal termine de pintar.
+         */
+        window.requestAnimationFrame(
           () => {
-            const next =
-              marker.getLngLat();
-
-            emitPosition(
-              next.lng,
-              next.lat,
-            );
+            if (!disposed) {
+              map.invalidateSize();
+            }
           },
         );
 
-        map.on(
-          "click",
-          (
-            event,
-          ) => {
-            marker.setLngLat(
-              event.lngLat,
+        window.setTimeout(
+          () => {
+            if (!disposed) {
+              map.invalidateSize();
+            }
+          },
+          150,
+        );
+
+        if (
+          typeof ResizeObserver !==
+          "undefined"
+        ) {
+          resizeObserver =
+            new ResizeObserver(
+              () => {
+                if (!disposed) {
+                  map.invalidateSize({
+                    pan:
+                      false,
+                  });
+                }
+              },
             );
 
-            emitPosition(
-              event.lngLat.lng,
-              event.lngLat.lat,
-            );
-          },
+          resizeObserver.observe(
+            containerRef.current,
+          );
+        }
+      } catch (mapError) {
+        console.error(
+          "❌ No se pudo inicializar el mapa del evento:",
+          mapError,
         );
       }
-
-      /*
-       * MapLibre puede inicializarse mientras un modal
-       * todavía está terminando de calcular su tamaño.
-       *
-       * Ejecutar resize al cargar evita mapas recortados
-       * o con zonas vacías.
-       */
-      map.once(
-        "load",
-        () => {
-          if (!disposed) {
-            map.resize();
-          }
-        },
-      );
     }
 
     void initializeMap();
@@ -272,18 +396,24 @@ export function EventLocationMap({
       disposed =
         true;
 
+      resizeObserver
+        ?.disconnect();
+
       markerRef.current =
         null;
 
-      mapRef.current?.remove();
+      mapRef.current
+        ?.remove();
 
       mapRef.current =
         null;
     };
 
     /*
-     * `editable` cambia el comportamiento completo del mapa.
-     * Las coordenadas se sincronizan en el efecto siguiente.
+     * El modo editable cambia las interacciones
+     * completas del mapa.
+     *
+     * Las coordenadas se sincronizan abajo.
      */
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
@@ -291,13 +421,8 @@ export function EventLocationMap({
   ]);
 
   /*
-   * Sincronizamos coordenadas sin reconstruir MapLibre.
-   *
-   * Esto sirve tanto cuando:
-   *
-   * - el geocoder devuelve una posición nueva
-   * - se abre otro evento
-   * - el creador mueve el pin
+   * Sin destruir el mapa,
+   * sincronizamos coordenadas nuevas.
    */
   useEffect(() => {
     if (
@@ -312,12 +437,12 @@ export function EventLocationMap({
     const next:
       [number, number] =
       [
-        longitude,
         latitude,
+        longitude,
       ];
 
     markerRef.current
-      ?.setLngLat(
+      ?.setLatLng(
         next,
       );
 
@@ -331,38 +456,41 @@ export function EventLocationMap({
     const currentCenter =
       map.getCenter();
 
-    const longitudeDifference =
-      Math.abs(
-        currentCenter.lng -
-        longitude,
-      );
-
     const latitudeDifference =
       Math.abs(
         currentCenter.lat -
         latitude,
       );
 
+    const longitudeDifference =
+      Math.abs(
+        currentCenter.lng -
+        longitude,
+      );
+
     /*
-     * Si la nueva posición está realmente lejos del
-     * centro visible, recentramos suavemente.
+     * Si las coordenadas cambian realmente de zona,
+     * recentramos.
      *
-     * Si simplemente fue un pequeño ajuste del pin,
-     * no peleamos contra el usuario moviendo el mapa.
+     * Para pequeños ajustes manuales no hacemos
+     * que el mapa pelee contra el usuario.
      */
     if (
-      longitudeDifference >
-        0.002 ||
       latitudeDifference >
+        0.002 ||
+      longitudeDifference >
         0.002
     ) {
-      map.easeTo({
-        center:
-          next,
+      map.panTo(
+        next,
+        {
+          animate:
+            true,
 
-        duration:
-          450,
-      });
+          duration:
+            0.45,
+        },
+      );
     }
   }, [
     latitude,
@@ -377,7 +505,7 @@ export function EventLocationMap({
         ref={
           containerRef
         }
-        className="absolute inset-0"
+        className="absolute inset-0 z-0"
         role={
           editable
             ? undefined
@@ -390,11 +518,11 @@ export function EventLocationMap({
         }
       />
 
-      <div className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-slate-950/5" />
+      <div className="pointer-events-none absolute inset-0 z-10 ring-1 ring-inset ring-slate-950/5" />
 
       {editable ? (
-        <div className="pointer-events-none absolute bottom-3 left-3 rounded-xl bg-white/95 px-3 py-2 text-[11px] font-bold text-slate-600 shadow-lg backdrop-blur">
-          Mueve el pin o toca el mapa para afinar la ubicación
+        <div className="pointer-events-none absolute bottom-3 left-3 z-[500] rounded-xl bg-white/95 px-3 py-2 text-[11px] font-bold text-slate-600 shadow-lg backdrop-blur">
+          Mueve el punto o toca el mapa para afinar la ubicación
         </div>
       ) : null}
     </div>
