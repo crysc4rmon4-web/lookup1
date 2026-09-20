@@ -4,6 +4,7 @@ import {
 
 import {
   getSupabaseAdminClient,
+  SupabaseServerConfigurationError,
 } from "@/lib/supabase-admin";
 
 import {
@@ -24,6 +25,8 @@ import type {
   EventDraftIntelligenceResult,
   EventLocalAudiencePreview,
 } from "@/lib/events/event-intelligence-types";
+
+export const maxDuration = 60;
 
 export const runtime =
   "nodejs";
@@ -896,6 +899,11 @@ export async function POST(
       },
     );
   } catch (error) {
+    if (error instanceof SupabaseServerConfigurationError) {
+      console.error("Configuración de eventos:", error.message);
+      return NextResponse.json({ error: "Los eventos no están disponibles por un problema de configuración del servidor. Contacta con el equipo de LookUp.", code: "EVENTS_CONFIGURATION" }, { status: 503, headers: noStoreHeaders() });
+    }
+
     console.error(
       "❌ Error generando LookUp Intelligence:",
       error,

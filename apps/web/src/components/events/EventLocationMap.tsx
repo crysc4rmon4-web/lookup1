@@ -10,6 +10,8 @@ import type {
   Marker as LeafletMarker,
 } from "leaflet";
 
+import { createEventTileLayer } from "@/lib/events/event-map-tiles";
+
 type EventLocationPosition = {
   latitude: number;
   longitude: number;
@@ -121,17 +123,6 @@ export function EventLocationMap({
           return;
         }
 
-        const stadiaApiKey =
-          process.env
-            .NEXT_PUBLIC_STADIA_MAPS_API_KEY
-            ?.trim();
-
-        if (!stadiaApiKey) {
-          throw new Error(
-            "Falta NEXT_PUBLIC_STADIA_MAPS_API_KEY.",
-          );
-        }
-
         const center:
           [number, number] =
           [
@@ -182,24 +173,7 @@ export function EventLocationMap({
          * La API key se envía como query parameter,
          * forma soportada oficialmente por Stadia.
          */
-        const tileUrl =
-          `https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png?api_key=${encodeURIComponent(
-            stadiaApiKey,
-          )}`;
-
-        const tileLayer =
-          L.tileLayer(
-            tileUrl,
-            {
-              maxZoom:
-                20,
-
-              attribution:
-                '&copy; <a href="https://stadiamaps.com/attribution/" target="_blank" rel="noopener noreferrer">Stadia Maps</a>, ' +
-                '&copy; <a href="https://openmaptiles.org/" target="_blank" rel="noopener noreferrer">OpenMapTiles</a> ' +
-                '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a>',
-            },
-          );
+        const tileLayer = createEventTileLayer(L);
 
         tileLayer.on(
           "tileerror",

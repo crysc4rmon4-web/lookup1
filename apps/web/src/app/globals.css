@@ -24,3 +24,15 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Explore map controls share LookUp's violet palette and touch targets. */
+.lookup-explore-map .leaflet-control-zoom { border: 0; box-shadow: 0 4px 16px #27264b1a; border-radius: 14px; overflow: hidden; }
+.lookup-explore-map .leaflet-control-zoom a { width: 44px; height: 44px; line-height: 44px; color: #5557d8; border-color: #f0f0ff; }
+.lookup-explore-map .leaflet-control-zoom a:hover { background: #f0f0ff; }
+.lookup-explore-map .leaflet-control-attribution { max-width: 100%; font-size: 9px; }
+.lookup-explore-marker { display: grid; place-items: center; background: transparent; border: 0; }
+.lookup-explore-marker__dot { display: grid; place-items: center; width: 36px; height: 36px; border: 3px solid white; border-radius: 50%; background: #5d5fef; color: white; font: 800 13px Arial, sans-serif; box-shadow: 0 3px 12px #37328c40; transition: background .15s, box-shadow .15s; }
+.lookup-explore-marker:hover .lookup-explore-marker__dot, .lookup-explore-marker:focus .lookup-explore-marker__dot { background: #4648c8; box-shadow: 0 0 0 4px #5d5fef30, 0 3px 12px #37328c40; }
+.lookup-explore-marker:focus-visible { outline: 2px solid #5d5fef; border-radius: 50%; }
+.lookup-explore-popup { max-height: 220px; overflow-y: auto; }
+.lookup-explore-popup a { display: flex; align-items: center; min-height: 44px; padding: 8px; color: #5557d8; font-weight: 700; border-bottom: 1px solid #f0f0ff; overflow-wrap: anywhere; }

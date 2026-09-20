@@ -51,6 +51,8 @@ type ExploreLifecycleStatus =
   | "live";
 
 type EventRow = {
+  latitude: number | string | null;
+  longitude: number | string | null;
   id: string;
   creator_profile_id: string;
   title: string;
@@ -273,6 +275,8 @@ function mapEvent(
     EventRow,
 ) {
   return {
+    latitude: event.latitude == null ? null : Number(event.latitude),
+    longitude: event.longitude == null ? null : Number(event.longitude),
     id:
       event.id,
 
@@ -429,6 +433,17 @@ export async function GET(
         ?.trim() ??
       "";
 
+    const province = url.searchParams.get("province")?.trim();
+    if (province && (province.length > 120 || /[%_]/.test(province))) {
+      return NextResponse.json({ error: "Provincia no válida." }, { status: 400, headers: noStoreHeaders() });
+    }
+
+    const mapView = url.searchParams.get("view") === "map";
+    const offset = Number(url.searchParams.get("offset") ?? "0");
+    if (mapView && (!Number.isSafeInteger(offset) || offset < 0)) {
+      return NextResponse.json({ error: "Página no válida." }, { status: 400, headers: noStoreHeaders() });
+    }
+
     const category =
       url.searchParams
         .get(
@@ -497,55 +512,58 @@ export async function GET(
       DiscoveryPreferencesRow | null =
       null;
 
-    try {
-      const {
-        data:
-          preferencesData,
+    if (!mapView) {
+      try {
+        const {
+          data:
+            preferencesData,
 
-        error:
-          preferencesError,
-      } =
-        await supabaseAdmin
-          .from(
-            "event_discovery_preferences",
-          )
-          .select(
-            `
-              date_scope,
-              date_from,
-              date_to,
-              intent_text,
-              intent_expires_at
-            `,
-          )
-          .eq(
-            "profile_id",
-            currentProfileId,
-          )
-          .maybeSingle();
+          error:
+            preferencesError,
+        } =
+          await supabaseAdmin
+            .from(
+              "event_discovery_preferences",
+            )
+            .select(
+              `
+                date_scope,
+                date_from,
+                date_to,
+                intent_text,
+                intent_expires_at
+              `,
+            )
+            .eq(
+              "profile_id",
+              currentProfileId,
+            )
+            .maybeSingle();
 
-      if (
+        if (
+          preferencesError
+        ) {
+          throw new Error(
+            preferencesError.message,
+          );
+        }
+
+        preferences =
+          preferencesData as
+            | DiscoveryPreferencesRow
+            | null;
+      } catch (
         preferencesError
       ) {
-        throw new Error(
-          preferencesError.message,
+        /*
+         * Una preferencia nunca debe romper Explorar.
+         */
+        console.error(
+          "⚠️ Explorar continuará con preferencias por defecto:",
+          preferencesError,
         );
       }
 
-      preferences =
-        preferencesData as
-          | DiscoveryPreferencesRow
-          | null;
-    } catch (
-      preferencesError
-    ) {
-      /*
-       * Una preferencia nunca debe romper Explorar.
-       */
-      console.error(
-        "⚠️ Explorar continuará con preferencias por defecto:",
-        preferencesError,
-      );
     }
 
     const dateScope:
@@ -604,6 +622,8 @@ export async function GET(
             cover_image_url,
             tags,
             audience,
+            latitude,
+            longitude,
             venue_name,
             address,
             city,
@@ -645,6 +665,12 @@ export async function GET(
           limit,
         );
 
+    if (province) query = query.ilike("province", province);
+
+    if (mapView) {
+      query = query.order("id", { ascending: true }).range(offset, offset + limit - 1);
+    }
+
     if (
       dateRange.toIso
     ) {
@@ -684,6 +710,14 @@ export async function GET(
         data ??
         []
       ) as EventRow[];
+
+    if (mapView) {
+      const events = eventRows.map((event) => ({
+        ...mapEvent(event), isFavorite: false, canFavorite: false,
+        relevanceScore: null, relevanceLevel: null, matchedInterests: [],
+      }));
+      return NextResponse.json({ city, cityKey, events, count: events.length }, { headers: noStoreHeaders() });
+    }
 
     if (
       eventRows.length ===

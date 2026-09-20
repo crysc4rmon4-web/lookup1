@@ -4,7 +4,10 @@ import {
 
 import {
   getSupabaseAdminClient,
+  SupabaseServerConfigurationError,
 } from "@/lib/supabase-admin";
+
+export const maxDuration = 60;
 
 export const runtime =
   "nodejs";
@@ -167,7 +170,8 @@ export async function POST(
             id,
             status,
             start_at,
-            end_at
+            end_at,
+            updated_at
           `,
         )
         .eq(
@@ -207,6 +211,10 @@ export async function POST(
       )
         .trim()
         .toLowerCase();
+
+    if (currentStatus === "published") {
+      return NextResponse.json({ event: { id: event.id, status: event.status, updatedAt: event.updated_at } }, { headers: noStoreHeaders() });
+    }
 
     if (
       currentStatus !==
@@ -519,6 +527,11 @@ if (
       },
     );
   } catch (error) {
+    if (error instanceof SupabaseServerConfigurationError) {
+      console.error("Configuración de eventos:", error.message);
+      return NextResponse.json({ error: "Los eventos no están disponibles por un problema de configuración del servidor. Contacta con el equipo de LookUp.", code: "EVENTS_CONFIGURATION" }, { status: 503, headers: noStoreHeaders() });
+    }
+
     console.error(
       "❌ Error publicando evento:",
       error,

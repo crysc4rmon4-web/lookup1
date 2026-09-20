@@ -1,4 +1,5 @@
 import "server-only";
+import { locationNamesMatch } from "@/lib/locations/location-name";
 
 type EventLocationInput = {
   venueName: string;
@@ -366,10 +367,9 @@ function getCandidateCities(
     feature.properties
       ?.geocoding;
 
+  if (geocoding?.city) return [clean(geocoding.city)];
+
   return [
-    clean(
-      geocoding?.city,
-    ),
 
     clean(
       geocoding?.locality,
@@ -407,10 +407,7 @@ function findDirectCityMatch(
     )
   ) {
     if (
-      normalizeComparable(
-        candidate,
-      ) ===
-      normalizedExpected
+      locationNamesMatch(candidate, expectedCity)
     ) {
       return candidate;
     }
@@ -536,51 +533,10 @@ function labelContainsExactComponent(
     );
 }
 
-function provinceAppearsCompatible(
-  feature:
-    NominatimFeature,
-  expectedProvince:
-    string,
-) {
-  const expected =
-    normalizeComparable(
-      expectedProvince,
-    );
-
-  if (
-    !expected
-  ) {
-    return false;
-  }
-
-  const geocoding =
-    feature.properties
-      ?.geocoding;
-
-  const candidates =
-    [
-      geocoding?.county,
-      geocoding?.state,
-    ]
-      .map(
-        normalizeComparable,
-      )
-      .filter(
-        Boolean,
-      );
-
-  if (
-    candidates.includes(
-      expected,
-    )
-  ) {
-    return true;
-  }
-
-  return labelContainsExactComponent(
-    feature,
-    expectedProvince,
-  );
+function provinceAppearsCompatible(feature: NominatimFeature, expectedProvince: string) {
+  const properties = feature.properties?.geocoding;
+  const candidates = [properties?.county, properties?.state, ...(properties?.label?.split(",") ?? [])];
+  return candidates.some((name) => name && locationNamesMatch(name, expectedProvince));
 }
 
 function addressAppearsCompatible(
@@ -748,7 +704,10 @@ function calculateFeatureScore(
       input.city,
     );
 
+  // A province in the display label must never stand in for the municipality.
   const labelCityMatch =
+    getCandidateCities(feature).length === 0 &&
+    !locationNamesMatch(input.city, input.province) &&
     labelContainsExactComponent(
       feature,
       input.city,
@@ -777,6 +736,8 @@ function calculateFeatureScore(
   ) {
     return null;
   }
+
+  if (!provinceAppearsCompatible(feature, input.province) || !addressAppearsCompatible(feature, input.address)) return null;
 
   let score =
     0;
@@ -1121,6 +1082,7 @@ async function executeSearch(
       await fetch(
         `${getBaseUrl()}/search?${params.toString()}`,
         {
+          signal: AbortSignal.timeout(8000),
           method:
             "GET",
 
@@ -1153,6 +1115,7 @@ async function executeSearch(
   if (
     !response.ok
   ) {
+    console.error("El geocodificador respondió con estado", response.status);
     throw new Error(
       "El servicio de ubicación no está disponible en este momento.",
     );

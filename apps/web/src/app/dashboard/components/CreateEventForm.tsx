@@ -26,6 +26,8 @@ import {
   X,
 } from "lucide-react";
 
+import { EventPublicationReview } from "@/components/events/EventPublicationReview";
+
 import {
   EventImagePicker,
 } from "@/components/events/EventImagePicker";
@@ -82,6 +84,7 @@ type CreateEventFormProps = {
 
   onCreated: (
     draft: CreatedEventDraft,
+    published?: boolean,
   ) => void;
 
   onClose: () => void;
@@ -685,6 +688,7 @@ export function CreateEventForm({
   onCreated,
   onClose,
 }: CreateEventFormProps) {
+  const [reviewDraft, setReviewDraft] = useState<CreatedEventDraft | null>(null);
   const [
     form,
     setForm,
@@ -1686,6 +1690,8 @@ export function CreateEventForm({
       FormEvent<HTMLFormElement>,
   ) {
     event.preventDefault();
+    const submitter = (event.nativeEvent as SubmitEvent).submitter;
+    const shouldReview = submitter instanceof HTMLButtonElement && submitter.value === "publish";
 
     if (saving) {
       return;
@@ -1913,9 +1919,8 @@ export function CreateEventForm({
         }
       }
 
-      onCreated(
-        draft,
-      );
+      if (shouldReview) setReviewDraft(draft);
+      else onCreated(draft, false);
     } catch (error) {
       if (
         error instanceof
@@ -1954,6 +1959,10 @@ export function CreateEventForm({
     }
   }
 
+  if (reviewDraft) {
+    return <EventPublicationReview draft={reviewDraft} accessToken={accessToken} hasImages={eventImages.length > 0} onDone={onCreated} />;
+  }
+
   return (
     <div className="fixed inset-0 z-[80] bg-slate-950/30 backdrop-blur-sm">
       <div className="mx-auto flex h-full w-full max-w-3xl flex-col bg-[#F7F8FC] shadow-2xl sm:my-4 sm:h-[calc(100%-2rem)] sm:overflow-hidden sm:rounded-[2rem]">
@@ -1990,7 +1999,7 @@ export function CreateEventForm({
                 size={14}
               />
 
-              Intelligence después
+              Revisión antes de publicar
             </div>
           </div>
         </header>
@@ -3128,7 +3137,7 @@ export function CreateEventForm({
 
                   <div>
                     <p className="text-[11px] font-black uppercase tracking-[0.16em] text-violet-300">
-                      Siguiente fase
+                      Antes de publicar
                     </p>
 
                     <h2 className="mt-1 text-lg font-black">
@@ -3136,7 +3145,7 @@ export function CreateEventForm({
                     </h2>
 
                     <p className="mt-2 text-sm leading-6 text-slate-300">
-                      Primero guardaremos un borrador real. Después LookUp podrá analizar su preparación y el potencial local sin inventar información.
+                      Guarda tu propuesta para continuar más tarde o revisa aquí las recomendaciones de LookUp Intelligence antes de publicarla. Para publicar, añade al menos una imagen.
                     </p>
                   </div>
                 </div>
@@ -3154,7 +3163,7 @@ export function CreateEventForm({
           </div>
 
           <footer className="border-t border-slate-200/80 bg-white/95 px-4 py-4 backdrop-blur-xl sm:px-6">
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-3">
               <button
                 type="button"
                 onClick={
@@ -3170,6 +3179,8 @@ export function CreateEventForm({
 
               <button
                 type="submit"
+                name="intent"
+                value="draft"
                 disabled={
                   saving ||
                   locationPreviewLoading ||
@@ -3181,7 +3192,7 @@ export function CreateEventForm({
                   0 ||
                   municipalitiesLoading
                 }
-                className="flex min-h-12 flex-1 items-center justify-center gap-2 rounded-2xl bg-[#5D5FEF] px-5 py-3.5 text-sm font-black text-white shadow-lg shadow-[#5D5FEF]/20 transition hover:bg-[#5254DF] disabled:cursor-not-allowed disabled:opacity-50"
+                className="flex min-h-12 flex-1 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-3 text-sm font-bold text-slate-600 transition hover:bg-slate-50 disabled:opacity-50"
               >
                 {saving ? (
                   <>
@@ -3206,6 +3217,7 @@ export function CreateEventForm({
                 )}
               </button>
             </div>
+              <button type="submit" name="intent" value="publish" disabled={saving || locationPreviewLoading || categoriesLoading || !categories.length || provincesLoading || !provinces.length || municipalitiesLoading} className="mt-3 min-h-12 w-full rounded-2xl bg-[#5D5FEF] px-4 py-3 text-sm font-black text-white shadow-sm transition hover:bg-[#5254DF] disabled:opacity-50">{saving ? "Guardando…" : "Revisar y publicar"}</button>
           </footer>
         </form>
       </div>

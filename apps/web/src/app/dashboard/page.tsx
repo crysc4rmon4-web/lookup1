@@ -212,6 +212,8 @@ export default function DashboardPage() {
   ] =
     useState(false);
 
+  const [createdEventPublished, setCreatedEventPublished] = useState(false);
+
   const [
     createdEventDraft,
     setCreatedEventDraft,
@@ -610,7 +612,10 @@ export default function DashboardPage() {
 
   function handleEventCreated(
     draft: CreatedEventDraft,
+    published = false,
   ) {
+    setCreatedEventPublished(published);
+    setSection("events");
     setCreatedEventDraft(
       draft,
     );
@@ -621,7 +626,7 @@ export default function DashboardPage() {
 
     showToast(
       "success",
-      "Borrador creado correctamente. Ya está listo para analizarlo con LookUp.",
+      published ? "Evento publicado. Ya está disponible en Mis eventos." : "Borrador guardado. Puedes continuar desde Mis eventos.",
     );
   }
 
@@ -1555,6 +1560,7 @@ export default function DashboardPage() {
                 defaultEventCity
               }
 
+              createdPublished={createdEventPublished}
               createdDraft={
                 createdEventDraft
               }

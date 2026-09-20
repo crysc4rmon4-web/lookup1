@@ -9,6 +9,8 @@ export type ExploreEventRelevanceLevel =
   | "low";
 
 export type ExploreEvent = {
+  latitude: number | null;
+  longitude: number | null;
   id:
     string;
 
@@ -115,6 +117,9 @@ type ExploreEventsResponse = {
 };
 
 type GetExploreEventsInput = {
+  mapView?: boolean;
+  province?: string;
+  offset?: number;
   accessToken:
     string;
 
@@ -135,6 +140,9 @@ export async function getExploreEvents({
   accessToken,
   city,
   category = null,
+  mapView = false,
+  province,
+  offset = 0,
   limit = 30,
   signal,
 }: GetExploreEventsInput): Promise<
@@ -166,7 +174,7 @@ export async function getExploreEvents({
     Math.min(
       Math.max(
         Math.trunc(
-          limit,
+          mapView ? 50 : limit,
         ),
         1,
       ),
@@ -183,6 +191,13 @@ export async function getExploreEvents({
           normalizedLimit,
         ),
     });
+
+  if (mapView) {
+    params.set("view", "map");
+    params.set("offset", String(offset));
+  }
+
+  if (province) params.set("province", province);
 
   const normalizedCategory =
     category
@@ -250,10 +265,19 @@ export async function getExploreEvents({
     );
   }
 
-  return Array.isArray(
+  const events = Array.isArray(
     payload
       ?.events,
   )
     ? payload.events
     : [];
+  if (mapView && events.length === normalizedLimit) {
+    const next = await getExploreEvents({
+      accessToken, city, category, mapView, offset: offset + normalizedLimit,
+      ...(signal ? { signal } : {}),
+      ...(province ? { province } : {}),
+    });
+    return [...events, ...next];
+  }
+  return events;
 }
