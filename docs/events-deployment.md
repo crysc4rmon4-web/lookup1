@@ -18,7 +18,7 @@ Las variables locales no viajan con el push. Los cambios de variables en Vercel 
 2. Buscar Soria y elegir **Municipio · Provincia de Soria**. Buscar un nombre repetido (por ejemplo, Cabanes) y comprobar que se distingue la provincia.
 3. Verificar fondo del mapa, zoom, arrastre, controles en móvil, categorías y navegación desde puntos/lista. Los puntos comparten los datos filtrados de la lista y usan las coordenadas guardadas. Varios eventos en las mismas coordenadas se agrupan sin alterar su dirección.
 4. Crear un evento de prueba con fecha futura. Guardar borrador y comprobar Mis eventos > Borradores.
-5. Crear con portada y usar Revisar y publicar. Leer Intelligence en el formulario, publicar y comprobar Mis eventos > Activos. Un fallo de análisis/publicación conserva el borrador y permite reintentar sin crear otro.
+5. Crear con portada y usar Revisar y publicar. Pulsar Analizar evento si se desea consultar LookUp Intelligence, publicar y comprobar Mis eventos > Activos. Comprobar también que se puede publicar sin analizar o si el análisis falla. Un fallo de publicación conserva el borrador y permite reintentar sin crear otro.
 6. Comprobar que cancelar no crea eventos y que sin portada se puede guardar, pero no publicar.
 7. Ejecutar `pnpm --filter web exec tsc --noEmit` y `git diff --check`. Revisar el diff y obtener visto bueno antes de commit/push. No ejecutar build completo sin acordarlo.
 

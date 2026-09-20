@@ -369,70 +369,7 @@ if (
 
     /*
      * ==========================================================
-     * 5. EXIGIR REVISIÓN PRE-PUBLICACIÓN
-     * ==========================================================
-     *
-     * Intelligence asesora.
-     *
-     * No imponemos una nota mínima artificial, pero sí exigimos
-     * que el creador haya revisado la versión actual del borrador.
-     */
-
-    const {
-      data: insight,
-      error: insightError,
-    } =
-      await supabaseAdmin
-        .from(
-          "event_insights",
-        )
-        .select(
-          `
-            event_id,
-            created_at
-          `,
-        )
-        .eq(
-          "event_id",
-          eventId,
-        )
-        .eq(
-          "phase",
-          "prepublish",
-        )
-        .order(
-          "created_at",
-          {
-            ascending:
-              false,
-          },
-        )
-        .limit(1)
-        .maybeSingle();
-
-    if (insightError) {
-      throw new Error(
-        `No se pudo comprobar LookUp Intelligence: ${insightError.message}`,
-      );
-    }
-
-    if (!insight) {
-      return NextResponse.json(
-        {
-          error:
-            "Analiza el borrador con LookUp Intelligence antes de publicarlo.",
-        },
-        {
-          status: 409,
-          headers:
-            noStoreHeaders(),
-        },
-      );
-    }
-
-    /*
-     * ==========================================================
-     * 6. PUBLICAR
+     * 5. PUBLICAR
      * ==========================================================
      *
      * IMPORTANTE:

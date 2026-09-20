@@ -68,9 +68,6 @@ export async function geocodeAddress(
   const city = result.address?.city ?? result.address?.town ?? result.address?.village ?? result.address?.municipality;
   if (options.cityOnly) {
     if (!city || !locationNamesMatch(city, normalizedAddress)) throw new Error("No pudimos confirmar ese municipio. Prueba su otro nombre oficial o inténtalo más tarde.");
-    if (options.province && ![result.address?.county, result.address?.province, result.address?.state].some((value) => value && locationNamesMatch(value, options.province!))) {
-      throw new Error("La ubicación encontrada no corresponde a la provincia elegida.");
-    }
   }
 
   return {
