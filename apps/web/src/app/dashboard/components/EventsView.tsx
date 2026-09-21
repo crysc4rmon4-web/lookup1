@@ -35,6 +35,7 @@ import {
 import { exploreFilters, getExploreCategory, type ExploreFilter } from "@/lib/events/event-explore-categories";
 import { EventExploreMap } from "@/components/events/EventExploreMap";
 import { geocodeAddress, type GeocodedAddress } from "@/services/location/geocode-address";
+import type { ExploreLocationChoice } from "@/lib/locations/event-explore-locations";
 
 import {
   SavedEventsPanel,
@@ -55,7 +56,7 @@ import {
   type MyEvent,
 } from "@/services/events/get-my-events";
 
-type ExploreCity = { id: string; name: string; province: string; provinceCode: string };
+type ExploreCity = ExploreLocationChoice;
 
 export type EventCard = {
   id: string;
@@ -474,6 +475,7 @@ export function EventsView({
   const [cityLocation, setCityLocation] = useState<GeocodedAddress | null>(null);
   const [cityChoices, setCityChoices] = useState<ExploreCity[]>([]);
   const [selectedProvince, setSelectedProvince] = useState("");
+  const [selectedLocationId, setSelectedLocationId] = useState("");
   const [activeFilter, setActiveFilter] = useState<ExploreFilter>("all");
   const [cityLoading, setCityLoading] = useState(false);
   const [cityError, setCityError] = useState<string | null>(null);
@@ -487,7 +489,7 @@ export function EventsView({
   useEffect(() => {
     try {
       const saved = JSON.parse(sessionStorage.getItem("lookup.events.exploreCity") ?? "null") as {
-        city: string; province: string; location: GeocodedAddress;
+        city: string; province: string; location: GeocodedAddress; locationId?: string;
       } | null;
       const requested = new URLSearchParams(window.location.search).get("eventsCity");
       if (!saved || (requested && requested !== saved.city) || typeof saved.city !== "string" ||
@@ -495,6 +497,7 @@ export function EventsView({
         !Number.isFinite(saved.location?.longitude) || Math.abs(saved.location.latitude) > 90 || Math.abs(saved.location.longitude) > 180) return;
       setSelectedExploreCity(saved.city);
       setSelectedProvince(saved.province);
+      setSelectedLocationId(typeof saved.locationId === "string" ? saved.locationId : "");
       setCityLocation(saved.location);
       setCityQuery(saved.city);
     } catch {
@@ -503,6 +506,22 @@ export function EventsView({
   }, []);
 
   const filteredExploreEvents = useMemo(() => exploreEvents.filter((event) => activeFilter === "all" || getExploreCategory(event.category).group === activeFilter), [exploreEvents, activeFilter]);
+  const mapLocation = useMemo(() => {
+    if (cityLocation) return cityLocation;
+    const event = exploreEvents.find((item) => item.latitude !== null && item.longitude !== null &&
+      Number.isFinite(item.latitude) && Number.isFinite(item.longitude) && Math.abs(item.latitude) <= 90 && Math.abs(item.longitude) <= 180);
+    return event ? { latitude: event.latitude!, longitude: event.longitude!, zoom: 13 } : null;
+  }, [cityLocation, exploreEvents]);
+
+  useEffect(() => {
+    if (!selectedExploreCity || !mapLocation) return;
+    try {
+      sessionStorage.setItem("lookup.events.exploreCity", JSON.stringify({
+        city: selectedExploreCity, province: selectedProvince, locationId: selectedLocationId,
+        location: { ...mapLocation, address: selectedExploreCity },
+      }));
+    } catch { /* Private browsing may disable storage. */ }
+  }, [selectedExploreCity, selectedProvince, selectedLocationId, mapLocation]);
 
   async function searchCity() {
     const query = cityQuery.trim();
@@ -515,11 +534,11 @@ export function EventsView({
     setCityChoices([]);
     try {
       const response = await fetch(`/api/events/cities?q=${encodeURIComponent(query)}`, { signal: controller.signal });
-      if (!response.ok) throw new Error("No se pudieron buscar los municipios.");
+      if (!response.ok) throw new Error("No se pudieron buscar las ubicaciones.");
       const payload = await response.json() as { cities: ExploreCity[] };
       if (controller.signal.aborted) return;
       setCityChoices(payload.cities);
-      if (!payload.cities.length) setCityError("No encontramos ese municipio. Prueba su nombre o añade la provincia.");
+      if (!payload.cities.length) setCityError("No encontramos ese lugar. Prueba el nombre del municipio o de la isla.");
     } catch (error) {
       if (!controller.signal.aborted) {
         setCityError(error instanceof Error ? error.message : "No se pudo localizar la ciudad.");
@@ -536,22 +555,22 @@ export function EventsView({
     setCityLoading(true);
     setCityError(null);
     setExploreEvents([]);
-    setSelectedExploreCity("");
+    // Event discovery must not depend on the external map-center geocoder.
+    setSelectedExploreCity(city.name);
+    setSelectedProvince(city.province);
+    setSelectedLocationId(city.id);
+    setCityQuery(city.name);
+    setCityChoices([]);
+    setActiveFilter("all");
     setCityLocation(null);
     try {
-      const location = await geocodeAddress(city.name, { cityOnly: true, province: city.province, signal: controller.signal });
+      const location: GeocodedAddress = city.center
+        ? { ...city.center, address: city.name }
+        : await geocodeAddress(city.name, { cityOnly: true, province: city.province, signal: controller.signal });
       if (controller.signal.aborted) return;
       setCityLocation(location);
-      setSelectedExploreCity(city.name);
-      setSelectedProvince(city.province);
-      try {
-        sessionStorage.setItem("lookup.events.exploreCity", JSON.stringify({ city: city.name, province: city.province, location }));
-      } catch { /* Private browsing may disable storage. */ }
-      setCityQuery(city.name);
-      setCityChoices([]);
-      setActiveFilter("all");
-    } catch (error) {
-      if (!controller.signal.aborted) setCityError(error instanceof Error ? error.message : "No se pudo localizar el municipio.");
+    } catch {
+      if (!controller.signal.aborted) setCityError("No pudimos centrar el mapa en el municipio. Sus eventos siguen disponibles y usaremos su ubicación cuando sea posible.");
     } finally {
       if (!controller.signal.aborted) setCityLoading(false);
     }
@@ -667,6 +686,7 @@ export function EventsView({
                 accessToken,
                 mapView: true,
                 province: selectedProvince,
+                ...(selectedLocationId ? { locationId: selectedLocationId } : {}),
 
                 city:
                   selectedExploreCity,
@@ -677,6 +697,7 @@ export function EventsView({
                 accessToken,
                 mapView: true,
                 province: selectedProvince,
+                ...(selectedLocationId ? { locationId: selectedLocationId } : {}),
 
                 city:
                   selectedExploreCity,
@@ -732,6 +753,7 @@ export function EventsView({
       [
         selectedExploreCity,
         selectedProvince,
+        selectedLocationId,
         session
           ?.access_token,
       ],
@@ -1174,41 +1196,42 @@ export function EventsView({
           <section className="rounded-[1.75rem] border border-[#5D5FEF]/10 bg-white p-4 shadow-sm sm:p-6">
             <form onSubmit={(event) => { event.preventDefault(); void searchCity(); }}>
               <label htmlFor="explore-city" className="text-sm font-black text-slate-900">¿Dónde quieres explorar?</label>
-              <p id="explore-city-help" className="mt-1 text-xs leading-5 text-slate-500">Busca un municipio. Te mostraremos su provincia para que elijas el lugar correcto.</p>
+              <p id="explore-city-help" className="mt-1 text-xs leading-5 text-slate-500">Busca una ciudad o isla. Elige el municipio concreto o explora toda la isla.</p>
               <div className="mt-3 flex gap-2">
-                <input id="explore-city" aria-describedby="explore-city-help" value={cityQuery} onChange={(event) => setCityQuery(event.target.value)} placeholder="Soria, Zaragoza…" required minLength={2} maxLength={120} className="min-w-0 flex-1 rounded-2xl border border-slate-200 bg-[#F8F8FF] px-4 py-3 text-sm font-semibold text-slate-900 outline-none focus:border-[#5D5FEF] focus:ring-4 focus:ring-[#5D5FEF]/10" />
+                <input id="explore-city" aria-describedby="explore-city-help" value={cityQuery} onChange={(event) => setCityQuery(event.target.value)} placeholder="Soria, Tenerife, Mallorca…" required minLength={2} maxLength={120} className="min-w-0 flex-1 rounded-2xl border border-slate-200 bg-[#F8F8FF] px-4 py-3 text-sm font-semibold text-slate-900 outline-none focus:border-[#5D5FEF] focus:ring-4 focus:ring-[#5D5FEF]/10" />
                 <button type="submit" disabled={cityLoading || cityQuery.trim().length < 2} className="min-h-12 rounded-2xl bg-[#5D5FEF] px-4 text-sm font-bold text-white transition hover:bg-[#5254DF] disabled:opacity-50">{cityLoading ? "Buscando…" : "Buscar"}</button>
               </div>
             </form>
             {cityError ? <p role="alert" className="mt-3 text-sm text-rose-700">{cityError}</p> : null}
             {cityChoices.length > 0 ? (
-              <div className="mt-4" aria-label="Municipios encontrados">
-                <p className="mb-2 text-xs font-semibold text-slate-500">Elige el municipio</p>
+              <div className="mt-4" aria-label="Ubicaciones encontradas">
+                <p className="mb-2 text-xs font-semibold text-slate-500">Elige dónde explorar</p>
                 <ul className="max-h-60 space-y-1 overflow-y-auto">
-                  {cityChoices.map((city) => <li key={city.id}><button type="button" disabled={cityLoading} onClick={() => void selectExploreCity(city)} className="flex min-h-14 w-full items-center gap-3 rounded-xl px-3 py-2 text-left transition hover:bg-[#F0F0FF] focus-visible:outline-[#5D5FEF] disabled:opacity-50"><MapPin size={18} className="shrink-0 text-[#5D5FEF]" /><span><span className="block text-sm font-bold text-slate-900">{city.name}</span><span className="text-xs text-slate-500">Municipio · Provincia de {city.province}</span></span><ChevronRight size={16} className="ml-auto shrink-0 text-slate-400" /></button></li>)}
+                  {cityChoices.map((city) => <li key={city.id}><button type="button" disabled={cityLoading} onClick={() => void selectExploreCity(city)} className="flex min-h-14 w-full items-center gap-3 rounded-xl px-3 py-2 text-left transition hover:bg-[#F0F0FF] focus-visible:outline-[#5D5FEF] disabled:opacity-50"><MapPin size={18} className="shrink-0 text-[#5D5FEF]" /><span><span className="block text-sm font-bold text-slate-900">{city.name}</span><span className="text-xs text-slate-500">{city.kind === "island" ? "Isla completa" : "Municipio"} · {city.province}</span></span><ChevronRight size={16} className="ml-auto shrink-0 text-slate-400" /></button></li>)}
                 </ul>
               </div>
             ) : null}
           </section>
-          {cityLocation ? (
+          {selectedExploreCity ? (
             <>
               <section aria-label="Filtrar eventos" className="rounded-2xl bg-[#F0F0FF]/70 p-4">
                 <p className="mb-3 text-xs font-black uppercase tracking-wider text-[#5557D8]">¿Qué buscas?</p>
-                <div className="flex flex-wrap gap-2">
-                  {exploreFilters.map((filter) => <button key={filter.id} type="button" aria-pressed={activeFilter === filter.id} onClick={() => setActiveFilter(filter.id)} className={`min-h-11 rounded-xl px-4 text-sm font-bold transition focus-visible:outline-[#5D5FEF] ${activeFilter === filter.id ? "bg-[#5D5FEF] text-white shadow-sm" : "bg-white text-slate-600 hover:bg-white/70"}`}>{filter.label}</button>)}
+                <div className="grid auto-cols-max grid-flow-col grid-rows-2 gap-2 overflow-x-auto p-1 sm:flex sm:flex-wrap">
+                  {exploreFilters.map((filter) => <button key={filter.id} type="button" aria-pressed={activeFilter === filter.id} onClick={() => setActiveFilter(filter.id)} style={{ color: filter.color, backgroundColor: activeFilter === filter.id ? filter.surface : "#ffffff", borderColor: activeFilter === filter.id ? filter.color : "transparent" }} className="flex min-h-11 items-center gap-2 rounded-xl border-2 px-3 text-xs font-bold transition hover:shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#5D5FEF] sm:text-sm"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={filter.path} /></svg>{filter.label}{activeFilter === filter.id ? <Check size={14} aria-hidden="true" /> : null}</button>)}
                 </div>
+                <p className="mt-2 text-[11px] text-slate-500 sm:hidden">Desliza para ver todas las categorías.</p>
               </section>
-              <EventExploreMap latitude={cityLocation.latitude} longitude={cityLocation.longitude} city={selectedExploreCity} events={filteredExploreEvents} />
+              {mapLocation ? <EventExploreMap latitude={mapLocation.latitude} longitude={mapLocation.longitude} zoom={mapLocation.zoom ?? 13} city={selectedExploreCity} events={filteredExploreEvents} /> : null}
               <section aria-label="Eventos encontrados" className="space-y-3">
                 <div className="flex items-center justify-between gap-3 px-1"><div><h2 className="text-lg font-black text-slate-900">En {selectedExploreCity}</h2><p className="text-xs text-slate-500">Provincia de {selectedProvince}</p></div><p aria-live="polite" className="text-xs font-semibold text-[#5557D8]">{exploreEventsLoading ? "Cargando…" : `${filteredExploreEvents.length} evento${filteredExploreEvents.length === 1 ? "" : "s"}`}</p></div>
                 {exploreEventsError ? <p role="alert" className="rounded-2xl bg-rose-50 p-4 text-sm text-rose-700">{exploreEventsError}</p> : null}
-                {!exploreEventsLoading && !exploreEventsError && filteredExploreEvents.length === 0 ? <div className="rounded-2xl border border-dashed border-[#5D5FEF]/20 bg-white p-6 text-center"><p className="text-sm font-bold text-slate-700">{activeFilter === "all" ? "Todavía no hay eventos en esta ciudad" : "No hay eventos de este tipo"}</p><p className="mt-1 text-xs text-slate-500">{activeFilter === "all" ? "Prueba otro municipio o vuelve más adelante." : "Prueba con Todo para ver el resto de propuestas."}</p></div> : null}
+                {!exploreEventsLoading && !exploreEventsError && filteredExploreEvents.length === 0 ? <div className="rounded-2xl border border-dashed border-[#5D5FEF]/20 bg-white p-6 text-center"><p className="text-sm font-bold text-slate-700">{activeFilter === "all" ? "Todavía no hay eventos en este lugar" : "No hay eventos de este tipo"}</p><p className="mt-1 text-xs text-slate-500">{activeFilter === "all" ? "Prueba otra ciudad o isla, o vuelve más adelante." : "Prueba con Todo para ver el resto de propuestas."}</p></div> : null}
                 <ul className="space-y-3">
                   {filteredExploreEvents.map((event) => (
                     <li key={event.id}>
                       <Link href={`/events/${encodeURIComponent(event.id)}`} className="group flex items-center gap-3 rounded-[1.5rem] border border-slate-200/80 bg-white p-4 shadow-sm transition hover:border-[#5D5FEF]/30 hover:shadow-md focus-visible:outline-[#5D5FEF] sm:gap-4 sm:p-5">
-                        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#F0F0FF] text-[#5D5FEF]"><CalendarDays size={22} /></span>
-                        <div className="min-w-0 flex-1"><span className="inline-block rounded-lg bg-[#F0F0FF] px-2 py-1 text-[10px] font-bold text-[#5557D8]">{getExploreCategory(event.category).label}</span><h3 className="mt-2 break-words text-base font-black leading-snug text-slate-900">{event.title}</h3><p className="mt-1 break-words text-xs leading-5 text-slate-500">{event.venueName || event.address} · {event.city}</p></div>
+                        <span style={{ color: getExploreCategory(event.category).color, backgroundColor: getExploreCategory(event.category).surface }} className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={getExploreCategory(event.category).path} /></svg></span>
+                        <div className="min-w-0 flex-1"><span style={{ color: getExploreCategory(event.category).color, backgroundColor: getExploreCategory(event.category).surface }} className="inline-block rounded-lg px-2 py-1 text-[10px] font-bold">{getExploreCategory(event.category).label}</span><h3 className="mt-2 break-words text-base font-black leading-snug text-slate-900">{event.title}</h3><p className="mt-1 break-words text-xs leading-5 text-slate-500">{event.venueName || event.address} · {event.city}</p></div>
                         <ChevronRight size={18} className="shrink-0 text-[#5D5FEF] transition group-hover:translate-x-0.5" />
                       </Link>
                     </li>
@@ -1216,7 +1239,7 @@ export function EventsView({
                 </ul>
               </section>
             </>
-          ) : !cityLoading && cityChoices.length === 0 ? <p className="px-2 text-center text-sm text-slate-500">Elige un municipio y descubre qué pasa cerca.</p> : null}
+          ) : !cityLoading && cityChoices.length === 0 ? <p className="px-2 text-center text-sm text-slate-500">Elige una ciudad o isla y descubre sus eventos.</p> : null}
         </div>
       ) : null}
 

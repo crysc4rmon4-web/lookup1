@@ -1,10 +1,11 @@
-import { locationNamesMatch } from "@/lib/locations/location-name";
+import { getLocationNames, locationNamesMatch } from "@/lib/locations/location-name";
 
 export type GeocodedAddress = {
   address: string;
   city?: string;
   latitude: number;
   longitude: number;
+  zoom?: number;
 };
 
 type NominatimResult = {
@@ -27,10 +28,10 @@ export async function geocodeAddress(
   }
 
   const params = new URLSearchParams({
-    ...(options.cityOnly ? { city: normalizedAddress } : { q: normalizedAddress }),
+    ...(options.cityOnly ? { city: getLocationNames(normalizedAddress)[0]! } : { q: normalizedAddress }),
     ...(options.province ? { county: options.province } : {}),
     format: "jsonv2",
-    limit: "1",
+    limit: options.cityOnly ? "5" : "1",
     addressdetails: "1",
     countrycodes: "es",
   });
@@ -50,7 +51,9 @@ export async function geocodeAddress(
 
   const results = (await response.json()) as NominatimResult[];
 
-  const result = results[0];
+  const result = options.cityOnly ? results.find((item) =>
+    [item.address?.city, item.address?.town, item.address?.village, item.address?.municipality]
+      .some((name) => name && locationNamesMatch(name, normalizedAddress))) : results[0];
 
   if (!result || !result.lat || !result.lon) {
     throw new Error(
@@ -66,9 +69,6 @@ export async function geocodeAddress(
   }
 
   const city = result.address?.city ?? result.address?.town ?? result.address?.village ?? result.address?.municipality;
-  if (options.cityOnly) {
-    if (!city || !locationNamesMatch(city, normalizedAddress)) throw new Error("No pudimos confirmar ese municipio. Prueba su otro nombre oficial o inténtalo más tarde.");
-  }
 
   return {
     ...(city ? { city } : {}),

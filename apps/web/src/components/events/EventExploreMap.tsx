@@ -8,9 +8,9 @@ import { createEventTileLayer } from "@/lib/events/event-map-tiles";
 import { getExploreCategory } from "@/lib/events/event-explore-categories";
 import type { ExploreEvent } from "@/services/events/get-explore-events";
 
-type Props = { latitude: number; longitude: number; city: string; events: ExploreEvent[] };
+type Props = { latitude: number; longitude: number; zoom?: number; city: string; events: ExploreEvent[] };
 
-export function EventExploreMap({ latitude, longitude, city, events }: Props) {
+export function EventExploreMap({ latitude, longitude, zoom = 13, city, events }: Props) {
   const router = useRouter();
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<LeafletMap | null>(null);
@@ -80,11 +80,24 @@ export function EventExploreMap({ latitude, longitude, city, events }: Props) {
       for (const group of groups.values()) {
         const first = group.events[0]!;
         const multiple = group.events.length > 1;
+        const category = getExploreCategory(first.category);
+        const mixed = group.events.some((event) => getExploreCategory(event.category).group !== category.group);
         const label = multiple ? `${group.events.length} eventos en este lugar` : `${first.title} · ${getExploreCategory(first.category).label}`;
         bounds.extend([group.lat, group.lng]);
+        const dot = document.createElement("span");
+        dot.className = "lookup-explore-marker__dot";
+        dot.style.backgroundColor = mixed ? "#596579" : category.color;
+        if (multiple) dot.textContent = String(group.events.length);
+        else {
+          const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+          for (const [name, value] of Object.entries({ width: "18", height: "18", viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", "stroke-width": "2", "stroke-linecap": "round", "stroke-linejoin": "round", "aria-hidden": "true" })) svg.setAttribute(name, value);
+          const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+          path.setAttribute("d", category.path); svg.append(path);
+          dot.append(svg);
+        }
         const icon = L.divIcon({
           className: "lookup-explore-marker",
-          html: `<span class="lookup-explore-marker__dot">${multiple ? group.events.length : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="5" width="16" height="16" rx="3"/><path d="M8 3v4m8-4v4M4 11h16m-10 4h4"/></svg>'}</span>`,
+          html: dot,
           iconSize: [44, 44], iconAnchor: [22, 22],
         });
         const marker = L.marker([group.lat, group.lng], { icon, title: label, alt: label, keyboard: true }).addTo(markers);
@@ -94,7 +107,9 @@ export function EventExploreMap({ latitude, longitude, city, events }: Props) {
           for (const event of group.events) {
             const link = document.createElement("a");
             link.href = `/events/${encodeURIComponent(event.id)}`;
-            link.textContent = event.title;
+            const theme = getExploreCategory(event.category);
+            link.textContent = `${event.title} · ${theme.label}`;
+            link.style.color = theme.color;
             list.append(link);
           }
           marker.bindPopup(list, { maxWidth: 260 });
@@ -104,14 +119,14 @@ export function EventExploreMap({ latitude, longitude, city, events }: Props) {
       }
       const recenter = () => {
         if (groups.size) map.fitBounds(bounds, { padding: [36, 36], maxZoom: 14, animate: false });
-        else map.setView([latitude, longitude], 13, { animate: false });
+        else map.setView([latitude, longitude], zoom, { animate: false });
       };
       recenterRef.current = recenter;
       recenter();
     }
     void update();
     return () => { disposed = true; removeMarkers?.(); recenterRef.current = null; };
-  }, [map, latitude, longitude, events, router]);
+  }, [map, latitude, longitude, zoom, events, router]);
 
   return (
     <section className="overflow-hidden rounded-[1.75rem] border border-[#5D5FEF]/10 bg-white shadow-sm" aria-label={`Mapa de eventos en ${city}`}>
@@ -120,7 +135,7 @@ export function EventExploreMap({ latitude, longitude, city, events }: Props) {
         <button type="button" disabled={!map} onClick={() => recenterRef.current?.()} className="flex min-h-11 items-center gap-1.5 rounded-xl px-3 text-xs font-bold text-[#5557D8] hover:bg-[#F0F0FF] disabled:opacity-50"><RotateCcw size={14} />Centrar</button>
       </div>
       <div ref={containerRef} className="lookup-explore-map relative z-0 h-[min(55svh,24rem)] min-h-64 w-full bg-[#F0F0FF] sm:h-96" />
-      <p className="px-4 py-3 text-[11px] leading-4 text-slate-500">Acerca con dos dedos o con + y −. Toca un punto para ver el evento.</p>
+      <p className="px-4 py-3 text-[11px] leading-4 text-slate-500">Cada color e icono indica un tipo de evento. Los puntos grises agrupan varias categorías. Acerca con dos dedos o con + y −.</p>
       {error ? <p role="alert" className="border-t border-rose-100 bg-rose-50 px-4 py-3 text-xs text-rose-700">{error}</p> : null}
     </section>
   );

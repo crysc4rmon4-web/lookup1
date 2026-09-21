@@ -1,11 +1,26 @@
 import { normalizeLocationSearch } from "./spain-locations";
 
-// INE includes bilingual names and articles at the end (e.g. "Coruña, A").
+// Preserve official names, bilingual alternatives and INE's trailing articles.
+export function getLocationNames(value: string): string[] {
+  const clean = value.trim().replace(/^(provincia de|province of)\s+/i, "");
+  const names = [clean, ...clean.split("/")].flatMap((part) => {
+    const name = part.trim();
+    const natural = name.replace(/^(.+),\s*(el|la|los|las|a|o|as|os|els|les)$/i, "$2 $1");
+    return [natural, name];
+  });
+  return [...new Set(names.filter(Boolean))];
+}
+
+export function getLocationKeys(value: string): string[] {
+  return [...new Set(getLocationNames(value).flatMap((name) => {
+    const lower = name.toLowerCase().replace(/\s+/g, " ");
+    const plain = lower.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    const words = normalizeLocationSearch(name);
+    return [lower, plain, words, words.replace(/ /g, "-")];
+  }))];
+}
+
 export function locationNamesMatch(actual: string, official: string) {
-  const aliases = (value: string) => value.split("/").map((name) => normalizeLocationSearch(
-    name.replace(/^(provincia de|province of)\s+/i, "")
-      .replace(/^(.+),\s*(el|la|los|las|a|o|as|os|els|les)$/i, "$2 $1"),
-  ));
-  const expected = aliases(official);
-  return aliases(actual).some((name) => name.length > 0 && expected.includes(name));
+  const expected = getLocationNames(official).map(normalizeLocationSearch);
+  return getLocationNames(actual).some((name) => expected.includes(normalizeLocationSearch(name)));
 }

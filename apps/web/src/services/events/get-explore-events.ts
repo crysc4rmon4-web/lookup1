@@ -117,6 +117,7 @@ type ExploreEventsResponse = {
 };
 
 type GetExploreEventsInput = {
+  locationId?: string;
   mapView?: boolean;
   province?: string;
   offset?: number;
@@ -142,6 +143,7 @@ export async function getExploreEvents({
   category = null,
   mapView = false,
   province,
+  locationId,
   offset = 0,
   limit = 30,
   signal,
@@ -198,6 +200,7 @@ export async function getExploreEvents({
   }
 
   if (province) params.set("province", province);
+  if (locationId) params.set("locationId", locationId);
 
   const normalizedCategory =
     category
@@ -276,6 +279,7 @@ export async function getExploreEvents({
       accessToken, city, category, mapView, offset: offset + normalizedLimit,
       ...(signal ? { signal } : {}),
       ...(province ? { province } : {}),
+      ...(locationId ? { locationId } : {}),
     });
     return [...events, ...next];
   }

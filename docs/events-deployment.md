@@ -15,12 +15,22 @@ Las variables locales no viajan con el push. Los cambios de variables en Vercel 
 ## Flujo de comprobación
 
 1. Iniciar sesión con la cuenta de pruebas y abrir Mis eventos. Si falla antes de guardar, revisar los logs de las funciones y las variables del servidor.
-2. Buscar Soria y elegir **Municipio · Provincia de Soria**. Buscar un nombre repetido (por ejemplo, Cabanes) y comprobar que se distingue la provincia.
+2. Buscar Soria y elegir su municipio. Buscar un nombre repetido (por ejemplo, Cabanes) y comprobar que se distingue la provincia. Buscar Tenerife y elegir **Isla completa**: debe incluir La Laguna, mientras que elegir el municipio Santa Cruz de Tenerife solo muestra sus propios eventos. Probar Las Palmas de Gran Canaria, Mallorca, Ibiza/Eivissa y La Graciosa.
 3. Verificar fondo del mapa, zoom, arrastre, controles en móvil, categorías y navegación desde puntos/lista. Los puntos comparten los datos filtrados de la lista y usan las coordenadas guardadas. Varios eventos en las mismas coordenadas se agrupan sin alterar su dirección.
 4. Crear un evento de prueba con fecha futura. Guardar borrador y comprobar Mis eventos > Borradores.
 5. Crear con portada y usar Revisar y publicar. Pulsar Analizar evento si se desea consultar LookUp Intelligence, publicar y comprobar Mis eventos > Activos. Comprobar también que se puede publicar sin analizar o si el análisis falla. Un fallo de publicación conserva el borrador y permite reintentar sin crear otro.
 6. Comprobar que cancelar no crea eventos y que sin portada se puede guardar, pero no publicar.
 7. Ejecutar `pnpm --filter web exec tsc --noEmit` y `git diff --check`. Revisar el diff y obtener visto bueno antes de commit/push. No ejecutar build completo sin acordarlo.
+
+## Catálogo de Explore y colores
+
+- La selección envía un identificador de municipio o isla. El servidor resuelve su provincia y municipios; no confunde Tenerife con Santa Cruz ni una isla con toda su provincia.
+- `spain-islands.json` procede de [INE, municipios por islas 2026](https://www.ine.es/daco/daco42/codmun/26codislas.xlsx). Sus 155 municipios coinciden con los catálogos existentes de Baleares, Las Palmas y Santa Cruz de Tenerife. Actualizar esta relación junto al catálogo INE cuando cambien los municipios.
+- La Graciosa comparte municipio con Teguise y Cabrera con Palma. Sus búsquedas usan además las coordenadas guardadas y los límites rectangulares de OSM documentados en `event-explore-locations.ts`; esos límites se excluyen de Lanzarote/Mallorca. No se geocodifican eventos al renderizar. Los centros aproximados de las islas solo posicionan inicialmente el mapa.
+- Las variantes de nombres (tildes, espacios/guiones, artículos al final y nombres bilingües) se resuelven en `location-name.ts`. Se admiten nombres guardados y claves antiguas sin migrar ni modificar eventos.
+- Diez grupos más Todo, basados en las categorías de [Meetup](https://www.meetup.com/topics/) y [Eventbrite](https://eventbrite.com/), no en un ranking de búsquedas propio. La paleta categórica sigue el criterio de [Carbon](https://carbondesignsystem.com/data-visualization/color-palettes/), con tonos adaptados a LookUp, superficies claras e iconos/texto como apoyo al color.
+- `event-explore-categories.ts` es la única asignación de categorías, colores e iconos para Explore. Las categorías nuevas deben añadirse allí; las desconocidas quedan en Ocio. Un punto de categorías mezcladas es gris y muestra el número; su ventana identifica cada evento y categoría.
+- La lista se carga aunque falle el geocodificador del centro del municipio. Si hay coordenadas guardadas, el mapa puede centrarse en sus eventos.
 
 ## Diagnóstico observado el 20/09/2026
 

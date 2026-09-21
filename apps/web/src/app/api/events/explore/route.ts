@@ -1,6 +1,8 @@
 import {
   NextResponse,
 } from "next/server";
+import { getLocationKeys, getLocationNames } from "@/lib/locations/location-name";
+import { getExploreLocation, getExploreMunicipalityNames, resolveExploreMunicipality } from "@/lib/locations/event-explore-locations";
 
 import {
   parseStoredLookupEmbedding,
@@ -433,10 +435,17 @@ export async function GET(
         ?.trim() ??
       "";
 
-    const province = url.searchParams.get("province")?.trim();
+    let province = url.searchParams.get("province")?.trim();
     if (province && (province.length > 120 || /[%_]/.test(province))) {
       return NextResponse.json({ error: "Provincia no válida." }, { status: 400, headers: noStoreHeaders() });
     }
+
+    const locationId = url.searchParams.get("locationId");
+    const location = locationId ? getExploreLocation(locationId) : resolveExploreMunicipality(city, province);
+    if (locationId && !location) {
+      return NextResponse.json({ error: "Selecciona un municipio o una isla de la lista." }, { status: 400, headers: noStoreHeaders() });
+    }
+    if (location) province = location.province;
 
     const mapView = url.searchParams.get("view") === "map";
     const offset = Number(url.searchParams.get("offset") ?? "0");
@@ -596,15 +605,11 @@ export async function GET(
         city,
       );
 
-    // Existing events use both slug keys and lowercased INE names (with commas).
-    // Match these exact formats without broadening the search to other cities.
-    const storedCityName = city.toLowerCase().replace(/\s+/g, " ");
-    const cityKeys = [...new Set([
-      cityKey,
-      cityKey.replace(/-/g, " "),
-      storedCityName,
-      storedCityName.normalize("NFD").replace(/[\u0300-\u036f]/g, ""),
-    ])];
+    const municipalityNames = location ? getExploreMunicipalityNames(location) : [city];
+    const cityKeys = [...new Set(municipalityNames.flatMap(getLocationKeys))];
+    const cityNames = [...new Set(municipalityNames.flatMap(getLocationNames))];
+    // Quote PostgREST values: INE names can include commas and parentheses.
+    const list = (values: string[]) => values.map((value) => JSON.stringify(value)).join(",");
 
     /*
      * ============================================================
@@ -656,10 +661,7 @@ export async function GET(
           "status",
           "published",
         )
-        .in(
-          "city_key",
-          cityKeys,
-        )
+        .or(`city_key.in.(${list(cityKeys)}),city.in.(${list(cityNames)})`)
         .gt(
           "end_at",
           dateRange.fromIso,
@@ -676,6 +678,15 @@ export async function GET(
         );
 
     if (province) query = query.ilike("province", province);
+
+    if (location?.bounds) {
+      const { south, north, west, east } = location.bounds;
+      query = query.gte("latitude", south).lte("latitude", north).gte("longitude", west).lte("longitude", east);
+    }
+    if (location?.excludeBounds) {
+      const { south, north, west, east } = location.excludeBounds;
+      query = query.or(`latitude.is.null,longitude.is.null,latitude.lt.${south},latitude.gt.${north},longitude.lt.${west},longitude.gt.${east}`);
+    }
 
     if (mapView) {
       query = query.order("id", { ascending: true }).range(offset, offset + limit - 1);
