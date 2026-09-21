@@ -25,6 +25,13 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+@layer utilities {
+  /* Keep brand headers readable when Safari cannot render the gradient. */
+  [class~="from-[#5D5FEF]"] {
+    background-color: #5d5fef;
+  }
+}
+
 /* Explore map controls share LookUp's violet palette and touch targets. */
 .lookup-explore-map .leaflet-control-zoom { border: 0; box-shadow: 0 4px 16px #27264b1a; border-radius: 14px; overflow: hidden; }
 .lookup-explore-map .leaflet-control-zoom a { width: 44px; height: 44px; line-height: 44px; color: #5557d8; border-color: #f0f0ff; }

@@ -596,6 +596,16 @@ export async function GET(
         city,
       );
 
+    // Existing events use both slug keys and lowercased INE names (with commas).
+    // Match these exact formats without broadening the search to other cities.
+    const storedCityName = city.toLowerCase().replace(/\s+/g, " ");
+    const cityKeys = [...new Set([
+      cityKey,
+      cityKey.replace(/-/g, " "),
+      storedCityName,
+      storedCityName.normalize("NFD").replace(/[\u0300-\u036f]/g, ""),
+    ])];
+
     /*
      * ============================================================
      * EVENTOS
@@ -646,9 +656,9 @@ export async function GET(
           "status",
           "published",
         )
-        .eq(
+        .in(
           "city_key",
-          cityKey,
+          cityKeys,
         )
         .gt(
           "end_at",
