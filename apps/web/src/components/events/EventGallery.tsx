@@ -12,9 +12,12 @@ import {
     useState,
 } from "react";
 
-import type {
-    PersistedEventImage,
+import {
+    isEventVideo,
+    type PersistedEventImage,
 } from "@/lib/events/event-images";
+
+import { EventVideo } from "./event-video";
 
 import {
     EventCoverImage,
@@ -152,6 +155,9 @@ export function EventGallery({
             className="overflow-hidden bg-slate-100"
         >
             <div className="group relative aspect-[16/10] overflow-hidden bg-slate-100 sm:aspect-[16/8]">
+                {isEventVideo(activeImage.storagePath || activeImage.publicUrl) ? (
+                    <EventVideo key={activeImage.publicUrl} src={activeImage.publicUrl} title={`Vídeo de ${title}`} />
+                ) : (
                 <EventCoverImage
                     src={
                         activeImage.publicUrl
@@ -159,6 +165,7 @@ export function EventGallery({
                     alt={`Imagen ${activeIndex + 1} de ${title}`}
                     className="absolute inset-0"
                 />
+                )}
 
                 <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/30 via-transparent to-transparent" />
 
@@ -182,7 +189,7 @@ export function EventGallery({
                             onClick={
                                 previousImage
                             }
-                            aria-label="Imagen anterior"
+                            aria-label="Archivo anterior"
                             className="absolute left-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/95 text-slate-800 shadow-lg transition hover:scale-105 hover:bg-white"
                         >
                             <ChevronLeft
@@ -195,7 +202,7 @@ export function EventGallery({
                             onClick={
                                 nextImage
                             }
-                            aria-label="Imagen siguiente"
+                            aria-label="Archivo siguiente"
                             className="absolute right-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/95 text-slate-800 shadow-lg transition hover:scale-105 hover:bg-white"
                         >
                             <ChevronRight
@@ -223,7 +230,7 @@ export function EventGallery({
                                         index,
                                     )
                                 }
-                                aria-label={`Ver imagen ${index + 1}`}
+                                aria-label={`Ver archivo ${index + 1}`}
                                 aria-current={
                                     index ===
                                         activeIndex
@@ -236,6 +243,7 @@ export function EventGallery({
                                     : "border-transparent opacity-70 hover:opacity-100"
                                     }`}
                             >
+                                {isEventVideo(image.storagePath || image.publicUrl) ? <span className="text-xs font-bold">Vídeo {index + 1}</span> : (
                                 <EventCoverImage
                                     src={
                                         image.publicUrl
@@ -243,6 +251,7 @@ export function EventGallery({
                                     alt={`Miniatura ${index + 1} de ${title}`}
                                     className="absolute inset-0"
                                 />
+                                )}
                             </button>
                         ),
                     )}

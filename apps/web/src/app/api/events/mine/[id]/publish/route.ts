@@ -1,3 +1,4 @@
+import { isEventVideo } from "@/lib/events/event-images";
 import {
   NextResponse,
 } from "next/server";
@@ -249,52 +250,15 @@ export async function POST(
  * la portada del evento.
  */
 
-const {
-  count: imageCount,
-  error: imageCountError,
-} =
-  await supabaseAdmin
-    .from(
-      "event_images",
-    )
-    .select(
-      "id",
-      {
-        count:
-          "exact",
-        head:
-          true,
-      },
-    )
-    .eq(
-      "event_id",
-      eventId,
-    );
-
-if (imageCountError) {
-  throw new Error(
-    `No se pudo comprobar la galería del evento: ${imageCountError.message}`,
-  );
-}
-
-if (
-  !imageCount ||
-  imageCount <
-    1
-) {
-  return NextResponse.json(
-    {
-      error:
-        "Añade al menos una imagen antes de publicar el evento. La primera imagen será su portada.",
-    },
-    {
-      status:
-        409,
-      headers:
-        noStoreHeaders(),
-    },
-  );
-}
+    const { data: cover, error: coverError } = await supabaseAdmin
+      .from("event_images").select("storage_path").eq("event_id", eventId)
+      .eq("position", 0).maybeSingle();
+    if (coverError) throw new Error(`No se pudo comprobar la portada: ${coverError.message}`);
+    if (!cover || isEventVideo(cover.storage_path)) {
+      return NextResponse.json({ error: "Añade una foto de portada antes de publicar el evento." }, {
+        status: 409, headers: noStoreHeaders(),
+      });
+    }
 
     /*
      * ==========================================================

@@ -1,3 +1,5 @@
+import { getEventFeedData } from "@/lib/events/event-feed-data";
+import { exploreFilters, getExploreGroupSlugs, getNonLeisureSlugs, type ExploreFilter } from "@/lib/events/event-explore-categories";
 import {
   NextResponse,
 } from "next/server";
@@ -447,7 +449,12 @@ export async function GET(
     }
     if (location) province = location.province;
 
-    const mapView = url.searchParams.get("view") === "map";
+    const feedView = url.searchParams.get("view") === "feed";
+    const mapView = feedView || url.searchParams.get("view") === "map";
+    const group = url.searchParams.get("group") ?? "all";
+    if (feedView && !exploreFilters.some(item => item.id === group)) {
+      return NextResponse.json({ error: "Categoría no válida." }, { status: 400, headers: noStoreHeaders() });
+    }
     const offset = Number(url.searchParams.get("offset") ?? "0");
     if (mapView && (!Number.isSafeInteger(offset) || offset < 0)) {
       return NextResponse.json({ error: "Página no válida." }, { status: 400, headers: noStoreHeaders() });
@@ -677,6 +684,13 @@ export async function GET(
           limit,
         );
 
+    if (feedView) query = query.eq("visibility", "public");
+    if (feedView && group !== "all") {
+      query = group === "leisure"
+        ? query.not("category", "in", `(${getNonLeisureSlugs().join(",")})`)
+        : query.in("category", getExploreGroupSlugs(group as ExploreFilter));
+    }
+
     if (province) query = query.ilike("province", province);
 
     if (location?.bounds) {
@@ -731,6 +745,18 @@ export async function GET(
         data ??
         []
       ) as EventRow[];
+
+    if (feedView) {
+      if (!eventRows.length) return NextResponse.json({ events: [], count: 0 }, { headers: noStoreHeaders() });
+      const extras = await getEventFeedData(eventRows.map(event => event.id), currentProfileId);
+      const events = eventRows.map(event => ({
+        ...mapEvent(event), images: extras.images.get(event.id) ?? [],
+        isFavorite: extras.favorites.has(event.id), canFavorite: event.creator_profile_id !== currentProfileId,
+        likeCount: extras.likes?.get(event.id)?.count ?? null, isLiked: extras.likes?.get(event.id)?.liked ?? false,
+        relevanceScore: null, relevanceLevel: null, matchedInterests: [],
+      }));
+      return NextResponse.json({ events, count: events.length }, { headers: noStoreHeaders() });
+    }
 
     if (mapView) {
       const events = eventRows.map((event) => ({

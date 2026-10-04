@@ -67,7 +67,32 @@ export function isValidEventImageStoragePath(
     return false;
   }
 
-  return normalized.startsWith(
-    `${profileId}/${eventId}/`,
-  );
+  const prefix = `${profileId}/${eventId}/`;
+  return normalized.startsWith(prefix) && /^[a-zA-Z0-9_-]+\.(jpg|jpeg|png|webp|mp4|webm)$/i.test(normalized.slice(prefix.length));
+}
+
+export const EVENT_VIDEO_MAX_BYTES = 50 * 1024 * 1024;
+export const EVENT_MEDIA_ACCEPT = "image/jpeg,image/png,image/webp,video/mp4,video/webm";
+export type EventMediaMimeType = EventImageMimeType | "video/mp4" | "video/webm";
+
+export function isSupportedEventMediaMimeType(value: string): value is EventMediaMimeType {
+  return isSupportedEventImageMimeType(value) || value === "video/mp4" || value === "video/webm";
+}
+
+export function isEventVideo(path: string) {
+  return /\.(mp4|webm)(?:[?#]|$)/i.test(path);
+}
+
+export function getEventMediaExtension(type: EventMediaMimeType) {
+  return type === "video/mp4" ? "mp4" : type === "video/webm" ? "webm" : getEventImageExtension(type);
+}
+
+export function getEventMediaError(file: { type: string; size: number }): string | null {
+  if (!isSupportedEventMediaMimeType(file.type)) return "Admite fotos JPG, PNG o WebP y vídeos MP4 o WebM.";
+  if (!Number.isFinite(file.size) || file.size <= 0) return "El archivo está vacío o no es válido.";
+  const video = file.type.startsWith("video/");
+  if (file.size > (video ? EVENT_VIDEO_MAX_BYTES : EVENT_IMAGE_MAX_BYTES)) {
+    return video ? "Cada vídeo puede pesar como máximo 50 MB." : "Cada foto puede pesar como máximo 6 MB.";
+  }
+  return null;
 }

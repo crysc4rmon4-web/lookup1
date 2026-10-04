@@ -22,6 +22,7 @@ import {
 } from "@/services/events/event-favorite";
 
 type EventFavoriteButtonProps = {
+  iconOnly?: boolean;
   eventId: string;
 
   creatorProfileId:
@@ -42,6 +43,7 @@ type EventFavoriteButtonProps = {
 };
 
 export function EventFavoriteButton({
+  iconOnly = false,
   eventId,
   creatorProfileId,
   initialIsFavorite,
@@ -366,6 +368,8 @@ export function EventFavoriteButton({
         disabled={
           disabled
         }
+        aria-label={label}
+        title={label}
         aria-pressed={
           isFavorite
         }
@@ -391,11 +395,10 @@ export function EventFavoriteButton({
           />
         )}
 
-        {
-          label
-        }
+        {iconOnly ? null : label}
       </button>
 
+      {iconOnly ? <span className="mt-1 block text-center text-[10px] font-semibold text-slate-600">{isFavorite ? "Guardado" : "Guardar"}</span> : null}
       {error ? (
         <p className="mt-1 text-xs font-semibold text-rose-600">
           {

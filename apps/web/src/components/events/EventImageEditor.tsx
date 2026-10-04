@@ -1,29 +1,22 @@
 "use client";
 
-import {
-  type ChangeEvent,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-
+import { useEffect, useRef, useState, type ChangeEvent } from "react";
 import {
   ChevronLeft,
   ChevronRight,
   ImagePlus,
   LoaderCircle,
   Trash2,
+  Video,
 } from "lucide-react";
-
 import {
-  EVENT_IMAGE_MAX_BYTES,
   EVENT_IMAGES_MAX_COUNT,
-  isSupportedEventImageMimeType,
+  EVENT_MEDIA_ACCEPT,
+  getEventMediaError,
+  isEventVideo,
 } from "@/lib/events/event-images";
-
-import {
-  EventCoverImage,
-} from "./EventCoverImage";
+import { EventCoverImage } from "./EventCoverImage";
+import { EventVideo } from "./event-video";
 
 export type EditableEventImage =
   | {
@@ -33,513 +26,192 @@ export type EditableEventImage =
       storagePath: string;
       publicUrl: string;
     }
-  | {
-      key: string;
-      kind: "new";
-      file: File;
-    };
+  | { key: string; kind: "new"; file: File };
 
-type EventImageEditorProps = {
+type Props = {
   items: EditableEventImage[];
-
-  onChange: (
-    items: EditableEventImage[],
-  ) => void;
-
+  onChange: (items: EditableEventImage[]) => void;
   disabled?: boolean;
-
   loading?: boolean;
 };
+const isVideo = (item: EditableEventImage) =>
+  item.kind === "new"
+    ? item.file.type.startsWith("video/")
+    : isEventVideo(item.storagePath);
 
 export function EventImageEditor({
   items,
   onChange,
   disabled = false,
   loading = false,
-}: EventImageEditorProps) {
-  const inputRef =
-    useRef<HTMLInputElement | null>(
-      null,
-    );
-
-  const [
-    previewUrls,
-    setPreviewUrls,
-  ] =
-    useState<
-      Record<string, string>
-    >({});
-
-  const [
-    error,
-    setError,
-  ] =
-    useState<string | null>(
-      null,
-    );
-
+}: Props) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [urls, setUrls] = useState<Record<string, string>>({});
+  const [error, setError] = useState<string | null>(null);
   useEffect(() => {
-    const urls:
-      Record<string, string> =
-      {};
+    const next: Record<string, string> = {};
+    items.forEach((item) => {
+      if (item.kind === "new") next[item.key] = URL.createObjectURL(item.file);
+    });
+    setUrls(next);
+    return () => Object.values(next).forEach((url) => URL.revokeObjectURL(url));
+  }, [items]);
 
-    for (
-      const item
-      of items
-    ) {
-      if (
-        item.kind ===
-        "new"
-      ) {
-        urls[item.key] =
-          URL.createObjectURL(
-            item.file,
-          );
-      }
-    }
-
-    setPreviewUrls(
-      urls,
-    );
-
-    return () => {
-      for (
-        const url
-        of Object.values(
-          urls,
-        )
-      ) {
-        URL.revokeObjectURL(
-          url,
-        );
-      }
-    };
-  }, [
-    items,
-  ]);
-
-  function getImageUrl(
-    item: EditableEventImage,
-  ) {
-    if (
-      item.kind ===
-      "persisted"
-    ) {
-      return item.publicUrl;
-    }
-
-    return (
-      previewUrls[
-        item.key
-      ] ?? ""
-    );
-  }
-
-  function moveImage(
-    index: number,
-    direction:
-      -1 | 1,
-  ) {
-    const nextIndex =
-      index +
-      direction;
-
-    if (
-      nextIndex <
-        0 ||
-      nextIndex >=
-        items.length
-    ) {
-      return;
-    }
-
-    const next =
-      [...items];
-
-    const current =
-      next[index];
-
-    const target =
-      next[nextIndex];
-
-    if (
-      !current ||
-      !target
-    ) {
-      return;
-    }
-
-    next[index] =
-      target;
-
-    next[nextIndex] =
-      current;
-
-    onChange(
-      next,
-    );
-
-    setError(
-      null,
-    );
-  }
-
-  function removeImage(
-    index: number,
-  ) {
-    onChange(
-      items.filter(
-        (
-          _,
-          itemIndex,
-        ) =>
-          itemIndex !==
-          index,
-      ),
-    );
-
-    setError(
-      null,
-    );
-  }
-
-  function handleFiles(
-    event:
-      ChangeEvent<HTMLInputElement>,
-  ) {
-    const selected =
-      Array.from(
-        event.target.files ??
-          [],
-      );
-
-    event.target.value =
-      "";
-
-    if (
-      selected.length ===
-      0
-    ) {
-      return;
-    }
-
-    const availableSlots =
-      EVENT_IMAGES_MAX_COUNT -
-      items.length;
-
-    if (
-      availableSlots <=
-      0
-    ) {
+  function update(next: EditableEventImage[]) {
+    if (next[0] && isVideo(next[0])) {
       setError(
-        `Puedes añadir como máximo ${EVENT_IMAGES_MAX_COUNT} imágenes.`,
+        "La portada debe ser una foto. Coloca una foto primero o elimina los vídeos antes de quitar la última foto.",
       );
-
       return;
     }
-
-    if (
-      selected.length >
-      availableSlots
-    ) {
-      setError(
-        `Solo puedes añadir ${availableSlots} imagen${availableSlots === 1 ? "" : "es"} más.`,
-      );
-
+    setError(null);
+    onChange(next);
+  }
+  function move(index: number, direction: number) {
+    const next = [...items];
+    const target = index + direction;
+    if (!next[index] || !next[target]) return;
+    [next[index], next[target]] = [next[target]!, next[index]!];
+    update(next);
+  }
+  function select(event: ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(event.target.files ?? []);
+    event.target.value = "";
+    if (!files.length) return;
+    if (files.length + items.length > EVENT_IMAGES_MAX_COUNT) {
+      setError("Puedes añadir hasta 5 archivos en total.");
       return;
     }
-
-    for (
-      const file
-      of selected
-    ) {
-      if (
-        !isSupportedEventImageMimeType(
-          file.type,
-        )
-      ) {
-        setError(
-          "Las imágenes deben ser JPG, PNG o WebP.",
-        );
-
-        return;
-      }
-
-      if (
-        file.size <=
-        0
-      ) {
-        setError(
-          "Una de las imágenes seleccionadas está vacía.",
-        );
-
-        return;
-      }
-
-      if (
-        file.size >
-        EVENT_IMAGE_MAX_BYTES
-      ) {
-        setError(
-          "Cada imagen puede pesar como máximo 6 MB.",
-        );
-
+    for (const file of files) {
+      const problem = getEventMediaError(file);
+      if (problem) {
+        setError(problem);
         return;
       }
     }
-
-    const newItems:
-      EditableEventImage[] =
-      selected.map(
-        (file) => ({
-          key:
-            crypto.randomUUID(),
-
-          kind:
-            "new",
-
-          file,
-        }),
-      );
-
-    onChange([
+    const next: EditableEventImage[] = [
       ...items,
-      ...newItems,
-    ]);
-
-    setError(
-      null,
-    );
+      ...files.map((file) => ({
+        key: crypto.randomUUID(),
+        kind: "new" as const,
+        file,
+      })),
+    ];
+    // A multi-file selection may start with a video: promote its first photo.
+    if (!items.length) {
+      const photo = next.findIndex((item) => !isVideo(item));
+      if (photo > 0) next.unshift(...next.splice(photo, 1));
+    }
+    update(next);
   }
-
-  if (
-    loading
-  ) {
+  if (loading)
     return (
-      <section className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-        <div className="flex items-center gap-3 text-sm font-bold text-slate-500">
-          <LoaderCircle
-            size={18}
-            className="animate-spin text-[#5D5FEF]"
-          />
-
-          Cargando galería…
-        </div>
-      </section>
+      <p role="status" className="flex items-center gap-2 p-5">
+        <LoaderCircle className="animate-spin" size={18} />
+        Cargando galería…
+      </p>
     );
-  }
-
   return (
-    <section className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#5D5FEF]">
-            Galería
-          </p>
-
-          <h2 className="mt-1 text-xl font-black tracking-tight text-slate-950">
-            Imágenes del evento
-          </h2>
-
-          <p className="mt-2 text-sm leading-6 text-slate-500">
-            La primera imagen será siempre la portada. Puedes añadir hasta cinco y cambiar su orden.
-          </p>
-        </div>
-
-        <span className="shrink-0 rounded-full bg-[#F0F0FF] px-3 py-1.5 text-xs font-black text-[#5557D8]">
-          {items.length}/
-          {
-            EVENT_IMAGES_MAX_COUNT
-          }
-        </span>
-      </div>
-
-      {items.length >
-      0 ? (
-        <div className="mt-5 grid grid-cols-2 gap-3">
-          {items.map(
-            (
-              item,
-              index,
-            ) => {
-              const imageUrl =
-                getImageUrl(
-                  item,
-                );
-
-              const isCover =
-                index ===
-                0;
-
-              return (
-                <div
-                  key={
-                    item.key
-                  }
-                  className={
-                    isCover
-                      ? "col-span-2"
-                      : ""
-                  }
-                >
-                  <div
-                    className={`relative overflow-hidden rounded-2xl bg-slate-100 ${
-                      isCover
-                        ? "aspect-[16/8]"
-                        : "aspect-square"
-                    }`}
+    <section className="rounded-3xl border border-slate-200 bg-white p-5">
+      <h3 className="font-bold text-slate-900">Fotos y vídeos</h3>
+      <p className="mt-1 text-sm text-slate-500">
+        Hasta 5 archivos. La primera foto será la portada. Fotos hasta 6 MB y
+        vídeos MP4 o WebM hasta 50 MB.
+      </p>
+      <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+        {items.map((item, index) => {
+          const url =
+            item.kind === "persisted" ? item.publicUrl : urls[item.key];
+          return (
+            <article
+              key={item.key}
+              className="overflow-hidden rounded-2xl border border-slate-200"
+            >
+              <div className="relative aspect-video bg-slate-100">
+                {url ? (
+                  isVideo(item) ? (
+                    <EventVideo
+                      key={url}
+                      src={url}
+                      title={`Vista previa del vídeo ${index + 1}`}
+                    />
+                  ) : (
+                    <EventCoverImage
+                      src={url}
+                      alt={`Foto ${index + 1}`}
+                      className="absolute inset-0"
+                    />
+                  )
+                ) : null}
+              </div>
+              <div className="flex items-center justify-between gap-2 p-2">
+                <span className="flex items-center gap-1 text-xs font-bold text-slate-700">
+                  {isVideo(item) ? <Video size={14} /> : null}
+                  {index === 0 ? "Portada" : `Archivo ${index + 1}`}
+                </span>
+                <div className="flex gap-1">
+                  <button
+                    type="button"
+                    aria-label={`Mover archivo ${index + 1} antes`}
+                    disabled={disabled || index === 0}
+                    onClick={() => move(index, -1)}
+                    className="min-h-11 min-w-11 rounded-lg p-3 hover:bg-slate-100 disabled:opacity-30"
                   >
-                    {imageUrl ? (
-                      <EventCoverImage
-                        src={
-                          imageUrl
-                        }
-                        alt={
-                          isCover
-                            ? "Portada del evento"
-                            : `Imagen ${index + 1} del evento`
-                        }
-                        className="absolute inset-0"
-                      />
-                    ) : null}
-
-                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/45 via-transparent to-transparent" />
-
-                    {isCover ? (
-                      <span className="absolute left-3 top-3 rounded-full bg-white/95 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.08em] text-slate-900 shadow-sm backdrop-blur">
-                        Portada
-                      </span>
-                    ) : (
-                      <span className="absolute left-3 top-3 rounded-full bg-slate-950/60 px-2.5 py-1 text-[10px] font-black text-white backdrop-blur">
-                        {index +
-                          1}
-                      </span>
-                    )}
-
-                    <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between gap-2">
-                      <div className="flex gap-1.5">
-                        <button
-                          type="button"
-                          onClick={() =>
-                            moveImage(
-                              index,
-                              -1,
-                            )
-                          }
-                          disabled={
-                            disabled ||
-                            index ===
-                              0
-                          }
-                          aria-label="Mover imagen a la izquierda"
-                          className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/95 text-slate-800 shadow-sm transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-40"
-                        >
-                          <ChevronLeft
-                            size={17}
-                          />
-                        </button>
-
-                        <button
-                          type="button"
-                          onClick={() =>
-                            moveImage(
-                              index,
-                              1,
-                            )
-                          }
-                          disabled={
-                            disabled ||
-                            index ===
-                              items.length -
-                                1
-                          }
-                          aria-label="Mover imagen a la derecha"
-                          className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/95 text-slate-800 shadow-sm transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-40"
-                        >
-                          <ChevronRight
-                            size={17}
-                          />
-                        </button>
-                      </div>
-
-                      <button
-                        type="button"
-                        onClick={() =>
-                          removeImage(
-                            index,
-                          )
-                        }
-                        disabled={
-                          disabled
-                        }
-                        aria-label="Eliminar imagen"
-                        className="flex h-9 w-9 items-center justify-center rounded-xl bg-rose-50/95 text-rose-600 shadow-sm transition hover:bg-rose-100 disabled:cursor-not-allowed disabled:opacity-40"
-                      >
-                        <Trash2
-                          size={16}
-                        />
-                      </button>
-                    </div>
-                  </div>
+                    <ChevronLeft size={18} />
+                  </button>
+                  <button
+                    type="button"
+                    aria-label={`Mover archivo ${index + 1} después`}
+                    disabled={disabled || index === items.length - 1}
+                    onClick={() => move(index, 1)}
+                    className="min-h-11 min-w-11 rounded-lg p-3 hover:bg-slate-100 disabled:opacity-30"
+                  >
+                    <ChevronRight size={18} />
+                  </button>
+                  <button
+                    type="button"
+                    aria-label={`Eliminar archivo ${index + 1}`}
+                    disabled={disabled}
+                    onClick={() => update(items.filter((_, i) => i !== index))}
+                    className="min-h-11 min-w-11 rounded-lg p-3 text-rose-600 hover:bg-rose-50 disabled:opacity-30"
+                  >
+                    <Trash2 size={18} />
+                  </button>
                 </div>
-              );
-            },
-          )}
-        </div>
-      ) : (
-        <div className="mt-5 rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-5 py-8 text-center">
-          <ImagePlus
-            size={24}
-            className="mx-auto text-[#5D5FEF]"
-          />
-
-          <p className="mt-3 text-sm font-black text-slate-800">
-            Todavía no hay imágenes
-          </p>
-
-          <p className="mt-1 text-xs leading-5 text-slate-500">
-            Añade al menos una antes de publicar el evento.
-          </p>
-        </div>
-      )}
-
+              </div>
+            </article>
+          );
+        })}
+      </div>
       <input
-        ref={
-          inputRef
-        }
+        ref={inputRef}
         type="file"
-        accept="image/jpeg,image/png,image/webp"
+        accept={EVENT_MEDIA_ACCEPT}
         multiple
+        disabled={disabled}
+        onChange={select}
         className="hidden"
-        onChange={
-          handleFiles
-        }
       />
-
-      {items.length <
-      EVENT_IMAGES_MAX_COUNT ? (
-        <button
-          type="button"
-          onClick={() =>
-            inputRef.current?.click()
-          }
-          disabled={
-            disabled
-          }
-          className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-[#D9DAF8] bg-[#F8F8FF] px-4 py-3.5 text-sm font-black text-[#5557D8] transition hover:border-[#BFC0F4] hover:bg-[#F1F1FF] disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          <ImagePlus
-            size={17}
-          />
-
-          Añadir imágenes
-        </button>
-      ) : null}
-
+      <div className="mt-4 flex items-center justify-between gap-2">
+        <span className="text-xs text-slate-500">
+          {items.length}/{EVENT_IMAGES_MAX_COUNT} archivos
+        </span>
+        {items.length < EVENT_IMAGES_MAX_COUNT ? (
+          <button
+            type="button"
+            disabled={disabled}
+            onClick={() => inputRef.current?.click()}
+            className="flex items-center gap-2 rounded-xl bg-[#F0F0FF] px-4 py-3 text-sm font-bold text-[#5557D8] disabled:opacity-50"
+          >
+            <ImagePlus size={18} />
+            Añadir fotos o vídeos
+          </button>
+        ) : null}
+      </div>
       {error ? (
         <p
           role="alert"
-          className="mt-3 text-sm font-bold text-rose-600"
+          className="mt-3 rounded-xl bg-rose-50 p-3 text-sm text-rose-700"
         >
           {error}
         </p>

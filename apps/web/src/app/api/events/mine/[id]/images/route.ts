@@ -3,6 +3,10 @@ import {
 } from "next/server";
 
 import {
+  getEventMediaError,
+  getEventMediaExtension,
+  isSupportedEventMediaMimeType,
+  isEventVideo,
   EVENT_IMAGES_BUCKET,
   EVENT_IMAGES_MAX_COUNT,
   isValidEventImageStoragePath,
@@ -675,6 +679,11 @@ export async function PUT(
       }
     }
 
+    const cover = [...images].sort((a, b) => a.position - b.position)[0];
+    if (cover && isEventVideo(cover.storagePath)) {
+      return NextResponse.json({ error: "La portada debe ser una foto." }, { status: 400, headers: noStoreHeaders() });
+    }
+
     /*
      * Comprobamos que los objetos realmente
      * existen en Storage antes de persistirlos.
@@ -711,16 +720,7 @@ export async function PUT(
         );
       }
 
-      const storedNames =
-        new Set(
-          (
-            storedObjects ??
-            []
-          ).map(
-            (object) =>
-              object.name,
-          ),
-        );
+      const storedByName = new Map((storedObjects ?? []).map(object => [object.name, object]));
 
       for (
         const image
@@ -733,9 +733,7 @@ export async function PUT(
 
         if (
           !fileName ||
-          !storedNames.has(
-            fileName,
-          )
+          !storedByName.has(fileName)
         ) {
           return NextResponse.json(
             {
@@ -751,6 +749,15 @@ export async function PUT(
             },
           );
         }
+        const metadata = storedByName.get(fileName)?.metadata;
+        const mime = typeof metadata?.mimetype === "string" ? metadata.mimetype : "";
+        const size = Number(metadata?.size);
+        const extension = fileName.split(".").pop()?.toLowerCase();
+        if (getEventMediaError({ type: mime, size }) || !isSupportedEventMediaMimeType(mime) ||
+            (extension !== getEventMediaExtension(mime) && !(mime === "image/jpeg" && extension === "jpeg"))) {
+          return NextResponse.json({ error: "Uno de los archivos tiene formato o tamaño no permitido." }, { status: 400, headers: noStoreHeaders() });
+        }
+
       }
     }
 
@@ -781,88 +788,13 @@ export async function PUT(
       );
     }
 
-    const {
-      error:
-      deleteError,
-    } =
-      await supabaseAdmin
-        .from(
-          "event_images",
-        )
-        .delete()
-        .eq(
-          "event_id",
-          eventId,
-        );
-
-    if (deleteError) {
-      throw new Error(
-        `No se pudo actualizar la galería: ${deleteError.message}`,
-      );
-    }
-
-    let persistedImages:
-      {
-        id:
-        string;
-
-        storage_path:
-        string;
-
-        position:
-        number;
-      }[] =
-      [];
-
-    if (
-      images.length >
-      0
-    ) {
-      const {
-        data:
-        insertedData,
-
-        error:
-        insertError,
-      } =
-        await supabaseAdmin
-          .from(
-            "event_images",
-          )
-          .insert(
-            images.map(
-              (image) => ({
-                event_id:
-                  eventId,
-
-                storage_path:
-                  image.storagePath,
-
-                position:
-                  image.position,
-              }),
-            ),
-          )
-          .select(
-            `
-              id,
-              storage_path,
-              position
-            `,
-          );
-
-      if (
-        insertError
-      ) {
-        throw new Error(
-          `No se pudo guardar la galería: ${insertError.message}`,
-        );
-      }
-
-      persistedImages =
-        insertedData ??
-        [];
-    }
+    const { data: insertedData, error: replaceError } = await supabaseAdmin.rpc("replace_event_media", {
+      target_id: eventId,
+      owner_id: userId,
+      media: images.map(image => ({ ...image, publicUrl: supabaseAdmin.storage.from(EVENT_IMAGES_BUCKET).getPublicUrl(image.storagePath).data.publicUrl })),
+    });
+    if (replaceError) throw new Error(`No se pudo guardar la galería: ${replaceError.message}`);
+    const persistedImages = (insertedData ?? []) as { id: string; storage_path: string; position: number }[];
 
     const publicImages =
       persistedImages
@@ -908,39 +840,6 @@ export async function PUT(
       publicImages[0]
         ?.publicUrl ??
       null;
-
-    const {
-      error:
-      coverUpdateError,
-    } =
-      await supabaseAdmin
-        .from(
-          "events",
-        )
-        .update({
-          cover_image_url:
-            coverImageUrl,
-
-          updated_at:
-            new Date()
-              .toISOString(),
-        })
-        .eq(
-          "id",
-          eventId,
-        )
-        .eq(
-          "creator_profile_id",
-          userId,
-        );
-
-    if (
-      coverUpdateError
-    ) {
-      throw new Error(
-        `La galería se guardó pero no pudo actualizarse la portada: ${coverUpdateError.message}`,
-      );
-    }
 
     /*
      * Después de persistir correctamente,

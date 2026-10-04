@@ -3,11 +3,11 @@ import {
 } from "@lookup/services";
 
 import {
-  EVENT_IMAGE_MAX_BYTES,
+  getEventMediaError,
   EVENT_IMAGES_BUCKET,
   EVENT_IMAGES_MAX_COUNT,
-  getEventImageExtension,
-  isSupportedEventImageMimeType,
+  getEventMediaExtension,
+  isSupportedEventMediaMimeType,
   type EventImageReference,
   type PersistedEventImage,
 } from "@/lib/events/event-images";
@@ -49,41 +49,13 @@ function validateImageFiles(
     EVENT_IMAGES_MAX_COUNT
   ) {
     throw new Error(
-      `Puedes añadir como máximo ${EVENT_IMAGES_MAX_COUNT} imágenes.`,
+      `Puedes añadir como máximo ${EVENT_IMAGES_MAX_COUNT} archivos.`,
     );
   }
 
-  for (
-    const file
-    of files
-  ) {
-    if (
-      !isSupportedEventImageMimeType(
-        file.type,
-      )
-    ) {
-      throw new Error(
-        "Las imágenes deben ser JPG, PNG o WebP.",
-      );
-    }
-
-    if (
-      file.size >
-      EVENT_IMAGE_MAX_BYTES
-    ) {
-      throw new Error(
-        "Cada imagen puede pesar como máximo 6 MB.",
-      );
-    }
-
-    if (
-      file.size <=
-      0
-    ) {
-      throw new Error(
-        "Una de las imágenes seleccionadas está vacía.",
-      );
-    }
+  for (const file of files) {
+    const error = getEventMediaError(file);
+    if (error) throw new Error(error);
   }
 }
 
@@ -98,6 +70,15 @@ export async function removeEventImagesFromStorage(
     return;
   }
 
+  // A lost HTTP response can hide a successful gallery save. Never delete
+  // objects that the database already references, or guess when it is offline.
+  const { data: referenced, error: referenceError } = await supabase
+    .from("event_images").select("storage_path").in("storage_path", [...storagePaths]);
+  if (referenceError) return;
+  const keptPaths = new Set((referenced ?? []).map(image => image.storage_path));
+  const removablePaths = storagePaths.filter(path => !keptPaths.has(path));
+  if (!removablePaths.length) return;
+
   const {
     error,
   } =
@@ -106,7 +87,7 @@ export async function removeEventImagesFromStorage(
         EVENT_IMAGES_BUCKET,
       )
       .remove([
-        ...storagePaths,
+        ...removablePaths,
       ]);
 
   if (error) {
@@ -133,7 +114,7 @@ export async function uploadEventImages({
     !normalizedEventId
   ) {
     throw new Error(
-      "No se pudo preparar el destino de las imágenes.",
+      "No se pudo preparar el destino de los archivos.",
     );
   }
 
@@ -160,49 +141,31 @@ export async function uploadEventImages({
       }
 
       if (
-        !isSupportedEventImageMimeType(
+        !isSupportedEventMediaMimeType(
           file.type,
         )
       ) {
         throw new Error(
-          "Formato de imagen no compatible.",
+          "Formato de archivo no compatible.",
         );
       }
 
       const extension =
-        getEventImageExtension(
+        getEventMediaExtension(
           file.type,
         );
 
       const storagePath =
         `${normalizedProfileId}/${normalizedEventId}/${crypto.randomUUID()}.${extension}`;
 
-      const {
-        error,
-      } =
-        await supabase.storage
-          .from(
-            EVENT_IMAGES_BUCKET,
-          )
-          .upload(
-            storagePath,
-            file,
-            {
-              cacheControl:
-                "31536000",
-
-              upsert:
-                false,
-
-              contentType:
-                file.type,
-            },
-          );
-
-      if (error) {
-        throw new Error(
-          `No se pudo subir una de las imágenes: ${error.message}`,
-        );
+      if (file.type.startsWith("video/")) {
+        const { uploadEventVideo } = await import("./upload-event-video");
+        await uploadEventVideo(storagePath, file);
+      } else {
+        const { error } = await supabase.storage.from(EVENT_IMAGES_BUCKET).upload(storagePath, file, {
+          cacheControl: "31536000", upsert: false, contentType: file.type,
+        });
+        if (error) throw new Error(`No se pudo subir el archivo: ${error.message}`);
       }
 
       uploaded.push({

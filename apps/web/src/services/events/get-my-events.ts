@@ -6,6 +6,7 @@ export type EventLifecycleStatus =
   | "cancelled";
 
 export type MyEvent = {
+  likeCount: number | null;
   id: string;
 
   creatorProfileId:

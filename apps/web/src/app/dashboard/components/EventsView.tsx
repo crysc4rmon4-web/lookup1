@@ -11,6 +11,8 @@ import {
 import Link from "next/link";
 
 import {
+  Heart,
+  PanelsTopLeft,
   CalendarDays,
   Check,
   CheckCircle2,
@@ -21,18 +23,14 @@ import {
   Plus,
   RefreshCw,
   Sparkles,
-  Users,
 } from "lucide-react";
-
-import {
-  EventCoverImage,
-} from "@/components/events/EventCoverImage";
 
 import {
   useAuth,
 } from "@/components/auth-provider";
 
 import { exploreFilters, getExploreCategory, type ExploreFilter } from "@/lib/events/event-explore-categories";
+import { EventFeedScreen } from "@/components/events/event-feed-screen";
 import { EventExploreMap } from "@/components/events/EventExploreMap";
 import { geocodeAddress, type GeocodedAddress } from "@/services/location/geocode-address";
 import type { ExploreLocationChoice } from "@/lib/locations/event-explore-locations";
@@ -476,6 +474,11 @@ export function EventsView({
   const [cityChoices, setCityChoices] = useState<ExploreCity[]>([]);
   const [selectedProvince, setSelectedProvince] = useState("");
   const [selectedLocationId, setSelectedLocationId] = useState("");
+  const [feedRequested, setFeedRequested] = useState(false);
+  const focusCity = () => {
+    setActiveTab("explore");
+    requestAnimationFrame(() => document.getElementById("explore-city")?.focus());
+  };
   const [activeFilter, setActiveFilter] = useState<ExploreFilter>("all");
   const [cityLoading, setCityLoading] = useState(false);
   const [cityError, setCityError] = useState<string | null>(null);
@@ -489,16 +492,16 @@ export function EventsView({
   useEffect(() => {
     try {
       const saved = JSON.parse(sessionStorage.getItem("lookup.events.exploreCity") ?? "null") as {
-        city: string; province: string; location: GeocodedAddress; locationId?: string;
+        city: string; province: string; location: GeocodedAddress | null; locationId?: string;
       } | null;
       const requested = new URLSearchParams(window.location.search).get("eventsCity");
       if (!saved || (requested && requested !== saved.city) || typeof saved.city !== "string" ||
-        typeof saved.province !== "string" || !Number.isFinite(saved.location?.latitude) ||
-        !Number.isFinite(saved.location?.longitude) || Math.abs(saved.location.latitude) > 90 || Math.abs(saved.location.longitude) > 180) return;
+        typeof saved.province !== "string") return;
       setSelectedExploreCity(saved.city);
       setSelectedProvince(saved.province);
       setSelectedLocationId(typeof saved.locationId === "string" ? saved.locationId : "");
-      setCityLocation(saved.location);
+      const location = saved.location;
+      if (location && Number.isFinite(location.latitude) && Number.isFinite(location.longitude) && Math.abs(location.latitude) <= 90 && Math.abs(location.longitude) <= 180) setCityLocation(location);
       setCityQuery(saved.city);
     } catch {
       // Storage is optional; a city can always be selected again.
@@ -514,16 +517,16 @@ export function EventsView({
   }, [cityLocation, exploreEvents]);
 
   useEffect(() => {
-    if (!selectedExploreCity || !mapLocation) return;
+    if (!selectedExploreCity) return;
     try {
       sessionStorage.setItem("lookup.events.exploreCity", JSON.stringify({
         city: selectedExploreCity, province: selectedProvince, locationId: selectedLocationId,
-        location: { ...mapLocation, address: selectedExploreCity },
+        location: mapLocation ? { ...mapLocation, address: selectedExploreCity } : null,
       }));
     } catch { /* Private browsing may disable storage. */ }
   }, [selectedExploreCity, selectedProvince, selectedLocationId, mapLocation]);
 
-  async function searchCity() {
+  const searchCity = useCallback(async () => {
     const query = cityQuery.trim();
     if (query.length < 2) return;
     cityRequest.current?.abort();
@@ -546,7 +549,13 @@ export function EventsView({
     } finally {
       if (!controller.signal.aborted) setCityLoading(false);
     }
-  }
+  }, [cityQuery]);
+
+  useEffect(() => {
+    if (cityQuery.trim().length < 2 || cityQuery.trim() === selectedExploreCity) return;
+    const timer = window.setTimeout(() => void searchCity(), 300);
+    return () => window.clearTimeout(timer);
+  }, [cityQuery, selectedExploreCity, searchCity]);
 
   async function selectExploreCity(city: ExploreCity) {
     cityRequest.current?.abort();
@@ -911,7 +920,7 @@ export function EventsView({
     const controller =
       new AbortController();
 
-    void loadExploreEvents(
+    if (!feedRequested) void loadExploreEvents(
       controller.signal,
     );
 
@@ -920,6 +929,7 @@ export function EventsView({
     };
   }, [
     activeTab,
+    feedRequested,
     loadExploreEvents,
   ]);
 
@@ -1094,6 +1104,13 @@ export function EventsView({
 
   return (
     <section className="space-y-5 pb-24">
+      {feedRequested && selectedExploreCity && session?.access_token ? <EventFeedScreen
+        token={session.access_token}
+        location={{ city: selectedExploreCity, province: selectedProvince, locationId: selectedLocationId }}
+        group={activeFilter}
+        onClose={() => setFeedRequested(false)}
+        onChangeCity={() => { setFeedRequested(false); focusCity(); }}
+      /> : null}
       <div className="overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#5D5FEF] via-[#6668F4] to-[#7B6CF6] p-6 text-white shadow-lg shadow-[#5D5FEF]/20 sm:p-7">
         <div className="flex items-start justify-between gap-5">
           <div>
@@ -1126,12 +1143,16 @@ export function EventsView({
           </div>
         </div>
 
+        <div className="mt-6 flex flex-wrap gap-3">
+        <button type="button" onClick={() => { setFeedRequested(true); if (!selectedExploreCity) focusCity(); }} className="flex min-h-12 flex-1 items-center justify-center gap-2 rounded-2xl bg-white px-5 py-3.5 text-sm font-black text-[#5557D8] shadow-sm sm:flex-none">
+          <PanelsTopLeft size={19} /> Abrir feed
+        </button>
         <button
           type="button"
           onClick={
             onCreateEvent
           }
-          className="mt-6 flex w-full items-center justify-center gap-2 rounded-2xl bg-white px-5 py-3.5 text-sm font-black text-[#5557D8] shadow-sm transition-all hover:-translate-y-0.5 hover:bg-violet-50 hover:shadow-md sm:w-auto"
+          className="flex min-h-12 flex-1 items-center justify-center gap-2 rounded-2xl border border-white/30 bg-white/15 px-5 py-3.5 text-sm font-black text-white sm:flex-none"
         >
           <Plus
             size={18}
@@ -1139,6 +1160,8 @@ export function EventsView({
 
           Crear evento
         </button>
+        </div>
+        {feedRequested && !selectedExploreCity ? <p role="status" className="mt-3 text-sm">Elige una ciudad para abrir tu feed.</p> : null}
       </div>
 
       <div className="grid grid-cols-3 gap-1 rounded-2xl border border-slate-200/80 bg-white p-1.5 shadow-sm">
@@ -1198,7 +1221,7 @@ export function EventsView({
               <label htmlFor="explore-city" className="text-sm font-black text-slate-900">¿Dónde quieres explorar?</label>
               <p id="explore-city-help" className="mt-1 text-xs leading-5 text-slate-500">Busca una ciudad o isla. Elige el municipio concreto o explora toda la isla.</p>
               <div className="mt-3 flex gap-2">
-                <input id="explore-city" aria-describedby="explore-city-help" value={cityQuery} onChange={(event) => setCityQuery(event.target.value)} placeholder="Soria, Tenerife, Mallorca…" required minLength={2} maxLength={120} className="min-w-0 flex-1 rounded-2xl border border-slate-200 bg-[#F8F8FF] px-4 py-3 text-sm font-semibold text-slate-900 outline-none focus:border-[#5D5FEF] focus:ring-4 focus:ring-[#5D5FEF]/10" />
+                <input id="explore-city" aria-describedby="explore-city-help" value={cityQuery} onChange={(event) => { cityRequest.current?.abort(); setCityLoading(false); setCityChoices([]); setCityQuery(event.target.value); }} placeholder="Soria, Tenerife, Mallorca…" required minLength={2} maxLength={120} className="min-w-0 flex-1 rounded-2xl border border-slate-200 bg-[#F8F8FF] px-4 py-3 text-sm font-semibold text-slate-900 outline-none focus:border-[#5D5FEF] focus:ring-4 focus:ring-[#5D5FEF]/10" />
                 <button type="submit" disabled={cityLoading || cityQuery.trim().length < 2} className="min-h-12 rounded-2xl bg-[#5D5FEF] px-4 text-sm font-bold text-white transition hover:bg-[#5254DF] disabled:opacity-50">{cityLoading ? "Buscando…" : "Buscar"}</button>
               </div>
             </form>
@@ -1588,6 +1611,7 @@ export function EventsView({
                         </div>
                       </div>
 
+                      <p className="mt-3 flex items-center gap-2 text-sm font-semibold text-slate-600"><Heart size={16} className="text-rose-500" />{event.likeCount === null ? "Likes no disponibles" : `${event.likeCount} me gusta`}</p>
                       <p className="mt-3 line-clamp-2 text-sm leading-6 text-slate-500">
                         {
                           event.description

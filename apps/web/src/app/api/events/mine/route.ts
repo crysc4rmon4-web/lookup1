@@ -1,3 +1,4 @@
+import { getEventLikeSummaries } from "@/lib/events/event-likes";
 import {
   NextResponse,
 } from "next/server";
@@ -424,9 +425,11 @@ export async function GET(
         },
       );
 
+    const likes = await getEventLikeSummaries(events.map(event => event.id), authData.user.id);
+
     return NextResponse.json(
       {
-        events,
+        events: events.map(event => ({ ...event, likeCount: likes?.get(event.id)?.count ?? null })),
       },
       {
         status: 200,

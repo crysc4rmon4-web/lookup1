@@ -37,8 +37,10 @@ export default function RootLayout({
   return (
     <html
       lang="es"
+      suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
+      <head><script dangerouslySetInnerHTML={{ __html: `(function(){try{var t=localStorage.getItem('lookup-theme');document.documentElement.dataset.theme=t==='dark'?'dark':'light'}catch(e){}})()` }} /></head>
       <body className="flex min-h-full flex-col bg-white">
         <AuthProvider>
           <RadarProvider>

@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { ThemeToggle } from "@/components/theme-toggle";
 import Link from "next/link";
 
 import {
@@ -331,6 +332,7 @@ export function SettingsView({
         </div>
       </section>
 
+      <ThemeToggle />
       <section>
         <p className="mb-3 px-1 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
           PRIVACIDAD Y RADAR

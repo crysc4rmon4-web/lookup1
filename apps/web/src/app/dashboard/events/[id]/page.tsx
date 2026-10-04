@@ -1,5 +1,7 @@
 "use client";
 
+import { EventLikeButton } from "@/components/events/event-like-button";
+
 import {
   useCallback,
   useEffect,
@@ -1059,6 +1061,7 @@ export default function EventManagementPage() {
               </button>
             ) : null}
           </div>
+          <section aria-label="Reacciones al evento" className="rounded-2xl border border-slate-200 bg-white p-4"><EventLikeButton eventId={event.id} readOnly /></section>
           {event.coverImageUrl ? (
             <section className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-sm">
               <div className="relative aspect-[16/8] overflow-hidden bg-slate-100 sm:aspect-[16/7]">

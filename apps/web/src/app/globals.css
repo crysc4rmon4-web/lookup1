@@ -12,13 +12,6 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
@@ -33,13 +26,399 @@ body {
 }
 
 /* Explore map controls share LookUp's violet palette and touch targets. */
-.lookup-explore-map .leaflet-control-zoom { border: 0; box-shadow: 0 4px 16px #27264b1a; border-radius: 14px; overflow: hidden; }
-.lookup-explore-map .leaflet-control-zoom a { width: 44px; height: 44px; line-height: 44px; color: #5557d8; border-color: #f0f0ff; }
-.lookup-explore-map .leaflet-control-zoom a:hover { background: #f0f0ff; }
-.lookup-explore-map .leaflet-control-attribution { max-width: 100%; font-size: 9px; }
-.lookup-explore-marker { display: grid; place-items: center; background: transparent; border: 0; }
-.lookup-explore-marker__dot { display: grid; place-items: center; width: 36px; height: 36px; border: 3px solid white; border-radius: 50%; background: #5d5fef; color: white; font: 800 13px Arial, sans-serif; box-shadow: 0 3px 12px #37328c40; transition: background .15s, box-shadow .15s; }
-.lookup-explore-marker:hover .lookup-explore-marker__dot, .lookup-explore-marker:focus .lookup-explore-marker__dot { background: #4648c8; box-shadow: 0 0 0 4px #5d5fef30, 0 3px 12px #37328c40; }
-.lookup-explore-marker:focus-visible { outline: 2px solid #5d5fef; border-radius: 50%; }
-.lookup-explore-popup { max-height: 220px; overflow-y: auto; }
-.lookup-explore-popup a { display: flex; align-items: center; min-height: 44px; padding: 8px; color: #5557d8; font-weight: 700; border-bottom: 1px solid #f0f0ff; overflow-wrap: anywhere; }
+.lookup-explore-map .leaflet-control-zoom {
+  border: 0;
+  box-shadow: 0 4px 16px #27264b1a;
+  border-radius: 14px;
+  overflow: hidden;
+}
+.lookup-explore-map .leaflet-control-zoom a {
+  width: 44px;
+  height: 44px;
+  line-height: 44px;
+  color: #5557d8;
+  border-color: #f0f0ff;
+}
+.lookup-explore-map .leaflet-control-zoom a:hover {
+  background: #f0f0ff;
+}
+.lookup-explore-map .leaflet-control-attribution {
+  max-width: 100%;
+  font-size: 9px;
+}
+.lookup-explore-marker {
+  display: grid;
+  place-items: center;
+  background: transparent;
+  border: 0;
+}
+.lookup-explore-marker__dot {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 3px solid white;
+  border-radius: 50%;
+  background: #5d5fef;
+  color: white;
+  font:
+    800 13px Arial,
+    sans-serif;
+  box-shadow: 0 3px 12px #37328c40;
+  transition:
+    background 0.15s,
+    box-shadow 0.15s;
+}
+.lookup-explore-marker:hover .lookup-explore-marker__dot,
+.lookup-explore-marker:focus .lookup-explore-marker__dot {
+  background: #4648c8;
+  box-shadow:
+    0 0 0 4px #5d5fef30,
+    0 3px 12px #37328c40;
+}
+.lookup-explore-marker:focus-visible {
+  outline: 2px solid #5d5fef;
+  border-radius: 50%;
+}
+.lookup-explore-popup {
+  max-height: 220px;
+  overflow-y: auto;
+}
+.lookup-explore-popup a {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px;
+  color: #5557d8;
+  font-weight: 700;
+  border-bottom: 1px solid #f0f0ff;
+  overflow-wrap: anywhere;
+}
+
+/* Shared surfaces: the existing screens keep their layout and brand accents. */
+:root {
+  color-scheme: light;
+  --lookup-page: #f7f8fc;
+  --lookup-surface: #fff;
+  --lookup-soft: #f0f0ff;
+  --lookup-text: #171933;
+  --lookup-muted: #64748b;
+  --lookup-border: #e4e5f0;
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --background: #121321;
+  --foreground: #eeedf9;
+  --lookup-page: #121321;
+  --lookup-surface: #1d1f32;
+  --lookup-soft: #292941;
+  --lookup-text: #eeedf9;
+  --lookup-muted: #b2b4cd;
+  --lookup-border: #393b54;
+}
+.lookup-feed-screen {
+  position: fixed;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  width: 100%;
+  max-width: none;
+  height: 100dvh;
+  max-height: none;
+  background: var(--lookup-page);
+  color: var(--lookup-text);
+}
+.lookup-feed-screen[open] {
+  display: flex;
+  flex-direction: column;
+}
+.lookup-feed-screen::backdrop {
+  background: #121321;
+}
+.lookup-feed-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+  padding: max(8px, env(safe-area-inset-top)) 16px 4px;
+}
+.feed-header-button {
+  display: grid;
+  place-items: center;
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: 50%;
+  background: var(--lookup-soft);
+}
+.feed-category {
+  background: var(--lookup-soft);
+  color: var(--lookup-text);
+}
+.lookup-feed-scroll {
+  height: 100%;
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  scroll-snap-type: y mandatory;
+  overflow-anchor: none;
+  scrollbar-width: none;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.lookup-feed-scroll::-webkit-scrollbar {
+  display: none;
+}
+.lookup-feed-scroll:focus-visible {
+  outline: 2px solid #898aff;
+  outline-offset: -3px;
+}
+.lookup-reel {
+  position: relative;
+  isolation: isolate;
+  height: 100%;
+  min-height: 460px;
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  display: flex;
+  align-items: stretch;
+  overflow: hidden;
+  background: linear-gradient(150deg, #e6e5ff, #f4efff 55%, #e1e7fa);
+  padding: 12px 14px max(16px, env(safe-area-inset-bottom));
+}
+:root[data-theme="dark"] .lookup-reel {
+  background: linear-gradient(150deg, #282447, #1c1d33 55%, #292c49);
+}
+.reel-backdrop {
+  opacity: 0.26;
+}
+.reel-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 52px;
+  gap: 12px;
+  width: 100%;
+}
+.reel-main {
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 26px;
+  background: var(--lookup-surface);
+  box-shadow: 0 12px 40px #26204a18;
+}
+.reel-media {
+  position: relative;
+  flex: 1;
+  min-height: 120px;
+  background: var(--lookup-soft);
+}
+.reel-info {
+  flex-shrink: 0;
+  padding: 16px;
+}
+.reel-actions {
+  align-self: end;
+}
+.reel-actions button {
+  border-radius: 50% !important;
+}
+@media (min-width: 640px) {
+  .lookup-reel {
+    border-radius: 28px 28px 0 0;
+    padding: 20px 24px;
+  }
+  .reel-info {
+    padding: 20px;
+  }
+}
+@media (max-height: 720px) {
+  .reel-description {
+    display: none;
+  }
+  .reel-info {
+    padding: 12px;
+  }
+  .reel-info h3 {
+    font-size: 18px;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .lookup-feed-scroll {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Exact aliases for legacy LookUp color utilities; media and semantic badges retain their colors. */
+:root[data-theme="dark"]
+  :is(
+    [class~="bg-[#D7DCE8]"],
+    [class~="bg-[#DDE2F2]"],
+    [class~="bg-[#E3E8FF]"],
+    [class~="bg-[#E5E7FF]"],
+    [class~="bg-[#E8E8FF]"],
+    [class~="bg-[#ECEEFF]"],
+    [class~="bg-[#EEEEFF]"],
+    [class~="bg-[#EEF0FF]"],
+    [class~="bg-[#EEF2FF]"],
+    [class~="bg-[#F0F0FF]"],
+    [class~="bg-[#F0F2FF]"],
+    [class~="bg-[#F1F2FF]"],
+    [class~="bg-[#F1F3F8]"],
+    [class~="bg-[#F2F2FF]"],
+    [class~="bg-[#F3F2FF]"],
+    [class~="bg-[#F3F4F6]"],
+    [class~="bg-[#F4F3FF]"],
+    [class~="bg-[#F5F6FF]"],
+    [class~="bg-[#F5F7FF]"],
+    [class~="bg-[#F7F7FF]"],
+    [class~="bg-[#F7F8FB]"],
+    [class~="bg-[#F7F8FC]"],
+    [class~="bg-[#F7F8FF]"],
+    [class~="bg-[#F8F8FF]"],
+    [class~="bg-[#F8F9FD]"],
+    [class~="bg-[#F9FAFB]"],
+    [class~="bg-[#FAFAFC]"],
+    [class~="bg-[#FAFAFF]"],
+    [class~="bg-[#FAFBFC]"],
+    [class~="bg-[#FAFBFD]"],
+    [class~="bg-[#FBFCFE]"],
+    [class~="bg-[#fafafa]"],
+    [class~="bg-gray-100"],
+    [class~="bg-gray-50"],
+    [class~="bg-slate-100"],
+    [class~="bg-slate-50"],
+    [class~="bg-white"]
+  ) {
+  background-color: var(--lookup-surface);
+}
+:root[data-theme="dark"]
+  :is(
+    [class~="border-[#C9CCFF]"],
+    [class~="border-[#CACDFC]"],
+    [class~="border-[#CBCDFF]"],
+    [class~="border-[#CED1FF]"],
+    [class~="border-[#CFCFFF]"],
+    [class~="border-[#D6DAE8]"],
+    [class~="border-[#D6DAFF]"],
+    [class~="border-[#D8DBFF]"],
+    [class~="border-[#D9DEEF]"],
+    [class~="border-[#DCE1F2]"],
+    [class~="border-[#DCE2F8]"],
+    [class~="border-[#DDE2EC]"],
+    [class~="border-[#DDE4FF]"],
+    [class~="border-[#DEE3F3]"],
+    [class~="border-[#DFE2FF]"],
+    [class~="border-[#E0E3EC]"],
+    [class~="border-[#E1E2FA]"],
+    [class~="border-[#E1E5F3]"],
+    [class~="border-[#E2E5EE]"],
+    [class~="border-[#E2E5FF]"],
+    [class~="border-[#E3E4FB]"],
+    [class~="border-[#E3E6EE]"],
+    [class~="border-[#E4E5FA]"],
+    [class~="border-[#E5E6F7]"],
+    [class~="border-[#E5E7EB]"],
+    [class~="border-[#E5E8F0]"],
+    [class~="border-[#E6E8F0]"],
+    [class~="border-[#E6E8F1]"],
+    [class~="border-[#E7E7EF]"],
+    [class~="border-[#E7E9F1]"],
+    [class~="border-[#E7E9F2]"],
+    [class~="border-[#E7EAF2]"],
+    [class~="border-[#E8E9F5]"],
+    [class~="border-[#E8EAF6]"],
+    [class~="border-[#E8EBF2]"],
+    [class~="border-[#E8EBF3]"],
+    [class~="border-[#E8EBF5]"],
+    [class~="border-[#E8ECF4]"],
+    [class~="border-[#E9ECF3]"],
+    [class~="border-[#E9ECF4]"],
+    [class~="border-[#ECEEF5]"],
+    [class~="border-[#ECEFF5]"],
+    [class~="border-[#EEF0F5]"],
+    [class~="border-[#F0F2F6]"],
+    [class~="border-[#F0F2FF]"],
+    [class~="border-gray-200"],
+    [class~="border-slate-100"],
+    [class~="border-slate-200"],
+    [class~="border-slate-300"],
+    [class~="border-white"]
+  ) {
+  border-color: var(--lookup-border);
+}
+:root[data-theme="dark"]
+  :is(
+    [class~="text-[#101828]"],
+    [class~="text-[#111827]"],
+    [class~="text-[#1F2937]"],
+    [class~="text-black"],
+    [class~="text-gray-900"],
+    [class~="text-slate-700"],
+    [class~="text-slate-800"],
+    [class~="text-slate-900"],
+    [class~="text-slate-950"]
+  ) {
+  color: var(--lookup-text);
+}
+:root[data-theme="dark"]
+  :is(
+    [class~="text-slate-400"],
+    [class~="text-slate-500"],
+    [class~="text-slate-600"],
+    [class~="text-gray-500"],
+    [class~="text-gray-600"]
+  ) {
+  color: var(--lookup-muted);
+}
+:root[data-theme="dark"]
+  :is(
+    [class~="text-[#5D5FEF]"],
+    [class~="text-[#5557D8]"],
+    [class~="text-[#5052D9]"],
+    [class~="text-[#494BC8]"]
+  ) {
+  color: #b4b4ff;
+}
+
+:root[data-theme="dark"] .bg-white\/95 {
+  background-color: #1d1f32f2;
+}
+:root[data-theme="dark"] .bg-white\/90 {
+  background-color: #1d1f32e6;
+}
+:root[data-theme="dark"] .bg-white\/80 {
+  background-color: #1d1f32cc;
+}
+:root[data-theme="dark"] [class~="bg-[#F0F0FF]/70"] {
+  background-color: #292941b3;
+}
+:root[data-theme="dark"] [class~="from-white"] {
+  --tw-gradient-from: var(--lookup-surface);
+}
+:root[data-theme="dark"] [class~="hover:bg-slate-50"]:hover {
+  background-color: var(--lookup-soft);
+}
+:root[data-theme="dark"]
+  :is(
+    [class~="bg-[#F7F8FC]"],
+    [class~="bg-[#FBFCFE]"],
+    [class~="bg-[#FAFBFD]"]
+  ) {
+  background-color: var(--lookup-page);
+}
+:root[data-theme="dark"]
+  :is(
+    [class~="bg-[#F0F0FF]"],
+    [class~="bg-[#EEF2FF]"],
+    [class~="bg-[#F8F8FF]"],
+    [class~="bg-slate-100"]
+  ) {
+  background-color: var(--lookup-soft);
+}
+:root[data-theme="dark"] :is([class~="from-white"], [class~="via-white"], [class~="from-[#FAFAFF]"], [class~="from-[#FBFBFF]"]) {
+  background-image: linear-gradient(135deg, var(--lookup-surface), var(--lookup-soft));
+}

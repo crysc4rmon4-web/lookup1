@@ -36,3 +36,11 @@ export function getExploreCategory(slug: string) {
   const theme = exploreFilters.find((filter) => filter.id === category.group)!;
   return { ...category, color: theme.color, surface: theme.surface, path: theme.path };
 }
+
+export function getExploreGroupSlugs(group: ExploreFilter) {
+  return Object.entries(categories).filter(([, category]) => category.group === group).map(([slug]) => slug);
+}
+
+export function getNonLeisureSlugs() {
+  return Object.entries(categories).filter(([, category]) => category.group !== "leisure").map(([slug]) => slug);
+}

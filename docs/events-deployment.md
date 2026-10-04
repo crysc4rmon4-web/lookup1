@@ -1,5 +1,7 @@
 # Events: configuración y prueba antes de desplegar
 
+> Ampliación de octubre de 2026: consultar `events-feed.md` y aplicar la migración revisada `scripts/sql/events-feed.sql` antes de desplegar el feed con likes y vídeos. Requiere aprobación del propietario; no se ha aplicado automáticamente.
+
 ## Configuración
 
 - Versiones: Next 15.5.9 y pnpm 10.12.1. En Vercel, proyecto web con Root Directory `apps/web` y acceso a los paquetes del workspace.

@@ -1,6 +1,6 @@
 # Producto oficial — LookUp
 
-> Última actualización: Julio 2026
+> Documento base: Julio 2026. La ampliación de eventos aprobada en octubre de 2026 se describe en [events-feed.md](events-feed.md); incluye feed, likes y vídeos para eventos.
 
 ---
 
