@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef } from "react";
-import { LoaderCircle } from "lucide-react";
+import { CalendarDays, LoaderCircle } from "lucide-react";
 import { useEventFeed } from "@/hooks/use-event-feed";
 import type { FeedLocation } from "@/services/events/event-feed";
 import type { ExploreFilter } from "@/lib/events/event-explore-categories";
@@ -10,10 +10,14 @@ export function EventFeed({
   token,
   location,
   group,
+  onCreate,
+  onChangeCity,
 }: {
   token: string;
   location: FeedLocation;
   group: ExploreFilter;
+  onCreate: () => void;
+  onChangeCity: () => void;
 }) {
   const { events, loading, error, hasMore, loadMore } = useEventFeed(
     token,
@@ -48,14 +52,34 @@ export function EventFeed({
           <EventFeedCard key={event.id} event={event} />
         ))}
         {!loading && !error && !events.length ? (
-          <div className="flex min-h-80 flex-col items-center justify-center rounded-3xl border border-dashed border-slate-300 bg-white p-8 text-center">
-            <h3 className="font-bold text-slate-800">
-              Todavía no hay eventos{" "}
-              {group === "all" ? "en este lugar" : "de este tipo"}
-            </h3>
-            <p className="mt-2 text-sm text-slate-500">
-              Prueba otra categoría o ubicación.
+          <div className="feed-empty">
+            <span className="feed-empty-icon">
+              <CalendarDays size={32} />
+            </span>
+            <h2>
+              {group === "all"
+                ? "Ups, todavía no hay planes por aquí"
+                : "No hay eventos de esta categoría"}
+            </h2>
+            <p>
+              {group === "all"
+                ? `No hay eventos programados en ${location.city}. ¿Y si el próximo lo creas tú?`
+                : "Prueba otra categoría o descubre otra ciudad."}
             </p>
+            <button
+              type="button"
+              onClick={onCreate}
+              className="feed-primary-action"
+            >
+              Crear un evento
+            </button>
+            <button
+              type="button"
+              onClick={onChangeCity}
+              className="min-h-11 text-sm font-bold text-[#5557D8]"
+            >
+              Buscar en otra ciudad
+            </button>
           </div>
         ) : null}
         <div

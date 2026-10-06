@@ -75,6 +75,7 @@ type EventsViewProps = {
   events: EventCard[];
 
   city?: string | null;
+  province?: string | null;
 
   createdDraft?: CreatedEventDraft | null;
   createdPublished?: boolean;
@@ -440,6 +441,7 @@ function getEmptySectionCopy(
 
 export function EventsView({
   city,
+  province,
   createdDraft = null,
   createdPublished = false,
   onCreateEvent,
@@ -468,17 +470,15 @@ export function EventsView({
    * ==========================================================
    */
 
+  const initialRequestedCity = useRef(typeof window === "undefined" ? null : new URLSearchParams(window.location.search).get("eventsCity")).current;
   const [selectedExploreCity, setSelectedExploreCity] = useState("");
   const [cityQuery, setCityQuery] = useState(() => getInitialExploreCity(profileCity));
   const [cityLocation, setCityLocation] = useState<GeocodedAddress | null>(null);
   const [cityChoices, setCityChoices] = useState<ExploreCity[]>([]);
   const [selectedProvince, setSelectedProvince] = useState("");
   const [selectedLocationId, setSelectedLocationId] = useState("");
-  const [feedRequested, setFeedRequested] = useState(false);
-  const focusCity = () => {
-    setActiveTab("explore");
-    requestAnimationFrame(() => document.getElementById("explore-city")?.focus());
-  };
+  const [feedRequested, setFeedRequested] = useState(() => getInitialEventsTab() === "explore" && !createdDraft);
+  const [locatingCity, setLocatingCity] = useState(true);
   const [activeFilter, setActiveFilter] = useState<ExploreFilter>("all");
   const [cityLoading, setCityLoading] = useState(false);
   const [cityError, setCityError] = useState<string | null>(null);
@@ -490,23 +490,45 @@ export function EventsView({
   useEffect(() => () => cityRequest.current?.abort(), []);
 
   useEffect(() => {
-    try {
-      const saved = JSON.parse(sessionStorage.getItem("lookup.events.exploreCity") ?? "null") as {
-        city: string; province: string; location: GeocodedAddress | null; locationId?: string;
-      } | null;
-      const requested = new URLSearchParams(window.location.search).get("eventsCity");
-      if (!saved || (requested && requested !== saved.city) || typeof saved.city !== "string" ||
-        typeof saved.province !== "string") return;
-      setSelectedExploreCity(saved.city);
-      setSelectedProvince(saved.province);
-      setSelectedLocationId(typeof saved.locationId === "string" ? saved.locationId : "");
-      const location = saved.location;
-      if (location && Number.isFinite(location.latitude) && Number.isFinite(location.longitude) && Math.abs(location.latitude) <= 90 && Math.abs(location.longitude) <= 180) setCityLocation(location);
-      setCityQuery(saved.city);
-    } catch {
-      // Storage is optional; a city can always be selected again.
+    const controller = new AbortController();
+    cityRequest.current = controller;
+    const requested = initialRequestedCity;
+    const initialCity = requested || profileCity;
+    async function restoreCity() {
+      setLocatingCity(true);
+      try {
+        const saved = JSON.parse(sessionStorage.getItem("lookup.events.exploreCity") ?? "null") as {
+          city?: string; province?: string; locationId?: string;
+        } | null;
+        if (saved && typeof saved.city === "string" && typeof saved.province === "string" &&
+            (!initialCity || saved.city === initialCity) && (!province || requested || saved.province === province)) {
+          setSelectedExploreCity(saved.city);
+          setSelectedProvince(saved.province);
+          setSelectedLocationId(typeof saved.locationId === "string" ? saved.locationId : "");
+          setCityQuery(saved.city);
+          setLocatingCity(false);
+          return;
+        }
+      } catch { /* The catalog also works when storage is unavailable. */ }
+      if (!initialCity) { setLocatingCity(false); return; }
+      try {
+        const params = new URLSearchParams({ q: initialCity, resolve: "1", province: requested ? "" : province || "" });
+        const response = await fetch(`/api/events/cities?${params}`, { signal: controller.signal });
+        if (!response.ok) throw new Error("Location unavailable");
+        const { location } = await response.json() as { location: ExploreCity | null };
+        if (controller.signal.aborted) return;
+        if (location) {
+          setSelectedExploreCity(location.name);
+          setSelectedProvince(location.province);
+          setSelectedLocationId(location.id);
+          setCityQuery(location.name);
+        }
+      } catch { /* Let the user choose; never guess an ambiguous city. */ }
+      finally { if (!controller.signal.aborted) setLocatingCity(false); }
     }
-  }, []);
+    void restoreCity();
+    return () => controller.abort();
+  }, [profileCity, province, initialRequestedCity]);
 
   const filteredExploreEvents = useMemo(() => exploreEvents.filter((event) => activeFilter === "all" || getExploreCategory(event.category).group === activeFilter), [exploreEvents, activeFilter]);
   const mapLocation = useMemo(() => {
@@ -552,12 +574,13 @@ export function EventsView({
   }, [cityQuery]);
 
   useEffect(() => {
-    if (cityQuery.trim().length < 2 || cityQuery.trim() === selectedExploreCity) return;
+    if (feedRequested || cityQuery.trim().length < 2 || cityQuery.trim() === selectedExploreCity) return;
     const timer = window.setTimeout(() => void searchCity(), 300);
     return () => window.clearTimeout(timer);
-  }, [cityQuery, selectedExploreCity, searchCity]);
+  }, [cityQuery, selectedExploreCity, searchCity, feedRequested]);
 
   async function selectExploreCity(city: ExploreCity) {
+    setLocatingCity(false);
     cityRequest.current?.abort();
     const controller = new AbortController();
     cityRequest.current = controller;
@@ -571,7 +594,8 @@ export function EventsView({
     setCityQuery(city.name);
     setCityChoices([]);
     setActiveFilter("all");
-    setCityLocation(null);
+    setCityLocation(city.center ? { ...city.center, address: city.name } : null);
+    if (feedRequested) { setCityLoading(false); return; }
     try {
       const location: GeocodedAddress = city.center
         ? { ...city.center, address: city.name }
@@ -966,6 +990,7 @@ export function EventsView({
       return;
     }
 
+    setFeedRequested(false);
     setActiveTab(
       "mine",
     );
@@ -1104,12 +1129,17 @@ export function EventsView({
 
   return (
     <section className="space-y-5 pb-24">
-      {feedRequested && selectedExploreCity && session?.access_token ? <EventFeedScreen
+      {feedRequested && session?.access_token ? <EventFeedScreen
         token={session.access_token}
-        location={{ city: selectedExploreCity, province: selectedProvince, locationId: selectedLocationId }}
+        location={selectedExploreCity ? { city: selectedExploreCity, province: selectedProvince, locationId: selectedLocationId } : null}
+        initialCity={cityQuery}
+        locating={locatingCity}
         group={activeFilter}
         onClose={() => setFeedRequested(false)}
-        onChangeCity={() => { setFeedRequested(false); focusCity(); }}
+        onSelectCity={city => void selectExploreCity(city)}
+        onSaved={() => { setFeedRequested(false); setActiveTab("saved"); }}
+        onMine={() => { setFeedRequested(false); setActiveTab("mine"); }}
+        onCreate={() => { setFeedRequested(false); onCreateEvent(); }}
       /> : null}
       <div className="overflow-hidden rounded-[2rem] bg-gradient-to-br from-[#5D5FEF] via-[#6668F4] to-[#7B6CF6] p-6 text-white shadow-lg shadow-[#5D5FEF]/20 sm:p-7">
         <div className="flex items-start justify-between gap-5">
@@ -1144,8 +1174,8 @@ export function EventsView({
         </div>
 
         <div className="mt-6 flex flex-wrap gap-3">
-        <button type="button" onClick={() => { setFeedRequested(true); if (!selectedExploreCity) focusCity(); }} className="flex min-h-12 flex-1 items-center justify-center gap-2 rounded-2xl bg-white px-5 py-3.5 text-sm font-black text-[#5557D8] shadow-sm sm:flex-none">
-          <PanelsTopLeft size={19} /> Abrir feed
+        <button type="button" onClick={() => { setActiveTab("explore"); setFeedRequested(true); }} className="flex min-h-12 flex-1 items-center justify-center gap-2 rounded-2xl bg-white px-5 py-3.5 text-sm font-black text-[#5557D8] shadow-sm sm:flex-none">
+          <PanelsTopLeft size={19} /> Volver al feed
         </button>
         <button
           type="button"
@@ -1161,7 +1191,6 @@ export function EventsView({
           Crear evento
         </button>
         </div>
-        {feedRequested && !selectedExploreCity ? <p role="status" className="mt-3 text-sm">Elige una ciudad para abrir tu feed.</p> : null}
       </div>
 
       <div className="grid grid-cols-3 gap-1 rounded-2xl border border-slate-200/80 bg-white p-1.5 shadow-sm">

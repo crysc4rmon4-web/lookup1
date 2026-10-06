@@ -212,7 +212,7 @@ export function RadarTopBar({
           aria-label={enabled ? "Desactivar radar" : "Activar radar"}
           aria-pressed={enabled}
           className={[
-            "relative h-8 w-14 shrink-0 rounded-full transition-all duration-300",
+            "radar-power-toggle relative h-8 w-14 shrink-0 rounded-full transition-all duration-300",
             "focus:outline-none focus-visible:ring-2 focus-visible:ring-[#5D5FEF]/40",
             toggleLoading ? "cursor-wait opacity-60" : "cursor-pointer",
             enabled ? "bg-[#22C55E]" : "bg-[#D7DCE8]",
@@ -220,7 +220,7 @@ export function RadarTopBar({
         >
           <span
             className={[
-              "absolute top-1 h-6 w-6 rounded-full bg-white shadow-md",
+              "radar-power-thumb absolute top-1 h-6 w-6 rounded-full bg-white shadow-md",
               "transition-all duration-300",
               enabled ? "left-7" : "left-1",
             ].join(" ")}

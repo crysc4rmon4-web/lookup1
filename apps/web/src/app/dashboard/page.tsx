@@ -1559,6 +1559,7 @@ export default function DashboardPage() {
               city={
                 defaultEventCity
               }
+              province={defaultEventProvince}
 
               createdPublished={createdEventPublished}
               createdDraft={
