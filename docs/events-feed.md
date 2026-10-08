@@ -78,3 +78,9 @@ Pruebas: 17 comprobaciones automatizadas, incluidos vídeos generados de 59/60 s
 Cierre de pruebas el 08/10/2026: selección de MOV y rechazo de 60 segundos comprobados en el formulario; navegación desde la foto, visor individual, carrusel mixto y reproducción real de 59 segundos, Escape y foco, compartir independiente y feed oscuro/escritorio comprobados. Cuenta, evento y objetos temporales eliminados. SQL verificado en PostgreSQL aislado: idempotencia, conservación de formatos existentes, lista nula, tamaño, visibilidad y otros buckets. ESLint de los archivos modificados sin errores.
 
 Compilación de producción completada correctamente. Verificada la inclusión del analizador de vídeo y su archivo WASM en el paquete del servidor para Vercel. Solo aparecen los cuatro avisos previos de variables sin uso del módulo de ubicaciones.
+
+## Corrección del paquete de Vercel — 08/10/2026
+
+Vercel completaba el build de `caed985`, pero rechazaba la función al desplegar: el trace contenía el enlace `apps/web/node_modules/mediainfo.js` y, simultáneamente, un archivo dentro de él (`dist/MediaInfoModule.wasm`). La inclusión ahora resuelve la ruta física con `realpathSync` y la convierte en relativa a la aplicación, sin fijar la estructura ni versión de pnpm. Se conserva la dependencia externa y su carga en servidor. Turbo declara las cinco variables usadas por la aplicación e incluye los `.env*` del paquete entre las entradas de caché.
+
+Validación: build de producción completo, ESLint de la configuración, ausencia de archivos bajo entradas de enlaces simbólicos en el trace de la función, WASM incluido y lectura real de un vídeo de 59 segundos desde una copia aislada de los archivos trazados. La confirmación definitiva del despliegue requiere que Vercel alcance Ready con este nuevo commit.
