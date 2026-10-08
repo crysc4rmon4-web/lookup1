@@ -701,6 +701,7 @@ export function CreateEventForm({
         ),
     );
 
+  const [checkingMedia, setCheckingMedia] = useState(false);
   const [
     eventImages,
     setEventImages,
@@ -1693,7 +1694,7 @@ export function CreateEventForm({
     const submitter = (event.nativeEvent as SubmitEvent).submitter;
     const shouldReview = submitter instanceof HTMLButtonElement && submitter.value === "publish";
 
-    if (saving) {
+    if (saving || checkingMedia) {
       return;
     }
 
@@ -2279,10 +2280,11 @@ export function CreateEventForm({
                   }
                   eyebrow="02 · Galería"
                   title="Enséñalo antes de explicarlo"
-                  description="Añade hasta cinco imágenes. La primera será la portada y puedes cambiar el orden antes de guardar."
+                  description="Añade hasta cinco fotos o vídeos. La primera foto será la portada y puedes cambiar el orden antes de guardar."
                 />
 
                 <EventImagePicker
+                  onCheckingChange={setCheckingMedia}
                   files={
                     eventImages
                   }
@@ -3087,6 +3089,8 @@ export function CreateEventForm({
                       }
                     />
 
+                    <p className="mt-2 text-xs text-slate-500">También puedes enlazar un vídeo externo, sin límite de duración.</p>
+
                     {form.externalUrl.trim() ? (
                       <div className="mt-4">
                         <label
@@ -3182,7 +3186,7 @@ export function CreateEventForm({
                 name="intent"
                 value="draft"
                 disabled={
-                  saving ||
+                  saving || checkingMedia ||
                   locationPreviewLoading ||
                   categoriesLoading ||
                   categories.length ===
@@ -3217,7 +3221,7 @@ export function CreateEventForm({
                 )}
               </button>
             </div>
-              <button type="submit" name="intent" value="publish" disabled={saving || locationPreviewLoading || categoriesLoading || !categories.length || provincesLoading || !provinces.length || municipalitiesLoading} className="mt-3 min-h-12 w-full rounded-2xl bg-[#5D5FEF] px-4 py-3 text-sm font-black text-white shadow-sm transition hover:bg-[#5254DF] disabled:opacity-50">{saving ? "Guardando…" : "Revisar y publicar"}</button>
+              <button type="submit" name="intent" value="publish" disabled={saving || checkingMedia || locationPreviewLoading || categoriesLoading || !categories.length || provincesLoading || !provinces.length || municipalitiesLoading} className="mt-3 min-h-12 w-full rounded-2xl bg-[#5D5FEF] px-4 py-3 text-sm font-black text-white shadow-sm transition hover:bg-[#5254DF] disabled:opacity-50">{saving ? "Guardando…" : "Revisar y publicar"}</button>
           </footer>
         </form>
       </div>

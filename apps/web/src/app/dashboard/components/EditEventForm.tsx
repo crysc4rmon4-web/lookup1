@@ -752,6 +752,7 @@ export function EditEventForm({
       string | null
     >(null);
 
+  const [checkingMedia, setCheckingMedia] = useState(false);
   const [
     eventImages,
     setEventImages,
@@ -1671,7 +1672,7 @@ export function EditEventForm({
   ) {
     submitEvent.preventDefault();
 
-    if (saving) {
+    if (saving || checkingMedia) {
       return;
     }
 
@@ -2049,6 +2050,7 @@ export function EditEventForm({
           <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-5 sm:px-6">
             <div className="space-y-5">
               <EventImageEditor
+                onCheckingChange={setCheckingMedia}
                 items={
                   eventImages
                 }
@@ -2915,6 +2917,8 @@ export function EditEventForm({
                     }
                   />
 
+                  <p className="mt-2 text-xs text-slate-500">También puedes enlazar un vídeo externo, sin límite de duración.</p>
+
                   {form.externalUrl.trim() ? (
                     <div className="mt-4">
                       <label className="text-sm font-black text-slate-900">
@@ -2980,7 +2984,7 @@ export function EditEventForm({
               <button
                 type="submit"
                 disabled={
-                  saving ||
+                  saving || checkingMedia ||
                   imagesLoading ||
                   Boolean(
                     imagesError,

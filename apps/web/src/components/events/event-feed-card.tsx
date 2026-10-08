@@ -70,54 +70,70 @@ export function EventFeedCard({ event }: { event: FeedEvent }) {
       <div className="reel-layout">
         <div className="reel-main">
           <div className="reel-media">
-            {active && !failed ? (
-              isEventVideo(active.storagePath || active.publicUrl) ? (
-                <EventVideo
-                  key={active.publicUrl}
-                  src={active.publicUrl}
-                  title={`Vídeo de ${event.title}`}
-                />
+            <div className="reel-visual">
+              {active && !failed ? (
+                isEventVideo(active.storagePath || active.publicUrl) ? (
+                  <EventVideo
+                    key={active.publicUrl}
+                    src={active.publicUrl}
+                    title={`Vídeo de ${event.title}`}
+                    className="relative z-10"
+                  />
+                ) : (
+                  <Image
+                    src={active.publicUrl}
+                    alt={`Foto ${index + 1} de ${event.title}`}
+                    fill
+                    unoptimized
+                    sizes="(max-width: 640px) 80vw, 540px"
+                    className="object-cover"
+                    onError={() => setFailed(true)}
+                  />
+                )
               ) : (
-                <Image
-                  src={active.publicUrl}
-                  alt={`Foto ${index + 1} de ${event.title}`}
-                  fill
-                  unoptimized
-                  sizes="(max-width: 640px) 80vw, 540px"
-                  className="object-cover"
-                  onError={() => setFailed(true)}
-                />
-              )
-            ) : (
-              <div className="flex h-full items-center justify-center text-slate-400">
-                <ImageIcon size={40} aria-label="Sin imagen disponible" />
-              </div>
-            )}
-            {media.length > 1 ? (
-              <div className="absolute left-2 top-2 flex items-center gap-1 rounded-full bg-white/95 p-1 shadow">
-                <button
-                  type="button"
-                  aria-label="Archivo anterior"
-                  disabled={index === 0}
-                  onClick={() => changeMedia(index - 1)}
-                  className="min-h-11 min-w-11 rounded-full p-2 disabled:opacity-30"
-                >
-                  <ChevronLeft size={18} />
-                </button>
-                <span aria-live="polite" className="text-xs font-bold">
-                  {index + 1}/{media.length}
-                </span>
-                <button
-                  type="button"
-                  aria-label="Archivo siguiente"
-                  disabled={index === media.length - 1}
-                  onClick={() => changeMedia(index + 1)}
-                  className="min-h-11 min-w-11 rounded-full p-2 disabled:opacity-30"
-                >
-                  <ChevronRight size={18} />
-                </button>
-              </div>
-            ) : null}
+                <div className="flex h-full items-center justify-center text-slate-400">
+                  <ImageIcon size={40} aria-label="Sin imagen disponible" />
+                </div>
+              )}
+              {media.length > 1 ? (
+                <div className="absolute left-2 top-2 z-10 flex items-center gap-1 rounded-full bg-white/95 p-1 shadow">
+                  <button
+                    type="button"
+                    aria-label="Archivo anterior"
+                    disabled={index === 0}
+                    onClick={() => changeMedia(index - 1)}
+                    className="min-h-11 min-w-11 rounded-full p-2 disabled:opacity-30"
+                  >
+                    <ChevronLeft size={18} />
+                  </button>
+                  <span aria-live="polite" className="text-xs font-bold">
+                    {index + 1}/{media.length}
+                  </span>
+                  <button
+                    type="button"
+                    aria-label="Archivo siguiente"
+                    disabled={index === media.length - 1}
+                    onClick={() => changeMedia(index + 1)}
+                    className="min-h-11 min-w-11 rounded-full p-2 disabled:opacity-30"
+                  >
+                    <ChevronRight size={18} />
+                  </button>
+                </div>
+              ) : null}
+            </div>
+            <div aria-label="Acciones del evento" className="reel-actions">
+              <EventLikeButton eventId={event.id} initial={like} />
+              <EventFavoriteButton
+                eventId={event.id}
+                creatorProfileId={event.creatorProfileId}
+                initialIsFavorite={saved}
+                initialCanFavorite={event.canFavorite}
+                onChange={setSaved}
+                iconOnly
+                className="min-h-12 min-w-12 !rounded-2xl !px-3 !py-3 shadow-sm"
+              />
+              <EventShareButton eventId={event.id} title={event.title} />
+            </div>
           </div>
           <div className="reel-info space-y-2">
             <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] font-bold">
@@ -135,7 +151,7 @@ export function EventFeedCard({ event }: { event: FeedEvent }) {
             <h3 className="line-clamp-2 break-words text-xl font-black leading-tight text-slate-900 sm:text-2xl">
               <Link
                 href={`/events/${event.id}`}
-                className="hover:text-[#5557D8]"
+                className="reel-detail-link hover:text-[#5557D8]"
               >
                 {event.title}
               </Link>
@@ -162,28 +178,12 @@ export function EventFeedCard({ event }: { event: FeedEvent }) {
             </p>
             <Link
               href={`/events/${event.id}`}
-              className="flex min-h-11 items-center justify-between rounded-xl bg-[#F0F0FF] px-4 py-3 text-sm font-bold text-[#5557D8]"
+              className="relative z-10 flex min-h-11 items-center justify-between rounded-xl bg-[#F0F0FF] px-4 py-3 text-sm font-bold text-[#5557D8]"
             >
               Ver evento
               <ChevronRight size={17} />
             </Link>
           </div>
-        </div>
-        <div
-          aria-label="Acciones del evento"
-          className="reel-actions flex flex-col items-center gap-5 pb-4"
-        >
-          <EventLikeButton eventId={event.id} initial={like} />
-          <EventFavoriteButton
-            eventId={event.id}
-            creatorProfileId={event.creatorProfileId}
-            initialIsFavorite={saved}
-            initialCanFavorite={event.canFavorite}
-            onChange={setSaved}
-            iconOnly
-            className="min-h-12 min-w-12 !rounded-2xl !px-3 !py-3 shadow-sm"
-          />
-          <EventShareButton eventId={event.id} title={event.title} />
         </div>
       </div>
     </article>

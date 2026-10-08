@@ -4,6 +4,7 @@ import {
 
 import {
   getEventMediaError,
+  getEventMediaMimeType,
   EVENT_IMAGES_BUCKET,
   EVENT_IMAGES_MAX_COUNT,
   getEventMediaExtension,
@@ -140,9 +141,10 @@ export async function uploadEventImages({
         continue;
       }
 
+      const mimeType = getEventMediaMimeType(file);
       if (
         !isSupportedEventMediaMimeType(
-          file.type,
+          mimeType,
         )
       ) {
         throw new Error(
@@ -152,18 +154,18 @@ export async function uploadEventImages({
 
       const extension =
         getEventMediaExtension(
-          file.type,
+          mimeType,
         );
 
       const storagePath =
         `${normalizedProfileId}/${normalizedEventId}/${crypto.randomUUID()}.${extension}`;
 
-      if (file.type.startsWith("video/")) {
+      if (mimeType.startsWith("video/")) {
         const { uploadEventVideo } = await import("./upload-event-video");
-        await uploadEventVideo(storagePath, file);
+        await uploadEventVideo(storagePath, file, mimeType);
       } else {
         const { error } = await supabase.storage.from(EVENT_IMAGES_BUCKET).upload(storagePath, file, {
-          cacheControl: "31536000", upsert: false, contentType: file.type,
+          cacheControl: "31536000", upsert: false, contentType: mimeType,
         });
         if (error) throw new Error(`No se pudo subir el archivo: ${error.message}`);
       }

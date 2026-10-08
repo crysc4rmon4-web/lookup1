@@ -7,10 +7,12 @@ export function EventImagePicker({
   files,
   onChange,
   disabled = false,
+  onCheckingChange,
 }: {
   files: File[];
   onChange: (files: File[]) => void;
   disabled?: boolean;
+  onCheckingChange?: ((checking: boolean) => void) | undefined;
 }) {
   const items = useMemo<EditableEventImage[]>(
     () =>
@@ -24,6 +26,7 @@ export function EventImagePicker({
   return (
     <EventImageEditor
       items={items}
+      onCheckingChange={onCheckingChange}
       disabled={disabled}
       onChange={(next) =>
         onChange(

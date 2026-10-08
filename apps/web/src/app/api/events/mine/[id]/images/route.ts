@@ -758,6 +758,14 @@ export async function PUT(
           return NextResponse.json({ error: "Uno de los archivos tiene formato o tamaño no permitido." }, { status: 400, headers: noStoreHeaders() });
         }
 
+        if (isEventVideo(image.storagePath)) {
+          const { data: video, error: downloadError } = await supabaseAdmin.storage
+            .from(EVENT_IMAGES_BUCKET).download(image.storagePath);
+          if (downloadError || !video) throw new Error("No se pudo comprobar el vídeo almacenado.");
+          const { getStoredEventVideoError } = await import("@/lib/events/event-video-metadata");
+          const videoError = await getStoredEventVideoError(video);
+          if (videoError) return NextResponse.json({ error: videoError }, { status: 400, headers: noStoreHeaders() });
+        }
       }
     }
 

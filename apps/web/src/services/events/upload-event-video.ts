@@ -1,4 +1,4 @@
-import { Upload } from "tus-js-client";
+import { DetailedError, Upload } from "tus-js-client";
 import { supabase } from "@lookup/services";
 import { EVENT_IMAGES_BUCKET } from "@/lib/events/event-images";
 
@@ -6,6 +6,7 @@ import { EVENT_IMAGES_BUCKET } from "@/lib/events/event-images";
 export async function uploadEventVideo(
   storagePath: string,
   file: File,
+  contentType: string,
 ): Promise<void> {
   const {
     data: { session },
@@ -33,15 +34,26 @@ export async function uploadEventVideo(
       metadata: {
         bucketName: EVENT_IMAGES_BUCKET,
         objectName: storagePath,
-        contentType: file.type,
+        contentType,
         cacheControl: "31536000",
       },
-      onError: () =>
-        reject(
-          new Error(
-            "No se pudo subir el vídeo. Comprueba tu conexión y vuelve a intentarlo.",
-          ),
-        ),
+      onError: (error) => {
+        const response =
+          error instanceof DetailedError ? error.originalResponse : null;
+        const status = response?.getStatus();
+        const rejectedType =
+          status === 415 ||
+          /mime.?type|content.?type/i.test(response?.getBody() ?? "");
+        const message =
+          status === 413
+            ? "El vídeo supera el tamaño permitido por el almacenamiento. Prueba una copia más ligera (máximo 50 MB)."
+            : rejectedType
+              ? "Este formato todavía no está habilitado para subir vídeos. Prueba un MP4 o utiliza el enlace externo."
+              : status === 401 || status === 403
+                ? "No se ha autorizado la subida. Vuelve a iniciar sesión e inténtalo de nuevo."
+                : "No se pudo subir el vídeo. Comprueba tu conexión y vuelve a intentarlo.";
+        reject(new Error(message));
+      },
       onSuccess: () => resolve(),
     });
     upload.start();

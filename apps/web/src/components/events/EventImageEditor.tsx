@@ -13,8 +13,10 @@ import {
   EVENT_IMAGES_MAX_COUNT,
   EVENT_MEDIA_ACCEPT,
   getEventMediaError,
+  getEventMediaMimeType,
   isEventVideo,
 } from "@/lib/events/event-images";
+import { validateSelectedEventVideo } from "@/lib/events/event-video-validation";
 import { EventCoverImage } from "./EventCoverImage";
 import { EventVideo } from "./event-video";
 
@@ -33,10 +35,11 @@ type Props = {
   onChange: (items: EditableEventImage[]) => void;
   disabled?: boolean;
   loading?: boolean;
+  onCheckingChange?: ((checking: boolean) => void) | undefined;
 };
 const isVideo = (item: EditableEventImage) =>
   item.kind === "new"
-    ? item.file.type.startsWith("video/")
+    ? getEventMediaMimeType(item.file).startsWith("video/")
     : isEventVideo(item.storagePath);
 
 export function EventImageEditor({
@@ -44,7 +47,20 @@ export function EventImageEditor({
   onChange,
   disabled = false,
   loading = false,
+  onCheckingChange,
 }: Props) {
+  const [checking, setChecking] = useState(false);
+  const selection = useRef(0);
+  const currentItems = useRef(items);
+  currentItems.current = items;
+  const disabledRef = useRef(disabled);
+  disabledRef.current = disabled;
+  useEffect(
+    () => () => {
+      selection.current += 1;
+    },
+    [],
+  );
   const inputRef = useRef<HTMLInputElement>(null);
   const [urls, setUrls] = useState<Record<string, string>>({});
   const [error, setError] = useState<string | null>(null);
@@ -74,7 +90,7 @@ export function EventImageEditor({
     [next[index], next[target]] = [next[target]!, next[index]!];
     update(next);
   }
-  function select(event: ChangeEvent<HTMLInputElement>) {
+  async function select(event: ChangeEvent<HTMLInputElement>) {
     const files = Array.from(event.target.files ?? []);
     event.target.value = "";
     if (!files.length) return;
@@ -89,20 +105,48 @@ export function EventImageEditor({
         return;
       }
     }
-    const next: EditableEventImage[] = [
-      ...items,
-      ...files.map((file) => ({
-        key: crypto.randomUUID(),
-        kind: "new" as const,
-        file,
-      })),
-    ];
-    // A multi-file selection may start with a video: promote its first photo.
-    if (!items.length) {
-      const photo = next.findIndex((item) => !isVideo(item));
-      if (photo > 0) next.unshift(...next.splice(photo, 1));
+    const version = ++selection.current;
+    setChecking(true);
+    onCheckingChange?.(true);
+    setError(null);
+    try {
+      for (const file of files) {
+        if (getEventMediaMimeType(file).startsWith("video/"))
+          await validateSelectedEventVideo(file);
+      }
+      if (
+        version !== selection.current ||
+        disabledRef.current ||
+        currentItems.current !== items
+      )
+        return;
+      const next: EditableEventImage[] = [
+        ...items,
+        ...files.map((file) => ({
+          key: crypto.randomUUID(),
+          kind: "new" as const,
+          file,
+        })),
+      ];
+      // A multi-file selection may start with a video: promote its first photo.
+      if (!items.length) {
+        const photo = next.findIndex((item) => !isVideo(item));
+        if (photo > 0) next.unshift(...next.splice(photo, 1));
+      }
+      update(next);
+    } catch (error) {
+      if (version === selection.current)
+        setError(
+          error instanceof Error
+            ? error.message
+            : "No se pudo comprobar el vídeo.",
+        );
+    } finally {
+      if (version === selection.current) {
+        setChecking(false);
+        onCheckingChange?.(false);
+      }
     }
-    update(next);
   }
   if (loading)
     return (
@@ -116,7 +160,8 @@ export function EventImageEditor({
       <h3 className="font-bold text-slate-900">Fotos y vídeos</h3>
       <p className="mt-1 text-sm text-slate-500">
         Hasta 5 archivos. La primera foto será la portada. Fotos hasta 6 MB y
-        vídeos MP4 o WebM hasta 50 MB.
+        vídeos de hasta 59 segundos y 50 MB, incluidos MOV de iPhone. Para
+        vídeos más largos, utiliza el enlace externo del evento.
       </p>
       <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
         {items.map((item, index) => {
@@ -153,7 +198,7 @@ export function EventImageEditor({
                   <button
                     type="button"
                     aria-label={`Mover archivo ${index + 1} antes`}
-                    disabled={disabled || index === 0}
+                    disabled={disabled || checking || index === 0}
                     onClick={() => move(index, -1)}
                     className="min-h-11 min-w-11 rounded-lg p-3 hover:bg-slate-100 disabled:opacity-30"
                   >
@@ -162,7 +207,9 @@ export function EventImageEditor({
                   <button
                     type="button"
                     aria-label={`Mover archivo ${index + 1} después`}
-                    disabled={disabled || index === items.length - 1}
+                    disabled={
+                      disabled || checking || index === items.length - 1
+                    }
                     onClick={() => move(index, 1)}
                     className="min-h-11 min-w-11 rounded-lg p-3 hover:bg-slate-100 disabled:opacity-30"
                   >
@@ -171,7 +218,7 @@ export function EventImageEditor({
                   <button
                     type="button"
                     aria-label={`Eliminar archivo ${index + 1}`}
-                    disabled={disabled}
+                    disabled={disabled || checking}
                     onClick={() => update(items.filter((_, i) => i !== index))}
                     className="min-h-11 min-w-11 rounded-lg p-3 text-rose-600 hover:bg-rose-50 disabled:opacity-30"
                   >
@@ -188,7 +235,7 @@ export function EventImageEditor({
         type="file"
         accept={EVENT_MEDIA_ACCEPT}
         multiple
-        disabled={disabled}
+        disabled={disabled || checking}
         onChange={select}
         className="hidden"
       />
@@ -199,7 +246,7 @@ export function EventImageEditor({
         {items.length < EVENT_IMAGES_MAX_COUNT ? (
           <button
             type="button"
-            disabled={disabled}
+            disabled={disabled || checking}
             onClick={() => inputRef.current?.click()}
             className="flex items-center gap-2 rounded-xl bg-[#F0F0FF] px-4 py-3 text-sm font-bold text-[#5557D8] disabled:opacity-50"
           >
@@ -208,6 +255,11 @@ export function EventImageEditor({
           </button>
         ) : null}
       </div>
+      {checking ? (
+        <p role="status" className="mt-3 text-sm text-slate-500">
+          Comprobando duración del vídeo…
+        </p>
+      ) : null}
       {error ? (
         <p
           role="alert"
